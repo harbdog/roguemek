@@ -29,6 +29,8 @@ class MechController {
             notFound()
             return
         }
+		
+		log.info("Mech params: " + params.toString())
 
         if (mechInstance.hasErrors()) {
             respond mechInstance.errors, view:'create'
