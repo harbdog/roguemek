@@ -24,8 +24,17 @@ class MechController {
     }
 
     @Transactional
-    def save(Mech mechInstance) {
-        if (mechInstance == null) {
+    def save(MechCreateCommand mechCmd) {
+		if(mechCmd.validate()) {
+			def mech = mechCmd.createMech()
+			mech.save()
+			redirect action: 'show', id: mech.id
+		}
+		else {
+			render view: 'create', model:[mechCmd:mechCmd]
+		}
+		
+        /*if (mechInstance == null) {
             notFound()
             return
         }
@@ -45,7 +54,7 @@ class MechController {
                 redirect mechInstance
             }
             '*' { respond mechInstance, [status: CREATED] }
-        }
+        }*/
     }
 
     def edit(Mech mechInstance) {

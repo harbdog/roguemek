@@ -9,7 +9,7 @@ class Mech {
 	
 	int tonnage
 	int[] armor
-	int[] internal
+	int[] internals
 	
 	// static location indices
 	static HEAD = 0;
@@ -54,7 +54,8 @@ class Mech {
 				return false;
 			}
 		}
-		armor size: 11..11, min: 0
-		internal size: 8..8, min: 0
+		
+		armor nullable: true
+		internals nullable: true
     }
 }

@@ -35,6 +35,8 @@
 						<g:sortableColumn property="tonnage" title="${message(code: 'mech.tonnage.label', default: 'Tonnage')}" />
 					
 						<g:sortableColumn property="armor" title="${message(code: 'mech.armor.label', default: 'Armor')}" />
+						
+						<g:sortableColumn property="armor" title="${message(code: 'mech.internals.label', default: 'Internals')}" />
 					
 					</tr>
 				</thead>
@@ -53,6 +55,8 @@
 						<td>${fieldValue(bean: mechInstance, field: "tonnage")}</td>
 					
 						<td>${fieldValue(bean: mechInstance, field: "armor")}</td>
+						
+						<td>${fieldValue(bean: mechInstance, field: "internals")}</td>
 					
 					</tr>
 				</g:each>

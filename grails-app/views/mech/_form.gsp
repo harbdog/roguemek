@@ -47,19 +47,19 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'armor', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'armor', 'error')} ">
 	<label for="armor">
 		<g:message code="mech.armor.label" default="Armor" />
-		<span class="required-indicator">*</span>
+		
 	</label>
 	
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'internal', 'error')} required">
-	<label for="internal">
-		<g:message code="mech.internal.label" default="Internal" />
-		<span class="required-indicator">*</span>
+<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'internals', 'error')} ">
+	<label for="internals">
+		<g:message code="mech.internals.label" default="Internals" />
+		
 	</label>
 	
 

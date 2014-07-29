@@ -75,9 +75,9 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${mechInstance?.internal}">
+				<g:if test="${mechInstance?.internals}">
 				<li class="fieldcontain">
-					<span id="internal-label" class="property-label"><g:message code="mech.internal.label" default="Internal" /></span>
+					<span id="internals-label" class="property-label"><g:message code="mech.internals.label" default="Internals" /></span>
 					
 				</li>
 				</g:if>
