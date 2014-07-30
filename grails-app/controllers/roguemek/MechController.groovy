@@ -24,6 +24,14 @@ class MechController {
         respond new Mech(params)
     }
 	
+	def beforeInterceptor = {
+		log.info "Request from country: "+request.locale.country
+	}
+	
+	def afterInterceptor =  { model ->
+		log.info "$actionName: $model"
+	}
+	
 	def upload() {
 		def requestFile = request.getFile('mtfFile')
 		
@@ -63,7 +71,7 @@ class MechController {
     def save(MechCreateCommand mechCmd) {
 		if(mechCmd.validate()) {
 			def mech = mechCmd.createMech()
-			mech.save()
+			mech.save flush:true
 			redirect action: 'show', id: mech.id
 		}
 		else {
