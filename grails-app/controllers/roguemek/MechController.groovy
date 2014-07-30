@@ -4,6 +4,7 @@ package roguemek
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+import org.apache.commons.io.IOUtils
 
 @Transactional(readOnly = true)
 class MechController {
@@ -22,6 +23,41 @@ class MechController {
     def create() {
         respond new Mech(params)
     }
+	
+	def upload() {
+		def requestFile = request.getFile('mtfFile')
+		
+		StringBuffer mtfText = new StringBuffer()
+		
+		if(requestFile && !requestFile.empty && requestFile.size < 10240) {
+			log.info("Incoming file name: "+requestFile.getOriginalFilename())
+			
+			StringWriter writer = new StringWriter()
+			IOUtils.copy(requestFile.getInputStream(), writer)
+			mtfText.append(writer.toString().replaceAll("\n", "<BR/>"))
+			
+			/* The example below is for creating and reading Files on the server
+			 * instead of just reading the InputeStream
+			 */
+			/*
+			def mtfFile = File.createTempFile(requestFile.getOriginalFilename(), null)
+			requestFile.transferTo(mtfFile)
+			
+			BufferedReader br = new BufferedReader(new FileReader(mtfFile))
+			String line = null
+			while ((line = br.readLine()) != null) {
+				mtfText.append(line + "<br/>")
+			}
+			
+			mtfFile.delete()
+			*/
+		}
+		else {
+			mtfText.append("File is empty or not appropriate for this application.")
+		}
+		
+		render mtfText
+	}
 
     @Transactional
     def save(MechCreateCommand mechCmd) {
