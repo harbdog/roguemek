@@ -15,7 +15,7 @@
 		
 		<g:form action="register" name="registerForm">
 			<div class="formField">
-				<label for="login">Login Email:</label>
+				<label for="login">Email:</label>
 				<g:textField name="login" value="${user?.login}"/>
 			</div>
 			<div class="formField">

@@ -33,7 +33,12 @@
 						${session?.user?.callsign}!
 					</span><br><br>
 					
-					<%-- You own (${session.user.ownedMechs?.size() ?: 0}) Mechs.<br> --%>
+					<%-- You own (${session?.user?.ownedMechs?.size() ?: 0}) Mechs.<br> --%>
+					<%--
+					<g:each var="mech" in="${session?.user?.ownedMechs?}">
+						<span class="mech">${mech.name}</span>
+					</g:each>
+					 --%>
 				</div>
 			</g:elseif>
 			<g:else>
