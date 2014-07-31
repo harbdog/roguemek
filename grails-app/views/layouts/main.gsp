@@ -17,7 +17,7 @@
 		<g:layoutHead/>
 	</head>
 	<body>
-		<div id="grailsLogo" role="banner"><a href="http://grails.org"><asset:image src="grails_logo.png" alt="Grails"/></a></div>
+		<div id="grailsLogo" role="banner"><a href="/RogueMek"><asset:image src="roguemek_logo.png" alt="Grails"/></a></div>
 		
 		<div id="loginBox" class="loginBox">
 			<g:if test="${params.action == 'register'}">
@@ -59,12 +59,11 @@
 				<%-- Hide login box while registering --%>
 			</g:if>
 			<g:elseif test="${session.user}">
-				<ul>
-					<li><g:link controller="user"
-								action="mechs">My Mechs</g:link></li>
-					<li><g:link controller="mech"
-								action="index">List Mechs</g:link></li>
-				</ul>
+				<g:link controller="user"
+						action="mechs">My Mechs</g:link>
+				<br/>
+				<g:link controller="mech"
+						action="index">List Mechs</g:link>
 			</g:elseif>
 			<g:else>
 				<div id="registerPane">
