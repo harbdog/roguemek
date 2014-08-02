@@ -19,6 +19,20 @@ class MechController {
     def show(Mech mechInstance) {
         respond mechInstance
     }
+	
+	def showMech() {
+		def chassisToSearchFor = params.chassis
+		def variantToSearchFor = params.variant
+		
+		def mechInstance = Mech.findByChassisAndVariant(chassisToSearchFor, variantToSearchFor)
+		
+		if(mechInstance) {
+			respond mechInstance
+		}
+		else {
+			redirect action: 'index'
+		}
+	}
 
     def create() {
         respond new Mech(params)

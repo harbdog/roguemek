@@ -6,6 +6,15 @@ class UrlMappings {
                 // apply constraints here
             }
         }
+		
+		name mechDetails: "/showMech/$chassis/$variant"{
+			controller = 'mech'
+			action = 'showMech'
+			
+			constraints {
+				// apply constraints here
+			}
+		}
 
         "/"(controller:"RogueMek")
         "500"(view:'/error')
