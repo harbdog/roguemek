@@ -6,6 +6,9 @@ class RogueMekController {
     
 	def index() {
 		log.info('Starting the index action...')
+		
+		[mechPreview:Mech.list(max:5, sort:"name"),
+		 userPreview:User.list(max:5, sort:"callsign")]
 	}
 	
 	def list() {
