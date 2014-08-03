@@ -15,6 +15,15 @@ class UrlMappings {
 				// apply constraints here
 			}
 		}
+		
+		name userDetails: "/showUser/$callsign"{
+			controller = 'user'
+			action = 'showUser'
+			
+			constraints {
+				// apply constraints here
+			}
+		}
 
         "/"(controller:"RogueMek")
         "500"(view:'/error')

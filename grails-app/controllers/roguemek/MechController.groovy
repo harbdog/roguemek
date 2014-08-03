@@ -10,6 +10,15 @@ import org.apache.commons.io.IOUtils
 class MechController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+	
+	def beforeInterceptor = {
+		log.info "Request from country: "+request.locale.country
+	}
+	
+	def afterInterceptor =  { model ->
+		log.info "$actionName: $model"
+	}
+	
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -17,7 +26,12 @@ class MechController {
     }
 
     def show(Mech mechInstance) {
-        respond mechInstance
+		if(mechInstance == null) {
+			redirect action: 'index'
+		}
+		else {
+			respond mechInstance
+		}
     }
 	
 	def showMech() {
@@ -37,14 +51,6 @@ class MechController {
     def create() {
         respond new Mech(params)
     }
-	
-	def beforeInterceptor = {
-		log.info "Request from country: "+request.locale.country
-	}
-	
-	def afterInterceptor =  { model ->
-		log.info "$actionName: $model"
-	}
 	
 	def upload() {
 		def requestFile = request.getFile('mtfFile')

@@ -44,7 +44,7 @@
 				<g:each in="${mechInstanceList}" status="i" var="mechInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link mapping="mechDetails" params='[chassis:"${mechInstance.chassis}", variant:"${mechInstance.variant}"]'>${fieldValue(bean: mechInstance, field: "name")}</g:link></td>
+						<td><g:link mapping="mechDetails" params='[chassis:"${mechInstance?.chassis}", variant:"${mechInstance?.variant}"]'>${fieldValue(bean: mechInstance, field: "name")}</g:link></td>
 					
 						<td>${fieldValue(bean: mechInstance, field: "description")}</td>
 					

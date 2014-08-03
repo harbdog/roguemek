@@ -1,9 +1,9 @@
 <ul class="list">
-	<g:each in="${users?}" var="user">
+	<g:each in="${users?}" var="userInstance">
         <li class="icon">
-            <g:link controller="store" action="shop">
+            <g:link mapping="userDetails" params='[callsign:"${userInstance?.callsign}"]'>
                 <g:img dir="images" file="spinner.gif" />
-                ${user?.callsign}
+                ${userInstance?.callsign}
             </g:link>
         </li>
 	</g:each>

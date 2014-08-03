@@ -6,7 +6,7 @@
 	%>
 	<g:each in="${mechs?}" var="mechInstance">
 		<li class="icon">
-			<g:link controller="store" action="shop">
+			<g:link mapping="mechDetails" params='[chassis:"${mechInstance?.chassis}", variant:"${mechInstance?.variant}"]'>
 				<g:img dir="images" file="spinner.gif" />
 				${mechInstance?.name}
 			</g:link>
