@@ -8,14 +8,14 @@
 		<h1>Prepare for battle!</h1>
 		<p>Mechwarrior, are you ready?</p>
 	
-		<div id="mechPreview" class="previewItem">
+		<%-- <div id="mechPreview" class="previewItem">
 			<g:render template="/mech/mechList"
 					  model="[mechs: mechPreview]"></g:render>
-		</div>
+		</div> --%>
 		
-		<div id="userPreview" class="previewItem">
+		<%-- <div id="userPreview" class="previewItem">
 			<g:render template="/user/userList"
 					  model="[users: userPreview]"></g:render>
-		</div>
+		</div> --%>
 	</body>
 </html>

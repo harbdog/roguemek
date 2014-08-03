@@ -20,42 +20,11 @@
 		<div id="grailsLogo" role="banner"><a href="/RogueMek"><asset:image src="roguemek_logo.png" alt="Grails"/></a></div>
 		
 		<div id="loginBox" class="loginBox">
-			<g:if test="${params.action == 'register'}">
-				<%-- Hide login box while registering --%>
+			<g:if test="${session?.user}">
+				<g:render template="/user/loginLanding" />
 			</g:if>
-			<g:elseif test="${session?.user}">
-				<div style="margin-top:20px">
-					<div style="float:right;">
-						<g:link controller="user" action="profile">Profile</g:link> | <g:link controller="user" action="logout">Logout</g:link><br>
-					</div>
-					Welcome back
-					<span id="userCallSign">
-						${session?.user?.callsign}!
-					</span><br><br>
-					
-					<%-- You own (${session?.user?.ownedMechs?.size() ?: 0}) Mechs.<br> --%>
-					<%--
-					<g:each var="mech" in="${session?.user?.ownedMechs?}">
-						<span class="mech">${mech.name}</span>
-					</g:each>
-					 --%>
-				</div>
-			</g:elseif>
-			<g:else>
+			<g:elseif test="${params.action != 'register'}">
 				<g:render template="/user/loginBox" />
-			</g:else>
-		</div>
-		
-		<div id="navPane">
-			<g:if test="${params.action == 'register'}">
-				<%-- Hide user box while registering --%>
-			</g:if>
-			<g:elseif test="${session.user}">
-				<g:link controller="user"
-						action="mechs">My Mechs</g:link>
-				<br/>
-				<g:link controller="mech"
-						action="index">List Mechs</g:link>
 			</g:elseif>
 		</div>
 		

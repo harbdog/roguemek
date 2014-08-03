@@ -61,14 +61,14 @@ class UserController {
 		if(request.method == 'POST') {
 			if(!cmd.hasErrors()) {
 				session.user = cmd.getUser()
-				redirect controller:'RogueMek'
+				render template: '/user/loginLanding'
 			}
 			else {
-				render view:'/RogueMek', model:[loginCmd:cmd]
+				render template: 'loginBox', model: [loginCmd:cmd]
 			}
 		}
 		else {
-			render view:'/RogueMek'
+			render template: 'loginBox'
 		}
 	}
 	

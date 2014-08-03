@@ -2,7 +2,7 @@
 <g:form name="loginForm" url="[controller:'user', action:'login']" class="form">
 	<div class="input">
 		<g:textField required="true"
-					 placeholder="Username"
+					 placeholder="Email"
 					 name="login"
 					 value="${fieldValue(bean:loginCmd, field:'login')}" />
 		<g:hasErrors bean="${loginCmd}" field="login" >
@@ -18,6 +18,6 @@
 		</g:hasErrors>
 	</div>
 	<div class="submit">
-		<input type="submit" value="login" class="btn" />
+		<input type="image" src="assets/login-button.gif" class="btn"/>
 	</div>
 </g:form>

@@ -6,6 +6,7 @@
 // to create separate JavaScript files as needed.
 //
 //= require jquery
+//= require jquery.form.js
 //= require_tree .
 //= require_self
 
@@ -16,5 +17,10 @@ if (typeof jQuery !== 'undefined') {
 		}).ajaxStop(function() {
 			$(this).fadeOut();
 		});
+		
+		$('#loginForm').ajaxForm(function(result) {
+			$('#loginBox').html(result);
+		});
+		
 	})(jQuery);
 }
