@@ -87,6 +87,7 @@
 				</g:if>
 			
 			</ol>
+			
 			<g:form url="[resource:mechInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">
 					<g:link class="edit" action="edit" resource="${mechInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>

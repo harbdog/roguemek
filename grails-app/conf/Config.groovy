@@ -95,6 +95,11 @@ environments {
     }
 }
 
+// ElasticeSearch configuration
+elasticSearch.client.mode = 'local'
+
+elasticSearch.datastoreImpl = 'hibernateDatastore'
+
 // log4j configuration
 log4j.main = {
     // Example of changing the log pattern for the default console appender:

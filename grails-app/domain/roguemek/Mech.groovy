@@ -1,6 +1,10 @@
 package roguemek
 
 class Mech {
+	static searchable = {
+		only = ['name', 'description', 'chassis', 'variant']
+	}
+	
 	// Configuration properties
 	String name
 	String description

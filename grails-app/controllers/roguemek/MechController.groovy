@@ -24,6 +24,16 @@ class MechController {
         params.max = Math.min(max ?: 10, 100)
         respond Mech.list(params), model:[mechInstanceCount: Mech.count()]
     }
+	
+	def display() {
+		def mech = Mech.get(params.id)
+		if(mech) {
+			render(template:"mech", model:[mech:mech])
+		}
+		else {
+			render "Mech not found."
+		}
+	}
 
     def show(Mech mechInstance) {
 		if(mechInstance == null) {
@@ -35,6 +45,8 @@ class MechController {
     }
 	
 	def showMech() {
+		[mechPreview:Mech.list(max:5, sort:"name")]
+		
 		def chassisToSearchFor = params.chassis
 		def variantToSearchFor = params.variant
 		

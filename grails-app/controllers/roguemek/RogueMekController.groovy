@@ -7,8 +7,7 @@ class RogueMekController {
 	def index() {
 		log.info('Starting the index action...')
 		
-		[mechPreview:Mech.list(max:5, sort:"name"),
-		 userPreview:User.list(max:5, sort:"callsign")]
+		[mechPreview:Mech.list(max:5, sort:"name")]
 	}
 	
 	def list() {
@@ -25,5 +24,16 @@ class RogueMekController {
 		}
 		
 		render 'Default page for RogueMek!'
+	}
+	
+	def search(String q) {
+		def searchResults = [:]
+		if(q) {
+			searchResults = Mech.search("${q}*")
+			
+			log.info("searchResults: ${searchResults}")
+		}
+		
+		render template: 'searchResults', model: searchResults
 	}
 }

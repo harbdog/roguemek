@@ -18,6 +18,6 @@
 		</g:hasErrors>
 	</div>
 	<div class="submit">
-		<input type="image" src="assets/login-button.gif" class="btn"/>
+		<input type="image" src="/RogueMek/assets/login-button.gif" class="btn"/>
 	</div>
 </g:form>
