@@ -18,9 +18,5 @@ if (typeof jQuery !== 'undefined') {
 			$(this).fadeOut();
 		});
 		
-		$('#loginForm').ajaxForm(function(result) {
-			$('#loginBox').html(result);
-		});
-		
 	})(jQuery);
 }

@@ -8,15 +8,15 @@
 					elementId="mechLink${mechInstance?.id}">${mechInstance?.name}</g:link>
 		</li>
 		
-		<r:script>
+		<asset:script type="text/javascript">
         $('#mechLink${mechInstance.id}').click (function() {
             return showMech(${mechInstance.id});
         });
-        </r:script>
+        </asset:script>
 	</g:each>
 </ul>
 
-<r:script>
+<asset:script type="text/javascript">
 function showMech(mechId) {
     $.ajax({
         url: '${createLink(action: "display", controller: "mech")}?id=' + mechId,
@@ -27,4 +27,4 @@ function showMech(mechId) {
     });
     return false;
 }
-</r:script>
+</asset:script>

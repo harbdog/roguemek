@@ -1,3 +1,4 @@
+
 <p class="legend">Log in</p>
 <g:form name="loginForm" url="[controller:'user', action:'login']" class="form">
 	<div class="input">
@@ -21,3 +22,9 @@
 		<input type="image" src="/RogueMek/assets/login-button.gif" class="btn"/>
 	</div>
 </g:form>
+
+<asset:script type="text/javascript">
+	$('#loginForm').ajaxForm(function(result) {
+		$('#loginBox').html(result);
+	});
+</asset:script>

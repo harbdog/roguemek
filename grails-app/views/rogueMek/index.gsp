@@ -24,10 +24,10 @@
 			<div id="mechPanel"></div>
 		</div>
 		
-		<r:script>
+		<asset:script type="text/javascript">
 			$("#searchField").keyup(function() {
 				$("#mechPanel").load("${createLink(action: 'search')}?q="+this.value);
 			});
-		</r:script>
+		</asset:script>
 	</body>
 </html>
