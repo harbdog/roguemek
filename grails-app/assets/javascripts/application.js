@@ -17,6 +17,40 @@ if (typeof jQuery !== 'undefined') {
 		}).ajaxStop(function() {
 			$(this).fadeOut();
 		});
-		
 	})(jQuery);
+}
+
+//Wait for DOM to load and init functions
+$(window).ready(function(){ 
+	init(); 
+});
+
+function init(){
+	// The global login form should be able to allow login regardless of the current page 
+	$('#loginForm').ajaxForm(function(result) {
+		$('#loginBox').html(result);
+	});
+	
+	// Test for instant search to create links in a panel
+	$("#searchField").keyup(function() {
+		console.log("value: "+this.value);
+		$("#searchResults").load("RogueMek/search?q="+this.value);
+	});
+	
+	// Load a #mechLinkN into the #mechPanel
+	$("a[id^='mechLink']").click (function() {
+		var mechLinkId = this.id.substring(8);
+        return showMech(mechLinkId);
+    });
+}
+
+function showMech(mechId) {
+    $.ajax({
+        url: 'mech/display?id=' + mechId,
+        success: function(data) {
+            $('#mechPanel').html(data);
+            $('#mech' + mechId).fadeIn('slow');
+        }
+    });
+    return false;
 }

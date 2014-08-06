@@ -21,13 +21,7 @@
 		<div id="searchBox">
 			<h1>Instant Search</h1>
 			<g:textField id="searchField" name="searchField" />
-			<div id="mechPanel"></div>
+			<div id="searchResults"></div>
 		</div>
-		
-		<asset:script type="text/javascript">
-			$("#searchField").keyup(function() {
-				$("#mechPanel").load("${createLink(action: 'search')}?q="+this.value);
-			});
-		</asset:script>
 	</body>
 </html>

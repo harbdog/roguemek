@@ -26,7 +26,7 @@ class MechController {
     }
 	
 	def display() {
-		def mech = Mech.get(params.id)
+		def mech = Mech.read(params.id)
 		if(mech) {
 			render(template:"mech", model:[mech:mech])
 		}

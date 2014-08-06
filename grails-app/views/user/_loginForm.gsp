@@ -22,9 +22,3 @@
 		<input type="image" src="/RogueMek/assets/login-button.gif" class="btn"/>
 	</div>
 </g:form>
-
-<asset:script type="text/javascript">
-	$('#loginForm').ajaxForm(function(result) {
-		$('#loginBox').html(result);
-	});
-</asset:script>
