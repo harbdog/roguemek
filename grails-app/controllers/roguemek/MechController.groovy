@@ -102,7 +102,7 @@ class MechController {
     @Transactional
     def save(MechCreateCommand mechCmd) {
 		if(mechCmd.validate()) {
-			def mech = mechCmd.createMech()
+			def mech = mechCmd.createMech(params)
 			mech.save flush:true
 			redirect action: 'show', id: mech.id
 		}

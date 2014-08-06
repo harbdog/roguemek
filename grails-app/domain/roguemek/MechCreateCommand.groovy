@@ -1,5 +1,7 @@
 package roguemek
 
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+
 class MechCreateCommand {
 	// Configuration properties
 	String name
@@ -10,23 +12,17 @@ class MechCreateCommand {
 	int tonnage
 	
     static constraints = {
-		name blank: false
-		description blank: true
-		chassis blank: false
-		variant blank: false
-		
-		tonnage range : 20..100, validator:{val, obj ->
-			if(val % 5 != 0) {
-				return false;
-			}
-		}
+		importFrom Mech
     }
 	
-	Mech createMech() {
+	Mech createMech(GrailsParameterMap params) {
 		def armor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		def internals = [0, 0, 0, 0, 0, 0, 0, 0]
 		
-		def mech = new Mech(name: name, description: description, chassis: chassis, variant: variant, tonnage: tonnage, armor: armor, internals: internals)
+		params.armor = armor
+		params.internals = internals
+		
+		def mech = new Mech(params)
 		
 		return mech
 	}
