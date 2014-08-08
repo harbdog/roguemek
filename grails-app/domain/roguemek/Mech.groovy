@@ -2,7 +2,7 @@ package roguemek
 
 class Mech {
 	static searchable = {
-		only = ['name', 'description', 'chassis', 'variant']
+		only = ['name', 'description', 'chassis', 'variant', 'mass']
 	}
 	
 	// Configuration properties
@@ -11,9 +11,9 @@ class Mech {
 	String chassis
 	String variant
 	
-	int tonnage
-	int[] armor
-	int[] internals
+	Integer mass
+	Integer[] armor
+	Integer[] internals
 	
 	// static location indices
 	static HEAD = 0;
@@ -77,7 +77,7 @@ class Mech {
 		chassis blank: false
 		variant blank: false
 		
-		tonnage range : 20..100, validator:{val, obj ->
+		mass range : 20..100, validator:{val, obj ->
 			if(val % 5 != 0) {
 				return false;
 			}

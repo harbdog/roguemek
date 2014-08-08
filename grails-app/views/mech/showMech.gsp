@@ -59,11 +59,11 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${mechInstance?.tonnage}">
+				<g:if test="${mechInstance?.mass}">
 				<li class="fieldcontain">
-					<span id="tonnage-label" class="property-label"><g:message code="mech.tonnage.label" default="Tonnage" /></span>
+					<span id="mass-label" class="property-label"><g:message code="mech.mass.label" default="Tonnage" /></span>
 					
-						<span class="property-value" aria-labelledby="tonnage-label"><g:fieldValue bean="${mechInstance}" field="tonnage"/></span>
+						<span class="property-value" aria-labelledby="mass-label"><g:fieldValue bean="${mechInstance}" field="mass"/></span>
 					
 				</li>
 				</g:if>
@@ -72,7 +72,7 @@
 				<li class="fieldcontain">
 					<span id="armor-label" class="property-label"><g:message code="mech.armor.label" default="Armor" /></span>
 					
-						<span class="property-value" aria-labelledby="tonnage-label"><g:fieldValue bean="${mechInstance}" field="armor"/></span>
+						<span class="property-value" aria-labelledby="mass-label"><g:fieldValue bean="${mechInstance}" field="armor"/></span>
 						
 				</li>
 				</g:if>
@@ -81,7 +81,7 @@
 				<li class="fieldcontain">
 					<span id="internals-label" class="property-label"><g:message code="mech.internals.label" default="Internals" /></span>
 					
-						<span class="property-value" aria-labelledby="tonnage-label"><g:fieldValue bean="${mechInstance}" field="internals"/></span>
+						<span class="property-value" aria-labelledby="mass-label"><g:fieldValue bean="${mechInstance}" field="internals"/></span>
 					
 				</li>
 				</g:if>

@@ -4,7 +4,7 @@
 		<div class="mechChassisVariant">${mech.chassis}-${mech.variant}</div>
 		<div class="mechTonnage">
 			Description: ${mech.description}<br>
-			Tonnage: ${mech.tonnage}</div>
+			Tonnage: ${mech.mass}</div>
 		<div class="mechWeapons">
 		
 		</div>

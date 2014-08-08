@@ -38,12 +38,12 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'tonnage', 'error')} required">
-	<label for="tonnage">
-		<g:message code="mech.tonnage.label" default="Tonnage" />
+<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'mass', 'error')} required">
+	<label for="mass">
+		<g:message code="mech.mass.label" default="Tonnage" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select name="tonnage" from="${20..100}" class="range" required="" value="${fieldValue(bean: mechInstance, field: 'tonnage')}"/>
+	<g:select name="mass" from="${20..100}" class="range" required="" value="${fieldValue(bean: mechInstance, field: 'mass')}"/>
 
 </div>
 
