@@ -4,7 +4,10 @@ package roguemek
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+
 import org.apache.commons.io.IOUtils
+
+import roguemek.model.Mech;
 
 @Transactional(readOnly = true)
 class MechController {

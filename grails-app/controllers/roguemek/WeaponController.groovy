@@ -3,6 +3,7 @@ package roguemek
 
 
 import static org.springframework.http.HttpStatus.*
+import roguemek.model.Weapon;
 import grails.transaction.Transactional
 
 @Transactional(readOnly = true)

@@ -2,6 +2,8 @@ package roguemek
 
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
+import roguemek.model.Mech;
+
 class MechCreateCommand {
 	// Configuration properties
 	String name

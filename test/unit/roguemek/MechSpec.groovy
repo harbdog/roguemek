@@ -1,6 +1,7 @@
 package roguemek
 
 import grails.test.mixin.TestFor
+import roguemek.model.Mech;
 import spock.lang.Specification
 
 /**

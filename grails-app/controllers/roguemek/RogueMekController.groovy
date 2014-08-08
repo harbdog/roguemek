@@ -1,5 +1,7 @@
 package roguemek
 
+import roguemek.model.Mech;
+
 class RogueMekController {
 	// override default index method with list method
 	//static defaultAction = 'list'

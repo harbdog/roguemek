@@ -3,6 +3,7 @@ package roguemek
 
 
 import grails.test.mixin.*
+import roguemek.model.Weapon;
 import spock.lang.*
 
 @TestFor(WeaponController)

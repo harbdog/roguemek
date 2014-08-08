@@ -1,4 +1,4 @@
-package roguemek
+package roguemek.model
 
 class Weapon extends Equipment {
 		
