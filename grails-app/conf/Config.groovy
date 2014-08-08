@@ -120,6 +120,8 @@ log4j.main = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 		   
+    fatal 'org.hibernate.tool.hbm2ddl.SchemaExport'
+		   
     // Set level for all application artifacts
     info "grails.app"
 	

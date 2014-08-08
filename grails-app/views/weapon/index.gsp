@@ -30,7 +30,7 @@
 					
 						<g:sortableColumn property="heat" title="${message(code: 'weapon.heat.label', default: 'Heat')}" />
 					
-						<g:sortableColumn property="tonnage" title="${message(code: 'weapon.tonnage.label', default: 'Tonnage')}" />
+						<g:sortableColumn property="mass" title="${message(code: 'weapon.mass.label', default: 'Tonnage')}" />
 					
 						<g:sortableColumn property="crits" title="${message(code: 'weapon.crits.label', default: 'Crits')}" />
 					
@@ -48,7 +48,7 @@
 					
 						<td>${fieldValue(bean: weaponInstance, field: "heat")}</td>
 					
-						<td>${fieldValue(bean: weaponInstance, field: "tonnage")}</td>
+						<td>${fieldValue(bean: weaponInstance, field: "mass")}</td>
 					
 						<td>${fieldValue(bean: weaponInstance, field: "crits")}</td>
 					

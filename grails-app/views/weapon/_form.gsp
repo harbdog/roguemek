@@ -29,12 +29,12 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: weaponInstance, field: 'tonnage', 'error')} required">
-	<label for="tonnage">
-		<g:message code="weapon.tonnage.label" default="Tonnage" />
+<div class="fieldcontain ${hasErrors(bean: weaponInstance, field: 'mass', 'error')} required">
+	<label for="mass">
+		<g:message code="weapon.mass.label" default="Tonnage" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:field name="tonnage" type="number" value="${weaponInstance.tonnage}" required=""/>
+	<g:field name="mass" type="number" value="${weaponInstance.mass}" required=""/>
 
 </div>
 

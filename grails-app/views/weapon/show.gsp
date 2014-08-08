@@ -50,11 +50,11 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${weaponInstance?.tonnage}">
+				<g:if test="${weaponInstance?.mass}">
 				<li class="fieldcontain">
-					<span id="tonnage-label" class="property-label"><g:message code="weapon.tonnage.label" default="Tonnage" /></span>
+					<span id="mass-label" class="property-label"><g:message code="weapon.mass.label" default="Tonnage" /></span>
 					
-						<span class="property-value" aria-labelledby="tonnage-label"><g:fieldValue bean="${weaponInstance}" field="tonnage"/></span>
+						<span class="property-value" aria-labelledby="mass-label"><g:fieldValue bean="${weaponInstance}" field="mass"/></span>
 					
 				</li>
 				</g:if>
