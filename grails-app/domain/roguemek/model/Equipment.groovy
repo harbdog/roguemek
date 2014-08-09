@@ -1,6 +1,9 @@
 package roguemek.model
 
 class Equipment {
+	static searchable = {
+		only = ['name', 'description']
+	}
 
     String name
 	String description
@@ -19,6 +22,7 @@ class Equipment {
 	static CLAN = 'C'
 	
 	static mapping = {
+		// All extending classes will get their own tables
 		tablePerHierarchy false
 	}
 

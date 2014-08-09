@@ -2,7 +2,7 @@ package roguemek.model
 
 class Mech {
 	static searchable = {
-		only = ['name', 'description', 'chassis', 'variant', 'mass']
+		only = ['name', 'description', 'chassis', 'variant']
 	}
 	
 	// Configuration properties
