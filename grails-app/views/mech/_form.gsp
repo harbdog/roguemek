@@ -1,6 +1,3 @@
-<%@ page import="roguemek.Mech" %>
-
-
 
 <div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'name', 'error')} required">
 	<label for="name">

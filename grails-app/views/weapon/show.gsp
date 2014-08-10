@@ -1,5 +1,4 @@
 
-<%@ page import="roguemek.Weapon" %>
 <!DOCTYPE html>
 <html>
 	<head>

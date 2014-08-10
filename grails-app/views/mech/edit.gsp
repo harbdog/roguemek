@@ -1,4 +1,4 @@
-<%@ page import="roguemek.Mech" %>
+
 <!DOCTYPE html>
 <html>
 	<head>

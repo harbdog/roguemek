@@ -2,10 +2,12 @@ package roguemek.model
 
 class Equipment {
 	static searchable = {
-		only = ['name', 'description']
+		only = ['name', 'description', 'shortName', 'aliases']
 	}
 
     String name
+	String shortName
+	String aliases
 	String description
 	
 	Character tech
@@ -18,8 +20,8 @@ class Equipment {
 	Integer battleValue
 	
 	// STATIC value mappings
-	static IS = 'I'
-	static CLAN = 'C'
+	static Character IS = 'I'
+	static Character CLAN = 'C'
 	
 	static mapping = {
 		// All extending classes will get their own tables
@@ -28,6 +30,8 @@ class Equipment {
 
     static constraints = {
 		name blank: false
+		shortName nullable: true
+		aliases nullable: true
 		description nullable: true
 		
 		tech inList: [IS, CLAN]

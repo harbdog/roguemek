@@ -21,9 +21,17 @@ class Faction {
 		// Create all factions for the game from csv
 		new CSVMapReader(new FileReader("src/csv/Factions.csv")).eachLine { map ->
 			def faction = new Faction(map)
-			faction.save()
 			
-			log.info("Created faction "+faction.name)
+			if(!faction.validate()) {
+				log.error("Errors with faction "+faction.name+":\n")
+				faction.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				faction.save()
+				log.info("Created faction "+faction.name)
+			}
 		}
 		
 	}

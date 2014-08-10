@@ -15,12 +15,13 @@ class BootStrap {
 			admin = new User(login: adminEmail, callsign: adminCallsign, password: adminInitialPassword)
 			admin.save()
 			
-			log.info('Initialized admin user '+admin.adminEmail)
+			log.info('Initialized admin user '+admin.login)
 		}
 		// Initialize factions
 		Faction.initFactions()
 		
 		// Initialize equipment, weapons, ammo, and heat sinks
+		Weapon.initWeapons()
 		
 		
 		// Initialize stock mechs
