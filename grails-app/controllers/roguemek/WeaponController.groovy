@@ -17,6 +17,14 @@ class WeaponController {
     }
 
     def show(Weapon weaponInstance) {
+		
+		if(weaponInstance.ammoTypes != null) {
+			log.info(weaponInstance.ammoTypes)
+		}
+		else {
+			log.info("no ammo")
+		}
+		
         respond weaponInstance
     }
 

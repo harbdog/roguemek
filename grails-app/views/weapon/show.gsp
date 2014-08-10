@@ -29,6 +29,33 @@
 					
 				</li>
 				</g:if>
+				
+				<g:if test="${weaponInstance?.description}">
+				<li class="fieldcontain">
+					<span id="description-label" class="property-label"><g:message code="weapon.description.label" default="Description" /></span>
+					
+						<span class="property-value" aria-labelledby="description-label"><g:fieldValue bean="${weaponInstance}" field="description"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${weaponInstance?.mass}">
+				<li class="fieldcontain">
+					<span id="mass-label" class="property-label"><g:message code="weapon.mass.label" default="Mass" /></span>
+					
+						<span class="property-value" aria-labelledby="mass-label"><g:fieldValue bean="${weaponInstance}" field="mass"/></span>
+					
+				</li>
+				</g:if>
+			
+				<g:if test="${weaponInstance?.crits}">
+				<li class="fieldcontain">
+					<span id="crits-label" class="property-label"><g:message code="weapon.crits.label" default="Crits" /></span>
+					
+						<span class="property-value" aria-labelledby="crits-label"><g:fieldValue bean="${weaponInstance}" field="crits"/></span>
+					
+				</li>
+				</g:if>
 			
 				<g:if test="${weaponInstance?.damage}">
 				<li class="fieldcontain">
@@ -48,29 +75,65 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${weaponInstance?.mass}">
+				<g:if test="${weaponInstance?.cycle}">
 				<li class="fieldcontain">
-					<span id="mass-label" class="property-label"><g:message code="weapon.mass.label" default="Tonnage" /></span>
+					<span id="cycle-label" class="property-label"><g:message code="weapon.cycle.label" default="Cycle" /></span>
 					
-						<span class="property-value" aria-labelledby="mass-label"><g:fieldValue bean="${weaponInstance}" field="mass"/></span>
+						<span class="property-value" aria-labelledby="cycle-label"><g:fieldValue bean="${weaponInstance}" field="cycle"/></span>
 					
 				</li>
 				</g:if>
-			
-				<g:if test="${weaponInstance?.crits}">
+				
+				<g:if test="${weaponInstance?.projectiles}">
 				<li class="fieldcontain">
-					<span id="crits-label" class="property-label"><g:message code="weapon.crits.label" default="Crits" /></span>
+					<span id="projectiles-label" class="property-label"><g:message code="weapon.projectiles.label" default="Projectiles" /></span>
 					
-						<span class="property-value" aria-labelledby="crits-label"><g:fieldValue bean="${weaponInstance}" field="crits"/></span>
+						<span class="property-value" aria-labelledby="projectiles-label"><g:fieldValue bean="${weaponInstance}" field="projectiles"/></span>
 					
 				</li>
 				</g:if>
-			
-				<g:if test="${weaponInstance?.description}">
+				
+				<g:if test="${weaponInstance?.minRange >= 0}">
 				<li class="fieldcontain">
-					<span id="description-label" class="property-label"><g:message code="weapon.description.label" default="Description" /></span>
+					<span id="minRange-label" class="property-label"><g:message code="weapon.minRange.label" default="Min Range" /></span>
 					
-						<span class="property-value" aria-labelledby="description-label"><g:fieldValue bean="${weaponInstance}" field="description"/></span>
+						<span class="property-value" aria-labelledby="minRange-label"><g:fieldValue bean="${weaponInstance}" field="minRange"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${weaponInstance?.shortRange}">
+				<li class="fieldcontain">
+					<span id="shortRange-label" class="property-label"><g:message code="weapon.shortRange.label" default="Short Range" /></span>
+					
+						<span class="property-value" aria-labelledby="shortRange-label"><g:fieldValue bean="${weaponInstance}" field="shortRange"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${weaponInstance?.mediumRange}">
+				<li class="fieldcontain">
+					<span id="mediumRange-label" class="property-label"><g:message code="weapon.mediumRange.label" default="Medium Range" /></span>
+					
+						<span class="property-value" aria-labelledby="mediumRange-label"><g:fieldValue bean="${weaponInstance}" field="mediumRange"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${weaponInstance?.longRange}">
+				<li class="fieldcontain">
+					<span id="longRange-label" class="property-label"><g:message code="weapon.longRange.label" default="Long Range" /></span>
+					
+						<span class="property-value" aria-labelledby="longRange-label"><g:fieldValue bean="${weaponInstance}" field="longRange"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${weaponInstance?.ammoTypes}">
+				<li class="fieldcontain">
+					<span id="ammoTypes-label" class="property-label"><g:message code="weapon.ammoTypes.label" default="Ammo Types" /></span>
+					
+						<span class="property-value" aria-labelledby="ammoTypes-label"><g:fieldValue bean="${weaponInstance}" field="ammoTypes"/></span>
 					
 				</li>
 				</g:if>

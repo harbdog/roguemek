@@ -36,12 +36,24 @@ class Weapon extends Equipment {
 			return
 		}
 		
-		// TODO: map ammoTypes for weapons from csv (if possible?)
-		
 		// Create all objects for the game from csv
 		new CSVMapReader(new FileReader("src/csv/Weapons.csv")).eachLine { map ->
-			def weapon = new Weapon(map)
 			
+			// update the ammoTypes to be a map of the Ammo class by shortName
+			def ammoTypesStr = map.ammoTypes
+			if(ammoTypesStr != null) {
+				
+				def ammoTypesArr = []
+				ammoTypesStr.split(":").each {
+					def itAmmo = Ammo.findByShortName(it)
+					if(itAmmo != null) {
+						ammoTypesArr.add(itAmmo)
+					}
+				}
+				map.ammoTypes = ammoTypesArr
+			}
+			
+			def weapon = new Weapon(map)
 			if(!weapon.validate()) {
 				log.error("Errors with weapon "+weapon.name+":\n")
 				weapon.errors.allErrors.each {
@@ -51,6 +63,13 @@ class Weapon extends Equipment {
 			else {
 				weapon.save()
 				log.info("Created weapon "+weapon.name)
+				
+				weapon.ammoTypes.each {
+					// TODO: map ammoTypes for weapons from csv (if possible?)
+					// AMMO table stores WEAPONS_ID, need to link that up
+					log.info("ammo: "+weapon.ammoTypes)
+					it.save()
+				}
 			}
 		}
 		
