@@ -57,6 +57,33 @@
 					
 				</li>
 				</g:if>
+				
+				<g:if test="${mechInstance?.tech}">
+				<li class="fieldcontain">
+					<span id="tech-label" class="property-label"><g:message code="mech.tech.label" default="Tech" /></span>
+					
+						<span class="property-value" aria-labelledby="tech-label"><g:fieldValue bean="${mechInstance}" field="tech"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${mechInstance?.faction}">
+				<li class="fieldcontain">
+					<span id="faction-label" class="property-label"><g:message code="mech.faction.label" default="Faction" /></span>
+					
+						<span class="property-value" aria-labelledby="faction-label"><g:fieldValue bean="${mechInstance}" field="faction"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${mechInstance?.year}">
+				<li class="fieldcontain">
+					<span id="year-label" class="property-label"><g:message code="mech.year.label" default="Year" /></span>
+					
+						<span class="property-value" aria-labelledby="year-label"><g:formatNumber number="${mechInstance.year}" format="0000"/></span>
+					
+				</li>
+				</g:if>
 			
 				<g:if test="${mechInstance?.mass}">
 				<li class="fieldcontain">
@@ -66,12 +93,30 @@
 					
 				</li>
 				</g:if>
+				
+				<g:if test="${mechInstance?.walkMP}">
+				<li class="fieldcontain">
+					<span id="walkMP-label" class="property-label"><g:message code="mech.walkMP.label" default="Walk MP" /></span>
+					
+						<span class="property-value" aria-labelledby="walkmp-label"><g:fieldValue bean="${mechInstance}" field="walkMP"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${mechInstance?.jumpMP}">
+				<li class="fieldcontain">
+					<span id="jumpMP-label" class="property-label"><g:message code="mech.jumpMP.label" default="Jump MP" /></span>
+					
+						<span class="property-value" aria-labelledby="jumpMP-label"><g:fieldValue bean="${mechInstance}" field="jumpMP"/></span>
+					
+				</li>
+				</g:if>
 			
 				<g:if test="${mechInstance?.armor}">
 				<li class="fieldcontain">
 					<span id="armor-label" class="property-label"><g:message code="mech.armor.label" default="Armor" /></span>
 					
-						<span class="property-value" aria-labelledby="mass-label"><g:fieldValue bean="${mechInstance}" field="armor"/></span>
+						<span class="property-value" aria-labelledby="armor-label"><g:fieldValue bean="${mechInstance}" field="armor"/></span>
 						
 				</li>
 				</g:if>
@@ -80,7 +125,25 @@
 				<li class="fieldcontain">
 					<span id="internals-label" class="property-label"><g:message code="mech.internals.label" default="Internals" /></span>
 					
-						<span class="property-value" aria-labelledby="mass-label"><g:fieldValue bean="${mechInstance}" field="internals"/></span>
+						<span class="property-value" aria-labelledby="internals-label"><g:fieldValue bean="${mechInstance}" field="internals"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${mechInstance?.cbills >= 0}">
+				<li class="fieldcontain">
+					<span id="cbills-label" class="property-label"><g:message code="mech.cbills.label" default="CBills" /></span>
+					
+						<span class="property-value" aria-labelledby="cbills-label"><g:fieldValue bean="${mechInstance}" field="cbills"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${mechInstance?.battleValue >= 0}">
+				<li class="fieldcontain">
+					<span id="battleValue-label" class="property-label"><g:message code="mech.battleValue.label" default="Battle Value" /></span>
+					
+						<span class="property-value" aria-labelledby="battleValue-label"><g:fieldValue bean="${mechInstance}" field="battleValue"/></span>
 					
 				</li>
 				</g:if>

@@ -11,47 +11,59 @@ class Mech {
 	String chassis
 	String variant
 	
+	Character tech
+	Faction faction
+	Integer year
+	
 	Integer mass
 	Integer[] armor
 	Integer[] internals
 	
-	// static location indices
-	static HEAD = 0;
-	static LEFT_ARM = 1;
-	static LEFT_TORSO = 2;
-	static CENTER_TORSO = 3;
-	static RIGHT_TORSO = 4;
-	static RIGHT_ARM = 5;
-	static LEFT_LEG = 6;
-	static RIGHT_LEG = 7;
-	static LEFT_REAR = 8;
-	static CENTER_REAR = 9;
-	static RIGHT_REAR = 10;
+	Integer walkMP
+	Integer jumpMP
 	
-	static LEGS = [LEFT_LEG, RIGHT_LEG];
-	static ARMS = [LEFT_ARM, RIGHT_ARM];
+	Long cbills
+	Integer battleValue
+	
+	// STATIC value mappings
+	public static Character IS = 'I'
+	public static Character CLAN = 'C'
+	
+	// static location indices
+	public static HEAD = 0;
+	public static LEFT_ARM = 1;
+	public static LEFT_TORSO = 2;
+	public static CENTER_TORSO = 3;
+	public static RIGHT_TORSO = 4;
+	public static RIGHT_ARM = 5;
+	public static LEFT_LEG = 6;
+	public static RIGHT_LEG = 7;
+	public static LEFT_REAR = 8;
+	public static CENTER_REAR = 9;
+	public static RIGHT_REAR = 10;
+	
+	public static LEGS = [LEFT_LEG, RIGHT_LEG];
+	public static ARMS = [LEFT_ARM, RIGHT_ARM];
 	
 	// hit locations based on rolls in the order 2,3,4,5,6,7,8,9,10,11,12
-	static FRONT_HIT_LOCATIONS	= [CENTER_TORSO, RIGHT_ARM, RIGHT_ARM, RIGHT_LEG, RIGHT_TORSO, CENTER_TORSO, LEFT_TORSO, LEFT_LEG, LEFT_ARM, LEFT_ARM, HEAD];
-	static LEFT_HIT_LOCATIONS  = [LEFT_TORSO, LEFT_LEG, LEFT_ARM, LEFT_ARM, LEFT_LEG, LEFT_TORSO, CENTER_TORSO, RIGHT_TORSO, RIGHT_ARM, RIGHT_LEG, HEAD];
-	static RIGHT_HIT_LOCATIONS	= [RIGHT_TORSO, RIGHT_LEG, RIGHT_ARM, RIGHT_ARM, RIGHT_LEG, RIGHT_TORSO, CENTER_TORSO, LEFT_TORSO, LEFT_ARM, LEFT_LEG, HEAD];
-	static REAR_HIT_LOCATIONS	= [CENTER_REAR, RIGHT_ARM, RIGHT_ARM, RIGHT_LEG, RIGHT_REAR, CENTER_REAR, LEFT_REAR, LEFT_LEG, LEFT_ARM, LEFT_ARM, HEAD];
-	
-	static TEST_ARM_ONLY_LOCATION = [LEFT_ARM, RIGHT_ARM, LEFT_ARM, RIGHT_ARM, LEFT_ARM, RIGHT_ARM, LEFT_ARM, RIGHT_ARM, LEFT_ARM, RIGHT_ARM, LEFT_ARM];
+	public static FRONT_HIT_LOCATIONS	= [CENTER_TORSO, RIGHT_ARM, RIGHT_ARM, RIGHT_LEG, RIGHT_TORSO, CENTER_TORSO, LEFT_TORSO, LEFT_LEG, LEFT_ARM, LEFT_ARM, HEAD];
+	public static LEFT_HIT_LOCATIONS  = [LEFT_TORSO, LEFT_LEG, LEFT_ARM, LEFT_ARM, LEFT_LEG, LEFT_TORSO, CENTER_TORSO, RIGHT_TORSO, RIGHT_ARM, RIGHT_LEG, HEAD];
+	public static RIGHT_HIT_LOCATIONS	= [RIGHT_TORSO, RIGHT_LEG, RIGHT_ARM, RIGHT_ARM, RIGHT_LEG, RIGHT_TORSO, CENTER_TORSO, LEFT_TORSO, LEFT_ARM, LEFT_LEG, HEAD];
+	public static REAR_HIT_LOCATIONS	= [CENTER_REAR, RIGHT_ARM, RIGHT_ARM, RIGHT_LEG, RIGHT_REAR, CENTER_REAR, LEFT_REAR, LEFT_LEG, LEFT_ARM, LEFT_ARM, HEAD];
 	
 	// melee hit locations based on rolls 1,2,3,4,5,6
-	static FRONT_PUNCH_LOCATIONS = [LEFT_ARM, LEFT_TORSO, CENTER_TORSO, RIGHT_TORSO, RIGHT_ARM, HEAD];
-	static LEFT_PUNCH_LOCATIONS  = [LEFT_TORSO, LEFT_TORSO, CENTER_TORSO, LEFT_ARM, LEFT_ARM, HEAD];
-	static RIGHT_PUNCH_LOCATIONS = [RIGHT_TORSO, RIGHT_TORSO, CENTER_TORSO, RIGHT_ARM, RIGHT_ARM, HEAD];
-	static REAR_PUNCH_LOCATIONS  = [LEFT_ARM, LEFT_REAR, CENTER_REAR, RIGHT_REAR, RIGHT_ARM, HEAD];
+	public static FRONT_PUNCH_LOCATIONS = [LEFT_ARM, LEFT_TORSO, CENTER_TORSO, RIGHT_TORSO, RIGHT_ARM, HEAD];
+	public static LEFT_PUNCH_LOCATIONS  = [LEFT_TORSO, LEFT_TORSO, CENTER_TORSO, LEFT_ARM, LEFT_ARM, HEAD];
+	public static RIGHT_PUNCH_LOCATIONS = [RIGHT_TORSO, RIGHT_TORSO, CENTER_TORSO, RIGHT_ARM, RIGHT_ARM, HEAD];
+	public static REAR_PUNCH_LOCATIONS  = [LEFT_ARM, LEFT_REAR, CENTER_REAR, RIGHT_REAR, RIGHT_ARM, HEAD];
 	
-	static FRONT_KICK_LOCATIONS = [RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, LEFT_LEG, LEFT_LEG, LEFT_LEG];
-	static LEFT_KICK_LOCATIONS  = [LEFT_LEG, LEFT_LEG, LEFT_LEG, LEFT_LEG, LEFT_LEG, LEFT_LEG];
-	static RIGHT_KICK_LOCATIONS = [RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG];
-	static REAR_KICK_LOCATIONS  = FRONT_KICK_LOCATIONS;
+	public static FRONT_KICK_LOCATIONS = [RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, LEFT_LEG, LEFT_LEG, LEFT_LEG];
+	public static LEFT_KICK_LOCATIONS  = [LEFT_LEG, LEFT_LEG, LEFT_LEG, LEFT_LEG, LEFT_LEG, LEFT_LEG];
+	public static RIGHT_KICK_LOCATIONS = [RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG];
+	public static REAR_KICK_LOCATIONS  = FRONT_KICK_LOCATIONS;
 	
 	// internal structure points for each tonnage
-	static INTERNAL_STRUCTURE = [
+	public static INTERNAL_STRUCTURE = [
 		//	T:		[HD,LA,LT,CT,RT,RA,LL,RL]
 			20:		[ 3, 3, 5, 6, 5, 3, 4, 4],
 			25:		[ 3, 4, 6, 8, 6, 4, 6, 6],
@@ -73,9 +85,13 @@ class Mech {
 
     static constraints = {
 		name blank: false
-		description blank: true
+		description nullable: true
 		chassis blank: false
 		variant blank: false
+		
+		tech inList: [IS, CLAN]
+		faction nullable: true
+		year range: 2014..3132
 		
 		mass range : 20..100, validator:{val, obj ->
 			if(val % 5 != 0) {
@@ -83,7 +99,14 @@ class Mech {
 			}
 		}
 		
-		armor nullable: true
-		internals nullable: true
+		armor size: 11..11
+		internals size: 8..8
+		
+		walkMP min: 1
+		jumpMP min: 0
+		
+		cbills min: 0L
+		battleValue min: 0
     }
+	
 }

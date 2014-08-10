@@ -1,6 +1,7 @@
 import javax.servlet.ServletContext
 import roguemek.*
 import roguemek.model.*
+import mek.mtf.*
 
 class BootStrap {
 
@@ -28,7 +29,8 @@ class BootStrap {
 		Weapon.initWeapons()
 		
 		
-		// TODO: Initialize stock mechs
+		// Initialize stock mechs
+		MechMTF.createMechFromMTF(new File("src/mtf/mechs/Assassin ASN-21.MTF"))
 		
     }
     def destroy = {

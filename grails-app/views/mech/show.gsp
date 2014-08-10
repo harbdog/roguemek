@@ -67,20 +67,6 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${mechInstance?.armor}">
-				<li class="fieldcontain">
-					<span id="armor-label" class="property-label"><g:message code="mech.armor.label" default="Armor" /></span>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${mechInstance?.internals}">
-				<li class="fieldcontain">
-					<span id="internals-label" class="property-label"><g:message code="mech.internals.label" default="Internals" /></span>
-					
-				</li>
-				</g:if>
-			
 			</ol>
 			<g:form url="[resource:mechInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">

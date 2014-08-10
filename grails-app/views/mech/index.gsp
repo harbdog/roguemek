@@ -33,9 +33,9 @@
 					
 						<g:sortableColumn property="mass" title="${message(code: 'mech.mass.label', default: 'Tonnage')}" />
 					
-						<g:sortableColumn property="armor" title="${message(code: 'mech.armor.label', default: 'Armor')}" />
+						<g:sortableColumn property="armor" title="${message(code: 'mech.walkMP.label', default: 'Walk MP')}" />
 						
-						<g:sortableColumn property="armor" title="${message(code: 'mech.internals.label', default: 'Internals')}" />
+						<g:sortableColumn property="armor" title="${message(code: 'mech.jumpMP.label', default: 'Jump MP')}" />
 					
 					</tr>
 				</thead>
@@ -53,9 +53,9 @@
 					
 						<td>${fieldValue(bean: mechInstance, field: "mass")}</td>
 					
-						<td>${fieldValue(bean: mechInstance, field: "armor")}</td>
+						<td>${fieldValue(bean: mechInstance, field: "walkMP")}</td>
 						
-						<td>${fieldValue(bean: mechInstance, field: "internals")}</td>
+						<td>${fieldValue(bean: mechInstance, field: "jumpMP")}</td>
 					
 					</tr>
 				</g:each>
