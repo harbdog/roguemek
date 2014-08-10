@@ -17,14 +17,6 @@ class WeaponController {
     }
 
     def show(Weapon weaponInstance) {
-		
-		if(weaponInstance.ammoTypes != null) {
-			log.info(weaponInstance.ammoTypes)
-		}
-		else {
-			log.info("no ammo")
-		}
-		
         respond weaponInstance
     }
 
@@ -32,6 +24,7 @@ class WeaponController {
         respond new Weapon(params)
     }
 
+	/*
     @Transactional
     def save(Weapon weaponInstance) {
         if (weaponInstance == null) {
@@ -54,52 +47,7 @@ class WeaponController {
             '*' { respond weaponInstance, [status: CREATED] }
         }
     }
-
-    def edit(Weapon weaponInstance) {
-        respond weaponInstance
-    }
-
-    @Transactional
-    def update(Weapon weaponInstance) {
-        if (weaponInstance == null) {
-            notFound()
-            return
-        }
-
-        if (weaponInstance.hasErrors()) {
-            respond weaponInstance.errors, view:'edit'
-            return
-        }
-
-        weaponInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Weapon.label', default: 'Weapon'), weaponInstance.id])
-                redirect weaponInstance
-            }
-            '*'{ respond weaponInstance, [status: OK] }
-        }
-    }
-
-    @Transactional
-    def delete(Weapon weaponInstance) {
-
-        if (weaponInstance == null) {
-            notFound()
-            return
-        }
-
-        weaponInstance.delete flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Weapon.label', default: 'Weapon'), weaponInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
-    }
+    */
 
     protected void notFound() {
         request.withFormat {

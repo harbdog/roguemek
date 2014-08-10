@@ -22,7 +22,6 @@ class Weapon extends Equipment {
 		cycle min: 1
 		
 		projectiles min: 1
-		ammoTypes nullable: true
 		
 		minRange min: 0
 		shortRange min: 0
@@ -61,15 +60,8 @@ class Weapon extends Equipment {
 				}
 			}
 			else {
-				weapon.save()
+				weapon.save flush:true
 				log.info("Created weapon "+weapon.name)
-				
-				weapon.ammoTypes.each {
-					// TODO: map ammoTypes for weapons from csv (if possible?)
-					// AMMO table stores WEAPONS_ID, need to link that up
-					log.info("ammo: "+weapon.ammoTypes)
-					it.save()
-				}
 			}
 		}
 		

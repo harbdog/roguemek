@@ -7,13 +7,11 @@ class Ammo extends Equipment {
 	Integer ammoPerTon
 	Boolean explosive
 	
-	static belongsTo = [weapons:Weapon]
+	static belongsTo = Weapon
 	
     static constraints = {
 		ammoPerTon min: 1
 		explosive nullable: false
-		
-		weapons nullable: true
     }
 	
 	static void initAmmo() {
@@ -24,6 +22,7 @@ class Ammo extends Equipment {
 		
 		// Create all objects for the game from csv
 		new CSVMapReader(new FileReader("src/csv/Ammo.csv")).eachLine { map ->
+			
 			def ammo = new Ammo(map)
 			
 			if(!ammo.validate()) {
@@ -33,7 +32,7 @@ class Ammo extends Equipment {
 				}
 			}
 			else {
-				ammo.save()
+				ammo.save flush:true
 				log.info("Created ammo "+ammo.name)
 			}
 		}

@@ -133,7 +133,9 @@
 				<li class="fieldcontain">
 					<span id="ammoTypes-label" class="property-label"><g:message code="weapon.ammoTypes.label" default="Ammo Types" /></span>
 					
-						<span class="property-value" aria-labelledby="ammoTypes-label"><g:fieldValue bean="${weaponInstance}" field="ammoTypes"/></span>
+						<span class="property-value" aria-labelledby="ammoTypes-label">
+							<g:each in="${weaponInstance?.ammoTypes}" status="i" var="ammoInstance"><g:fieldValue bean="${ammoInstance}" field="name"/></g:each>
+						</span>
 					
 				</li>
 				</g:if>
