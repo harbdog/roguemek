@@ -1,0 +1,3 @@
+name,shortName,aliases, description,mass,crits,dissipation,tech,year,cbills,battleValue
+Heat Sink,SHS,IS Heat Sink,,1,1,1,I,3025,0,0
+Double Heat Sink,DHS,IS Double Heat Sink,,1,3,2,I,3025,0,0

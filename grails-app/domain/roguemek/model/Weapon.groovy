@@ -36,7 +36,9 @@ class Weapon extends Equipment {
 			return
 		}
 		
-		// Create all factions for the game from csv
+		// TODO: map ammoTypes for weapons from csv (if possible?)
+		
+		// Create all objects for the game from csv
 		new CSVMapReader(new FileReader("src/csv/Weapons.csv")).eachLine { map ->
 			def weapon = new Weapon(map)
 			

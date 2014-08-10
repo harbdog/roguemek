@@ -1,0 +1,13 @@
+name,shortName,aliases, description,mass,crits,ammoPerTon,explosive,tech,year,cbills,battleValue
+Auto Cannon 20 Ammo,AC20AMMO,ISAC20 Ammo,,1,1,5,TRUE,I,3025,0,0
+Auto Cannon 10 Ammo,AC10AMMO,ISAC10 Ammo,,1,1,10,TRUE,I,3025,0,0
+Auto Cannon 5 Ammo,AC5AMMO,ISAC5 Ammo,,1,1,20,TRUE,I,3025,0,0
+Auto Cannon 2 Ammo,AC2AMMO,ISAC2 Ammo,,1,1,45,TRUE,I,3025,0,0
+Machine Gun Ammo,MGAMMO,ISMG Ammo,,1,1,200,TRUE,I,3025,0,0
+Long Range Missile 20 Ammo,LRM20AMMO,ISLRM20 Ammo,,1,1,6,TRUE,I,3025,0,0
+Long Range Missile 15 Ammo,LRM15AMMO,ISLRM15 Ammo,,1,1,8,TRUE,I,3025,0,0
+Long Range Missile 10 Ammo,LRM10AMMO,ISLRM10 Ammo,,1,1,12,TRUE,I,3025,0,0
+Long Range Missile 5 Ammo,LRM5AMMO,ISLRM5 Ammo,,1,1,24,TRUE,I,3025,0,0
+Short Range Missile 6 Ammo,SRM6AMMO,ISSRM6 Ammo,,1,1,15,TRUE,I,3025,0,0
+Short Range Missile 4 Ammo,SRM4AMMO,ISSRM4 Ammo,,1,1,25,TRUE,I,3025,0,0
+Short Range Missile 2 Ammo,SRM2AMMO,ISSRM2 Ammo,,1,1,50,TRUE,I,3025,0,0

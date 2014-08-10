@@ -1,5 +1,7 @@
 package roguemek.model
 
+import org.grails.plugins.csv.CSVMapReader
+
 class Equipment {
 	static searchable = {
 		only = ['name', 'description', 'shortName', 'aliases']
@@ -43,4 +45,27 @@ class Equipment {
 		cbills min: 0L
 		battleValue min: 0
     }
+	
+	static void initEquipment() {
+		def defaultEquip = Equipment.findByName("Cockpit")
+		if(defaultEquip != null) {
+			return
+		}
+		
+		// Create all objects for the game from csv
+		new CSVMapReader(new FileReader("src/csv/Equipment.csv")).eachLine { map ->
+			def equip = new Equipment(map)
+			
+			if(!equip.validate()) {
+				log.error("Errors with equipment "+equip.name+":\n")
+				equip.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				equip.save()
+				log.info("Created equipment "+equip.name)
+			}
+		}
+	}
 }

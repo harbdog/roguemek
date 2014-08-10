@@ -17,14 +17,18 @@ class BootStrap {
 			
 			log.info('Initialized admin user '+admin.login)
 		}
+		
 		// Initialize factions
 		Faction.initFactions()
 		
 		// Initialize equipment, weapons, ammo, and heat sinks
+		Equipment.initEquipment()
+		HeatSink.initHeatSinks()
+		Ammo.initAmmo()
 		Weapon.initWeapons()
 		
 		
-		// Initialize stock mechs
+		// TODO: Initialize stock mechs
 		
     }
     def destroy = {

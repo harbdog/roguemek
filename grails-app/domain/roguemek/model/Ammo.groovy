@@ -1,5 +1,7 @@
 package roguemek.model
 
+import org.grails.plugins.csv.CSVMapReader
+
 class Ammo extends Equipment {
 
 	Integer ammoPerTon
@@ -13,4 +15,27 @@ class Ammo extends Equipment {
 		
 		weapons nullable: true
     }
+	
+	static void initAmmo() {
+		def defaultAmmo = Ammo.findByName("Auto Cannon 20 Ammo")
+		if(defaultAmmo != null) {
+			return
+		}
+		
+		// Create all objects for the game from csv
+		new CSVMapReader(new FileReader("src/csv/Ammo.csv")).eachLine { map ->
+			def ammo = new Ammo(map)
+			
+			if(!ammo.validate()) {
+				log.error("Errors with ammo "+ammo.name+":\n")
+				ammo.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				ammo.save()
+				log.info("Created ammo "+ammo.name)
+			}
+		}
+	}
 }
