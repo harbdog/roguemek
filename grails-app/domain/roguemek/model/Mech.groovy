@@ -19,6 +19,8 @@ class Mech {
 	Integer[] armor
 	Integer[] internals
 	
+	List crits
+	
 	Integer walkMP
 	Integer jumpMP
 	
@@ -101,6 +103,7 @@ class Mech {
 		
 		armor size: 11..11
 		internals size: 8..8
+		crits size: 8..8
 		
 		walkMP min: 1
 		jumpMP min: 0

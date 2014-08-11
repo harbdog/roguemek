@@ -4,12 +4,12 @@ import org.grails.plugins.csv.CSVMapReader
 
 class Equipment {
 	static searchable = {
-		only = ['name', 'description', 'shortName', 'aliases']
+		only = ['name', 'description', 'shortName']
 	}
 
     String name
 	String shortName
-	String aliases
+	static hasMany = [aliases:String]
 	String description
 	
 	Character tech
@@ -33,7 +33,6 @@ class Equipment {
     static constraints = {
 		name blank: false
 		shortName nullable: true
-		aliases nullable: true
 		description nullable: true
 		
 		tech inList: [IS, CLAN]

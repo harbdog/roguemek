@@ -2,7 +2,7 @@ package mek.mtf
 
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
-import roguemek.model.Mech;
+import roguemek.model.*;
 
 class MechMTF {
 	private static Log log = LogFactory.getLog(this)
@@ -83,6 +83,7 @@ class MechMTF {
 		// initialize arrays
 		map.armor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		map.internals = [0, 0, 0, 0, 0, 0, 0, 0]
+		map.crits = []
 		
 		// initialize section tracking indices
 		int sectionIndex = -1
@@ -94,8 +95,8 @@ class MechMTF {
 			String line = mtfLineList.get(i).trim()
 			
 			// determine if this line starts a new section by containing a colon character (but not also having a comma)
-			def colon = line.indexOf(":")
-			def comma = line.indexOf(",")
+			int colon = line.indexOf(":")
+			int comma = line.indexOf(",")
 			
 			if(line.indexOf("Source:") != -1){
 				// ignore the "Source:" line, since its not included in all MTF files and isn't needed yet anyway
@@ -207,7 +208,7 @@ class MechMTF {
 				case(MTF_CRITS_LL):
 				case(MTF_CRITS_RL):
 							// add crits
-							//TODO: addCriticalsFromMTF(map, line, sectionIndex)
+							addCriticalsFromMTF(map.crits, line, sectionIndex)
 							
 							// if Hatchet, add as weapon to this location
 							/*if(line == "Hatchet"){
@@ -226,7 +227,7 @@ class MechMTF {
 			
 		}
 		
-		def mech = new Mech(map)
+		Mech mech = new Mech(map)
 		if(!mech.validate()) {
 			log.error("Errors with mech "+mech.name+":\n")
 			mech.errors.allErrors.each {
@@ -239,5 +240,112 @@ class MechMTF {
 		}
 		
 		return mech
+	}
+	
+	private static void addCriticalsFromMTF(List crits, String line, int mtfSectionIndex){
+		// one crit is listed per line and in order, just push each entry after determining what it is
+		if(crits == null || line == null || line.length() == 0) {
+			return
+		}
+		
+		int section = -1;
+		switch(mtfSectionIndex){
+			case(MTF_CRITS_LA): section = Mech.LEFT_ARM
+								break
+			case(MTF_CRITS_RA): section = Mech.RIGHT_ARM
+								break
+			case(MTF_CRITS_LT): section = Mech.LEFT_TORSO
+								break
+			case(MTF_CRITS_RT): section = Mech.RIGHT_TORSO
+								break
+			case(MTF_CRITS_CT): section = Mech.CENTER_TORSO
+								break
+			case(MTF_CRITS_LL): section = Mech.LEFT_LEG
+								break
+			case(MTF_CRITS_RL): section = Mech.RIGHT_LEG
+								break
+			case(MTF_CRITS_HD): section = Mech.HEAD
+								break
+								
+			default: break
+		}
+		
+		if(section == -1){
+			log.error("Unknown MTF section index="+mtfSectionIndex+", line:"+line)
+			return
+		}
+		
+		def critSection = crits[section]
+		if(critSection == null) {
+			critSection = []
+			crits[section] = critSection
+		}
+		
+		def thisCrit = null;
+		
+		// look up weapon table to see if this is a weapon slot
+		def critName = line;
+		
+		// Determine if it is a rear facing item
+		def isRear = (critName.indexOf("(R)") != -1);
+		if(isRear){
+			critName = line.substring(0, critName.indexOf("(R)") - 1);
+		}
+		
+		// TODO: determine how to model rear facing weapons
+		/*def weaponClass = (MTF_WEAPON_TABLE[critName] != null) ? MTF_WEAPON_TABLE[critName].weapon : null;
+		
+		if(weaponClass != null){
+			thisCrit = new WeaponSlot(line, weaponClass, isRear);
+			
+			//debug.log(" Weapon crit, rear="+isRear+": "+critName);
+			if(isRear){
+				// set an appropriate weapon to the rear location
+				for(int i=0; i<mech.weapons.length; i++){
+					def thisWeapon = mech.weapons[i];
+					
+					if(thisWeapon instanceof this[weaponClass]
+							&& thisWeapon.getLocation() == section){
+						switch(section){
+							case LEFT_TORSO:
+											thisWeapon.location = LEFT_REAR;
+											break;
+							
+							case RIGHT_TORSO:
+											thisWeapon.location = RIGHT_REAR;
+											break;
+								
+							case CENTER_TORSO:
+											thisWeapon.location = CENTER_REAR;
+											break;
+								
+							default: break;
+						}
+						
+						// stop after the first weapon set to the rear
+						break;
+					}
+				}
+			}
+		}*/
+		
+		if(thisCrit == null){
+			// search all Equipment for the item, if it is not found then create a new one with some default info
+			def thisEquip = Equipment.findByName(critName)
+			
+			if(thisEquip != null) {
+				log.info("FOUND "+thisEquip)
+				
+				thisEquip.each{
+					log.info("   "+it)
+				}
+				
+			}
+			else {
+				log.info("MISSING "+critName)
+			}
+		}
+		
+		//critSection.push(thisCrit);
 	}
 }

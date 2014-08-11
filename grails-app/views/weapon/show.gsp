@@ -30,6 +30,15 @@
 				</li>
 				</g:if>
 				
+				<g:if test="${weaponInstance?.aliases}">
+				<li class="fieldcontain">
+					<span id="aliases-label" class="property-label"><g:message code="weapon.aliases.label" default="Aliases" /></span>
+					
+						<g:each in="${weaponInstance?.aliases}" status="i" var="alias"><span class="property-value" aria-labelledby="aliases-label">${alias}</span></g:each>
+						
+				</li>
+				</g:if>
+				
 				<g:if test="${weaponInstance?.description}">
 				<li class="fieldcontain">
 					<span id="description-label" class="property-label"><g:message code="weapon.description.label" default="Description" /></span>

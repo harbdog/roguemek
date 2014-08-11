@@ -38,6 +38,15 @@ class Weapon extends Equipment {
 		// Create all objects for the game from csv
 		new CSVMapReader(new FileReader("src/csv/Weapons.csv")).eachLine { map ->
 			
+			// update Aliases to be multiple strings in an array instead of one string
+			String aliases = map.aliases
+			if(aliases.contains(",")) {
+				map.aliases = []
+				aliases.split(",").each{
+					map.aliases.add(it)
+				}
+			}
+			
 			// update the ammoTypes to be a map of the Ammo class by shortName
 			def ammoTypesStr = map.ammoTypes
 			if(ammoTypesStr != null) {

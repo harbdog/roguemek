@@ -111,7 +111,25 @@
 					
 				</li>
 				</g:if>
-			
+				
+				<g:if test="${mechInstance?.cbills >= 0}">
+				<li class="fieldcontain">
+					<span id="cbills-label" class="property-label"><g:message code="mech.cbills.label" default="CBills" /></span>
+					
+						<span class="property-value" aria-labelledby="cbills-label"><g:fieldValue bean="${mechInstance}" field="cbills"/></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${mechInstance?.battleValue >= 0}">
+				<li class="fieldcontain">
+					<span id="battleValue-label" class="property-label"><g:message code="mech.battleValue.label" default="Battle Value" /></span>
+					
+						<span class="property-value" aria-labelledby="battleValue-label"><g:fieldValue bean="${mechInstance}" field="battleValue"/></span>
+					
+				</li>
+				</g:if>
+				
 				<g:if test="${mechInstance?.armor}">
 				<li class="fieldcontain">
 					<span id="armor-label" class="property-label"><g:message code="mech.armor.label" default="Armor" /></span>
@@ -130,20 +148,11 @@
 				</li>
 				</g:if>
 				
-				<g:if test="${mechInstance?.cbills >= 0}">
+				<g:if test="${mechInstance?.crits}">
 				<li class="fieldcontain">
-					<span id="cbills-label" class="property-label"><g:message code="mech.cbills.label" default="CBills" /></span>
+					<span id="crits-label" class="property-label"><g:message code="mech.crits.label" default="Critical Slots" /></span>
 					
-						<span class="property-value" aria-labelledby="cbills-label"><g:fieldValue bean="${mechInstance}" field="cbills"/></span>
-					
-				</li>
-				</g:if>
-				
-				<g:if test="${mechInstance?.battleValue >= 0}">
-				<li class="fieldcontain">
-					<span id="battleValue-label" class="property-label"><g:message code="mech.battleValue.label" default="Battle Value" /></span>
-					
-						<span class="property-value" aria-labelledby="battleValue-label"><g:fieldValue bean="${mechInstance}" field="battleValue"/></span>
+						<span class="property-value" aria-labelledby="crits-label"><g:fieldValue bean="${mechInstance}" field="crits"/></span>
 					
 				</li>
 				</g:if>
