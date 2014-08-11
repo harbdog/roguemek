@@ -331,21 +331,41 @@ class MechMTF {
 		
 		if(thisCrit == null){
 			// search all Equipment for the item, if it is not found then create a new one with some default info
-			def thisEquip = Equipment.findByName(critName)
+			def foundEquip = Equipment.findByName(critName)
 			
-			if(thisEquip != null) {
-				log.info("FOUND "+thisEquip)
-				
-				thisEquip.each{
-					log.info("   "+it)
-				}
-				
+			if(foundEquip) {
+				thisCrit = foundEquip
 			}
 			else {
-				log.info("MISSING "+critName)
+				// TODO: The findByAliases queries were all failing, so doing it the dumb way just to get past this part, fix it later!
+				//def thisEquip = Equipment.findByAliases(critName)
+				def equipList = Equipment.getAll()
+	
+				equipList.each { thisEquip ->
+					if(thisEquip.aliases?.contains(critName)){
+						thisCrit = thisEquip
+						return
+					}
+				}
+				
+				if(thisCrit == null) {
+					// create Equipment based on the incoming name so it has an object
+					thisCrit = new Equipment([
+							name:critName,
+							shortName:critName,
+							mass:0,
+							crits:1,
+							tech:Mech.IS,
+							year:2014,
+							cbills:0,
+							battleValue:0])
+					
+					thisCrit.save()
+					log.info("CREATED MISSING EQUIPMENT "+thisCrit.name)
+				}
 			}
 		}
 		
-		//critSection.push(thisCrit);
+		critSection.push(thisCrit);
 	}
 }
