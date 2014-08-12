@@ -208,7 +208,7 @@ class MechMTF {
 				case(MTF_CRITS_LL):
 				case(MTF_CRITS_RL):
 							// add crits
-							addCriticalsFromMTF(map.crits, line, sectionIndex)
+							addCriticalsFromMTF(map.crits, line, sectionIndex, subIndex)
 							
 							// if Hatchet, add as weapon to this location
 							/*if(line == "Hatchet"){
@@ -242,11 +242,15 @@ class MechMTF {
 		return mech
 	}
 	
-	private static void addCriticalsFromMTF(List crits, String line, int mtfSectionIndex){
+	private static void addCriticalsFromMTF(List crits, String line, int mtfSectionIndex, int subSectionIndex){
 		// one crit is listed per line and in order, just push each entry after determining what it is
 		if(crits == null || line == null || line.length() == 0) {
 			return
 		}
+		
+		// The sub index will always start at 1 due to its starting section declaration
+		// so making it start at 0 for arrays
+		subSectionIndex --
 		
 		int section = -1;
 		switch(mtfSectionIndex){
@@ -275,13 +279,13 @@ class MechMTF {
 			return
 		}
 		
-		def critSection = crits[section]
-		if(critSection == null) {
-			critSection = []
-			crits[section] = critSection
-		}
+		int critStart = Mech.getCritSectionStart(section)
+		int critEnd = Mech.getCritSectionEnd(section)
 		
-		def thisCrit = null;
+		if(critStart + subSectionIndex > critEnd) {
+			// if crit is outside the section is was extra (MTF likes to put 12 crits in Head and Legs even though they only have 6)
+			return
+		}
 		
 		// look up weapon table to see if this is a weapon slot
 		def critName = line;
@@ -291,6 +295,8 @@ class MechMTF {
 		if(isRear){
 			critName = line.substring(0, critName.indexOf("(R)") - 1);
 		}
+		
+		def thisCrit = null
 		
 		// TODO: determine how to model rear facing weapons
 		/*def weaponClass = (MTF_WEAPON_TABLE[critName] != null) ? MTF_WEAPON_TABLE[critName].weapon : null;
@@ -366,6 +372,6 @@ class MechMTF {
 			}
 		}
 		
-		critSection.push(thisCrit);
+		crits[critStart + subSectionIndex] = thisCrit.id
 	}
 }

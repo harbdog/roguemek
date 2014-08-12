@@ -19,7 +19,7 @@ class Mech {
 	Integer[] armor
 	Integer[] internals
 	
-	List crits
+	byte[] crits
 	
 	Integer walkMP
 	Integer jumpMP
@@ -30,6 +30,36 @@ class Mech {
 	// STATIC value mappings
 	public static Character IS = 'I'
 	public static Character CLAN = 'C'
+	
+	static constraints = {
+		name blank: false
+		description nullable: true
+		chassis blank: false
+		variant blank: false
+		
+		tech inList: [IS, CLAN]
+		faction nullable: true
+		year range: 2014..3132
+		
+		mass range : 20..100, validator:{val, obj ->
+			if(val % 5 != 0) {
+				return false;
+			}
+		}
+		
+		armor size: 11..11
+		internals size: 8..8
+		
+		// setting crits as bytes with maxSize 2048 since the arrays tend to get just under 1000 bytes 
+		// where by default H2 was creating as 255 bytes
+		crits maxSize: 2048, size: 78..78
+		
+		walkMP min: 1
+		jumpMP min: 0
+		
+		cbills min: 0L
+		battleValue min: 0
+	}
 	
 	// static location indices
 	public static HEAD = 0;
@@ -85,31 +115,80 @@ class Mech {
 			95:		[ 3,16,20,30,20,16,20,20],
 			100:	[ 3,17,21,31,21,17,21,21],]
 
-    static constraints = {
-		name blank: false
-		description nullable: true
-		chassis blank: false
-		variant blank: false
-		
-		tech inList: [IS, CLAN]
-		faction nullable: true
-		year range: 2014..3132
-		
-		mass range : 20..100, validator:{val, obj ->
-			if(val % 5 != 0) {
-				return false;
-			}
+	
+	/**
+	 * Gets the start index of the crits array for the given section
+	 * @param critSectionIndex
+	 * @return
+	 */
+	public static int getCritSectionStart(int critSectionIndex) {
+		switch(critSectionIndex) {
+			case HEAD:
+				// the HEAD only has 6 instead of the normal 12 crits
+				return 0
+				break
+			
+			case LEFT_ARM:
+			case LEFT_TORSO:
+			case CENTER_TORSO:
+			case RIGHT_TORSO:
+			case RIGHT_ARM:
+				// account for skipping over the HEAD which only has 6
+				return (critSectionIndex * 12) - 6		//-(HEAD)
+				break
+				
+			case LEFT_LEG:
+				// the LEGS only have 6 instead of the normal 12 crits
+				return (critSectionIndex * 12) - 6		//-(HEAD)
+				break
+			case RIGHT_LEG:
+				// the LEGS only have 6 instead of the normal 12 crits
+				return (critSectionIndex * 12) - 6 - 6	//-(HEAD) -(LEFT_LEG)
+				break
+				
+			default: 
+				return -1 
+				break
 		}
 		
-		armor size: 11..11
-		internals size: 8..8
-		crits size: 8..8
-		
-		walkMP min: 1
-		jumpMP min: 0
-		
-		cbills min: 0L
-		battleValue min: 0
-    }
+		return -1
+	}
 	
+	/**
+	 * Gets the end index of the crits array for the given section
+	 * @param critSectionIndex
+	 * @return
+	 */
+	public static int getCritSectionEnd(int critSectionIndex) {
+		switch(critSectionIndex) {
+			case HEAD:
+				// the HEAD only has 6 instead of the normal 12 crits
+				return 5
+				break
+			
+			case LEFT_ARM:
+			case LEFT_TORSO:
+			case CENTER_TORSO:
+			case RIGHT_TORSO:
+			case RIGHT_ARM:
+				// account for skipping over the HEAD which only has 6
+				return (critSectionIndex * 12) + 11 - 6 	//-(HEAD)
+				break
+				
+			case LEFT_LEG:
+				// the LEGS only have 6 instead of the normal 12 crits
+				return (critSectionIndex * 12) + 5 - 6		//-(HEAD)
+				break
+			case RIGHT_LEG:
+				// the LEGS only have 6 instead of the normal 12 crits
+				return (critSectionIndex * 12) + 5 - 6 - 6	//-(HEAD) -(LEFT_LEG)
+				break
+				
+			default: 
+				return -1 
+				break
+		}
+		
+		return -1
+	}
 }
