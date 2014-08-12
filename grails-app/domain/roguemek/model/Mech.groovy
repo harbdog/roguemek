@@ -191,4 +191,29 @@ class Mech {
 		
 		return -1
 	}
+	
+	public Equipment getEquipmentAt(int critIndex) {
+		def thisCritId = this.crits.getAt(critIndex)
+		return (thisCritId != null) ? Equipment.read(thisCritId) : null
+	}
+	
+	/**
+	 * Gets the Equipment array representing the crits array of just the give section 
+	 * @param critSectionIndex
+	 * @return
+	 */
+	public Equipment[] getCritSection(int critSectionIndex) {
+		int critSectionStart = Mech.getCritSectionStart(critSectionIndex)
+		int critSectionEnd = Mech.getCritSectionEnd(critSectionIndex)
+		
+		def critSection = []
+		
+		if(critSectionStart >= 0 && critSectionEnd < 78) {
+			for(int i=critSectionStart; i<=critSectionEnd; i++) {
+				critSection.add(this.getEquipmentAt(i))
+			}
+		}
+		
+		return critSection
+	}
 }
