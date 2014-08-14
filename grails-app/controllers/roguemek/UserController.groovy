@@ -1,5 +1,6 @@
 package roguemek
 
+import mek.command.LoginCommand;
 import grails.transaction.Transactional;
 
 class UserController {

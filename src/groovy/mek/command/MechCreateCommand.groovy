@@ -1,9 +1,10 @@
-package roguemek
+package mek.command
 
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import roguemek.model.Mech;
 
+@grails.validation.Validateable
 class MechCreateCommand {
 	// Configuration properties
 	String name

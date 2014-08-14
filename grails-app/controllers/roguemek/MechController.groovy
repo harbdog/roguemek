@@ -4,6 +4,7 @@ package roguemek
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+import mek.command.MechCreateCommand;
 
 import org.apache.commons.io.IOUtils
 

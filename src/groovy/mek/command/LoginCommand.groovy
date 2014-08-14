@@ -1,5 +1,8 @@
-package roguemek
+package mek.command
 
+import roguemek.User;
+
+@grails.validation.Validateable
 class LoginCommand {
 	
 	String login
