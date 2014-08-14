@@ -31,7 +31,14 @@ class BootStrap {
 		
 		
 		// Initialize stock mechs
-		MechMTF.createMechFromMTF(new File("src/mtf/mechs/Assassin ASN-21.MTF"))
+		File mtfMechsPath = new File("src/mtf/mechs/")
+		
+		mtfMechsPath.listFiles().each { mtfFile ->
+			if(mtfFile.isFile() && mtfFile.canRead()) {
+				MechMTF.createMechFromMTF(mtfFile)
+			}
+		}
+		//MechMTF.createMechFromMTF(new File("src/mtf/mechs/Assassin ASN-21.MTF"))
 		
     }
     def destroy = {
