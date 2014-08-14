@@ -14,11 +14,10 @@ class LoginCommand {
 			if(!obj.user) {
 				return "user.not.found"
 			}
-			
 		}
 		
 		password blank:false, validator:{ val, obj ->
-			if(obj.user && obj.user.password != val) {
+			if(obj.user && !obj.user.checkPassword(val)) {
 				return "user.password.invalid"
 			}
 		}

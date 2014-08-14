@@ -70,7 +70,7 @@ grails.project.dependency.resolution = {
 		// plugins added manually
 		runtime ":elasticsearch:0.0.3.2"
 		compile ":csv:0.3.1"
-		
+		compile ":bcrypt:1.0"
 		
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.7.4"
