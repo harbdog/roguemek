@@ -1,5 +1,7 @@
 package roguemek.model
 
+import mek.mtf.*
+
 class Mech {
 	static searchable = {
 		only = ['name', 'description', 'chassis', 'variant']
@@ -115,6 +117,20 @@ class Mech {
 			95:		[ 3,16,20,30,20,16,20,20],
 			100:	[ 3,17,21,31,21,17,21,21],]
 
+	static void init() {
+		def defaultMech = Mech.findByName("Atlas")
+		if(defaultMech != null) {
+			return
+		}
+		
+		File mtfMechsPath = new File("src/mtf/mechs/")
+		
+		mtfMechsPath.listFiles().each { mtfFile ->
+			if(mtfFile.isFile() && mtfFile.canRead()) {
+				MechMTF.createMechFromMTF(mtfFile)
+			}
+		}
+	}
 	
 	/**
 	 * Gets the start index of the crits array for the given section

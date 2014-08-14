@@ -170,17 +170,17 @@
 						<br/>
 						
 						<span class="property-value" aria-labelledby="crits-label">
-							<h1>Left Torso: ${mechInstance?.armor?.getAt(mechInstance.LEFT_TORSO)}/${mechInstance?.armor?.getAt(mechInstance.LEFT_REAR)}(${mechInstance?.internals?.getAt(mechInstance.LEFT_TORSO)})</h1>
+							<h1>Right Arm: ${mechInstance?.armor?.getAt(mechInstance.RIGHT_ARM)}(${mechInstance?.internals?.getAt(mechInstance.RIGHT_ARM)}):</h1>
 						</span>
-						<g:each in="${mechInstance?.getCritSection(mechInstance.LEFT_TORSO)}" status="i" var="critEquip">
+						<g:each in="${mechInstance?.getCritSection(mechInstance.RIGHT_ARM)}" status="i" var="critEquip">
 							<span class="property-value" aria-labelledby="crits-label">${critEquip.name}</span>
 						</g:each>
 						<br/>
 						
 						<span class="property-value" aria-labelledby="crits-label">
-							<h1>Center Torso: ${mechInstance?.armor?.getAt(mechInstance.CENTER_TORSO)}/${mechInstance?.armor?.getAt(mechInstance.CENTER_REAR)}(${mechInstance?.internals?.getAt(mechInstance.CENTER_TORSO)})</h1>
+							<h1>Left Torso: ${mechInstance?.armor?.getAt(mechInstance.LEFT_TORSO)}/${mechInstance?.armor?.getAt(mechInstance.LEFT_REAR)}(${mechInstance?.internals?.getAt(mechInstance.LEFT_TORSO)})</h1>
 						</span>
-						<g:each in="${mechInstance?.getCritSection(mechInstance.CENTER_TORSO)}" status="i" var="critEquip">
+						<g:each in="${mechInstance?.getCritSection(mechInstance.LEFT_TORSO)}" status="i" var="critEquip">
 							<span class="property-value" aria-labelledby="crits-label">${critEquip.name}</span>
 						</g:each>
 						<br/>
@@ -194,9 +194,9 @@
 						<br/>
 						
 						<span class="property-value" aria-labelledby="crits-label">
-							<h1>Right Arm: ${mechInstance?.armor?.getAt(mechInstance.RIGHT_ARM)}(${mechInstance?.internals?.getAt(mechInstance.RIGHT_ARM)}):</h1>
+							<h1>Center Torso: ${mechInstance?.armor?.getAt(mechInstance.CENTER_TORSO)}/${mechInstance?.armor?.getAt(mechInstance.CENTER_REAR)}(${mechInstance?.internals?.getAt(mechInstance.CENTER_TORSO)})</h1>
 						</span>
-						<g:each in="${mechInstance?.getCritSection(mechInstance.RIGHT_ARM)}" status="i" var="critEquip">
+						<g:each in="${mechInstance?.getCritSection(mechInstance.CENTER_TORSO)}" status="i" var="critEquip">
 							<span class="property-value" aria-labelledby="crits-label">${critEquip.name}</span>
 						</g:each>
 						<br/>
