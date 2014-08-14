@@ -5,6 +5,8 @@ import grails.transaction.Transactional;
 
 class UserController {
 	
+	def bcryptService
+	
 	def beforeInterceptor = {
 		log.info "Request from country: "+request.locale.country
 	}
@@ -48,12 +50,17 @@ class UserController {
 				u.errors.rejectValue("password", "user.password.dontmatch")
 				return [user:u]
 			}
-			else if(u.save()) {
-				session.user = u
-				redirect controller:"RogueMek"
-			}
 			else {
-				return [user:u]
+				// use bcrypt on the password before saving the new user
+				u.password = bcryptService.hashPassword(u.password)
+				
+				if(u.save()) {
+					session.user = u
+					redirect controller:"RogueMek"
+				}
+				else {
+					return [user:u]
+				}
 			}
 		}
 	}
