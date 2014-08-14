@@ -29,7 +29,7 @@ class Weapon extends Equipment {
 		longRange min: 0
     }
 	
-	static void initWeapons() {
+	static void init() {
 		def defaultWeapon = Weapon.findByName("Small Laser")
 		if(defaultWeapon != null) {
 			return
@@ -39,13 +39,7 @@ class Weapon extends Equipment {
 		new CSVMapReader(new FileReader("src/csv/Weapons.csv")).eachLine { map ->
 			
 			// update Aliases to be multiple strings in an array instead of one string
-			String aliases = map.aliases
-			if(aliases.contains(",")) {
-				map.aliases = []
-				aliases.split(",").each{
-					map.aliases.add(it)
-				}
-			}
+			Weapon.updateAliases(map)
 			
 			// update the ammoTypes to be a map of the Ammo class by shortName
 			def ammoTypesStr = map.ammoTypes

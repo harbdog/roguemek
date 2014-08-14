@@ -10,7 +10,7 @@ class HeatSink extends Equipment {
 		dissipation min: 0.0D
     }
 	
-	static void initHeatSinks() {
+	static void init() {
 		def defaultHS = HeatSink.findByName("Heat Sink")
 		if(defaultHS != null) {
 			return
@@ -18,6 +18,10 @@ class HeatSink extends Equipment {
 		
 		// Create all objects for the game from csv
 		new CSVMapReader(new FileReader("src/csv/HeatSinks.csv")).eachLine { map ->
+			
+			// update Aliases to be multiple strings in an array instead of one string
+			HeatSink.updateAliases(map)
+			
 			def heatsink = new HeatSink(map)
 			
 			if(!heatsink.validate()) {

@@ -20,13 +20,14 @@ class BootStrap {
 		}
 		
 		// Initialize factions
-		Faction.initFactions()
+		Faction.init()
 		
 		// Initialize equipment, weapons, ammo, and heat sinks
-		Equipment.initEquipment()
-		HeatSink.initHeatSinks()
-		Ammo.initAmmo()
-		Weapon.initWeapons()
+		Equipment.init()
+		JumpJet.init()
+		HeatSink.init()
+		Ammo.init()
+		Weapon.init()
 		
 		
 		// Initialize stock mechs

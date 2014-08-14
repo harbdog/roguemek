@@ -12,7 +12,7 @@ class Faction {
 		description nullable: true
     }
 	
-	static void initFactions() {
+	static void init() {
 		def defaultFaction = Faction.findByName("Lone Wolf")
 		if(defaultFaction != null) {
 			return

@@ -39,7 +39,7 @@ class Mech {
 		
 		tech inList: [IS, CLAN]
 		faction nullable: true
-		year range: 2014..3132
+		year range: 0..3132
 		
 		mass range : 20..100, validator:{val, obj ->
 			if(val % 5 != 0) {

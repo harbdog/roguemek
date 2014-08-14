@@ -8,7 +8,7 @@ class MechMTF {
 	private static Log log = LogFactory.getLog(this)
 	
 	// ordered index numbers of when each section occurs in an MTF file (each section is one that contains a colon in the line)
-	private static int MTF_index= 0
+	private static int MTF_index = 0
 	private static int MTF_VERSION = MTF_index ++
 	private static int MTF_CONFIG = MTF_index ++
 	private static int MTF_TECHBASE = MTF_index ++
@@ -121,7 +121,7 @@ class MechMTF {
 				continue
 			}
 			
-			log.info(i+": section "+sectionIndex+", sub "+subIndex+"  |  "+line)
+			//log.info(i+": section "+sectionIndex+", sub "+subIndex+"  |  "+line)
 			
 			switch(sectionIndex){
 				case(MTF_VERSION):

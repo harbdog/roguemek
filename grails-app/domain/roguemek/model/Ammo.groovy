@@ -14,7 +14,7 @@ class Ammo extends Equipment {
 		explosive nullable: false
     }
 	
-	static void initAmmo() {
+	static void init() {
 		def defaultAmmo = Ammo.findByName("Auto Cannon 20 Ammo")
 		if(defaultAmmo != null) {
 			return
@@ -22,6 +22,9 @@ class Ammo extends Equipment {
 		
 		// Create all objects for the game from csv
 		new CSVMapReader(new FileReader("src/csv/Ammo.csv")).eachLine { map ->
+			
+			// update Aliases to be multiple strings in an array instead of one string
+			Ammo.updateAliases(map)
 			
 			def ammo = new Ammo(map)
 			

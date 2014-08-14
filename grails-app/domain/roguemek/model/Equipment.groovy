@@ -37,7 +37,7 @@ class Equipment {
 		
 		tech inList: [IS, CLAN]
 		faction nullable: true
-		year range: 2014..3132
+		year range: 0..3132
 		
 		mass min: 0.0D
 		crits min: 1
@@ -45,7 +45,7 @@ class Equipment {
 		battleValue min: 0
     }
 	
-	static void initEquipment() {
+	static void init() {
 		def defaultEquip = Equipment.findByName("Cockpit")
 		if(defaultEquip != null) {
 			return
@@ -53,6 +53,10 @@ class Equipment {
 		
 		// Create all objects for the game from csv
 		new CSVMapReader(new FileReader("src/csv/Equipment.csv")).eachLine { map ->
+			
+			// update Aliases to be multiple strings in an array instead of one string
+			Equipment.updateAliases(map)
+			
 			def equip = new Equipment(map)
 			
 			if(!equip.validate()) {
@@ -64,6 +68,20 @@ class Equipment {
 			else {
 				equip.save()
 				log.info("Created equipment "+equip.name)
+			}
+		}
+	}
+	
+	/**
+	 * Method used for converting the input aliases comma separated string into an array
+	 * @param map
+	 */
+	private static void updateAliases(LinkedHashMap map) {
+		String aliases = map.aliases
+		if(aliases.contains(",")) {
+			map.aliases = []
+			aliases.split(",").each{
+				map.aliases.add(it)
 			}
 		}
 	}
