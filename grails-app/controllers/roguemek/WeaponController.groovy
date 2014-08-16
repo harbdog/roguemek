@@ -1,10 +1,11 @@
 package roguemek
 
 
-
 import static org.springframework.http.HttpStatus.*
-import roguemek.model.Weapon;
 import grails.transaction.Transactional
+import grails.plugin.springsecurity.annotation.Secured
+
+import roguemek.model.Weapon;
 
 @Transactional(readOnly = true)
 class WeaponController {

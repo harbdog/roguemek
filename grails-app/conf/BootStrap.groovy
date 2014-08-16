@@ -7,26 +7,36 @@ class BootStrap {
 	def bcryptService
 
     def init = { ServletContext servletContext ->
+		
+		def adminRole = new Role(authority: 'ROLE_ADMIN').save(flush: true)
+		def userRole = new Role(authority: 'ROLE_USER').save(flush: true)
+		
 		def adminEmail = 'harbdog@gmail.com'
 		def adminCallsign = 'CapperDeluxe'
-		def adminHashedPassword = '$2a$10$nmZgrO4gwRp2yleO2g5WDefLip9ngLTnqLX3MVcJQ6X09cFWjBCoq'
+		def adminPassword = 'Pass99'
 		
-		def admin = User.findByLogin(adminEmail)
-		if(!admin) {
+		def adminUser = User.findByUsername(adminEmail)
+		if(!adminUser) {
 			// initialize testing admin user
-			admin = new User(login: adminEmail, callsign: adminCallsign, password: adminHashedPassword)
-			if(!admin.validate()) {
-				log.error("Errors with admin "+admin.login+":\n")
-				admin.errors.allErrors.each {
+			adminUser = new User(username: adminEmail, callsign: adminCallsign, password: adminPassword, enabled: true)
+			if(!adminUser.validate()) {
+				log.error("Errors with admin "+adminUser.username+":\n")
+				adminUser.errors.allErrors.each {
 					log.error(it)
 				}
 			}
 			else {
-				admin.save()
+				adminUser.save()
 			
-				log.info('Initialized admin user '+admin.login)
+				log.info('Initialized admin user '+adminUser.username)
 			}
 		}
+		
+		UserRole.create adminUser, adminRole, true
+		
+		assert User.count() == 1
+		assert Role.count() == 2
+		assert UserRole.count() == 1
 		
 		// Initialize factions
 		Faction.init()

@@ -1,11 +1,10 @@
 package roguemek
 
-import mek.command.LoginCommand;
 import grails.transaction.Transactional;
+import grails.plugin.springsecurity.annotation.Secured
+import mek.command.LoginCommand;
 
 class UserController {
-	
-	def bcryptService
 	
 	def beforeInterceptor = {
 		log.info "Request from country: "+request.locale.country
@@ -45,22 +44,17 @@ class UserController {
     def register() {
 		if(request.method == 'POST') {
 			def u = new User()
-			u.properties['login', 'password', 'callsign'] = params
+			u.properties['username', 'password', 'callsign'] = params
 			if(u.password != params.confirm) {
 				u.errors.rejectValue("password", "user.password.dontmatch")
 				return [user:u]
 			}
+			if(u.save()) {
+				session.user = u
+				redirect controller:"RogueMek"
+			}
 			else {
-				// use bcrypt on the password before saving the new user
-				u.password = bcryptService.hashPassword(u.password)
-				
-				if(u.save()) {
-					session.user = u
-					redirect controller:"RogueMek"
-				}
-				else {
-					return [user:u]
-				}
+				return [user:u]
 			}
 		}
 	}
@@ -80,6 +74,7 @@ class UserController {
 		}
 	}
 	
+	@Secured(['ROLE_ADMIN'])
 	def edit(User userInstance) {
 		respond userInstance
 	}
@@ -108,6 +103,7 @@ class UserController {
 	}
 
 	@Transactional
+	@Secured(['ROLE_ADMIN'])
 	def delete(User userInstance) {
 
 		if (userInstance == null) {

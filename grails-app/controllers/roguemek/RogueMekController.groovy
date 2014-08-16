@@ -1,6 +1,7 @@
 package roguemek
 
 import roguemek.model.Mech;
+import grails.plugin.springsecurity.annotation.Secured
 
 class RogueMekController {
 	// override default index method with list method

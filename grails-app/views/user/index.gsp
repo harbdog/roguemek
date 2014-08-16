@@ -26,7 +26,7 @@
 					
 						<g:sortableColumn property="callsign" title="${message(code: 'user.callsign.label', default: 'Callsign')}" />
 					
-						<g:sortableColumn property="login" title="${message(code: 'user.login.label', default: 'Email')}" />
+						<g:sortableColumn property="username" title="${message(code: 'user.username.label', default: 'Email')}" />
 					
 						<g:sortableColumn property="password" title="${message(code: 'user.password.label', default: 'Password')}" />
 					
@@ -38,7 +38,7 @@
 					
 						<td><g:link mapping="userDetails" params='[callsign:"${userInstance?.callsign}"]'>${fieldValue(bean: userInstance, field: "callsign")}</g:link></td>
 					
-						<td>${fieldValue(bean: userInstance, field: "login")}</td>
+						<td>${fieldValue(bean: userInstance, field: "username")}</td>
 					
 						<td>${fieldValue(bean: userInstance, field: "password")}</td>
 					

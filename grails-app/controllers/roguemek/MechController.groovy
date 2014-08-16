@@ -4,10 +4,10 @@ package roguemek
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
-import mek.command.MechCreateCommand;
-
+import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.io.IOUtils
 
+import mek.command.MechCreateCommand;
 import roguemek.model.Mech
 
 @Transactional(readOnly = true)

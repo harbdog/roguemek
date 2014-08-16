@@ -88,6 +88,7 @@ grails.hibernate.osiv.readonly = false
 environments {
     development {
         grails.logging.jul.usebridge = true
+		grails.plugin.springsecurity.debug.useFilter = true
     }
     production {
         grails.logging.jul.usebridge = false
@@ -134,3 +135,27 @@ log4j.main = {
 	// Set for all taglibs
 	//info "grails.app.taglib"
 }
+
+
+// Added by the Spring Security Core plugin:
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'roguemek.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'roguemek.UserRole'
+grails.plugin.springsecurity.authority.className = 'roguemek.Role'
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+	'/':							['permitAll'],
+	'/index':						['permitAll'],
+	'/index.gsp':					['permitAll'],
+	'/roguemek/**':					['permitAll'],
+	'/user/**':						['permitAll'],
+	'/showUser/**':					['permitAll'],
+	'/**/js/**':					['permitAll'],
+	'/**/css/**':					['permitAll'],
+	'/**/images/**':				['permitAll'],
+	'/**/assets/**':				['permitAll'],
+	'/**/favicon.ico':              ['permitAll'],
+	'/login/**':          			['permitAll'],
+	'/logout/**':					['permitAll'],
+	'/secure/**':					['ROLE_ADMIN'],
+	'/dbconsole/**':				['ROLE_ADMIN'],
+]
+

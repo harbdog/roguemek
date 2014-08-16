@@ -1,13 +1,11 @@
 <%@ page import="roguemek.User" %>
 
-
-
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'login', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'username', 'error')} required">
 	<label for="login">
-		<g:message code="user.login.label" default="Login" />
+		<g:message code="user.username.label" default="Login" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:field type="email" name="login" required="" value="${userInstance?.login}"/>
+	<g:field type="email" name="username" required="" value="${userInstance?.username}"/>
 
 </div>
 

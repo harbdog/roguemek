@@ -1,13 +1,13 @@
 
 <p class="legend">Log in</p>
-<g:form name="loginForm" url="[controller:'user', action:'login']" class="form">
+<g:form name="loginForm" url="[controller:'login', action:'auth']" class="form">
 	<div class="input">
 		<g:textField required="true"
 					 placeholder="Email"
-					 name="login"
-					 value="${fieldValue(bean:loginCmd, field:'login')}" />
-		<g:hasErrors bean="${loginCmd}" field="login" >
-			<p class="error"><g:fieldError bean="${loginCmd}" field="login" /></p>
+					 name="username"
+					 value="${fieldValue(bean:loginCmd, field:'username')}" />
+		<g:hasErrors bean="${loginCmd}" field="username" >
+			<p class="error"><g:fieldError bean="${loginCmd}" field="username" /></p>
 		</g:hasErrors>
 	</div>
 	<div class="input">

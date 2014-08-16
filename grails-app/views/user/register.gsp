@@ -15,8 +15,8 @@
 		
 		<g:form action="register" name="registerForm">
 			<div class="formField">
-				<label for="login">Email:</label>
-				<g:textField name="login" value="${user?.login}"/>
+				<label for="username">Email:</label>
+				<g:textField name="username" value="${user?.username}"/>
 			</div>
 			<div class="formField">
 				<label for="callsign">Call Sign:</label>
