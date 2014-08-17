@@ -20,12 +20,14 @@
 		<div id="grailsLogo" role="banner"><a href="/RogueMek"><asset:image src="roguemek_logo.png" alt="Grails"/></a></div>
 		
 		<div id="loginBox" class="loginBox">
-			<g:if test="${session?.user}">
+			<sec:ifLoggedIn>
 				<g:render template="/user/loginLanding" />
-			</g:if>
-			<g:elseif test="${params.action != 'register'}">
-				<g:render template="/user/loginBox" />
-			</g:elseif>
+			</sec:ifLoggedIn>
+      		<sec:ifNotLoggedIn>
+				<g:if test="${params.action != 'register'}">
+					<g:render template="/user/loginBox" />
+				</g:if>
+			</sec:ifNotLoggedIn>
 		</div>
 		
 		<g:layoutBody/>

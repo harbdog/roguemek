@@ -2,7 +2,6 @@ package roguemek
 
 import grails.transaction.Transactional;
 import grails.plugin.springsecurity.annotation.Secured
-import mek.command.LoginCommand;
 
 class UserController {
 	
@@ -80,6 +79,7 @@ class UserController {
 	}
 	
 	@Transactional
+	@Secured(['ROLE_ADMIN'])
 	def update(User userInstance) {
 		if (userInstance == null) {
 			notFound()
@@ -103,7 +103,7 @@ class UserController {
 	}
 
 	@Transactional
-	@Secured(['ROLE_ADMIN'])
+	@Secured(['ROLE_ROOT'])
 	def delete(User userInstance) {
 
 		if (userInstance == null) {
@@ -135,5 +135,35 @@ class UserController {
 	def logout() {
 		session.invalidate()
 		redirect controller:'RogueMek'
+	}
+}
+
+@grails.validation.Validateable
+class LoginCommand {
+	
+	String login
+	String password
+	private u
+
+	static constraints = {
+		login blank:false, validator:{ val, obj ->
+			if(!obj.user) {
+				return "user.not.found"
+			}
+		}
+		
+		password blank:false, validator:{ val, obj ->
+			if(obj.user && !obj.user.checkPassword(val)) {
+				return "user.password.invalid"
+			}
+		}
+	}
+	
+	User getUser() {
+		if(!u && login) {
+			u = User.findByLogin(login)
+		}
+		
+		return u
 	}
 }

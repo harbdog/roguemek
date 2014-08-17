@@ -25,6 +25,14 @@ class LoginController {
 	 * Dependency injection for the springSecurityService.
 	 */
 	def springSecurityService
+	
+	def beforeInterceptor = {
+		log.info "Request from country: "+request.locale.country
+	}
+	
+	def afterInterceptor =  { model ->
+		log.info "$actionName: $model"
+	}
 
 	/**
 	 * Default action; redirects to 'defaultTargetUrl' if logged in, /login/auth otherwise.

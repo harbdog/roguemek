@@ -57,6 +57,18 @@ grails {
         // escapes all not-encoded output at final stage of outputting
         // filteringCodecForContentType.'text/html' = 'html'
     }
+	mail {
+		host = "smtp.gmail.com"
+		port = 465
+		username = "roguemek@gmail.com"
+		/** --> DO NOT COMMIT PASSWORD <-- */
+		password = "PASSWORD"
+		/** --> DO NOT COMMIT PASSWORD <-- */
+		props = ["mail.smtp.auth":"true",
+				 "mail.smtp.socketFactory.port":"465",
+				 "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+				 "mail.smtp.socketFactory.fallback":"false"]
+	}
 }
 
 
@@ -146,7 +158,6 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/index':						['permitAll'],
 	'/index.gsp':					['permitAll'],
 	'/roguemek/**':					['permitAll'],
-	'/user/**':						['permitAll'],
 	'/showUser/**':					['permitAll'],
 	'/**/js/**':					['permitAll'],
 	'/**/css/**':					['permitAll'],
@@ -155,7 +166,9 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':              ['permitAll'],
 	'/login/**':          			['permitAll'],
 	'/logout/**':					['permitAll'],
-	'/secure/**':					['ROLE_ADMIN'],
-	'/dbconsole/**':				['ROLE_ADMIN'],
+	'/user/**':						['ROLE_ADMIN'],
+	'/mech/**':						['ROLE_ROOT'],
+	'/weapon/**':					['ROLE_ROOT'],
+	'/dbconsole/**':				['ROLE_ROOT'],
 ]
 

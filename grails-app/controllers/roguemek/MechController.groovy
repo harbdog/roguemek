@@ -5,9 +5,10 @@ package roguemek
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.commons.io.IOUtils
 
-import mek.command.MechCreateCommand;
+import org.apache.commons.io.IOUtils
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap;
+
 import roguemek.model.Mech
 
 @Transactional(readOnly = true)
@@ -192,4 +193,31 @@ class MechController {
             '*'{ render status: NOT_FOUND }
         }
     }
+}
+
+@grails.validation.Validateable
+class MechCreateCommand {
+	// Configuration properties
+	String name
+	String description
+	String chassis
+	String variant
+	
+	int tonnage
+	
+	static constraints = {
+		importFrom Mech
+	}
+	
+	Mech createMech(GrailsParameterMap params) {
+		def armor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		def internals = [0, 0, 0, 0, 0, 0, 0, 0]
+		
+		params.armor = armor
+		params.internals = internals
+		
+		def mech = new Mech(params)
+		
+		return mech
+	}
 }

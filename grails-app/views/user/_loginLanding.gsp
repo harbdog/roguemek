@@ -21,11 +21,11 @@
 	<g:if test="${params.action == 'register'}">
 		<%-- Hide user box while registering --%>
 	</g:if>
-	<g:elseif test="${session.user}">
+	<sec:ifLoggedIn>
 		<g:link controller="user"
 				action="mechs">My Mechs</g:link>
 		<br/>
 		<g:link controller="mech"
 				action="index">List Mechs</g:link>
-	</g:elseif>
+	</sec:ifLoggedIn>
 </div>
