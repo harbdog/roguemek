@@ -2,74 +2,21 @@ package mek.mtf
 
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
+
 import roguemek.model.*;
 
 class MechMTF {
 	private static Log log = LogFactory.getLog(this)
 	
-	// ordered index numbers of when each section occurs in an MTF file (each section is one that contains a colon in the line)
-	private static int MTF_index = 0
-	private static int MTF_VERSION = MTF_index ++
-	private static int MTF_CONFIG = MTF_index ++
-	private static int MTF_TECHBASE = MTF_index ++
-	private static int MTF_ERA = MTF_index ++
-	private static int MTF_RULES = MTF_index ++
-	private static int MTF_MASS = MTF_index ++
-	private static int MTF_ENGINE = MTF_index ++
-	private static int MTF_STRUCTURE = MTF_index ++
-	private static int MTF_MYOMER = MTF_index ++
-	private static int MTF_HEATSINKS = MTF_index ++
-	private static int MTF_WALKMP = MTF_index ++
-	private static int MTF_JUMPMP = MTF_index ++
-	private static int MTF_ARMOR = MTF_index ++
-	private static int MTF_ARMOR_LA = MTF_index ++
-	private static int MTF_ARMOR_RA = MTF_index ++
-	private static int MTF_ARMOR_LT = MTF_index ++
-	private static int MTF_ARMOR_RT = MTF_index ++
-	private static int MTF_ARMOR_CT = MTF_index ++
-	private static int MTF_ARMOR_HD = MTF_index ++
-	private static int MTF_ARMOR_LL = MTF_index ++
-	private static int MTF_ARMOR_RL = MTF_index ++
-	private static int MTF_ARMOR_RTL = MTF_index ++
-	private static int MTF_ARMOR_RTR = MTF_index ++
-	private static int MTF_ARMOR_RTC = MTF_index ++
-	private static int MTF_WEAPONS = MTF_index ++
-	private static int MTF_CRITS_LA = MTF_index ++
-	private static int MTF_CRITS_RA = MTF_index ++
-	private static int MTF_CRITS_LT = MTF_index ++
-	private static int MTF_CRITS_RT = MTF_index ++
-	private static int MTF_CRITS_CT = MTF_index ++
-	private static int MTF_CRITS_HD = MTF_index ++
-	private static int MTF_CRITS_LL = MTF_index ++
-	private static int MTF_CRITS_RL = MTF_index ++
-	
-	// important critical slot values
-	private static String MTF_CRIT_EMPTY = "-Empty-"
-	private static String MTF_CRIT_HEATSINK = "Heat Sink"
-	private static String MTF_CRIT_JUMPJET = "Jump Jet"
-	private static String MTF_CRIT_SHOULDER = "Shoulder"
-	private static String MTF_CRIT_UP_ARM_ACT = "Upper Arm Actuator"
-	private static String MTF_CRIT_LOW_ARM_ACT = "Lower Arm Actuator"
-	private static String MTF_CRIT_HAND_ACT = "Hand Actuator"
-	private static String MTF_CRIT_HIP = "Hip"
-	private static String MTF_CRIT_UP_LEG_ACT = "Upper Leg Actuator"
-	private static String MTF_CRIT_LOW_LEG_ACT = "Lower Leg Actuator"
-	private static String MTF_CRIT_FOOT_ACT = "Foot Actuator"
-	private static String MTF_CRIT_ENGINE = "Engine"
-	private static String MTF_CRIT_FUSION_ENGINE = "Fusion Engine"
-	private static String MTF_CRIT_GYRO = "Gyro"
-	private static String MTF_CRIT_LIFE_SUPPORT = "Life Support"
-	private static String MTF_CRIT_SENSORS = "Sensors"
-	private static String MTF_CRIT_COCKPIT = "Cockpit"
-	private static String MTF_CRIT_AMMO = "Ammo"
-	
-	private static Boolean isEngineCrit(critName){
-		return (critName == MTF_CRIT_FUSION_ENGINE
-				|| critName == MTF_CRIT_ENGINE);
-	}
-	
+	/**
+	 * Generates a Mech instance from an MTF format file
+	 * @param mtfFile
+	 * @return Mech created from the file
+	 */
 	public static Mech createMechFromMTF(File mtfFile) {
-		if(mtfFile == null || !mtfFile.exists() || !mtfFile.canRead()) {
+		
+		def mtf = MapMTF.createMapFromMTF(mtfFile)
+		if(mtf == null) {
 			return null
 		}
 		
@@ -85,147 +32,193 @@ class MechMTF {
 		map.internals = [0, 0, 0, 0, 0, 0, 0, 0]
 		map.crits = []
 		
-		// initialize section tracking indices
-		int sectionIndex = -1
-		int subIndex = -1
 		
-		def mtfLineList = mtfFile.readLines()
-		int numLines = mtfLineList.size()
-		for(int i=0; i<numLines; i++) {
-			String line = mtfLineList.get(i).trim()
+		if(mtf[MapMTF.MTF_VERSION] instanceof List) {
+			map.name = mtf[MapMTF.MTF_VERSION].get(1)
 			
-			// determine if this line starts a new section by containing a colon character (but not also having a comma)
-			int colon = line.indexOf(":")
-			int comma = line.indexOf(",")
-			
-			if(line.indexOf("Source:") != -1){
-				// ignore the "Source:" line, since its not included in all MTF files and isn't needed yet anyway
-				continue
+			String chassisVariant = mtf[MapMTF.MTF_VERSION].get(2)
+			int dashIndex = chassisVariant.indexOf("-")
+			if(dashIndex >= 0) {
+				map.chassis = chassisVariant.substring(0, dashIndex)
+				map.variant = chassisVariant.substring(dashIndex+1)
 			}
-			else if(colon == -1 || comma != -1){
-				// continue from previous section index
-				if(line.length() > 0) {
-					subIndex ++
+			else {
+				map.chassis = chassisVariant
+				map.variant = "?"
+			}
+		}
+		
+		if(mtf[MapMTF.MTF_TECHBASE] instanceof List) {
+			String line = mtf[MapMTF.MTF_TECHBASE].get(0)
+			map.tech = line.equals("Inner Sphere") ? Mech.IS : Mech.CLAN
+		}
+		
+		if(mtf[MapMTF.MTF_ERA] instanceof List) {
+			String line = mtf[MapMTF.MTF_ERA].get(0)
+			map.year = Integer.valueOf(line)
+		}
+		
+		if(mtf[MapMTF.MTF_SOURCE] instanceof List) {
+			// ignored
+		}
+		
+		if(mtf[MapMTF.MTF_RULES] instanceof List) {
+			// ignored
+		}
+		
+		if(mtf[MapMTF.MTF_MASS] instanceof List) {
+			String line = mtf[MapMTF.MTF_MASS].get(0)
+			map.mass = Integer.valueOf(line)
+			
+			// Assign internal structure values based on mass
+			map.internals = Mech.INTERNAL_STRUCTURE[map.mass]
+		}
+		
+		if(mtf[MapMTF.MTF_ENGINE] instanceof List) {
+			// ignored (for now)
+		}
+		
+		if(mtf[MapMTF.MTF_STRUCTURE] instanceof List) {
+			// ignored (for now)
+		}
+		
+		if(mtf[MapMTF.MTF_MYOMER] instanceof List) {
+			// ignored (for now)
+		}
+		
+		if(mtf[MapMTF.MTF_HEATSINKS] instanceof List) {
+			//TODO: setHeatsinksFromMTF(map, line)
+		}
+		
+		if(mtf[MapMTF.MTF_WALKMP] instanceof List) {
+			String line = mtf[MapMTF.MTF_WALKMP].get(0)
+			map.walkMP = Integer.valueOf(line)
+		}
+		
+		if(mtf[MapMTF.MTF_JUMPMP] instanceof List) {
+			String line = mtf[MapMTF.MTF_JUMPMP].get(0)
+			map.jumpMP = Integer.valueOf(line)
+		}
+		
+		if(mtf[MapMTF.MTF_ARMOR] instanceof List) {
+			mtf[MapMTF.MTF_ARMOR].each { String line ->
+				int colon = line.indexOf(":")
+				
+				if(colon > 0) {
+					String armorSection = line.substring(0, colon).trim()
+					
+					// update the line to only contain the value after the colon
+					line = line.substring(colon + 1).trim()
+					
+					switch(armorSection) {
+						case(MapMTF.MTF_LA_ARMOR):
+									map.armor[Mech.LEFT_ARM] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_RA_ARMOR):
+									map.armor[Mech.RIGHT_ARM] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_LT_ARMOR):
+									map.armor[Mech.LEFT_TORSO] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_RT_ARMOR):
+									map.armor[Mech.RIGHT_TORSO] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_CT_ARMOR):
+									map.armor[Mech.CENTER_TORSO] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_HD_ARMOR):
+									map.armor[Mech.HEAD] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_LL_ARMOR):
+									map.armor[Mech.LEFT_LEG] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_RL_ARMOR):
+									map.armor[Mech.RIGHT_LEG] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_RTL_ARMOR):
+									map.armor[Mech.LEFT_REAR] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_RTR_ARMOR):
+									map.armor[Mech.RIGHT_REAR] = Integer.valueOf(line)
+									break
+						case(MapMTF.MTF_RTC_ARMOR):
+									map.armor[Mech.CENTER_REAR] = Integer.valueOf(line)
+									break
+								
+						default: break
+					}
 				}
 			}
-			else{
-				// the next section begins
-				sectionIndex ++
-				subIndex = 0
-				
-				// update the line to only contain the value after the colon
-				line = line.substring(colon + 1).trim()
-			}
-			
-			if(line.length() == 0) {
-				continue
-			}
-			
-			//log.info(i+": section "+sectionIndex+", sub "+subIndex+"  |  "+line)
-			
-			switch(sectionIndex){
-				case(MTF_VERSION):
-							// mech chassis and variant are directly under the version section before the next section
-							if(subIndex == 1) {
-								map.name = line
-							}
-							else if(subIndex == 2) {
-								int dashIndex = line.indexOf("-")
-								if(dashIndex >= 0) {
-									map.chassis = line.substring(0, dashIndex)
-									map.variant = line.substring(dashIndex+1)
-								}
-								else {
-									map.chassis = line
-									map.variant = "?"
-								}
-							}
-							break
-				case(MTF_TECHBASE):
-							map.tech = line.equals("Inner Sphere") ? Mech.IS : Mech.CLAN
-							break
-				case(MTF_ERA):
-							map.year = Integer.valueOf(line)
-							break
-				case(MTF_MASS):
-							map.mass = Integer.valueOf(line)
-							
-							// Assign internal structure values based on mass
-							map.internals = Mech.INTERNAL_STRUCTURE[map.mass]
-							
-							break
-				case(MTF_HEATSINKS):
-							//TODO: setHeatsinksFromMTF(map, line)
-							break
-				case(MTF_WALKMP):
-							map.walkMP = Integer.valueOf(line)
-							break
-				case(MTF_JUMPMP):
-							map.jumpMP = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_LA):
-							map.armor[Mech.LEFT_ARM] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_RA):
-							map.armor[Mech.RIGHT_ARM] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_LT):
-							map.armor[Mech.LEFT_TORSO] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_RT):
-							map.armor[Mech.RIGHT_TORSO] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_CT):
-							map.armor[Mech.CENTER_TORSO] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_HD):
-							map.armor[Mech.HEAD] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_LL):
-							map.armor[Mech.LEFT_LEG] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_RL):
-							map.armor[Mech.RIGHT_LEG] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_RTL):
-							map.armor[Mech.LEFT_REAR] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_RTR):
-							map.armor[Mech.RIGHT_REAR] = Integer.valueOf(line)
-							break
-				case(MTF_ARMOR_RTC):
-							map.armor[Mech.CENTER_REAR] = Integer.valueOf(line)
-							break
-				case(MTF_WEAPONS):
-							//TODO: addWeaponFromMTF(map, line)
-							break
-				case(MTF_CRITS_LA):
-				case(MTF_CRITS_RA):
-				case(MTF_CRITS_LT):
-				case(MTF_CRITS_RT):
-				case(MTF_CRITS_CT):
-				case(MTF_CRITS_HD):
-				case(MTF_CRITS_LL):
-				case(MTF_CRITS_RL):
-							// add crits
-							addCriticalsFromMTF(map.crits, line, sectionIndex, subIndex)
-							
-							// if Hatchet, add as weapon to this location
-							/*if(line == "Hatchet"){
-								int thisLocation = (sectionIndex == MTF_CRITS_LA) ? LEFT_ARM : RIGHT_ARM
-								if(hatchetLocations.indexOf(thisLocation) == -1){
-									hatchetLocations.push(thisLocation)
-								}
-							}*/
-								
-							break
-			
-				default: break
-			}
-			
-			//TODO: more stuff here
-			
 		}
+		
+		if(mtf[MapMTF.MTF_WEAPONS] instanceof List) {
+			//TODO: addWeaponFromMTF(map, line)
+		}
+		
+		if(mtf[MapMTF.MTF_LEFT_ARM] instanceof List) {
+			int subIndex = 0
+			mtf[MapMTF.MTF_LEFT_ARM].each { String line ->
+				// add crits
+				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_LEFT_ARM, subIndex ++)
+			}
+		}
+		
+		if(mtf[MapMTF.MTF_RIGHT_ARM] instanceof List) {
+			int subIndex = 0
+			mtf[MapMTF.MTF_RIGHT_ARM].each { String line ->
+				// add crits
+				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_RIGHT_ARM, subIndex ++)
+			}
+		}
+
+		if(mtf[MapMTF.MTF_LEFT_TORSO] instanceof List) {
+			int subIndex = 0
+			mtf[MapMTF.MTF_LEFT_TORSO].each { String line ->
+				// add crits
+				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_LEFT_TORSO, subIndex ++)
+			}
+		}
+		
+		if(mtf[MapMTF.MTF_RIGHT_TORSO] instanceof List) {
+			int subIndex = 0
+			mtf[MapMTF.MTF_RIGHT_TORSO].each { String line ->
+				// add crits
+				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_RIGHT_TORSO, subIndex ++)
+			}
+		}
+		
+		if(mtf[MapMTF.MTF_CENTER_TORSO] instanceof List) {
+			int subIndex = 0
+			mtf[MapMTF.MTF_CENTER_TORSO].each { String line ->
+				// add crits
+				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_CENTER_TORSO, subIndex ++)
+			}
+		}
+		
+		if(mtf[MapMTF.MTF_HEAD] instanceof List) {
+			int subIndex = 0
+			mtf[MapMTF.MTF_HEAD].each { String line ->
+				// add crits
+				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_HEAD, subIndex ++)
+			}
+		}
+		
+		if(mtf[MapMTF.MTF_LEFT_LEG] instanceof List) {
+			int subIndex = 0
+			mtf[MapMTF.MTF_LEFT_LEG].each { String line ->
+				// add crits
+				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_LEFT_LEG, subIndex ++)
+			}
+		}
+		
+		if(mtf[MapMTF.MTF_RIGHT_LEG] instanceof List) {
+			int subIndex = 0
+			mtf[MapMTF.MTF_RIGHT_LEG].each { String line ->
+				// add crits
+				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_RIGHT_LEG, subIndex ++)
+			}
+		}
+		
 		
 		Mech mech = new Mech(map)
 		if(!mech.validate()) {
@@ -242,34 +235,30 @@ class MechMTF {
 		return mech
 	}
 	
-	private static void addCriticalsFromMTF(List crits, String line, int mtfSectionIndex, int subSectionIndex){
+	private static void addCriticalsFromMTF(List crits, String line, String mtfSectionIndex, int subSectionIndex){
 		// one crit is listed per line and in order, just push each entry after determining what it is
 		if(crits == null || line == null || line.length() == 0) {
 			return
 		}
 		
-		// The sub index will always start at 1 due to its starting section declaration
-		// so making it start at 0 for arrays
-		subSectionIndex --
-		
 		int section = -1;
 		switch(mtfSectionIndex){
-			case(MTF_CRITS_LA): section = Mech.LEFT_ARM
-								break
-			case(MTF_CRITS_RA): section = Mech.RIGHT_ARM
-								break
-			case(MTF_CRITS_LT): section = Mech.LEFT_TORSO
-								break
-			case(MTF_CRITS_RT): section = Mech.RIGHT_TORSO
-								break
-			case(MTF_CRITS_CT): section = Mech.CENTER_TORSO
-								break
-			case(MTF_CRITS_LL): section = Mech.LEFT_LEG
-								break
-			case(MTF_CRITS_RL): section = Mech.RIGHT_LEG
-								break
-			case(MTF_CRITS_HD): section = Mech.HEAD
-								break
+			case(MapMTF.MTF_LEFT_ARM): 		section = Mech.LEFT_ARM
+											break
+			case(MapMTF.MTF_RIGHT_ARM): 	section = Mech.RIGHT_ARM
+											break
+			case(MapMTF.MTF_LEFT_TORSO): 	section = Mech.LEFT_TORSO
+											break
+			case(MapMTF.MTF_RIGHT_TORSO): 	section = Mech.RIGHT_TORSO
+											break
+			case(MapMTF.MTF_CENTER_TORSO): 	section = Mech.CENTER_TORSO
+											break
+			case(MapMTF.MTF_LEFT_LEG): 		section = Mech.LEFT_LEG
+											break
+			case(MapMTF.MTF_RIGHT_LEG): 	section = Mech.RIGHT_LEG
+											break
+			case(MapMTF.MTF_HEAD): 			section = Mech.HEAD
+											break
 								
 			default: break
 		}
