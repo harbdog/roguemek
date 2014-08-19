@@ -22,8 +22,8 @@ class Equipment {
 	Integer battleValue
 	
 	// STATIC value mappings
-	static Character IS = 'I'
-	static Character CLAN = 'C'
+	static Character TECH_IS = 'I'
+	static Character TECH_CLAN = 'C'
 	
 	static mapping = {
 		// All extending classes will get their own tables
@@ -35,7 +35,7 @@ class Equipment {
 		shortName nullable: true
 		description nullable: true
 		
-		tech inList: [IS, CLAN]
+		tech inList: [TECH_IS, TECH_CLAN]
 		faction nullable: true
 		year range: 0..3132
 		

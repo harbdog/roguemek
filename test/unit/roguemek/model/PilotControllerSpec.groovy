@@ -1,13 +1,14 @@
-package roguemek
+package roguemek.model
 
 
 
 import grails.test.mixin.*
+import roguemek.PilotController;
 import spock.lang.*
 
-@TestFor(UserController)
-@Mock(User)
-class UserControllerSpec extends Specification {
+@TestFor(PilotController)
+@Mock(Pilot)
+class PilotControllerSpec extends Specification {
 
     def populateValidParams(params) {
         assert params != null
@@ -21,8 +22,8 @@ class UserControllerSpec extends Specification {
             controller.index()
 
         then:"The model is correct"
-            !model.userInstanceList
-            model.userInstanceCount == 0
+            !model.pilotInstanceList
+            model.pilotInstanceCount == 0
     }
 
     void "Test the create action returns the correct model"() {
@@ -30,7 +31,7 @@ class UserControllerSpec extends Specification {
             controller.create()
 
         then:"The model is correctly created"
-            model.userInstance!= null
+            model.pilotInstance!= null
     }
 
     void "Test the save action correctly persists an instance"() {
@@ -38,25 +39,25 @@ class UserControllerSpec extends Specification {
         when:"The save action is executed with an invalid instance"
             request.contentType = FORM_CONTENT_TYPE
             request.method = 'POST'
-            def user = new User()
-            user.validate()
-            controller.save(user)
+            def pilot = new Pilot()
+            pilot.validate()
+            controller.save(pilot)
 
         then:"The create view is rendered again with the correct model"
-            model.userInstance!= null
+            model.pilotInstance!= null
             view == 'create'
 
         when:"The save action is executed with a valid instance"
             response.reset()
             populateValidParams(params)
-            user = new User(params)
+            pilot = new Pilot(params)
 
-            controller.save(user)
+            controller.save(pilot)
 
         then:"A redirect is issued to the show action"
-            response.redirectedUrl == '/user/show/1'
+            response.redirectedUrl == '/pilot/show/1'
             controller.flash.message != null
-            User.count() == 1
+            Pilot.count() == 1
     }
 
     void "Test that the show action returns the correct model"() {
@@ -68,11 +69,11 @@ class UserControllerSpec extends Specification {
 
         when:"A domain instance is passed to the show action"
             populateValidParams(params)
-            def user = new User(params)
-            controller.show(user)
+            def pilot = new Pilot(params)
+            controller.show(pilot)
 
         then:"A model is populated containing the domain instance"
-            model.userInstance == user
+            model.pilotInstance == pilot
     }
 
     void "Test that the edit action returns the correct model"() {
@@ -84,11 +85,11 @@ class UserControllerSpec extends Specification {
 
         when:"A domain instance is passed to the edit action"
             populateValidParams(params)
-            def user = new User(params)
-            controller.edit(user)
+            def pilot = new Pilot(params)
+            controller.edit(pilot)
 
         then:"A model is populated containing the domain instance"
-            model.userInstance == user
+            model.pilotInstance == pilot
     }
 
     void "Test the update action performs an update on a valid domain instance"() {
@@ -98,28 +99,28 @@ class UserControllerSpec extends Specification {
             controller.update(null)
 
         then:"A 404 error is returned"
-            response.redirectedUrl == '/user/index'
+            response.redirectedUrl == '/pilot/index'
             flash.message != null
 
 
         when:"An invalid domain instance is passed to the update action"
             response.reset()
-            def user = new User()
-            user.validate()
-            controller.update(user)
+            def pilot = new Pilot()
+            pilot.validate()
+            controller.update(pilot)
 
         then:"The edit view is rendered again with the invalid instance"
             view == 'edit'
-            model.userInstance == user
+            model.pilotInstance == pilot
 
         when:"A valid domain instance is passed to the update action"
             response.reset()
             populateValidParams(params)
-            user = new User(params).save(flush: true)
-            controller.update(user)
+            pilot = new Pilot(params).save(flush: true)
+            controller.update(pilot)
 
         then:"A redirect is issues to the show action"
-            response.redirectedUrl == "/user/show/$user.id"
+            response.redirectedUrl == "/pilot/show/$pilot.id"
             flash.message != null
     }
 
@@ -130,23 +131,23 @@ class UserControllerSpec extends Specification {
             controller.delete(null)
 
         then:"A 404 is returned"
-            response.redirectedUrl == '/user/index'
+            response.redirectedUrl == '/pilot/index'
             flash.message != null
 
         when:"A domain instance is created"
             response.reset()
             populateValidParams(params)
-            def user = new User(params).save(flush: true)
+            def pilot = new Pilot(params).save(flush: true)
 
         then:"It exists"
-            User.count() == 1
+            Pilot.count() == 1
 
         when:"The domain instance is passed to the delete action"
-            controller.delete(user)
+            controller.delete(pilot)
 
         then:"The instance is deleted"
-            User.count() == 0
-            response.redirectedUrl == '/user/index'
+            Pilot.count() == 0
+            response.redirectedUrl == '/pilot/index'
             flash.message != null
     }
 }

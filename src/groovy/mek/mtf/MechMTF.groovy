@@ -50,7 +50,7 @@ class MechMTF {
 		
 		if(mtf[MapMTF.MTF_TECHBASE] instanceof List) {
 			String line = mtf[MapMTF.MTF_TECHBASE].get(0)
-			map.tech = line.equals("Inner Sphere") ? Mech.IS : Mech.CLAN
+			map.tech = line.equals("Inner Sphere") ? Mech.TECH_IS : Mech.TECH_CLAN
 		}
 		
 		if(mtf[MapMTF.MTF_ERA] instanceof List) {

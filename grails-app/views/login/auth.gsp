@@ -1,6 +1,9 @@
 <html>
 <head>
+	<%-- Commented out since including it made the layout appear twice after logging in
+	TODO: figure out how to prevent it from doing that since the layout looked nice
 	<meta name='layout' content='main'/>
+	--%>
 	<title><g:message code="springSecurity.login.title"/></title>
 	<style type='text/css' media='screen'>
 	#login {

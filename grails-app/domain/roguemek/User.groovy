@@ -1,5 +1,7 @@
 package roguemek
 
+import roguemek.model.Pilot
+
 class User {
 
 	transient springSecurityService
@@ -11,6 +13,8 @@ class User {
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
+	
+	static hasMany = [pilots:Pilot]
 
 	static transients = ['springSecurityService']
 

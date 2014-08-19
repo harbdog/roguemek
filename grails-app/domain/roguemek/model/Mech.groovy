@@ -30,8 +30,8 @@ class Mech {
 	Integer battleValue
 	
 	// STATIC value mappings
-	public static Character IS = 'I'
-	public static Character CLAN = 'C'
+	public static Character TECH_IS = 'I'
+	public static Character TECH_CLAN = 'C'
 	
 	static constraints = {
 		name blank: false
@@ -39,7 +39,7 @@ class Mech {
 		chassis blank: false
 		variant blank: false
 		
-		tech inList: [IS, CLAN]
+		tech inList: [TECH_IS, TECH_CLAN]
 		faction nullable: true
 		year range: 0..3132
 		
