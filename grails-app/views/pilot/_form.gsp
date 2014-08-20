@@ -20,25 +20,24 @@
 
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: pilotInstance, field: 'ownerUser', 'error')} required">
+	<label for="ownerUser">
+		<g:message code="pilot.ownerUser.label" default="Owner User" />
+		<span class="required-indicator">*</span>
+	</label>
+	<g:select id="ownerUser" name="ownerUser.id" from="${roguemek.User.list()}" optionKey="id" required="" optionValue="username" value="${pilotInstance?.ownerUser?.id}" class="many-to-one"/>
+
+</div>
+
 <div class="fieldcontain ${hasErrors(bean: pilotInstance, field: 'status', 'error')} required">
 	<label for="status">
 		<g:message code="pilot.status.label" default="Status" />
 		<span class="required-indicator">*</span>
 	</label>
 	
-	<g:radio name="status" value="A" checked="${pilotInstance?.status == 'A'}"/>Active
-	<g:radio name="status" value="R" checked="${pilotInstance?.status == 'R'}"/>Retired
-	<g:radio name="status" value="D" checked="${pilotInstance?.status == 'D'}"/>Deceased
-	
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: pilotInstance, field: 'ownedMechs', 'error')} ">
-	<label for="ownedMechs">
-		<g:message code="pilot.ownedMechs.label" default="Owned Mechs" />
-		
-	</label>
-	
-	<g:select name="ownedMechs" from="${roguemek.model.Mech.list()}" multiple="multiple" optionKey="id" size="5" optionValue="${{it?.name+" "+it?.chassis+"-"+it?.variant}}" value="${pilotInstance?.ownedMechs*.id}" class="many-to-many"/>
+	<g:radio name="status" value="${Pilot.STATUS_ACTIVE}" checked="${pilotInstance?.status == Pilot.STATUS_ACTIVE}"/>Active
+	<g:radio name="status" value="${Pilot.STATUS_RETIRED}" checked="${pilotInstance?.status == Pilot.STATUS_RETIRED}"/>Retired
+	<g:radio name="status" value="${Pilot.STATUS_DECEASED}" checked="${pilotInstance?.status == Pilot.STATUS_DECEASED}"/>Deceased
 
 </div>
 

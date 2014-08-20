@@ -2,6 +2,9 @@ package roguemek.model
 
 import mek.mtf.*
 
+/**
+ * Represents the stock or core Mech configuration
+ */
 class Mech {
 	static searchable = {
 		only = ['name', 'description', 'chassis', 'variant']

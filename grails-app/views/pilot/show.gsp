@@ -40,7 +40,7 @@
 					
 				</li>
 				</g:if>
-			
+				
 				<g:if test="${pilotInstance?.status}">
 				<li class="fieldcontain">
 					<span id="status-label" class="property-label"><g:message code="pilot.status.label" default="Status" /></span>
@@ -50,12 +50,21 @@
 				</li>
 				</g:if>
 			
+				<g:if test="${pilotInstance?.ownerUser}">
+				<li class="fieldcontain">
+					<span id="ownerUser-label" class="property-label"><g:message code="pilot.ownerUser.label" default="Owner User" /></span>
+					
+						<span class="property-value" aria-labelledby="ownerUser-label"><g:link controller="user" action="show" id="${pilotInstance?.ownerUser?.id}">${pilotInstance?.ownerUser?.username}</g:link></span>
+					
+				</li>
+				</g:if>
+			
 				<g:if test="${pilotInstance?.ownedMechs}">
 				<li class="fieldcontain">
 					<span id="ownedMechs-label" class="property-label"><g:message code="pilot.ownedMechs.label" default="Owned Mechs" /></span>
 					
 						<g:each in="${pilotInstance.ownedMechs}" var="o">
-						<span class="property-value" aria-labelledby="ownedMechs-label"><g:link controller="mech" action="show" id="${o.id}">${o?.name +" "+ o?.chassis+"-"+o?.variant}</g:link></span>
+						<span class="property-value" aria-labelledby="ownedMechs-label"><g:link controller="battleMech" action="show" id="${o.id}">${o?.mech?.name +" " + o?.mech?.chassis+"-"+o?.mech?.variant}</g:link></span>
 						</g:each>
 					
 				</li>

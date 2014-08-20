@@ -27,9 +27,11 @@
 						<g:sortableColumn property="firstName" title="${message(code: 'pilot.firstName.label', default: 'First Name')}" />
 					
 						<g:sortableColumn property="lastName" title="${message(code: 'pilot.lastName.label', default: 'Last Name')}" />
-					
+						
 						<g:sortableColumn property="status" title="${message(code: 'pilot.status.label', default: 'Status')}" />
 					
+						<th><g:message code="pilot.ownerUser.label" default="Owner User" /></th>
+						
 					</tr>
 				</thead>
 				<tbody>
@@ -39,8 +41,10 @@
 						<td><g:link action="show" id="${pilotInstance.id}">${fieldValue(bean: pilotInstance, field: "firstName")}</g:link></td>
 					
 						<td>${fieldValue(bean: pilotInstance, field: "lastName")}</td>
-					
+						
 						<td>${fieldValue(bean: pilotInstance, field: "status")}</td>
+					
+						<td>${pilotInstance?.ownerUser?.username}</td>
 					
 					</tr>
 				</g:each>
