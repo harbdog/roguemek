@@ -9,8 +9,8 @@ class Pilot {
 	User ownerUser
 	Character status
 	
-	BattleMech mech
-	static hasMany = [ownedMechs:BattleMech]
+	BattleUnit unit
+	static hasMany = [ownedUnits:BattleUnit]
 	
 	// STATIC value mappings
 	static Character STATUS_ACTIVE = 'A'
@@ -24,6 +24,11 @@ class Pilot {
 		
 		status inList: [STATUS_ACTIVE, STATUS_DECEASED, STATUS_RETIRED]
 		
-		mech nullable: true
+		unit nullable: true
     }
+	
+	@Override
+	public String toString() {
+		return firstName + " \""+ownerUser.toString()+"\" " + lastName
+	}
 }

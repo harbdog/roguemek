@@ -5,22 +5,15 @@ import mek.mtf.*
 /**
  * Represents the stock or core Mech configuration
  */
-class Mech {
+class Mech extends Unit {
 	static searchable = {
 		only = ['name', 'description', 'chassis', 'variant']
 	}
 	
 	// Configuration properties
-	String name
-	String description
 	String chassis
 	String variant
 	
-	Character tech
-	Faction faction
-	Integer year
-	
-	Integer mass
 	Integer[] armor
 	Integer[] internals
 	
@@ -29,22 +22,9 @@ class Mech {
 	Integer walkMP
 	Integer jumpMP
 	
-	Long cbills
-	Integer battleValue
-	
-	// STATIC value mappings
-	public static Character TECH_IS = 'I'
-	public static Character TECH_CLAN = 'C'
-	
 	static constraints = {
-		name blank: false
-		description nullable: true
 		chassis blank: false
 		variant blank: false
-		
-		tech inList: [TECH_IS, TECH_CLAN]
-		faction nullable: true
-		year range: 0..3132
 		
 		mass range : 20..100, validator:{val, obj ->
 			if(val % 5 != 0) {
@@ -61,9 +41,6 @@ class Mech {
 		
 		walkMP min: 1
 		jumpMP min: 0
-		
-		cbills min: 0L
-		battleValue min: 0
 	}
 	
 	// static location indices
