@@ -1,5 +1,7 @@
 import javax.servlet.ServletContext
+
 import roguemek.*
+import roguemek.game.Pilot;
 import roguemek.model.*
 
 class BootStrap {
@@ -32,7 +34,7 @@ class BootStrap {
 				log.info('Initialized admin user '+adminUser.username)
 			}
 			
-			def adminPilot = new Pilot(firstName: "Rogue", lastName: "Mek", ownerUser: adminUser, status: roguemek.model.Pilot.STATUS_ACTIVE).save()
+			def adminPilot = new Pilot(firstName: "Rogue", lastName: "Mek", ownerUser: adminUser, status: Pilot.STATUS_ACTIVE).save()
 		}
 		
 		UserRole.create adminUser, rootRole, true

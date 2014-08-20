@@ -70,7 +70,7 @@
 		<g:message code="user.pilots.label" default="Pilots" />
 		
 	</label>
-	<g:select name="pilots" from="${roguemek.model.Pilot.list()}" multiple="multiple" optionKey="id" size="5" optionValue="${{it?.firstName+" "+it?.lastName}}" value="${userInstance?.pilots*.id}" class="many-to-many"/>
+	<g:select name="pilots" from="${roguemek.game.Pilot.list()}" multiple="multiple" optionKey="id" size="5" optionValue="${{it?.firstName+" "+it?.lastName}}" value="${userInstance?.pilots*.id}" class="many-to-many"/>
 
 </div>
 

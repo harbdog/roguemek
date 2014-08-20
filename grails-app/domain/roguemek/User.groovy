@@ -1,6 +1,6 @@
 package roguemek
 
-import roguemek.model.Pilot
+import roguemek.game.Pilot;
 
 class User {
 

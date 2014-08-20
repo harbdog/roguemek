@@ -1,5 +1,5 @@
 
-<%@ page import="roguemek.model.BattleMech" %>
+<%@ page import="roguemek.game.BattleMech" %>
 <!DOCTYPE html>
 <html>
 	<head>

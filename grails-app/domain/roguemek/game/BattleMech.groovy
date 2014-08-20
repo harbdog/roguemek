@@ -1,4 +1,6 @@
-package roguemek.model
+package roguemek.game
+
+import roguemek.model.Mech;
 
 /**
  * Represents the owned mech that can be taken into battle

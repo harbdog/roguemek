@@ -1,4 +1,4 @@
-package roguemek.model
+package roguemek.game
 
 import roguemek.User
 
@@ -9,6 +9,7 @@ class Pilot {
 	User ownerUser
 	Character status
 	
+	BattleMech mech
 	static hasMany = [ownedMechs:BattleMech]
 	
 	// STATIC value mappings
@@ -22,5 +23,7 @@ class Pilot {
 		ownerUser nullable: false
 		
 		status inList: [STATUS_ACTIVE, STATUS_DECEASED, STATUS_RETIRED]
+		
+		mech nullable: true
     }
 }

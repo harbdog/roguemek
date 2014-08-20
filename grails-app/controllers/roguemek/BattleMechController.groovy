@@ -3,7 +3,7 @@ package roguemek
 
 
 import static org.springframework.http.HttpStatus.*
-import roguemek.model.BattleMech;
+import roguemek.game.BattleMech;
 import grails.transaction.Transactional
 
 @Transactional(readOnly = true)

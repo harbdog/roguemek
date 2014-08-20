@@ -1,5 +1,5 @@
 
-<%@ page import="roguemek.model.Pilot" %>
+<%@ page import="roguemek.game.Pilot" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -59,16 +59,20 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${pilotInstance?.ownedMechs}">
+				
 				<li class="fieldcontain">
 					<span id="ownedMechs-label" class="property-label"><g:message code="pilot.ownedMechs.label" default="Owned Mechs" /></span>
 					
-						<g:each in="${pilotInstance.ownedMechs}" var="o">
-						<span class="property-value" aria-labelledby="ownedMechs-label"><g:link controller="battleMech" action="show" id="${o.id}">${o?.mech?.name +" " + o?.mech?.chassis+"-"+o?.mech?.variant}</g:link></span>
-						</g:each>
+						<g:if test="${pilotInstance?.ownedMechs}">
+							<g:each in="${pilotInstance.ownedMechs}" var="o">
+							<span class="property-value" aria-labelledby="ownedMechs-label"><g:link controller="battleMech" action="show" id="${o.id}">${o?.mech?.name +" " + o?.mech?.chassis+"-"+o?.mech?.variant}</g:link></span>
+							</g:each>
+						</g:if>
+						<g:else>
+							<span class="property-value" aria-labelledby="ownedMechs-label"><g:link controller="battleMech" action="index">None</g:link></span>
+						</g:else>
 					
 				</li>
-				</g:if>
 			
 			</ol>
 			<g:form url="[resource:pilotInstance, action:'delete']" method="DELETE">

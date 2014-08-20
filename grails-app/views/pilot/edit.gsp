@@ -1,4 +1,4 @@
-<%@ page import="roguemek.model.Pilot" %>
+<%@ page import="roguemek.game.Pilot" %>
 <!DOCTYPE html>
 <html>
 	<head>
