@@ -31,6 +31,8 @@ class BootStrap {
 			
 				log.info('Initialized admin user '+adminUser.username)
 			}
+			
+			def adminPilot = new Pilot(firstName: "Rogue", lastName: "Mek", ownerUser: adminUser, status: roguemek.model.Pilot.STATUS_ACTIVE).save()
 		}
 		
 		UserRole.create adminUser, rootRole, true

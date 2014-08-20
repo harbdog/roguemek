@@ -170,6 +170,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/pilot/**':					['ROLE_ADMIN'],
 	'/userrole/**':					['ROLE_ROOT'],
 	'/mech/**':						['ROLE_ROOT'],
+	'/battlemech/**':				['ROLE_ROOT'],
 	'/weapon/**':					['ROLE_ROOT'],
 	'/dbconsole/**':				['ROLE_ROOT'],
 ]

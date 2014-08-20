@@ -6,11 +6,10 @@ class Pilot {
 
 	String firstName
 	String lastName
-	
+	User ownerUser
 	Character status
 	
-	static hasMany = [ownedMechs:Mech]
-	static belongsTo = User
+	static hasMany = [ownedMechs:BattleMech]
 	
 	// STATIC value mappings
 	static Character STATUS_ACTIVE = 'A'
@@ -20,6 +19,7 @@ class Pilot {
     static constraints = {
 		firstName blank: false
 		lastName blank: false
+		ownerUser nullable: false
 		
 		status inList: [STATUS_ACTIVE, STATUS_DECEASED, STATUS_RETIRED]
     }
