@@ -212,4 +212,9 @@ class Mech extends Unit {
 		
 		return critSection
 	}
+	
+	@Override
+	public String toString() {
+		return "<Mech:"+name+" "+chassis+"-"+variant+">"
+	}
 }

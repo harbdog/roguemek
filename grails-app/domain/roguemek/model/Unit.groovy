@@ -45,4 +45,9 @@ class Unit {
 		battleValue min: 0
 	}
 	
+	@Override
+	public String toString() {
+		return "<Unit:"+name+">"
+	}
+	
 }
