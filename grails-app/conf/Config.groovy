@@ -169,6 +169,8 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/user/**':						['ROLE_ADMIN'],
 	'/pilot/**':					['ROLE_ADMIN'],
 	'/userrole/**':					['ROLE_ROOT'],
+	'/mech/display/**':				['permitAll'],
+	'/mech/showMech/**':			['permitAll'],
 	'/mech/**':						['ROLE_ROOT'],
 	'/battlemech/**':				['ROLE_ROOT'],
 	'/weapon/**':					['ROLE_ROOT'],

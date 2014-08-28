@@ -33,6 +33,8 @@ class MechController {
 	def display() {
 		def mech = Mech.read(params.id)
 		if(mech) {
+			// TESTING induced delay ajax response
+			Thread.sleep(2500)
 			render(template:"mech", model:[mech:mech])
 		}
 		else {

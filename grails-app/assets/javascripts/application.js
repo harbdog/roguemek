@@ -46,12 +46,46 @@ function init(){
 }
 
 function showMech(mechId) {
-    $.ajax({
+    var jqxhr = $.ajax({
         url: 'mech/display?id=' + mechId,
-        success: function(data) {
+        success: function(data, status, jqxhr) {
+        	clearInterval(timerID);
+        	
             $('#mechPanel').html(data);
             $('#mech' + mechId).fadeIn('slow');
-        }
+        },
+        error: function(jqxhr, status, errorMsg) {
+        	clearInterval(timerID);
+        	
+        	$('#mechPanel').html("ERROR");
+        },
+        complete: showMechCompleted
     });
+    
+    var waitTime = -1;
+    var intervalTime = 100;
+    
+    var timerID = setInterval(function() {
+    	if(waitTime == -1){
+    		waitTime = 0;
+    	}
+    	else{
+    		waitTime += intervalTime;
+    	}
+    	
+    	if(jqxhr != null){
+			console.log(waitTime+" | Status: "+jqxhr.status+" "+jqxhr.statusText+" | "+jqxhr.readyState);
+
+			var dots = ".";
+			for(var i=0; i<waitTime/100; i++){
+				dots += ".";
+			}
+			
+			$('#mechPanel').html(dots);
+    	}
+	}, intervalTime);
     return false;
+}
+function showMechCompleted(jqxhr, status){
+	console.log("Show Mech Completed (success or error): "+status);
 }
