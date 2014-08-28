@@ -27,6 +27,15 @@ $(window).ready(function(){
 });
 
 function init(){
+	// make the spinner show while ajax is going on
+	$(document)
+		.ajaxStart(function() {
+			$("#spinner").fadeIn('slow');
+		})
+		.ajaxComplete(function() {
+			$("#spinner").fadeOut('slow');
+		});
+	
 	// The global login form should be able to allow login regardless of the current page 
 	$('#loginForm').ajaxForm(function(result) {
 		$('#loginBox').html(result);
@@ -53,11 +62,13 @@ function showMech(mechId) {
         	
             $('#mechPanel').html(data);
             $('#mech' + mechId).fadeIn('slow');
+            $('#mechPanel').css("color", "blue");
         },
         error: function(jqxhr, status, errorMsg) {
         	clearInterval(timerID);
         	
         	$('#mechPanel').html("ERROR");
+        	$('#mechPanel').css("color", "red");
         },
         complete: showMechCompleted
     });
