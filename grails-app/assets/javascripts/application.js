@@ -56,6 +56,7 @@ function init(){
 
 function showMech(mechId) {
     var jqxhr = $.ajax({
+    	timeout: 5000,
         url: 'mech/display?id=' + mechId,
         success: function(data, status, jqxhr) {
         	clearInterval(timerID);
@@ -67,7 +68,8 @@ function showMech(mechId) {
         error: function(jqxhr, status, errorMsg) {
         	clearInterval(timerID);
         	
-        	$('#mechPanel').html("ERROR");
+        	var showMsg = status == "timeout" ? "TIMEOUT" : "ERROR";
+        	$('#mechPanel').html(showMsg);
         	$('#mechPanel').css("color", "red");
         },
         complete: showMechCompleted
