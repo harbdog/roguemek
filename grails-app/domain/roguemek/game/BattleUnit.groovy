@@ -7,6 +7,8 @@ class BattleUnit {
 
 	Pilot ownerPilot
 	
+	Boolean destroyed = false
+	
 	static mapping = {
 		// All extending classes will get their own tables
 		tablePerHierarchy false

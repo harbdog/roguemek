@@ -1,5 +1,6 @@
 package roguemek.game
 
+import roguemek.model.Equipment
 import roguemek.model.Mech;
 
 /**
@@ -14,6 +15,19 @@ class BattleMech extends BattleUnit {
 	Integer[] internals
 	
 	byte[] crits
+	
+	// static location indices
+	public static HEAD = Mech.HEAD;
+	public static LEFT_ARM = Mech.LEFT_ARM;
+	public static LEFT_TORSO = Mech.LEFT_TORSO;
+	public static CENTER_TORSO = Mech.CENTER_TORSO;
+	public static RIGHT_TORSO = Mech.RIGHT_TORSO;
+	public static RIGHT_ARM = Mech.RIGHT_ARM;
+	public static LEFT_LEG = Mech.LEFT_LEG;
+	public static RIGHT_LEG = Mech.RIGHT_LEG;
+	public static LEFT_REAR = Mech.LEFT_REAR;
+	public static CENTER_REAR = Mech.CENTER_REAR;
+	public static RIGHT_REAR = Mech.RIGHT_REAR;
 	
     static constraints = {
 		mech nullable: false
@@ -33,8 +47,58 @@ class BattleMech extends BattleUnit {
 			// armor, internals, and crits needs to be initialized the first time from the Mech associated with it
 			armor = mech.armor
 			internals = mech.internals
-			crits = mech.crits
+			
+			// convert Equipment to BattleEquipment to store in crits
+			def counter = 0
+			crits = new byte[78]
+			mech.crits.each { equipId ->
+				def thisEquip = Equipment.get(equipId)
+				
+				log.info("Equipment ID: "+equipId+", "+thisEquip?.toString())
+				
+				
+				
+				BattleEquipment bEquip = new BattleEquipment(ownerPilot: ownerPilot, equipment: Equipment.get(equipId))
+				bEquip.save flush:true
+				
+				log.info("BattleEquipment ID: "+bEquip?.id+", "+bEquip.toString())
+				
+				crits[counter++] = bEquip.id
+			}
 		}
+	}
+	
+	public static int getCritSectionStart(int critSectionIndex) {
+		return Mech.getCritSectionStart(critSectionIndex)
+	}
+	
+	public static int getCritSectionEnd(int critSectionIndex) {
+		return Mech.getCritSectionEnd(critSectionIndex)
+	}
+	
+	public BattleEquipment getEquipmentAt(int critIndex) {
+		def thisCritId = this.crits.getAt(critIndex)
+		return (thisCritId != null) ? BattleEquipment.read(thisCritId) : null
+	}
+	
+	/**
+	 * Gets the BattleEquipment array representing the crits array of just the given section
+	 * @param critSectionIndex
+	 * @return
+	 */
+	public BattleEquipment[] getCritSection(int critSectionIndex) {
+		int critSectionStart = BattleMech.getCritSectionStart(critSectionIndex)
+		int critSectionEnd = BattleMech.getCritSectionEnd(critSectionIndex)
+		
+		def critSection = []
+		
+		if(critSectionStart >= 0 && critSectionEnd < 78) {
+			for(int i=critSectionStart; i<=critSectionEnd; i++) {
+				critSection.add(this.getEquipmentAt(i))
+			}
+		}
+		
+		return critSection
 	}
 	
 	@Override

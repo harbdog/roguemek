@@ -194,7 +194,7 @@ class Mech extends Unit {
 	}
 	
 	/**
-	 * Gets the Equipment array representing the crits array of just the give section 
+	 * Gets the Equipment array representing the crits array of just the given section 
 	 * @param critSectionIndex
 	 * @return
 	 */

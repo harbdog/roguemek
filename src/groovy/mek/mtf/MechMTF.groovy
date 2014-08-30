@@ -155,67 +155,18 @@ class MechMTF {
 			//TODO: addWeaponFromMTF(map, line)
 		}
 		
-		if(mtf[MapMTF.MTF_LEFT_ARM] instanceof List) {
-			int subIndex = 0
-			mtf[MapMTF.MTF_LEFT_ARM].each { String line ->
-				// add crits
-				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_LEFT_ARM, subIndex ++)
-			}
-		}
 		
-		if(mtf[MapMTF.MTF_RIGHT_ARM] instanceof List) {
-			int subIndex = 0
-			mtf[MapMTF.MTF_RIGHT_ARM].each { String line ->
-				// add crits
-				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_RIGHT_ARM, subIndex ++)
-			}
-		}
-
-		if(mtf[MapMTF.MTF_LEFT_TORSO] instanceof List) {
-			int subIndex = 0
-			mtf[MapMTF.MTF_LEFT_TORSO].each { String line ->
-				// add crits
-				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_LEFT_TORSO, subIndex ++)
-			}
-		}
+		def mtfCritSections = [MapMTF.MTF_LEFT_ARM, MapMTF.MTF_RIGHT_ARM, 
+			MapMTF.MTF_LEFT_TORSO, MapMTF.MTF_RIGHT_TORSO, MapMTF.MTF_CENTER_TORSO, 
+			MapMTF.MTF_HEAD, MapMTF.MTF_LEFT_LEG, MapMTF.MTF_RIGHT_LEG]
 		
-		if(mtf[MapMTF.MTF_RIGHT_TORSO] instanceof List) {
-			int subIndex = 0
-			mtf[MapMTF.MTF_RIGHT_TORSO].each { String line ->
-				// add crits
-				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_RIGHT_TORSO, subIndex ++)
-			}
-		}
-		
-		if(mtf[MapMTF.MTF_CENTER_TORSO] instanceof List) {
-			int subIndex = 0
-			mtf[MapMTF.MTF_CENTER_TORSO].each { String line ->
-				// add crits
-				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_CENTER_TORSO, subIndex ++)
-			}
-		}
-		
-		if(mtf[MapMTF.MTF_HEAD] instanceof List) {
-			int subIndex = 0
-			mtf[MapMTF.MTF_HEAD].each { String line ->
-				// add crits
-				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_HEAD, subIndex ++)
-			}
-		}
-		
-		if(mtf[MapMTF.MTF_LEFT_LEG] instanceof List) {
-			int subIndex = 0
-			mtf[MapMTF.MTF_LEFT_LEG].each { String line ->
-				// add crits
-				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_LEFT_LEG, subIndex ++)
-			}
-		}
-		
-		if(mtf[MapMTF.MTF_RIGHT_LEG] instanceof List) {
-			int subIndex = 0
-			mtf[MapMTF.MTF_RIGHT_LEG].each { String line ->
-				// add crits
-				addCriticalsFromMTF(map.crits, line, MapMTF.MTF_RIGHT_LEG, subIndex ++)
+		mtfCritSections.each { mtfSection ->
+			if(mtf[mtfSection] instanceof List) {
+				int subIndex = 0
+				mtf[mtfSection].each { String line ->
+					// add crits
+					addCriticalsFromMTF(map.crits, line, mtfSection, subIndex ++)
+				}
 			}
 		}
 		
