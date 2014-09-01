@@ -14,6 +14,7 @@ class UserController {
         respond User.list(params), model:[userInstanceCount: User.count()]
     }
 
+	@Secured(['ROLE_ADMIN'])
     def show(User userInstance) {
 		if(userInstance == null) {
 			redirect controller: 'RogueMek', action: 'index'
@@ -54,26 +55,13 @@ class UserController {
 		}
 	}
 
-	def login(LoginCommand cmd) {
-		if(request.method == 'POST') {
-			if(!cmd.hasErrors()) {
-				session.user = cmd.getUser()
-				render template: '/user/loginLanding'
-			}
-			else {
-				render template: 'loginBox', model: [loginCmd:cmd]
-			}
-		}
-		else {
-			render template: 'loginBox'
-		}
-	}
-
+	@Secured(['ROLE_ADMIN'])
     def create() {
         respond new User(params)
     }
 
     @Transactional
+	@Secured(['ROLE_ADMIN'])
     def save(User userInstance) {
         if (userInstance == null) {
             notFound()
@@ -96,11 +84,13 @@ class UserController {
         }
     }
 
+	@Secured(['ROLE_ADMIN'])
     def edit(User userInstance) {
         respond userInstance
     }
 
     @Transactional
+	@Secured(['ROLE_ADMIN'])
     def update(User userInstance) {
         if (userInstance == null) {
             notFound()

@@ -12,7 +12,9 @@
 		<div class="nav" role="navigation">
 			<ul>
 				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+				<sec:ifAnyGranted roles="ROLE_ADMIN">
+					<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+				</sec:ifAnyGranted>
 			</ul>
 		</div>
 		<div id="list-user" class="content scaffold-list" role="main">
@@ -24,32 +26,35 @@
 			<thead>
 					<tr>
 					
-						<g:sortableColumn property="username" title="${message(code: 'user.username.label', default: 'Username')}" />
-					
 						<g:sortableColumn property="callsign" title="${message(code: 'user.callsign.label', default: 'Callsign')}" />
 					
-						<g:sortableColumn property="accountExpired" title="${message(code: 'user.accountExpired.label', default: 'Account Expired')}" />
+						<sec:ifAnyGranted roles="ROLE_ADMIN">
+							<g:sortableColumn property="username" title="${message(code: 'user.username.label', default: 'Username')}" />
+							
+							<g:sortableColumn property="accountExpired" title="${message(code: 'user.accountExpired.label', default: 'Account Expired')}" />
 					
-						<g:sortableColumn property="accountLocked" title="${message(code: 'user.accountLocked.label', default: 'Account Locked')}" />
-					
-						<g:sortableColumn property="enabled" title="${message(code: 'user.enabled.label', default: 'Enabled')}" />
-					
+							<g:sortableColumn property="accountLocked" title="${message(code: 'user.accountLocked.label', default: 'Account Locked')}" />
+						
+							<g:sortableColumn property="enabled" title="${message(code: 'user.enabled.label', default: 'Enabled')}" />
+						</sec:ifAnyGranted>
+						
 					</tr>
 				</thead>
 				<tbody>
 				<g:each in="${userInstanceList}" status="i" var="userInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "username")}</g:link></td>
+						<td><g:link mapping="userDetails" params='[callsign:"${userInstance?.callsign}"]'>${userInstance?.callsign}</g:link></td>
 					
-						<td>${fieldValue(bean: userInstance, field: "callsign")}</td>
-					
-						<td><g:formatBoolean boolean="${userInstance.accountExpired}" /></td>
-					
-						<td><g:formatBoolean boolean="${userInstance.accountLocked}" /></td>
-					
-						<td><g:formatBoolean boolean="${userInstance.enabled}" /></td>
-					
+						<sec:ifAnyGranted roles="ROLE_ADMIN">
+							<td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "username")}</g:link></td>
+							
+							<td><g:formatBoolean boolean="${userInstance.accountExpired}" /></td>
+						
+							<td><g:formatBoolean boolean="${userInstance.accountLocked}" /></td>
+						
+							<td><g:formatBoolean boolean="${userInstance.enabled}" /></td>
+						</sec:ifAnyGranted>
 					</tr>
 				</g:each>
 				</tbody>

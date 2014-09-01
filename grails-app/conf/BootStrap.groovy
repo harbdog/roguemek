@@ -19,6 +19,11 @@ class BootStrap {
 		def adminCallsign = 'CapperDeluxe'
 		def adminPassword = 'Pass99'
 		
+		def testEmail = 'roguemek@gmail.com'
+		def testCallsign = 'RogueMek'
+		def testPassword = 'Pass99'
+		
+		// Create Admin user with all Roles
 		def adminUser = User.findByUsername(adminEmail)
 		if(!adminUser) {
 			// initialize testing admin user
@@ -53,9 +58,29 @@ class BootStrap {
 		UserRole.create adminUser, adminRole, true
 		UserRole.create adminUser, userRole, true
 		
-		assert User.count() == 1
+		// Create test user with User role
+		def testUser = User.findByUsername(testEmail)
+		if(!testUser) {
+			// initialize testing admin user
+			testUser = new User(username: testEmail, callsign: testCallsign, password: testPassword, enabled: true)
+			if(!testUser.validate()) {
+				log.error("Errors with tester "+testUser.username+":\n")
+				testUser.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				testUser.save()
+			
+				log.info('Initialized test user '+testUser.username)
+			}
+		}
+		
+		UserRole.create testUser, userRole, true
+		
+		assert User.count() == 2
 		assert Role.count() == 3
-		assert UserRole.count() == 3
+		assert UserRole.count() == 4
 		assert Pilot.count() == 1
 		
 		

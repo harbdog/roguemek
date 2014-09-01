@@ -50,32 +50,26 @@
 				</li>
 				</g:if>
 			
-				<g:if test="${userInstance?.accountExpired}">
 				<li class="fieldcontain">
 					<span id="accountExpired-label" class="property-label"><g:message code="user.accountExpired.label" default="Account Expired" /></span>
 					
 						<span class="property-value" aria-labelledby="accountExpired-label"><g:formatBoolean boolean="${userInstance?.accountExpired}" /></span>
 					
 				</li>
-				</g:if>
 			
-				<g:if test="${userInstance?.accountLocked}">
 				<li class="fieldcontain">
 					<span id="accountLocked-label" class="property-label"><g:message code="user.accountLocked.label" default="Account Locked" /></span>
 					
 						<span class="property-value" aria-labelledby="accountLocked-label"><g:formatBoolean boolean="${userInstance?.accountLocked}" /></span>
 					
 				</li>
-				</g:if>
 			
-				<g:if test="${userInstance?.enabled}">
 				<li class="fieldcontain">
 					<span id="enabled-label" class="property-label"><g:message code="user.enabled.label" default="Enabled" /></span>
 					
 						<span class="property-value" aria-labelledby="enabled-label"><g:formatBoolean boolean="${userInstance?.enabled}" /></span>
 					
 				</li>
-				</g:if>
 			
 				<g:if test="${userInstance?.passwordExpired}">
 				<li class="fieldcontain">
