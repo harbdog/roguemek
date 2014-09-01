@@ -32,7 +32,7 @@
 				<li class="fieldcontain">
 					<span id="mech-label" class="property-label"><g:message code="battleMech.mech.label" default="Mech" /></span>
 					
-						<span class="property-value" aria-labelledby="mech-label"><g:link controller="mech" action="show" id="${mechInstance?.id}">${mechInstance?.name +" "+mechInstance?.chassis+"-"+mechInstance?.variant}</g:link></span>
+						<span class="property-value" aria-labelledby="mech-label"><g:link mapping="mechDetails" params='[chassis:"${mechInstance?.chassis}", variant:"${mechInstance?.variant}"]'>${mechInstance?.name +" "+ mechInstance?.chassis+"-"+mechInstance?.variant}</g:link></span>
 					
 				</li>
 				</g:if>
@@ -46,12 +46,14 @@
 				</li>
 				</g:if>
 				
+				<g:if test="${battleMechInstance?.status}">
 				<li class="fieldcontain">
-					<span id="destroyed-label" class="property-label"><g:message code="mech.destroyed.label" default="Destroyed" /></span>
+					<span id="status-label" class="property-label"><g:message code="mech.status.label" default="Status" /></span>
 					
-						<span class="property-value" aria-labelledby="destroyed-label"><g:fieldValue bean="${battleMechInstance}" field="destroyed"/></span>
+						<span class="property-value" aria-labelledby="status-label"><g:fieldValue bean="${battleMechInstance}" field="status"/></span>
 					
 				</li>
+				</g:if>
 				
 				<g:if test="${mechInstance?.tech}">
 				<li class="fieldcontain">

@@ -7,7 +7,11 @@ class BattleUnit {
 
 	Pilot ownerPilot
 	
-	Boolean destroyed = false
+	Character status = STATUS_ACTIVE
+	
+	// STATIC value mappings
+	static Character STATUS_ACTIVE = 'A'
+	static Character STATUS_DESTROYED = 'D'
 	
 	static mapping = {
 		// All extending classes will get their own tables
