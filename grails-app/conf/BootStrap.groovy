@@ -6,8 +6,6 @@ import roguemek.game.Pilot;
 import roguemek.model.*
 
 class BootStrap {
-	
-	def bcryptService
 
     def init = { ServletContext servletContext ->
 		

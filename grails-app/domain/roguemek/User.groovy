@@ -3,12 +3,15 @@ package roguemek
 import roguemek.game.Pilot;
 
 class User {
+	private static final Date NULL_DATE = new Date(0)
 
 	transient springSecurityService
 
 	String username
 	String callsign
 	String password
+	Date signupDate = NULL_DATE
+	Date lastLoginDate = NULL_DATE
 	boolean enabled = true
 	boolean accountExpired
 	boolean accountLocked
@@ -31,9 +34,13 @@ class User {
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this).collect { it.role }
 	}
-
+	
 	def beforeInsert() {
 		encodePassword()
+		
+		if (signupDate == NULL_DATE) {
+			signupDate = new Date()
+		}
 	}
 
 	def beforeUpdate() {
@@ -44,6 +51,14 @@ class User {
 
 	protected void encodePassword() {
 		password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+	}
+	
+	static void updateLastLogin(def id) {
+		if(id != null){
+			def user = User.get(id)
+			user.lastLoginDate = new Date()
+			user.save(flush: true, failOnError: true)
+		}
 	}
 	
 	@Override

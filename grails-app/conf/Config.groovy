@@ -153,6 +153,10 @@ log4j.main = {
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'roguemek.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'roguemek.UserRole'
 grails.plugin.springsecurity.authority.className = 'roguemek.Role'
+grails.plugin.springsecurity.useSecurityEventListener = true
+grails.plugin.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
+	roguemek.User.updateLastLogin(appCtx.springSecurityService.currentUser.id)
+}
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':							['permitAll'],
 	'/index':						['permitAll'],
@@ -177,4 +181,3 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/weapon/**':					['ROLE_ROOT'],
 	'/dbconsole/**':				['ROLE_ROOT'],
 ]
-
