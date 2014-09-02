@@ -165,6 +165,8 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/showUser/**':					['permitAll'],
 	'/user/**':						['permitAll'],
 	'/userList':					['permitAll'],
+	'/mech/display/**':				['permitAll'],
+	 '/mech/showMech/**':			['permitAll'],
 	'/**/js/**':					['permitAll'],
 	'/**/css/**':					['permitAll'],
 	'/**/images/**':				['permitAll'],
@@ -172,10 +174,12 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':              ['permitAll'],
 	'/login/**':          			['permitAll'],
 	'/logout/**':					['permitAll'],
+	
+	'/game/**':						['ROLE_USER'],
+	
 	'/pilot/**':					['ROLE_ADMIN'],
+	
 	'/userrole/**':					['ROLE_ROOT'],
-	'/mech/display/**':				['permitAll'],
-	'/mech/showMech/**':			['permitAll'],
 	'/mech/**':						['ROLE_ROOT'],
 	'/battlemech/**':				['ROLE_ROOT'],
 	'/weapon/**':					['ROLE_ROOT'],
