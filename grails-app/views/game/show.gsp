@@ -42,6 +42,17 @@
 					
 				</li>
 				</g:if>
+				
+				<g:if test="${gameInstance?.units}">
+					<li class="fieldcontain">
+						<span id="units-label" class="property-label"><g:message code="game.units.label" default="Units" /></span>
+						
+							<g:each in="${gameInstance.units}" var="u">
+							<span class="property-value" aria-labelledby="units-label"><g:link controller="battleMech" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
+							</g:each>
+						
+					</li>
+				</g:if>
 			
 				<g:if test="${gameInstance?.startDate}">
 				<li class="fieldcontain">

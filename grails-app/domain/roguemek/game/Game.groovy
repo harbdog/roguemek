@@ -3,7 +3,7 @@ package roguemek.game
 class Game {
 	private static final Date NULL_DATE = new Date(0)
 
-	static hasMany = [pilots:Pilot]
+	static hasMany = [pilots:Pilot, units:BattleUnit]
 	Character gameState
 	
 	Date startDate = NULL_DATE

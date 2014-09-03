@@ -4,6 +4,7 @@ package roguemek.game
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+import roguemek.model.*
 
 @Transactional(readOnly = true)
 class GameController {
@@ -18,6 +19,31 @@ class GameController {
     def show(Game gameInstance) {
         respond gameInstance
     }
+	
+	def test(Game gameInstance) {
+		respond gameInstance
+	}
+	
+	def testWeapon() {
+		Weapon weapon
+		BattleMech unit
+		
+		if(params.weapon.id != "null"){
+			weapon = Weapon.get(params.weapon.id)
+		}
+		if(params.testUnit != "null"){
+			unit = BattleMech.get(params.testUnit)
+		}
+		
+		if(weapon != null && unit != null){
+			unit.testDamage(weapon.damage)
+			
+			render ""+new Date()+"<br/>"+params+"<br/>"+"Fired "+weapon?.name+" at "+unit
+		}
+		else{
+			render ""+new Date()+"<br/>"+params+"<br/>"+"No Weapon ("+weapon?.name+") or Unit ("+unit+") selected."
+		}
+	}
 
     def create() {
         respond new Game(params)

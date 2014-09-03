@@ -52,6 +52,11 @@ function init(){
 		var mechLinkId = this.id.substring(8);
         return showMech(mechLinkId);
     });
+	
+	// Testing weapons fire on the BattleMech model using a Weapon
+	$("#testWeaponForm").ajaxForm(function(result) {
+		$('#testWeaponResults').html(result);
+	});
 }
 
 function showMech(mechId) {

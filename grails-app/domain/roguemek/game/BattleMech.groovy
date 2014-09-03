@@ -68,6 +68,16 @@ class BattleMech extends BattleUnit {
 		}
 	}
 	
+	public void testDamage(int damage){
+		log.info "before damage: "+armor[CENTER_TORSO]
+		
+		armor[CENTER_TORSO] = armor[CENTER_TORSO] - damage
+		
+		log.info "after damage: "+armor[CENTER_TORSO]
+		
+		save flush:true
+	}
+	
 	public static int getCritSectionStart(int critSectionIndex) {
 		return Mech.getCritSectionStart(critSectionIndex)
 	}

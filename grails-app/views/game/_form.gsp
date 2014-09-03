@@ -22,3 +22,12 @@
 	<g:select name="pilots" from="${roguemek.game.Pilot.list()}" multiple="multiple" optionKey="id" size="5" value="${gameInstance?.pilots*.id}" class="many-to-many"/>
 
 </div>
+
+<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'units', 'error')} ">
+	<label for="units">
+		<g:message code="game.units.label" default="Units" />
+		
+	</label>
+	<g:select name="units" from="${roguemek.game.BattleUnit.list()}" multiple="multiple" optionKey="id" size="5" value="${gameInstance?.units*.id}" class="many-to-many"/>
+
+</div>
