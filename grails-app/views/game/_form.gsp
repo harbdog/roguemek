@@ -19,7 +19,7 @@
 		<g:message code="game.ownerPilot.label" default="Owner Pilot" />
 		
 	</label>
-	<g:select name="ownerPilot" from="${roguemek.game.Pilot.list()}" optionKey="id" size="5" value="${gameInstance?.pilots*.id}"/>
+	<g:select name="ownerPilot" from="${roguemek.game.Pilot.list()}" optionKey="id" value="${gameInstance?.ownerPilot?.id}"/>
 
 </div>
 
@@ -46,6 +46,6 @@
 		<g:message code="game.board.label" default="Board" />
 		
 	</label>
-	<g:select name="board" from="${roguemek.game.HexMap.list()}" optionKey="id" size="5" value="${gameInstance?.board*.id}"/>
+	<g:select name="board" from="${roguemek.game.HexMap.list()}" optionKey="id" value="${gameInstance?.board?.id}"/>
 
 </div>

@@ -2,6 +2,7 @@ import javax.servlet.ServletContext
 
 import roguemek.*
 import roguemek.game.BattleMech
+import roguemek.game.Game
 import roguemek.game.HexMap
 import roguemek.game.Pilot;
 import roguemek.model.*
@@ -113,13 +114,23 @@ class BootStrap {
 		}
 		assert BattleMech.count() == 1
 		
-		
 		// Initialize a sample HexMap board
 		File boardFile = new File("src/boards/battletech.board")
-		HexMap map = HexMap.loadBoardFile(boardFile)
-		
+		HexMap boardMap = HexMap.loadBoardFile(boardFile)
 		
 		// Initialize a sample Game
+		Game sampleGame = new Game(ownerPilot: Pilot.get(1), pilots: [Pilot.get(1)], units: [battleMech], board: boardMap)
+		if(!sampleGame.validate()) {
+			log.error("Errors with game:\n")
+			sampleGame.errors.allErrors.each {
+				log.error(it)
+			}
+		}
+		else {
+			sampleGame.save()
+		
+			log.info('Initialized game '+sampleGame.id)
+		}
 		
     }
     def destroy = {

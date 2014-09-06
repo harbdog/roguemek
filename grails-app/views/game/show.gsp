@@ -31,6 +31,15 @@
 					
 				</li>
 				</g:if>
+				
+				<g:if test="${gameInstance?.ownerPilot}">
+				<li class="fieldcontain">
+					<span id="ownerPilot-label" class="property-label"><g:message code="game.ownerPilot.label" default="Owner Pilot" /></span>
+					
+						<span class="property-value" aria-labelledby="ownerPilot-label"><g:link controller="pilot" action="show" id="${gameInstance?.ownerPilot.id}">${gameInstance?.ownerPilot?.encodeAsHTML()}</g:link></span>
+					
+				</li>
+				</g:if>
 			
 				<g:if test="${gameInstance?.pilots}">
 				<li class="fieldcontain">
@@ -68,6 +77,15 @@
 					<span id="updateDate-label" class="property-label"><g:message code="game.updateDate.label" default="Update Date" /></span>
 					
 						<span class="property-value" aria-labelledby="updateDate-label"><g:formatDate date="${gameInstance?.updateDate}" /></span>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${gameInstance?.board}">
+				<li class="fieldcontain">
+					<span id="board-label" class="property-label"><g:message code="game.board.label" default="Board" /></span>
+					
+						<span class="property-value" aria-labelledby="board-label"><g:fieldValue bean="${gameInstance}" field="board"/></span>
 					
 				</li>
 				</g:if>

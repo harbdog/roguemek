@@ -1,7 +1,5 @@
 package roguemek.game
 
-import java.util.LinkedHashMap;
-
 import org.grails.plugins.csv.CSVMapReader
 import roguemek.model.Terrain
 

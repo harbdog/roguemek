@@ -25,6 +25,8 @@
 					<tr>
 					
 						<g:sortableColumn property="id" title="${message(code: 'game.id.label', default: 'ID')}" />
+						
+						<g:sortableColumn property="ownerPilot" title="${message(code: 'game.ownerPilot.label', default: 'Owner Pilot')}" />
 					
 						<g:sortableColumn property="gameState" title="${message(code: 'game.gameState.label', default: 'Game State')}" />
 					
@@ -39,6 +41,8 @@
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
 						<td><g:link action="show" id="${gameInstance.id}">${fieldValue(bean: gameInstance, field: "id")}</g:link></td>
+						
+						<td><g:link controller="pilot" action="show" id="${gameInstance.ownerPilot.id}">${fieldValue(bean: gameInstance, field: "ownerPilot")}</g:link></td>
 						
 						<td>${fieldValue(bean: gameInstance, field: "gameState")}</td>
 					
