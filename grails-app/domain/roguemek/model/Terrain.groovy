@@ -129,13 +129,13 @@ class Terrain {
 			exits = levelFor(terrain.substring(lastColon + 1))
 		}
 		
-		int terrainFactor = Terrain.getTerrainFactor(type, level)
-		
 		// Try to find existing Terrain in database with same type/level/exits before creating a new instance
 		Terrain t = Terrain.findByTypeAndLevelAndExits(type, level, exits)
 		if(t != null){
 			return t
 		}
+		
+		int terrainFactor = Terrain.getTerrainFactor(type, level)
 		
 		t = new Terrain(type: type, level: level, exits: exits, terrainFactor: terrainFactor)
 		if(!t.validate()) {

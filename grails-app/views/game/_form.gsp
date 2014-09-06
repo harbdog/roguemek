@@ -14,6 +14,15 @@
 
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'ownerPilot', 'error')} ">
+	<label for="ownerPilot">
+		<g:message code="game.ownerPilot.label" default="Owner Pilot" />
+		
+	</label>
+	<g:select name="ownerPilot" from="${roguemek.game.Pilot.list()}" optionKey="id" size="5" value="${gameInstance?.pilots*.id}"/>
+
+</div>
+
 <div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'pilots', 'error')} ">
 	<label for="pilots">
 		<g:message code="game.pilots.label" default="Pilots" />
@@ -29,5 +38,14 @@
 		
 	</label>
 	<g:select name="units" from="${roguemek.game.BattleUnit.list()}" multiple="multiple" optionKey="id" size="5" value="${gameInstance?.units*.id}" class="many-to-many"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'board', 'error')} ">
+	<label for="board">
+		<g:message code="game.board.label" default="Board" />
+		
+	</label>
+	<g:select name="board" from="${roguemek.game.HexMap.list()}" optionKey="id" size="5" value="${gameInstance?.board*.id}"/>
 
 </div>
