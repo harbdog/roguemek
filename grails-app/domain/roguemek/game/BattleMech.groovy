@@ -17,17 +17,17 @@ class BattleMech extends BattleUnit {
 	byte[] crits
 	
 	// static location indices
-	public static HEAD = Mech.HEAD;
-	public static LEFT_ARM = Mech.LEFT_ARM;
-	public static LEFT_TORSO = Mech.LEFT_TORSO;
-	public static CENTER_TORSO = Mech.CENTER_TORSO;
-	public static RIGHT_TORSO = Mech.RIGHT_TORSO;
-	public static RIGHT_ARM = Mech.RIGHT_ARM;
-	public static LEFT_LEG = Mech.LEFT_LEG;
-	public static RIGHT_LEG = Mech.RIGHT_LEG;
-	public static LEFT_REAR = Mech.LEFT_REAR;
-	public static CENTER_REAR = Mech.CENTER_REAR;
-	public static RIGHT_REAR = Mech.RIGHT_REAR;
+	public static final HEAD = Mech.HEAD;
+	public static final LEFT_ARM = Mech.LEFT_ARM;
+	public static final LEFT_TORSO = Mech.LEFT_TORSO;
+	public static final CENTER_TORSO = Mech.CENTER_TORSO;
+	public static final RIGHT_TORSO = Mech.RIGHT_TORSO;
+	public static final RIGHT_ARM = Mech.RIGHT_ARM;
+	public static final LEFT_LEG = Mech.LEFT_LEG;
+	public static final RIGHT_LEG = Mech.RIGHT_LEG;
+	public static final LEFT_REAR = Mech.LEFT_REAR;
+	public static final CENTER_REAR = Mech.CENTER_REAR;
+	public static final RIGHT_REAR = Mech.RIGHT_REAR;
 	
     static constraints = {
 		mech nullable: false

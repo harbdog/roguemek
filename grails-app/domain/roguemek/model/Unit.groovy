@@ -23,8 +23,8 @@ class Unit {
 	Integer battleValue
 	
 	// STATIC value mappings
-	public static Character TECH_IS = 'I'
-	public static Character TECH_CLAN = 'C'
+	public static final Character TECH_IS = 'I'
+	public static final Character TECH_CLAN = 'C'
 	
 	static mapping = {
 		// All extending classes will get their own tables

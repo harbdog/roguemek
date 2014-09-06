@@ -22,8 +22,8 @@ class Equipment {
 	Integer battleValue
 	
 	// STATIC value mappings
-	static Character TECH_IS = 'I'
-	static Character TECH_CLAN = 'C'
+	public static final Character TECH_IS = 'I'
+	public static final Character TECH_CLAN = 'C'
 	
 	static mapping = {
 		// All extending classes will get their own tables

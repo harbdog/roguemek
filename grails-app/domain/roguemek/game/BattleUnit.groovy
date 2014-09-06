@@ -10,8 +10,8 @@ class BattleUnit {
 	Character status = STATUS_ACTIVE
 	
 	// STATIC value mappings
-	static Character STATUS_ACTIVE = 'A'
-	static Character STATUS_DESTROYED = 'D'
+	public static final Character STATUS_ACTIVE = 'A'
+	public static final Character STATUS_DESTROYED = 'D'
 	
 	static mapping = {
 		// All extending classes will get their own tables
