@@ -1,6 +1,6 @@
 package roguemek.model
 
-import mek.mtf.*
+import roguemek.mtf.*
 
 /**
  * Represents the stock or core Mech configuration

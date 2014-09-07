@@ -20,6 +20,8 @@ class BattleUnit {
 	
     static constraints = {
 		ownerPilot nullable: true
+		
+		status inList: [STATUS_ACTIVE, STATUS_DESTROYED]
     }
 	
 	@Override

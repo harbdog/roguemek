@@ -26,9 +26,9 @@ class HexMap {
 			FileInputStream fs = new FileInputStream(boardFile)
 			StreamTokenizer st = new StreamTokenizer(fs)
 			st.eolIsSignificant(true);
-			st.commentChar(Character.getNumericValue((char) '#'));
-			st.quoteChar(Character.getNumericValue((char) '"'));
-			st.wordChars(Character.getNumericValue((char) '_'), Character.getNumericValue((char) '_'));
+			st.commentChar((int)'#');
+			st.quoteChar((int)'"');
+			st.wordChars((int)'_', (int)'_');
 			
 			int x_pos = 1;
 			int y_pos = 1;
@@ -86,7 +86,7 @@ class HexMap {
 					String theme = args[3]
 					
 					int newIndex = indexFor(args[0], numCols, y_pos);
-					Hex hex = Hex.createHex(hexCoords, elevation, terrains)
+					Hex hex = Hex.createHex(hexCoords, elevation, terrains, theme)
 					hexMap[newIndex] = hex?.id
 					//nd[newIndex] = new Hex(elevation, args[2], args[3], new Coords(x_pos-1,y_pos-1));
 					

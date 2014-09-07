@@ -7,12 +7,14 @@ class Hex {
 	
 	String hexCoords
 	Integer elevation
+	String theme
 	
 	static hasMany = [terrains:Terrain]
 	
     static constraints = {
 		hexCoords nullable: false
 		elevation nullable: false
+		theme nullable: true
     }
 	
 	/**
@@ -22,8 +24,8 @@ class Hex {
 	 * @param terrain
 	 * @return
 	 */
-	public static Hex createHex(String coords, int elevation, String terrain) {
-		Hex hex = new Hex(hexCoords: coords, elevation: elevation)
+	public static Hex createHex(String coords, int elevation, String terrain, String theme) {
+		Hex hex = new Hex(hexCoords: coords, elevation: elevation, theme: theme)
 		hex.terrains = new HashSet()
 		for (StringTokenizer st = new StringTokenizer(terrain, ";", false); st.hasMoreTokens();) {
 			hex.terrains.add(Terrain.createTerrain(st.nextToken()))

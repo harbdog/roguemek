@@ -1,6 +1,7 @@
 import javax.servlet.ServletContext
 
 import roguemek.*
+import roguemek.assets.HexTileset;
 import roguemek.game.BattleMech
 import roguemek.game.Game
 import roguemek.game.HexMap
@@ -10,6 +11,10 @@ import roguemek.model.*
 class BootStrap {
 
     def init = { ServletContext servletContext ->
+		
+		// Initialize the Hex Tileset
+		HexTileset.init()
+		
 		
 		def rootRole = new Role(authority: 'ROLE_ROOT').save(flush: true)
 		def adminRole = new Role(authority: 'ROLE_ADMIN').save(flush: true)
@@ -99,6 +104,10 @@ class BootStrap {
 		Mech.init()
 		
 		
+		// Initialize a sample HexMap board
+		File boardFile = new File("src/boards/battletech.board")
+		HexMap boardMap = HexMap.loadBoardFile(boardFile)
+		
 		// Initialize a sample BattleMech
 		def battleMech = new BattleMech(ownerPilot: Pilot.get(1), mech: Mech.get(1))
 		if(!battleMech.validate()) {
@@ -113,10 +122,6 @@ class BootStrap {
 			log.info('Initialized battle mech '+battleMech.mech.name)
 		}
 		assert BattleMech.count() == 1
-		
-		// Initialize a sample HexMap board
-		File boardFile = new File("src/boards/battletech.board")
-		HexMap boardMap = HexMap.loadBoardFile(boardFile)
 		
 		// Initialize a sample Game
 		Game sampleGame = new Game(ownerPilot: Pilot.get(1), pilots: [Pilot.get(1)], units: [battleMech], board: boardMap)
