@@ -2,6 +2,7 @@ package roguemek.game
 
 import org.grails.plugins.csv.CSVMapReader
 import roguemek.model.Terrain
+import roguemek.assets.HexTileset
 
 class Hex {
 	
@@ -28,10 +29,15 @@ class Hex {
 	 */
 	public static Hex createHex(int x, int y, int elevation, String terrain, String theme) {
 		Hex hex = new Hex(x: x, y: y, elevation: elevation, theme: theme)
+		
+		// Load terrains for the Hex
 		hex.terrains = new HashSet()
 		terrain?.tokenize(';').each { tk ->
 			hex.terrains.add(Terrain.createTerrain(tk))
 		}
+		
+		// Load images for the Hex
+		println("*** "+HexTileset.getImageArray(hex))
 		
 		if(!hex.validate()) {
 			hex.errors.allErrors.each {

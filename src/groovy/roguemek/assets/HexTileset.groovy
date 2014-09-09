@@ -3,6 +3,7 @@ package roguemek.assets
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 
+import roguemek.game.Hex
 import roguemek.model.Terrain
 
 class HexTileset {
@@ -76,15 +77,285 @@ class HexTileset {
 			}
 		}
 	}
+	
+	/**
+	 * Returns the ordered image names used for a given hex based on its terrains
+	 * @param hex
+	 * @return
+	 */
+	public static String[] getImageArray(Hex hex) {
+		IHex hexCopy = new IHex(hex)
+		
+		ArrayList images = new ArrayList<String>()
+		
+		String base = baseFor(hexCopy)
+		images.add(base)
+		
+		List<String> supers = supersFor(hexCopy)
+		images.addAll(supers)
+		
+		List<String> ortho = orthoFor(hexCopy)
+		images.addAll(ortho)
+		
+		return images.toArray()
+	}
+	
+	/**
+	 * Returns a list of orthographic images to be tiled above the hex. As noted
+	 * above, all matches must be 1.0, and if such a match is achieved, all
+	 * terrain elements from the tileset hex are removed from the hex. Thus you
+	 * want to pass a copy of the original to this function.
+	 * Sourced from MegaMek HexTileset.java
+	 */
+	private static List<String> orthoFor(IHex hex) {
+		ArrayList<String> matches = new ArrayList<String>();
+
+		// find orthographic image matches
+		for (Iterator<HexEntry> i = ortho.iterator(); i.hasNext();) {
+			HexEntry entry = i.next();
+			if (orthoMatch(hex, entry.getHex()) >= 1.0) {
+				matches.add(entry.getImage());
+				// remove involved terrain from consideration
+				int[] terrTypes = entry.getHex().getTerrainTypes();
+				for (int j = 0; j < terrTypes.length; j++) {
+					if (entry.getHex().containsTerrain(terrTypes[j])) {
+						hex.removeTerrain(terrTypes[j]);
+					}
+				}
+			}
+		}
+		return matches;
+	}
+
+	/**
+	 * Returns a list of images to be superimposed on the hex. As noted above,
+	 * all matches must be 1.0, and if such a match is achieved, all terrain
+	 * elements from the tileset hex are removed from the hex. Thus you want to
+	 * pass a copy of the original to this function.
+	 * Sourced from MegaMek HexTileset.java
+	 */
+	private static List<String> supersFor(IHex hex) {
+		ArrayList<String> matches = new ArrayList<String>();
+
+		// find superimposed image matches
+		for (Iterator<HexEntry> i = supers.iterator(); i.hasNext();) {
+			HexEntry entry = i.next();
+			if (superMatch(hex, entry.getHex()) >= 1.0) {
+				matches.add(entry.getImage());
+				// remove involved terrain from consideration
+				int[] terrTypes = entry.getHex().getTerrainTypes();
+				for (int j = 0; j < terrTypes.length; j++) {
+					if (entry.getHex().containsTerrain(terrTypes[j])) {
+						hex.removeTerrain(terrTypes[j]);
+					}
+				}
+			}
+		}
+		return matches;
+	}
+
+	/**
+	 * Returns the best matching base image for this hex. This works best if any
+	 * terrain with a "super" image is removed.
+	 * Sourced from MegaMek HexTileset.java
+	 */
+	private static String baseFor(IHex hex) {
+		HexEntry bestMatch = null;
+		double match = -1;
+
+		// match a base image to the hex
+		Iterator<HexEntry> iter = bases.iterator();
+
+		while (iter.hasNext()) {
+			HexEntry entry = iter.next();
+
+			// Metal deposits don't count for visual
+			if (entry.getHex().containsTerrain(Terrain.METAL_CONTENT)) {
+				hex.removeTerrain(Terrain.METAL_CONTENT);
+			}
+
+			double thisMatch = baseMatch(hex, entry.getHex());
+			// stop if perfect match
+			if (thisMatch == 1.0) {
+				bestMatch = entry;
+				break;
+			}
+			// compare match with best
+			if (thisMatch > match) {
+				bestMatch = entry;
+				match = thisMatch;
+			}
+		}
+
+		return bestMatch.getImage();
+	}
+	
+	/**
+	 * Match the two hexes using the "ortho" super* formula. All matches must be
+	 * exact, however the match only depends on the original hex matching all
+	 * the elements of the comparison, not vice versa.
+	 * <p/>Sourced from MegaMek HexTileset.java
+	 * EXCEPTION: a themed original matches any unthemed comparison.
+	 */
+	private static double orthoMatch(IHex org, IHex com) {
+		// check elevation
+		if ((com.getElevation() != Terrain.WILDCARD)
+				&& (org.getElevation() != com.getElevation())) {
+			return 0;
+		}
+		
+		// A themed original matches any unthemed comparison.
+		if ((com.getTheme() != null)
+				&& !com.getTheme().equalsIgnoreCase(org.getTheme())) {
+			return 0.0;
+		}
+		
+		// org terrains must match com terrains
+		if (org.terrainsPresent() < com.terrainsPresent())
+			return 0.0;
+		
+		// check terrain
+		int[] cTerrainTypes = com.getTerrainTypes();
+		for (int i = 0; i < cTerrainTypes.length; i++) {
+			int cTerrType = cTerrainTypes[i];
+			Terrain cTerr = com.getTerrain(cTerrType);
+			Terrain oTerr = org.getTerrain(cTerrType);
+			if (cTerr == null) {
+				continue;
+			} else if ((oTerr == null)
+					|| ((cTerr.getLevel() != Terrain.WILDCARD) && (oTerr
+							.getLevel() != cTerr.getLevel()))
+					|| (cTerr.hasExitsSpecified() && (oTerr.getExits() != cTerr
+							.getExits()))) {
+				return 0;
+			}
+		}
+
+		return 1.0;
+	}
+
+	/**
+	 * Match the two hexes using the "super" formula. All matches must be exact,
+	 * however the match only depends on the original hex matching all the
+	 * elements of the comparision, not vice versa.
+	 * <p/>Sourced from MegaMek HexTileset.java
+	 * EXCEPTION: a themed original matches any unthemed comparason.
+	 */
+	private static double superMatch(IHex org, IHex com) {
+		// check elevation
+		if ((com.getElevation() != Terrain.WILDCARD)
+				&& (org.getElevation() != com.getElevation())) {
+			return 0;
+		}
+		
+		// A themed original matches any unthemed comparison.
+		if ((com.getTheme() != null)
+				&& !com.getTheme().equalsIgnoreCase(org.getTheme())) {
+			return 0.0;
+		}
+		
+		// org terrains must match com terrains
+		if (org.terrainsPresent() < com.terrainsPresent())
+			return 0.0;
+	   
+		// check terrain
+		int[] cTerrainTypes = com.getTerrainTypes();
+		for (int i = 0; i < cTerrainTypes.length; i++) {
+			int cTerrType = cTerrainTypes[i];
+			Terrain cTerr = com.getTerrain(cTerrType);
+			Terrain oTerr = org.getTerrain(cTerrType);
+			if (cTerr == null) {
+				continue;
+			} else if ((oTerr == null)
+					|| ((cTerr.getLevel() != Terrain.WILDCARD) && (oTerr
+							.getLevel() != cTerr.getLevel()))
+					|| (cTerr.hasExitsSpecified() && (oTerr.getExits() != cTerr
+							.getExits()))) {
+				return 0;
+			}
+		}
+
+
+		return 1.0;
+	}
+	
+	/**
+	 * Match the two hexes using the "base" formula.
+	 * <p/>Sourced from MegaMek HexTileset.java
+	 * Returns a value indicating how close of a match the original hex is to
+	 * the comparison hex. 0 means no match, 1 means perfect match.
+	 */
+	private static double baseMatch(IHex org, IHex com) {
+		double elevation;
+		double terrain;
+		double theme;
+
+		// check elevation
+		if (com.getElevation() == Terrain.WILDCARD) {
+			elevation = 1.0;
+		} else {
+			elevation = 1.01 / (Math.abs(org.getElevation()
+					- com.getElevation()) + 1.01);
+		}
+
+		// Determine maximum number of terrain matches.
+		// Bug 732188: Have a non-zero minimum terrain match.
+		double maxTerrains = Math.max(org.terrainsPresent(),
+				com.terrainsPresent());
+		double matches = 0.0;
+		
+		int[] orgTerrains = org.getTerrainTypes();
+		
+		for (int i = 0; i < orgTerrains.length; i++){
+			int terrType = orgTerrains[i];
+			Terrain cTerr = com.getTerrain(terrType);
+			Terrain oTerr = org.getTerrain(terrType);
+			if ((cTerr == null) || (oTerr == null)) {
+				continue;
+			}
+			double thisMatch = 0;
+
+			if (cTerr.getLevel() == Terrain.WILDCARD) {
+				thisMatch = 1.0;
+			} else {
+				thisMatch = 1.0 / (Math
+						.abs(oTerr.getLevel() - cTerr.getLevel()) + 1.0);
+			}
+			// without exit match, terrain counts... um, half?
+			if (cTerr.hasExitsSpecified()
+					&& (oTerr.getExits() != cTerr.getExits())) {
+				thisMatch *= 0.5;
+			}
+			// add up match value
+			matches += thisMatch;
+		}
+		if (maxTerrains == 0) {
+			terrain = 1.0;
+		} else {
+			terrain = matches / maxTerrains;
+		}
+
+		// check theme
+		if ((com.getTheme() == org.getTheme())
+				|| ((com.getTheme() != null) && com.getTheme()
+						.equalsIgnoreCase(org.getTheme()))) {
+			theme = 1.0;
+		} else {
+			// also don't throw a match entirely out because the theme is off
+			theme = 0.0001;
+		}
+
+		return elevation * terrain * theme;
+	}
 }
 
 /**
  * Unlike the MegaMek sourced IHex, this will only be used to determine image names
- * for Hex to serve as the temporary copy of Hex
+ * for Hex and to serve as the temporary copy of Hex
  */
 class IHex {
 	private int elevation
-	private HashSet terrains
+	private HashSet<Terrain> terrains
 	private String theme
 	
 	public IHex(int elevation, String terrain, String theme) {
@@ -96,6 +367,51 @@ class IHex {
 			terrains.add(Terrain.createTerrain(tk))
 		}
 	}
+	
+	public IHex(Hex hex) {
+		if(hex != null) {
+			this.elevation = hex.elevation
+			this.terrains = hex.terrains
+			this.theme = hex.theme
+		}
+	}
+	
+	public boolean containsTerrain(int type) {
+		return this.getTerrain(type) != null
+	}
+	
+	public Terrain getTerrain(int type) {
+		this.terrains?.each { t ->
+			if(t.type == type) {
+				return t
+			}
+		}
+		
+		return null
+	}
+	
+	public int[] getTerrainTypes() {
+		int[] types = terrains.size()
+		
+		int i = 0
+		this.terrains?.each { t ->
+			types[i++] = t.type
+		}
+		
+		return types
+	}
+	
+	public int terrainsPresent() {
+		return terrains.size();
+	}
+	
+	public int getElevation() {
+		return this.elevation
+	}
+	
+	public String getTheme() {
+		return this.theme
+	}
 }
 
 /**
@@ -103,7 +419,6 @@ class IHex {
  */
 class HexEntry {
 	private IHex hex
-	private String image
 	private Vector<String> filenames
 	
 	public HexEntry(IHex hex, String imageFiles) {
@@ -114,8 +429,12 @@ class HexEntry {
 			filenames.add(tk)
 		}
 	}
-
+	
 	public IHex getHex() {
-		return hex
+		return this.hex
+	}
+	
+	public String getImage() {
+		return this.filenames?.firstElement()
 	}
 }
