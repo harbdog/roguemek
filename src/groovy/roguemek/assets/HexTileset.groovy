@@ -140,7 +140,9 @@ class HexTileset {
 		// find superimposed image matches
 		for (Iterator<HexEntry> i = supers.iterator(); i.hasNext();) {
 			HexEntry entry = i.next()
+			
 			if (superMatch(hex, entry.getHex()) >= 1.0) {
+				
 				matches.add(entry.getImage())
 				// remove involved terrain from consideration
 				int[] terrTypes = entry.getHex().getTerrainTypes()
@@ -253,8 +255,9 @@ class HexTileset {
 		}
 		
 		// org terrains must match com terrains
-		if (org.terrainsPresent() < com.terrainsPresent())
+		if (org.terrainsPresent() < com.terrainsPresent()) {
 			return 0.0
+		}
 	   
 		// check terrain
 		int[] cTerrainTypes = com.getTerrainTypes();
@@ -364,7 +367,7 @@ class IHex {
 		if(hex != null) {
 			this.elevation = hex.elevation
 			this.terrains = hex.terrains
-			this.theme = hex.theme
+			this.theme = hex.theme ?: ""
 		}
 	}
 	
