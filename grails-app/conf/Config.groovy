@@ -136,7 +136,7 @@ log4j.main = {
     fatal 'org.hibernate.tool.hbm2ddl.SchemaExport'
 		   
     // Set level for all application artifacts
-    info "grails.app", "mek"
+    info "grails.app", "roguemek"
 	
 	// Set for a specific controller in the default package
 	//debug "grails.app.controllers.YourController"

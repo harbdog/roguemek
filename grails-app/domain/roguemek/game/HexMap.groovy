@@ -86,7 +86,7 @@ class HexMap {
 					String theme = args[3]
 					
 					int newIndex = indexFor(args[0], numCols, y_pos);
-					Hex hex = Hex.createHex(hexCoords, elevation, terrains, theme)
+					Hex hex = Hex.createHex(x_pos-1, y_pos-1, elevation, terrains, theme)
 					hexMap[newIndex] = hex?.id
 					//nd[newIndex] = new Hex(elevation, args[2], args[3], new Coords(x_pos-1,y_pos-1));
 					
