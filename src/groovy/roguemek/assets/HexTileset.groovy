@@ -91,11 +91,14 @@ class HexTileset {
 		String base = baseFor(hexCopy)
 		images.add(base)
 		
-		List<String> supers = supersFor(hexCopy)
-		images.addAll(supers)
-		
-		List<String> ortho = orthoFor(hexCopy)
-		images.addAll(ortho)
+		if(hexCopy.terrainsPresent() > 0) {
+			// only look for supers/ortho if there is at least one terrain to find
+			List<String> supers = supersFor(hexCopy)
+			images.addAll(supers)
+			
+			List<String> ortho = orthoFor(hexCopy)
+			images.addAll(ortho)
+		}
 		
 		return images.toArray()
 	}
