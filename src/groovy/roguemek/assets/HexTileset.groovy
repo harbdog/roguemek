@@ -40,8 +40,8 @@ class HexTileset {
 			String theme = null
 			String imageName = null
 			
-			if ((st.ttype == StreamTokenizer.TT_WORD)
-					&& (st.sval.equals("base") || st.sval.equals("super") || st.sval.equals("ortho"))) {
+			if ((st.ttype == StreamTokenizer.TT_WORD) && 
+					(st.sval.equals("base") || st.sval.equals("super") || st.sval.equals("ortho"))) {
 					
 				String tileset = st.sval
 				
@@ -108,18 +108,18 @@ class HexTileset {
 	 * Sourced from MegaMek HexTileset.java
 	 */
 	private static List<String> orthoFor(IHex hex) {
-		ArrayList<String> matches = new ArrayList<String>();
+		ArrayList<String> matches = new ArrayList<String>()
 
 		// find orthographic image matches
 		for (Iterator<HexEntry> i = ortho.iterator(); i.hasNext();) {
-			HexEntry entry = i.next();
+			HexEntry entry = i.next()
 			if (orthoMatch(hex, entry.getHex()) >= 1.0) {
-				matches.add(entry.getImage());
+				matches.add(entry.getImage())
 				// remove involved terrain from consideration
-				int[] terrTypes = entry.getHex().getTerrainTypes();
+				int[] terrTypes = entry.getHex().getTerrainTypes()
 				for (int j = 0; j < terrTypes.length; j++) {
 					if (entry.getHex().containsTerrain(terrTypes[j])) {
-						hex.removeTerrain(terrTypes[j]);
+						hex.removeTerrain(terrTypes[j])
 					}
 				}
 			}
@@ -139,14 +139,14 @@ class HexTileset {
 
 		// find superimposed image matches
 		for (Iterator<HexEntry> i = supers.iterator(); i.hasNext();) {
-			HexEntry entry = i.next();
+			HexEntry entry = i.next()
 			if (superMatch(hex, entry.getHex()) >= 1.0) {
-				matches.add(entry.getImage());
+				matches.add(entry.getImage())
 				// remove involved terrain from consideration
-				int[] terrTypes = entry.getHex().getTerrainTypes();
+				int[] terrTypes = entry.getHex().getTerrainTypes()
 				for (int j = 0; j < terrTypes.length; j++) {
 					if (entry.getHex().containsTerrain(terrTypes[j])) {
-						hex.removeTerrain(terrTypes[j]);
+						hex.removeTerrain(terrTypes[j])
 					}
 				}
 			}
@@ -160,34 +160,35 @@ class HexTileset {
 	 * Sourced from MegaMek HexTileset.java
 	 */
 	private static String baseFor(IHex hex) {
-		HexEntry bestMatch = null;
-		double match = -1;
+		HexEntry bestMatch = null
+		double match = -1
 
 		// match a base image to the hex
-		Iterator<HexEntry> iter = bases.iterator();
+		Iterator<HexEntry> iter = bases.iterator()
 
 		while (iter.hasNext()) {
-			HexEntry entry = iter.next();
+			HexEntry entry = iter.next()
 
 			// Metal deposits don't count for visual
 			if (entry.getHex().containsTerrain(Terrain.METAL_CONTENT)) {
-				hex.removeTerrain(Terrain.METAL_CONTENT);
+				hex.removeTerrain(Terrain.METAL_CONTENT)
 			}
 
-			double thisMatch = baseMatch(hex, entry.getHex());
+			double thisMatch = baseMatch(hex, entry.getHex())
+			
 			// stop if perfect match
 			if (thisMatch == 1.0) {
-				bestMatch = entry;
-				break;
+				bestMatch = entry
+				break
 			}
 			// compare match with best
 			if (thisMatch > match) {
-				bestMatch = entry;
-				match = thisMatch;
+				bestMatch = entry
+				match = thisMatch
 			}
 		}
 
-		return bestMatch.getImage();
+		return bestMatch.getImage()
 	}
 	
 	/**
@@ -201,37 +202,36 @@ class HexTileset {
 		// check elevation
 		if ((com.getElevation() != Terrain.WILDCARD)
 				&& (org.getElevation() != com.getElevation())) {
-			return 0;
+			return 0
 		}
 		
 		// A themed original matches any unthemed comparison.
-		if ((com.getTheme() != null)
-				&& !com.getTheme().equalsIgnoreCase(org.getTheme())) {
-			return 0.0;
+		if ((com.getTheme() != null) && !com.getTheme().equalsIgnoreCase(org.getTheme())) {
+			return 0.0
 		}
 		
 		// org terrains must match com terrains
-		if (org.terrainsPresent() < com.terrainsPresent())
-			return 0.0;
+		if (org.terrainsPresent() < com.terrainsPresent()) {
+			return 0.0
+		}
 		
 		// check terrain
-		int[] cTerrainTypes = com.getTerrainTypes();
+		int[] cTerrainTypes = com.getTerrainTypes()
 		for (int i = 0; i < cTerrainTypes.length; i++) {
-			int cTerrType = cTerrainTypes[i];
-			Terrain cTerr = com.getTerrain(cTerrType);
-			Terrain oTerr = org.getTerrain(cTerrType);
+			int cTerrType = cTerrainTypes[i]
+			Terrain cTerr = com.getTerrain(cTerrType)
+			Terrain oTerr = org.getTerrain(cTerrType)
+			
 			if (cTerr == null) {
-				continue;
-			} else if ((oTerr == null)
-					|| ((cTerr.getLevel() != Terrain.WILDCARD) && (oTerr
-							.getLevel() != cTerr.getLevel()))
-					|| (cTerr.hasExitsSpecified() && (oTerr.getExits() != cTerr
-							.getExits()))) {
-				return 0;
+				continue
+			} else if ((oTerr == null) || 
+					((cTerr.getLevel() != Terrain.WILDCARD) && (oTerr.getLevel() != cTerr.getLevel())) || 
+					(cTerr.hasExitsSpecified() && (oTerr.getExits() != cTerr.getExits()))) {
+				return 0
 			}
 		}
 
-		return 1.0;
+		return 1.0
 	}
 
 	/**
@@ -243,20 +243,18 @@ class HexTileset {
 	 */
 	private static double superMatch(IHex org, IHex com) {
 		// check elevation
-		if ((com.getElevation() != Terrain.WILDCARD)
-				&& (org.getElevation() != com.getElevation())) {
-			return 0;
+		if ((com.getElevation() != Terrain.WILDCARD) && (org.getElevation() != com.getElevation())) {
+			return 0
 		}
 		
 		// A themed original matches any unthemed comparison.
-		if ((com.getTheme() != null)
-				&& !com.getTheme().equalsIgnoreCase(org.getTheme())) {
-			return 0.0;
+		if ((com.getTheme() != null) && !com.getTheme().equalsIgnoreCase(org.getTheme())) {
+			return 0.0
 		}
 		
 		// org terrains must match com terrains
 		if (org.terrainsPresent() < com.terrainsPresent())
-			return 0.0;
+			return 0.0
 	   
 		// check terrain
 		int[] cTerrainTypes = com.getTerrainTypes();
@@ -265,18 +263,16 @@ class HexTileset {
 			Terrain cTerr = com.getTerrain(cTerrType);
 			Terrain oTerr = org.getTerrain(cTerrType);
 			if (cTerr == null) {
-				continue;
-			} else if ((oTerr == null)
-					|| ((cTerr.getLevel() != Terrain.WILDCARD) && (oTerr
-							.getLevel() != cTerr.getLevel()))
-					|| (cTerr.hasExitsSpecified() && (oTerr.getExits() != cTerr
-							.getExits()))) {
-				return 0;
+				continue
+			} else if ((oTerr == null) ||
+					((cTerr.getLevel() != Terrain.WILDCARD) && (oTerr.getLevel() != cTerr.getLevel())) ||
+					(cTerr.hasExitsSpecified() && (oTerr.getExits() != cTerr.getExits()))) {
+				return 0
 			}
 		}
 
 
-		return 1.0;
+		return 1.0
 	}
 	
 	/**
@@ -286,66 +282,62 @@ class HexTileset {
 	 * the comparison hex. 0 means no match, 1 means perfect match.
 	 */
 	private static double baseMatch(IHex org, IHex com) {
-		double elevation;
-		double terrain;
-		double theme;
+		double elevation
+		double terrain
+		double theme
 
 		// check elevation
 		if (com.getElevation() == Terrain.WILDCARD) {
-			elevation = 1.0;
+			elevation = 1.0
 		} else {
-			elevation = 1.01 / (Math.abs(org.getElevation()
-					- com.getElevation()) + 1.01);
+			elevation = 1.01 / (Math.abs(org.getElevation() - com.getElevation()) + 1.01)
 		}
 
 		// Determine maximum number of terrain matches.
 		// Bug 732188: Have a non-zero minimum terrain match.
-		double maxTerrains = Math.max(org.terrainsPresent(),
-				com.terrainsPresent());
-		double matches = 0.0;
+		double maxTerrains = Math.max(org.terrainsPresent(), com.terrainsPresent())
+		double matches = 0.0
 		
-		int[] orgTerrains = org.getTerrainTypes();
+		int[] orgTerrains = org.getTerrainTypes()
 		
 		for (int i = 0; i < orgTerrains.length; i++){
-			int terrType = orgTerrains[i];
-			Terrain cTerr = com.getTerrain(terrType);
-			Terrain oTerr = org.getTerrain(terrType);
+			int terrType = orgTerrains[i]
+			Terrain cTerr = com.getTerrain(terrType)
+			Terrain oTerr = org.getTerrain(terrType)
 			if ((cTerr == null) || (oTerr == null)) {
-				continue;
+				continue
 			}
-			double thisMatch = 0;
+			
+			double thisMatch = 0
 
 			if (cTerr.getLevel() == Terrain.WILDCARD) {
-				thisMatch = 1.0;
+				thisMatch = 1.0
 			} else {
-				thisMatch = 1.0 / (Math
-						.abs(oTerr.getLevel() - cTerr.getLevel()) + 1.0);
+				thisMatch = 1.0 / (Math.abs(oTerr.getLevel() - cTerr.getLevel()) + 1.0)
 			}
 			// without exit match, terrain counts... um, half?
-			if (cTerr.hasExitsSpecified()
-					&& (oTerr.getExits() != cTerr.getExits())) {
-				thisMatch *= 0.5;
+			if (cTerr.hasExitsSpecified() && (oTerr.getExits() != cTerr.getExits())) {
+				thisMatch *= 0.5
 			}
 			// add up match value
-			matches += thisMatch;
+			matches += thisMatch
 		}
 		if (maxTerrains == 0) {
-			terrain = 1.0;
+			terrain = 1.0
 		} else {
-			terrain = matches / maxTerrains;
+			terrain = matches / maxTerrains
 		}
 
 		// check theme
-		if ((com.getTheme() == org.getTheme())
-				|| ((com.getTheme() != null) && com.getTheme()
-						.equalsIgnoreCase(org.getTheme()))) {
-			theme = 1.0;
+		if ((com.getTheme() == org.getTheme()) || 
+				((com.getTheme() != null) && com.getTheme().equalsIgnoreCase(org.getTheme()))) {
+			theme = 1.0
 		} else {
 			// also don't throw a match entirely out because the theme is off
-			theme = 0.0001;
+			theme = 0.0001
 		}
-
-		return elevation * terrain * theme;
+		
+		return elevation * terrain * theme
 	}
 }
 
@@ -363,7 +355,7 @@ class IHex {
 		this.theme = theme
 		
 		terrains = new HashSet()
-		terrain?.tokenize(';').each { tk ->
+		terrain.tokenize(';').each { tk ->
 			terrains.add(Terrain.createTerrain(tk))
 		}
 	}
@@ -380,25 +372,41 @@ class IHex {
 		return this.getTerrain(type) != null
 	}
 	
-	public Terrain getTerrain(int type) {
-		this.terrains?.each { t ->
-			if(t.type == type) {
-				return t
+	public Terrain getTerrain(int terrainType) {
+		Terrain foundTerrain = null
+		
+		this.terrains.each { t ->
+			if(t.type == terrainType) {
+				foundTerrain = t
+				return 
 			}
 		}
 		
-		return null
+		return foundTerrain
+	}
+	
+	public void removeTerrain(int terrainType) {
+		HashSet<Terrain> removals = new HashSet()
+		
+		this.terrains.each { t ->
+			if(t.type == terrainType) {
+				removals.add(t)
+			}
+		}
+		
+		removals.each { t ->
+			this.terrains?.remove(t)
+		}
 	}
 	
 	public int[] getTerrainTypes() {
-		int[] types = terrains.size()
+		ArrayList types = new ArrayList()
 		
-		int i = 0
-		this.terrains?.each { t ->
-			types[i++] = t.type
+		this.terrains.each { t ->
+			types.add(t.type)
 		}
 		
-		return types
+		return types.toArray()
 	}
 	
 	public int terrainsPresent() {
@@ -411,6 +419,11 @@ class IHex {
 	
 	public String getTheme() {
 		return this.theme
+	}
+	
+	@Override
+	public String toString() {
+		return "<IHex: ^"+elevation+" "+theme+" ***"+terrains.toString()+">"
 	}
 }
 
@@ -425,7 +438,7 @@ class HexEntry {
 		this.hex = hex
 		
 		filenames = new Vector<String>()
-		imageFiles?.tokenize(';').each { tk ->
+		imageFiles.tokenize(';').each { tk ->
 			filenames.add(tk)
 		}
 	}
@@ -435,6 +448,11 @@ class HexEntry {
 	}
 	
 	public String getImage() {
-		return this.filenames?.firstElement()
+		return this.filenames.firstElement()
+	}
+	
+	@Override
+	public String toString() {
+		return "{HexEntry: "+hex.toString()+" >>>"+filenames.toString()+"}"
 	}
 }

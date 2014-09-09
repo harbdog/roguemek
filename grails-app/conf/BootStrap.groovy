@@ -106,6 +106,7 @@ class BootStrap {
 		
 		// Initialize a sample HexMap board
 		File boardFile = new File("src/boards/battletech.board")
+		//TODO: File boardFile = new File("src/boards/city_downtown.board")
 		HexMap boardMap = HexMap.loadBoardFile(boardFile)
 		
 		// Initialize a sample BattleMech

@@ -37,7 +37,7 @@ class Hex {
 		}
 		
 		// Load images for the Hex
-		println("*** "+HexTileset.getImageArray(hex))
+		println("*** "+x+","+y+": "+HexTileset.getImageArray(hex)+ " | terrain: "+terrain)
 		
 		if(!hex.validate()) {
 			hex.errors.allErrors.each {
