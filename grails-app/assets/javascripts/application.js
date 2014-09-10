@@ -7,7 +7,6 @@
 //
 //= require jquery
 //= require jquery.form.js
-//= require jqModal.js
 //= require_tree .
 //= require_self
 

@@ -161,7 +161,6 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':							['permitAll'],
 	'/index':						['permitAll'],
 	'/index.gsp':					['permitAll'],
-	'/roguemek/**':					['permitAll'],
 	'/showUser/**':					['permitAll'],
 	'/user/**':						['permitAll'],
 	'/userList':					['permitAll'],
@@ -175,13 +174,14 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/login/**':          			['permitAll'],
 	'/logout/**':					['permitAll'],
 	
+	'/rogueMek/**':					['ROLE_USER'],
 	'/game/**':						['ROLE_USER'],
 	
 	'/pilot/**':					['ROLE_ADMIN'],
 	
-	'/userrole/**':					['ROLE_ROOT'],
+	'/userRole/**':					['ROLE_ROOT'],
 	'/mech/**':						['ROLE_ROOT'],
-	'/battlemech/**':				['ROLE_ROOT'],
+	'/battleMech/**':				['ROLE_ROOT'],
 	'/weapon/**':					['ROLE_ROOT'],
 	'/dbconsole/**':				['ROLE_ROOT'],
 ]

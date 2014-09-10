@@ -24,8 +24,8 @@ class UrlMappings {
 				// apply constraints here
 			}
 		}
-
-        "/"(controller:"RogueMek")
+		
+		"/"(view:"/index")
         "500"(view:'/error')
 	}
 }
