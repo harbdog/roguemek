@@ -10,6 +10,7 @@ class Hex {
 	Integer y
 	Integer elevation
 	String theme
+	String[] images
 	
 	static hasMany = [terrains:Terrain]
 	
@@ -37,7 +38,7 @@ class Hex {
 		}
 		
 		// Load images for the Hex
-		println("*** "+x+","+y+": "+HexTileset.getImageArray(hex)+ " | terrain: "+terrain)
+		hex.images = HexTileset.getImageArray(hex)
 		
 		if(!hex.validate()) {
 			hex.errors.allErrors.each {
