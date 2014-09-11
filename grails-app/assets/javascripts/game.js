@@ -23,6 +23,12 @@ function initGame(){
 	// Test some CreateJS (EaselJS) code
 	stage = new createjs.Stage("canvas");
 	
+	if(stage.canvas == null){
+		// when not on the page with the canvas, this will be null 
+		// so nothing else should be initialized or run
+		return;
+	}
+	
 	circle = new createjs.Shape();
 	circle.graphics.beginFill("red").drawCircle(0, 0, 50);
 	circle.x = 100;
@@ -45,6 +51,21 @@ function initGame(){
 		.beginFill("blue").drawCircle(0,0,8);
 	arm.x = 180;
 	arm.y = 100;
+	
+	// add hex image
+	var hex = new createjs.Bitmap("assets/hexes/boring/crust.gif");
+	hex.x = 50;
+	hex.y = 50;
+	stage.addChild(hex);
+	// add drag and drop to circle
+	hex.on("pressmove", function(evt) {
+		var bounds = evt.target.getBounds();
+		
+	    evt.target.x = evt.stageX - bounds.width/2;
+	    evt.target.y = evt.stageY - bounds.height/2;
+	});
+	hex.on("pressup", function(evt) { console.log("up"); })
+	
 	
 	createjs.Ticker.on("tick", tick);
 	createjs.Ticker.setFPS(30);

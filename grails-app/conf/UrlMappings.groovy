@@ -25,6 +25,11 @@ class UrlMappings {
 			}
 		}
 		
+		name playGame: "/play"{
+			controller = 'rogueMek'
+			action = 'index'
+		}
+		
 		"/"(view:"/index")
         "500"(view:'/error')
 	}

@@ -1,4 +1,4 @@
-package roguemek
+package roguemek.game
 
 import roguemek.model.Mech;
 import grails.plugin.springsecurity.annotation.Secured
@@ -11,22 +11,6 @@ class RogueMekController {
 		log.info('Starting the index action...')
 		
 		[mechPreview:Mech.list(max:5, sort:"name")]
-	}
-	
-	def list() {
-		log.info('Starting the list action...')
-		
-		try {
-			def err = 1 / 0
-		}
-		catch(Exception e) {
-			log.error('An exception was found in the wild: ', e)
-			
-			redirect action: "index"
-			return
-		}
-		
-		render 'Default page for RogueMek!'
 	}
 	
 	def search(String q) {
