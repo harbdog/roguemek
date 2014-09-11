@@ -16,6 +16,10 @@ $(window).ready(function(){
 	initGame(); 
 });
 
+//all hex images are the same size
+var hexWidth = 84;
+var hexHeight = 72;
+
 var stage, circle, arm
 
 function initGame(){
@@ -66,6 +70,8 @@ function initGame(){
 	});
 	hex.on("pressup", function(evt) { console.log("up"); })
 	
+	// create the board
+	createHexBoard();
 	
 	createjs.Ticker.on("tick", tick);
 	createjs.Ticker.setFPS(30);
@@ -93,4 +99,8 @@ function tick(event) {
 	if (circle.hitTest(armpt.x, armpt.y)) { circle.alpha = 1; }
 	
 	stage.update(event);
+}
+
+function createHexBoard() {
+	
 }

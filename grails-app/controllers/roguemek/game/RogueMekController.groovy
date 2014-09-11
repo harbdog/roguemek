@@ -10,7 +10,7 @@ class RogueMekController {
 	def index() {
 		log.info('Starting the index action...')
 		
-		[mechPreview:Mech.list(max:5, sort:"name")]
+		[game:Game.get(1)]
 	}
 	
 	def search(String q) {
