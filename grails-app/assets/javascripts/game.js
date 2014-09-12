@@ -16,11 +16,14 @@ $(window).ready(function(){
 	initGame(); 
 });
 
+var numCols = 0;
+var numRows = 0;
+
 //all hex images are the same size
 var hexWidth = 84;
 var hexHeight = 72;
 
-var stage, circle, arm
+var stage, queue, circle, arm
 
 function initGame(){
 	
@@ -32,6 +35,22 @@ function initGame(){
 		// so nothing else should be initialized or run
 		return;
 	}
+	
+	// set up image loading queue handler
+	queue = new createjs.LoadQueue();
+	queue.addEventListener("complete", handleComplete);
+	
+	// load the board and its images
+	loadHexMap();
+	
+	$('#spinner').fadeIn();
+	
+	createjs.Ticker.on("tick", tick);
+	createjs.Ticker.setFPS(30);
+}
+
+function handleComplete(event) {
+	$('#spinner').fadeOut();
 	
 	circle = new createjs.Shape();
 	circle.graphics.beginFill("red").drawCircle(0, 0, 50);
@@ -57,7 +76,7 @@ function initGame(){
 	arm.y = 100;
 	
 	// add hex image
-	var hex = new createjs.Bitmap("assets/hexes/boring/crust.gif");
+	var hex = new createjs.Bitmap(queue.getResult("crust"));
 	hex.x = 50;
 	hex.y = 50;
 	stage.addChild(hex);
@@ -69,15 +88,14 @@ function initGame(){
 	    evt.target.y = evt.stageY - bounds.height/2;
 	});
 	hex.on("pressup", function(evt) { console.log("up"); })
-	
-	// create the board
-	createHexBoard();
-	
-	createjs.Ticker.on("tick", tick);
-	createjs.Ticker.setFPS(30);
 }
 
 function tick(event) {
+	if(circle == null){
+		console.log(queue.progress);
+		return;
+	}
+	
 	// rotate the arm
 	arm.rotation += 5;
 	
@@ -101,6 +119,33 @@ function tick(event) {
 	stage.update(event);
 }
 
-function createHexBoard() {
+function loadHexMap() {
 	
+	$.getJSON("game/getHexMap", {
+	    gameId: "1"
+	  })
+	  .fail(function(jqxhr, textStatus, error) {
+		  var err = textStatus + ", " + error;
+		    console.log( "Request Failed: " + err );
+	  })
+	  .done(function( data ) {
+		  numCols = data.numCols;
+		  numRows = data.numRows;
+		  
+		  var manifest = [];
+		  $.each(data.hexMap, function(key, val) {
+			  var thisHex = val;
+			  
+			  if(thisHex != null){
+				  $.each(thisHex.images, function(i, img) {
+					 manifest.push({id:img, src:"assets/hexes/"+img}); 
+				  });
+			  }
+		  });
+		  
+		  // the test crust
+		  manifest.push({id:"crust", src:"assets/hexes/boring/crust.gif"});
+		  
+		  queue.loadManifest(manifest);
+	  });
 }

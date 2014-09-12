@@ -15,12 +15,14 @@ class GameController {
 		log.info('Starting the index action...')
 	}
 	
-	def getHexBoard() {
-		Game g = Game.get(1)
+	def getHexMap() {
+		Game g = Game.get(params.gameId)
 		HexMap b = g?.board
 		if(g == null || b == null) {
 			return
 		}
+		
+		log.info("gameId="+params.gameId)
 		
 		render b.getHexMapRender() as JSON
 	}
