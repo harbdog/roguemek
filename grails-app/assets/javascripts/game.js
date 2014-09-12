@@ -76,7 +76,7 @@ function handleComplete(event) {
 	arm.y = 100;
 	
 	// add hex image
-	var hex = new createjs.Bitmap(queue.getResult("crust"));
+	var hex = new createjs.Bitmap(queue.getResult("boring/road42.gif"));
 	hex.x = 50;
 	hex.y = 50;
 	stage.addChild(hex);
@@ -133,18 +133,19 @@ function loadHexMap() {
 		  numRows = data.numRows;
 		  
 		  var manifest = [];
+		  var alreadyManifested = {};
 		  $.each(data.hexMap, function(key, val) {
 			  var thisHex = val;
 			  
 			  if(thisHex != null){
 				  $.each(thisHex.images, function(i, img) {
-					 manifest.push({id:img, src:"assets/hexes/"+img}); 
+					  if(alreadyManifested[img] == null){
+						  manifest.push({id:img, src:"assets/hexes/"+img});
+						  alreadyManifested[img] = true;
+					  }
 				  });
 			  }
 		  });
-		  
-		  // the test crust
-		  manifest.push({id:"crust", src:"assets/hexes/boring/crust.gif"});
 		  
 		  queue.loadManifest(manifest);
 	  });
