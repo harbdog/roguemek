@@ -51,4 +51,25 @@ class Hex {
 			return hex
 		}
 	}
+	
+	/**
+	 * Gets all applicable data for the object that can be turned into JSON for the client
+	 * @return
+	 */
+	public def getHexRender() {
+		def terrs = []
+		this.terrains?.each { t ->
+			terrs.add(t?.getTerrainRender())
+		}
+		
+		def hexRender = [
+			x: this.x,
+			y: this.y,
+			elevation: this.elevation,
+			images: this.images,
+			terrains: terrs
+		]
+		
+		return hexRender
+	}
 }

@@ -1,29 +1,47 @@
 package roguemek.game
 
-
-
 import static org.springframework.http.HttpStatus.*
+import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
+import grails.converters.*
 import roguemek.model.*
 
 @Transactional(readOnly = true)
 class GameController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+	
+	def index() {
+		log.info('Starting the index action...')
+	}
+	
+	def getHexBoard() {
+		Game g = Game.get(1)
+		HexMap b = g?.board
+		if(g == null || b == null) {
+			return
+		}
+		
+		render b.getHexMapRender() as JSON
+	}
 
-    def index(Integer max) {
+	@Secured(['ROLE_ADMIN'])
+    def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
         respond Game.list(params), model:[gameInstanceCount: Game.count()]
     }
 
+	@Secured(['ROLE_ADMIN'])
     def show(Game gameInstance) {
         respond gameInstance
     }
 	
+	@Secured(['ROLE_ROOT'])
 	def test(Game gameInstance) {
 		respond gameInstance
 	}
 	
+	@Secured(['ROLE_ROOT'])
 	def testWeapon() {
 		Weapon weapon
 		BattleMech unit
@@ -45,11 +63,13 @@ class GameController {
 		}
 	}
 
+	@Secured(['ROLE_ROOT'])
     def create() {
         respond new Game(params)
     }
 
     @Transactional
+	@Secured(['ROLE_ROOT'])
     def save(Game gameInstance) {
         if (gameInstance == null) {
             notFound()
@@ -72,11 +92,13 @@ class GameController {
         }
     }
 
+	@Secured(['ROLE_ROOT'])
     def edit(Game gameInstance) {
         respond gameInstance
     }
 
     @Transactional
+	@Secured(['ROLE_ROOT'])
     def update(Game gameInstance) {
         if (gameInstance == null) {
             notFound()
@@ -100,6 +122,7 @@ class GameController {
     }
 
     @Transactional
+	@Secured(['ROLE_ROOT'])
     def delete(Game gameInstance) {
 
         if (gameInstance == null) {
@@ -112,7 +135,7 @@ class GameController {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'Game.label', default: 'Game'), gameInstance.id])
-                redirect action:"index", method:"GET"
+                redirect action:"list", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
         }
@@ -122,7 +145,7 @@ class GameController {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'game.label', default: 'Game'), params.id])
-                redirect action: "index", method: "GET"
+                redirect action: "list", method: "GET"
             }
             '*'{ render status: NOT_FOUND }
         }

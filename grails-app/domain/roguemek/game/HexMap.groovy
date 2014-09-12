@@ -141,4 +141,24 @@ class HexMap {
 				- substringDiff)) - 1;
 		return (y * width) + x;
 	}
+	
+	/**
+	 * Gets all applicable data for the object that can be turned into JSON for the client
+	 * @return
+	 */
+	public def getHexMapRender() {
+		def board = []
+		this.hexMap?.each { hexId ->
+			Hex h = Hex.get(hexId)
+			board.add(h?.getHexRender())
+		}
+		
+		def hexMapRender = [
+			numCols: this.numCols,
+			numRows: this.numRows,
+			hexMap: board
+		]
+		
+		return hexMapRender
+	}
 }

@@ -444,6 +444,22 @@ class Terrain {
 		}
 	}
 	
+	/**
+	 * Gets all applicable data for the object that can be turned into JSON for the client
+	 * @return
+	 */
+	public def getTerrainRender() {
+		
+		def terrainRender = [
+			type: this.type,
+			level: this.level,
+			exits: this.exits,
+			terrainFactor: this.terrainFactor
+		]
+		
+		return terrainRender
+	}
+	
 	@Override
 	public String toString(){
 		return Terrain.getDisplayName(this.type, this.level)

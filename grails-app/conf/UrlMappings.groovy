@@ -25,8 +25,8 @@ class UrlMappings {
 			}
 		}
 		
-		name playGame: "/play"{
-			controller = 'rogueMek'
+		name playGame: "/battle"{
+			controller = 'game'
 			action = 'index'
 		}
 		
