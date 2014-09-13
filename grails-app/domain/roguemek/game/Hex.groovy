@@ -1,6 +1,7 @@
 package roguemek.game
 
 import org.grails.plugins.csv.CSVMapReader
+
 import roguemek.model.Terrain
 import roguemek.assets.HexTileset
 
@@ -71,5 +72,10 @@ class Hex {
 		]
 		
 		return hexRender
+	}
+	
+	@Override
+	public String toString() {
+		return "<Hex("+x+","+y+"): ^"+elevation+" "+theme+" ***"+terrains.toString()+">"
 	}
 }

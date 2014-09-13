@@ -106,7 +106,7 @@ class HexMap {
 			System.err.println(ex);
 		}
 	
-		// TODO: fill nulls with blank hexes
+		// TODO: if there are any nulls, the board file is invalid
 		/*for (int i = 0; i < nd.length; i++) {
 			if (nd[i] == null) {
 				nd[i] = new Hex();

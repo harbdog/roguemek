@@ -54,14 +54,8 @@ class BattleMech extends BattleUnit {
 			mech.crits.each { equipId ->
 				def thisEquip = Equipment.get(equipId)
 				
-				log.info("Equipment ID: "+equipId+", "+thisEquip?.toString())
-				
-				
-				
 				BattleEquipment bEquip = new BattleEquipment(ownerPilot: ownerPilot, equipment: Equipment.get(equipId))
 				bEquip.save flush:true
-				
-				log.info("BattleEquipment ID: "+bEquip?.id+", "+bEquip.toString())
 				
 				crits[counter++] = bEquip.id
 			}

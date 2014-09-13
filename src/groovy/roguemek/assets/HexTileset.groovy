@@ -178,7 +178,7 @@ class HexTileset {
 			if (entry.getHex().containsTerrain(Terrain.METAL_CONTENT)) {
 				hex.removeTerrain(Terrain.METAL_CONTENT)
 			}
-
+			
 			double thisMatch = baseMatch(hex, entry.getHex())
 			
 			// stop if perfect match
@@ -192,7 +192,7 @@ class HexTileset {
 				match = thisMatch
 			}
 		}
-
+		
 		return bestMatch.getImage()
 	}
 	
@@ -300,7 +300,6 @@ class HexTileset {
 		}
 
 		// Determine maximum number of terrain matches.
-		// Bug 732188: Have a non-zero minimum terrain match.
 		double maxTerrains = Math.max(org.terrainsPresent(), com.terrainsPresent())
 		double matches = 0.0
 		
@@ -330,7 +329,14 @@ class HexTileset {
 		}
 		if (maxTerrains == 0) {
 			terrain = 1.0
-		} else {
+		} 
+		else if(matches == 0 && org.terrainsPresent() > 0) {
+			// When no Base matches were found then it means the terrains 
+			// were all super/ortho so try without any terrains
+			IHex orgNoTerrains = new IHex(org.getElevation(), "", org.getTheme())
+			return baseMatch(orgNoTerrains, com)
+		}
+		else {
 			terrain = matches / maxTerrains
 		}
 

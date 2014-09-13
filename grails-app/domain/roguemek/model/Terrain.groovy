@@ -462,6 +462,6 @@ class Terrain {
 	
 	@Override
 	public String toString(){
-		return Terrain.getDisplayName(this.type, this.level)
+		return "[Terrain:"+Terrain.getName(this.type)+"]"
 	}
 }
