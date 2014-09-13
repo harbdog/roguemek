@@ -16,14 +16,41 @@ $(window).ready(function(){
 	initGame(); 
 });
 
+// Base class for a displayed object
+function DisplayObject(x, y, images) {
+	this.x = x;
+	this.y = y;
+	
+	if(images == null){
+		images = [];
+	}
+	this.images = images;
+}
+DisplayObject.prototype.getX = function() {
+	return this.x;
+}
+DisplayObject.prototype.getY = function() {
+	return this.y;
+}
+DisplayObject.prototype.getImages = function() {
+	return this.images;
+}
+
+// Create HexMap variables 
 var numCols = 0;
 var numRows = 0;
+
+// TODO: Dynamically generate visible cols/rows based on canvas size
+var visibleHexOffsetX = 0;
+var visibleHexOffsetY = 0;
+var numVisibleHexCols = 7;
+var numVisibleHexRows = 6;
 
 //all hex images are the same size
 var hexWidth = 84;
 var hexHeight = 72;
 
-var stage, queue, circle, arm
+var stage, queue, hexMap;
 
 function initGame(){
 	
@@ -52,69 +79,14 @@ function initGame(){
 function handleComplete(event) {
 	$('#spinner').fadeOut();
 	
-	circle = new createjs.Shape();
-	circle.graphics.beginFill("red").drawCircle(0, 0, 50);
-	circle.x = 100;
-	circle.y = 100;
-	stage.addChild(circle);
-	
-	// add test listener to circle
-	circle.addEventListener("click", function(event) { alert("clicked"); })
-	
-	// add drag and drop to circle
-	circle.on("pressmove", function(evt) {
-	    evt.target.x = evt.stageX;
-	    evt.target.y = evt.stageY;
-	});
-	circle.on("pressup", function(evt) { console.log("up"); })
-	
-	// add obstacle
-	arm = stage.addChild(new createjs.Shape());
-	arm.graphics.beginFill("black").drawRect(-2,-2,100,4)
-		.beginFill("blue").drawCircle(0,0,8);
-	arm.x = 180;
-	arm.y = 100;
-	
-	// add hex image
-	var hex = new createjs.Bitmap(queue.getResult("boring/road42.gif"));
-	hex.x = 50;
-	hex.y = 50;
-	stage.addChild(hex);
-	// add drag and drop to circle
-	hex.on("pressmove", function(evt) {
-		var bounds = evt.target.getBounds();
-		
-	    evt.target.x = evt.stageX - bounds.width/2;
-	    evt.target.y = evt.stageY - bounds.height/2;
-	});
-	hex.on("pressup", function(evt) { console.log("up"); })
+	// Create the map
+	drawHexMap();
 }
 
 function tick(event) {
-	if(circle == null){
+	if(queue != null && queue.progress < 1){
 		console.log(queue.progress);
-		return;
 	}
-	
-	// rotate the arm
-	arm.rotation += 5;
-	
-	// time based circle movement
-	circle.x = circle.x + (event.delta)/1000*100;
-	if (circle.x > stage.canvas.width) { circle.x = 0; }
-	
-	// not time based circle movement
-	//circle.x = circle.x + 5; // 100 / 20 = 5
-	//if (circle.x > stage.canvas.width) { circle.x = 0; }
-	
-	// hitTest with mouse
-	circle.alpha = 0.2;
-	var pt = circle.globalToLocal(stage.mouseX, stage.mouseY);
-	if (stage.mouseInBounds && circle.hitTest(pt.x, pt.y)) { circle.alpha = 1; }
-	
-	// hitTest with swinging arm (only the circle part?)
-	var armpt = arm.localToLocal(0, 0, circle);
-	if (circle.hitTest(armpt.x, armpt.y)) { circle.alpha = 1; }
 	
 	stage.update(event);
 }
@@ -129,8 +101,10 @@ function loadHexMap() {
 		    console.log( "Request Failed: " + err );
 	  })
 	  .done(function( data ) {
+		  
 		  numCols = data.numCols;
 		  numRows = data.numRows;
+		  hexMap = [];
 		  
 		  var manifest = [];
 		  var alreadyManifested = {};
@@ -138,6 +112,18 @@ function loadHexMap() {
 			  var thisHex = val;
 			  
 			  if(thisHex != null){
+				  // TODO: Create HexDisplay object as subclass of DisplayObject
+				  var hexDisplay = new DisplayObject(thisHex.x, thisHex.y, thisHex.images);
+				  
+				  // Place the hex in the map
+				  var hexRow = hexMap[thisHex.y];
+				  if(hexRow == null){
+					  hexRow = [];
+					  hexMap[thisHex.y] = hexRow;
+				  }
+				  hexRow[thisHex.x] = hexDisplay;
+				  
+				  // Make sure each image gets loaded to the manifest if not already present
 				  $.each(thisHex.images, function(i, img) {
 					  if(alreadyManifested[img] == null){
 						  manifest.push({id:img, src:"assets/hexes/"+img});
@@ -149,4 +135,35 @@ function loadHexMap() {
 		  
 		  queue.loadManifest(manifest);
 	  });
+}
+
+function drawHexMap() {
+	if(hexMap == null){return;}
+	
+	for(var y=0; y<numVisibleHexRows; y++){
+		console.log("y="+y);
+		
+		var thisDisplayRow = hexMap[y];
+		for(var x=0; x<numVisibleHexCols; x++){
+			console.log("x="+x);
+			
+			var thisDisplayHex = thisDisplayRow[x];
+			
+			var xOffset = x * (3 * hexWidth / 4);
+			var yOffset = y * hexHeight;
+			
+			if(thisDisplayHex.x & 1 == 1){	//TODO: isXOdd function
+				yOffset = (hexHeight / 2) + (y * hexHeight);
+			}
+			
+			var thisHexImages = thisDisplayHex.getImages();
+			$.each(thisHexImages, function(i, img){
+				// add the hex images to the stage
+				var hexImg = new createjs.Bitmap(queue.getResult(img));
+				hexImg.x = xOffset;
+				hexImg.y = yOffset;
+				stage.addChild(hexImg);
+			});
+		}
+	}
 }
