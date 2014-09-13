@@ -5,22 +5,19 @@ class HexMap {
 	Integer numCols
 	Integer numRows
 	
-	byte[] hexMap
+	List hexMap
+	static hasMany = [hexMap: long]
 	
     static constraints = {
 		numRows min: 0
 		numCols min: 0
-		
-		// setting map as bytes with a large maxSize
-		// where by default H2 was creating as 255 bytes
-		hexMap maxSize: 2048
     }
 	
 	public static HexMap loadBoardFile(File boardFile) {
 		def numCols = 0
 		def numRows = 0
 		
-		byte[] hexMap
+		long[] hexMap
 		
 		try {
 			FileInputStream fs = new FileInputStream(boardFile)
@@ -47,7 +44,7 @@ class HexMap {
 					numCols = Integer.parseInt(args[0]);
 					numRows = Integer.parseInt(args[1]);
 					
-					hexMap = new byte[numCols*numRows]
+					hexMap = new long[numCols*numRows]
 					
 				} else if ((st.ttype == StreamTokenizer.TT_WORD)
 						&& st.sval.equalsIgnoreCase("option")) {

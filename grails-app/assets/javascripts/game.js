@@ -43,8 +43,8 @@ var numRows = 0;
 // TODO: Dynamically generate visible cols/rows based on canvas size
 var visibleHexOffsetX = 0;
 var visibleHexOffsetY = 0;
-var numVisibleHexCols = 7;
-var numVisibleHexRows = 6;
+var numVisibleHexCols = 16;
+var numVisibleHexRows = 17;
 
 //all hex images are the same size
 var hexWidth = 84;
@@ -141,13 +141,20 @@ function drawHexMap() {
 	if(hexMap == null){return;}
 	
 	for(var y=0; y<numVisibleHexRows; y++){
-		console.log("y="+y);
 		
 		var thisDisplayRow = hexMap[y];
+		
+		if(thisDisplayRow == null){
+			continue;
+		}
+		
 		for(var x=0; x<numVisibleHexCols; x++){
-			console.log("x="+x);
 			
 			var thisDisplayHex = thisDisplayRow[x];
+			
+			if(thisDisplayHex == null){
+				continue;
+			}
 			
 			var xOffset = x * (3 * hexWidth / 4);
 			var yOffset = y * hexHeight;

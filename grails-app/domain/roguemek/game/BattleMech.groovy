@@ -14,7 +14,8 @@ class BattleMech extends BattleUnit {
 	Integer[] armor
 	Integer[] internals
 	
-	byte[] crits
+	List crits
+	static hasMany = [crits: long]
 	
 	// static location indices
 	public static final HEAD = Mech.HEAD;
@@ -35,9 +36,7 @@ class BattleMech extends BattleUnit {
 		armor size: 11..11
 		internals size: 8..8
 		
-		// setting crits as bytes with maxSize 2048 since the arrays tend to get just under 1000 bytes
-		// where by default H2 was creating as 255 bytes
-		crits maxSize: 2048, size: 78..78
+		crits size: 78..78
     }
 	
 	def beforeValidate() {
@@ -50,7 +49,7 @@ class BattleMech extends BattleUnit {
 			
 			// convert Equipment to BattleEquipment to store in crits
 			def counter = 0
-			crits = new byte[78]
+			crits = new long[78]
 			mech.crits.each { equipId ->
 				def thisEquip = Equipment.get(equipId)
 				

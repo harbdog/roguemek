@@ -17,7 +17,8 @@ class Mech extends Unit {
 	Integer[] armor
 	Integer[] internals
 	
-	byte[] crits
+	List crits
+	static hasMany = [crits: long]
 	
 	Integer walkMP
 	Integer jumpMP
@@ -35,9 +36,7 @@ class Mech extends Unit {
 		armor size: 11..11
 		internals size: 8..8
 		
-		// setting crits as bytes with maxSize 2048 since the arrays tend to get just under 1000 bytes 
-		// where by default H2 was creating as 255 bytes
-		crits maxSize: 2048, size: 78..78
+		crits size: 78..78
 		
 		walkMP min: 1
 		jumpMP min: 0
