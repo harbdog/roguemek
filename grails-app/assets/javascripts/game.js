@@ -202,6 +202,23 @@ function initHexMapDisplay() {
 		
 	    stage.x = evt.stageX - stageInitDragMoveX;
 	    stage.y = evt.stageY - stageInitDragMoveY;
+	    
+	    // Keep the board from going off the window too much
+	    if(stage.x > (3 * hexWidth / 4)) {
+	    	stage.x = (3 * hexWidth / 4);
+	    }
+	    else if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
+	    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
+	    }
+	    
+	    if(stage.y > (hexHeight / 2)) {
+	    	stage.y = (hexHeight / 2);
+	    }
+	    else if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height){
+	    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height;
+	    }
+	    
+	    console.log(stage.x+","+stage.y);
 	});
 	stage.on("pressup", function(evt) { 
 		// reset click and drag map panning
