@@ -66,7 +66,7 @@ var numRows = 0;
 var hexWidth = 84;
 var hexHeight = 72;
 
-var stage, queue, hexMap;
+var stage, queue, progress, hexMap;
 
 function initGame(){
 	
@@ -84,8 +84,7 @@ function initGame(){
 	createjs.Touch.enable(stage);
 	
 	// set full window size for canvas
-	stage.canvas.width = window.innerWidth - 5;
-	stage.canvas.height = window.innerHeight - 5;
+	resize_canvas();
 	
 	// add resizing event
 	window.addEventListener('resize', resize_canvas, false);
@@ -93,6 +92,13 @@ function initGame(){
 	// set up image loading queue handler
 	queue = new createjs.LoadQueue();
 	queue.addEventListener("complete", handleComplete);
+	queue.addEventListener("progress", handleProgress);
+	
+	// create progress bar during image loading
+	progress = new createjs.Shape();
+	progress.graphics.beginStroke("#000000").drawRect(0,0,100,20);
+	stage.addChild(progress);
+	
 	
 	// load the board and its images
 	loadHexMap();
@@ -111,18 +117,26 @@ function resize_canvas(){
 	}
 }
 
+function handleProgress(event) {
+	progress.graphics.clear();
+    
+    // Draw the outline again.
+    progress.graphics.beginStroke("#000000").drawRect(0,0,100,20);
+    
+    // Draw the progress bar
+    progress.graphics.beginFill("#ff0000").drawRect(0,0,100*event.progress,20);
+    console.log(event.progress);
+}
+
 function handleComplete(event) {
 	$('#spinner').fadeOut();
+	stage.removeChild(progress);
 	
 	// Initialize the hex map display objects
 	initHexMapDisplay();
 }
 
 function tick(event) {
-	if(queue != null && queue.progress < 1){
-		console.log(queue.progress);
-	}
-	
 	stage.update(event);
 }
 
