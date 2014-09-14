@@ -17,7 +17,7 @@ class HexTileset {
 	 * Initialize the tileset for Hex images
 	 */
 	public static void init() {
-		File tilesetFile = new File("src/tilesets/roguemek.tileset")
+		File tilesetFile = new File("src/tilesets/atmospheric.tileset")
 		HexTileset.loadFromFile(tilesetFile)
 	}
 	
@@ -127,6 +127,10 @@ class HexTileset {
 				}
 			}
 		}
+		
+		//log.info("*** orthoFor "+hex)
+		//log.info("    :"+matches)
+		
 		return matches;
 	}
 
@@ -156,6 +160,10 @@ class HexTileset {
 				}
 			}
 		}
+		
+		//log.info("*** supersFor "+hex)
+		//log.info("    :"+matches)
+		
 		return matches;
 	}
 
@@ -192,6 +200,17 @@ class HexTileset {
 				match = thisMatch
 			}
 		}
+		
+		if(match == 0 && hex.terrainsPresent() > 0) {
+			// When no Base matches were found then it means the terrains
+			// were all super/ortho so try without any terrains
+			IHex hexNoTerrains = new IHex(hex.getElevation(), "", hex.getTheme())
+			
+			return baseFor(hexNoTerrains)
+		}
+		
+		//log.info("*** baseFor "+hex)
+		//log.info("    :"+bestMatch.getImage())
 		
 		return bestMatch.getImage()
 	}
@@ -247,18 +266,23 @@ class HexTileset {
 	 * EXCEPTION: a themed original matches any unthemed comparason.
 	 */
 	private static double superMatch(IHex org, IHex com) {
+		//log.info("superMatch "+org+" vs. "+com)
+		
 		// check elevation
 		if ((com.getElevation() != Terrain.WILDCARD) && (org.getElevation() != com.getElevation())) {
+			//log.info("   NOT MATCHED: Elevation")
 			return 0
 		}
 		
 		// A themed original matches any unthemed comparison.
 		if ((com.getTheme() != null) && !com.getTheme().equalsIgnoreCase(org.getTheme())) {
+			//log.info("   NOT MATCHED: Theme")
 			return 0.0
 		}
 		
 		// org terrains must match com terrains
 		if (org.terrainsPresent() < com.terrainsPresent()) {
+			//log.info("   NOT MATCHED: Terrains Present")
 			return 0.0
 		}
 	   
@@ -273,11 +297,13 @@ class HexTileset {
 			} else if ((oTerr == null) ||
 					((cTerr.getLevel() != Terrain.WILDCARD) && (oTerr.getLevel() != cTerr.getLevel())) ||
 					(cTerr.hasExitsSpecified() && (oTerr.getExits() != cTerr.getExits()))) {
+				//log.info("   NOT MATCHED: Level/Exits")
 				return 0
 			}
 		}
 
-
+		//log.info("   MATCHED!!!")
+		
 		return 1.0
 	}
 	
@@ -291,6 +317,8 @@ class HexTileset {
 		double elevation
 		double terrain
 		double theme
+		
+		//log.info("baseMatch "+org+" vs. "+com)
 
 		// check elevation
 		if (com.getElevation() == Terrain.WILDCARD) {
@@ -330,12 +358,6 @@ class HexTileset {
 		if (maxTerrains == 0) {
 			terrain = 1.0
 		} 
-		else if(matches == 0 && org.terrainsPresent() > 0) {
-			// When no Base matches were found then it means the terrains 
-			// were all super/ortho so try without any terrains
-			IHex orgNoTerrains = new IHex(org.getElevation(), "", org.getTheme())
-			return baseMatch(orgNoTerrains, com)
-		}
 		else {
 			terrain = matches / maxTerrains
 		}
@@ -348,6 +370,9 @@ class HexTileset {
 			// also don't throw a match entirely out because the theme is off
 			theme = 0.0001
 		}
+		
+		// TODO: Terrain of ["rough:1;mud:1" "mars"] shows mud image as base in MegaMek (instead of mars rough image), but how can it since the theme not matching gets it set to 0.0001?
+		//log.info("    "+(elevation * terrain * theme)+"="+elevation+" * "+terrain+" * "+theme)
 		
 		return elevation * terrain * theme
 	}
@@ -364,8 +389,10 @@ class IHex {
 	
 	public IHex(int elevation, String terrain, String theme) {
 		this.elevation = elevation
-		this.theme = theme
-		
+		if(theme != "") {
+			this.theme = theme
+		}	
+			
 		terrains = new HashSet()
 		terrain.tokenize(';').each { tk ->
 			terrains.add(Terrain.createTerrain(tk))
@@ -376,7 +403,11 @@ class IHex {
 		if(hex != null) {
 			this.elevation = hex.elevation
 			this.terrains = hex.terrains
-			this.theme = hex.theme ?: ""
+			this.theme = hex.theme
+			
+			if(this.theme == "") {
+				this.theme = null;
+			}
 		}
 	}
 	
