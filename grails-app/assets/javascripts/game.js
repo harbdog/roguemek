@@ -110,7 +110,6 @@ function initGame(){
 }
 
 function resize_canvas(){
-	console.log(window.innerWidth+"x"+window.innerHeight);
 	if(stage != null){
 		stage.canvas.width = window.innerWidth - 5;
 		stage.canvas.height = window.innerHeight - 5;
@@ -125,7 +124,6 @@ function handleProgress(event) {
     
     // Draw the progress bar
     progress.graphics.beginFill("#ff0000").drawRect(0,0,100*event.progress,20);
-    console.log(event.progress);
 }
 
 function handleComplete(event) {
@@ -204,21 +202,19 @@ function initHexMapDisplay() {
 	    stage.y = evt.stageY - stageInitDragMoveY;
 	    
 	    // Keep the board from going off the window too much
+	    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
+	    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
+	    }
 	    if(stage.x > (3 * hexWidth / 4)) {
 	    	stage.x = (3 * hexWidth / 4);
 	    }
-	    else if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
-	    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
-	    }
 	    
+	    if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height){
+	    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height;
+	    }
 	    if(stage.y > (hexHeight / 2)) {
 	    	stage.y = (hexHeight / 2);
 	    }
-	    else if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height){
-	    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height;
-	    }
-	    
-	    console.log(stage.x+","+stage.y);
 	});
 	stage.on("pressup", function(evt) { 
 		// reset click and drag map panning
