@@ -47,6 +47,11 @@ class BattleMech extends BattleUnit {
 			armor = mech.armor
 			internals = mech.internals
 			
+			// initialize the displayed image
+			image = BattleMech.initMechImage(mech)
+			
+			log.info(mech.toString()+" >>> "+image)
+			
 			// convert Equipment to BattleEquipment to store in crits
 			def counter = 0
 			crits = new long[78]
@@ -69,6 +74,34 @@ class BattleMech extends BattleUnit {
 		log.info "after damage: "+armor[CENTER_TORSO]
 		
 		save flush:true
+	}
+	
+	private static String imagesBasePath = "units/mechs/"
+	private static String imagesTestPath = "grails-app/assets/images/units/mechs/"
+	private static String imagesExtension = ".gif"
+	
+	/**
+	 * Used during creation of the BattleMech to determine the image to be used
+	 * @param mech
+	 * @return
+	 */
+	private static String initMechImage(Mech mech) {
+		String mechImage = "";
+		if(mech == null) return mechImage;
+		
+		// If no specific image found, use a default based on the mech's weight class
+		String weightClass = mech.getWeightClass()
+		mechImage = "default_"+weightClass+".gif"
+		
+		// TODO: for now just matching by mech name (all lower case, no spaces), but should also extend to try chassis+variant first
+		String testImage = mech.name.toLowerCase().replaceAll(" ", "") + imagesExtension
+		File imageFile = new File(imagesTestPath + testImage)
+		
+		if(imageFile.exists()) {
+			mechImage = testImage
+		}
+		
+		return imagesBasePath + mechImage
 	}
 	
 	public static int getCritSectionStart(int critSectionIndex) {

@@ -1,13 +1,19 @@
 package roguemek.game
 
+import org.apache.commons.logging.LogFactory
+import org.apache.commons.logging.Log
+
 /**
  * Represents the owned unit that can be taken into battle as a base class for BattleMech, BattleTank, etc
  */
 class BattleUnit {
+	private static Log log = LogFactory.getLog(this)
 
 	Pilot ownerPilot
 	
 	Character status = STATUS_ACTIVE
+	
+	String image
 	
 	// STATIC value mappings
 	public static final Character STATUS_ACTIVE = 'A'
@@ -20,6 +26,7 @@ class BattleUnit {
 	
     static constraints = {
 		ownerPilot nullable: true
+		image nullable: false
 		
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED]
     }

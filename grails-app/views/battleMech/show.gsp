@@ -34,6 +34,10 @@
 					
 						<span class="property-value" aria-labelledby="mech-label"><g:link mapping="mechDetails" params='[chassis:"${mechInstance?.chassis}", variant:"${mechInstance?.variant}"]'>${mechInstance?.name +" "+ mechInstance?.chassis+"-"+mechInstance?.variant}</g:link></span>
 					
+						<g:if test="${battleMechInstance?.image}">
+							<span class="property-value" aria-labelledby="mech-label"><asset:image src="${battleMechInstance?.image}"/></span>
+						</g:if>
+					
 				</li>
 				</g:if>
 			

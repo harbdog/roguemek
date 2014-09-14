@@ -95,6 +95,12 @@ class Mech extends Unit {
 			90:		[ 3,15,19,29,19,15,19,19],
 			95:		[ 3,16,20,30,20,16,20,20],
 			100:	[ 3,17,21,31,21,17,21,21],]
+	
+	// Mech weight class types
+	public static final LIGHT = "light"
+	public static final MEDIUM = "medium"
+	public static final HEAVY = "heavy"
+	public static final ASSAULT = "assault"
 
 	static void init() {
 		def defaultMech = Mech.findByName("Atlas")
@@ -210,6 +216,29 @@ class Mech extends Unit {
 		}
 		
 		return critSection
+	}
+	
+	/**
+	 * Gets the weight class of the mech based on its mass.
+	 * * Mech.Light = 20-35
+	 * * Mech.Medium = 40 - 55
+	 * * Mech.Heavy = 60 - 75
+	 * * Mech.Assault 80 - 100
+	 * @return
+	 */
+	public String getWeightClass() {
+		if(this.mass < 40) {
+			return Mech.LIGHT
+		}
+		else if(this.mass < 60) {
+			return Mech.MEDIUM
+		}
+		else if(this.mass < 80) {
+			return Mech.HEAVY
+		}
+		else {
+			return Mech.ASSAULT
+		}
 	}
 	
 	@Override

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -27,7 +26,12 @@
 					<span id="name-label" class="property-label"><g:message code="mech.name.label" default="Name" /></span>
 					
 						<span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${mechInstance}" field="name"/></span>
-					
+						<% 
+							def mechImage = roguemek.game.BattleMech.initMechImage(mechInstance)
+						 %>
+						<g:if test="${mechImage}">
+							<span class="property-value" aria-labelledby="mech-label"><asset:image src="${mechImage}"/></span>
+						</g:if>
 				</li>
 				</g:if>
 			
