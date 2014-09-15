@@ -402,7 +402,7 @@ class IHex {
 	public IHex(Hex hex) {
 		if(hex != null) {
 			this.elevation = hex.elevation
-			this.terrains = hex.terrains
+			this.terrains = hex.terrains?.clone()
 			this.theme = hex.theme
 			
 			if(this.theme == "") {
