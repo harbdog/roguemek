@@ -329,7 +329,7 @@ class HexTileset {
 
 		// Determine maximum number of terrain matches.
 		double maxTerrains = Math.max(org.terrainsPresent(), com.terrainsPresent())
-		double matches = 0.0
+		double matches = com.terrainsPresent() == 0 ? 0.0001 : 0
 		
 		int[] orgTerrains = org.getTerrainTypes()
 		
@@ -389,9 +389,7 @@ class IHex {
 	
 	public IHex(int elevation, String terrain, String theme) {
 		this.elevation = elevation
-		if(theme != "") {
-			this.theme = theme
-		}	
+		this.theme = (theme == null || theme.length() > 0) ? theme : null
 			
 		terrains = new HashSet()
 		terrain.tokenize(';').each { tk ->
@@ -403,11 +401,7 @@ class IHex {
 		if(hex != null) {
 			this.elevation = hex.elevation
 			this.terrains = hex.terrains?.clone()
-			this.theme = hex.theme
-			
-			if(this.theme == "") {
-				this.theme = null;
-			}
+			this.theme = (hex.theme == null || hex.theme.length() > 0) ? hex.theme : null
 		}
 	}
 	
