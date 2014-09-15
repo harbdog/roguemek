@@ -22,9 +22,16 @@ class GameController {
 			return
 		}
 		
-		log.info("gameId="+params.gameId)
-		
 		render b.getHexMapRender() as JSON
+	}
+	
+	def getUnits() {
+		Game g = Game.get(params.gameId)
+		if(g == null) {
+			return
+		}
+		
+		render g.getUnitsRender() as JSON
 	}
 
 	@Secured(['ROLE_ADMIN'])

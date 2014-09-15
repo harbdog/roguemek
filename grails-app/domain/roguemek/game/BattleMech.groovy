@@ -50,8 +50,6 @@ class BattleMech extends BattleUnit {
 			// initialize the displayed image
 			image = BattleMech.initMechImage(mech)
 			
-			log.info(mech.toString()+" >>> "+image)
-			
 			// convert Equipment to BattleEquipment to store in crits
 			def counter = 0
 			crits = new long[78]

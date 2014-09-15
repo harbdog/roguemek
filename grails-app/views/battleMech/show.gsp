@@ -50,6 +50,18 @@
 				</li>
 				</g:if>
 				
+				<g:if test="${battleMechInstance?.battleGame}">
+				<li class="fieldcontain">
+					<span id="game-label" class="property-label"><g:message code="mech.game.label" default="Game" /></span>
+					
+						<span class="property-value" aria-labelledby="game-label"><g:link controller="game" action="show" id="${battleMechInstance.battleGame?.id}">ID: ${fieldValue(bean: battleMechInstance.battleGame, field: "id")}</g:link></span>
+					
+						<g:if test="${battleMechInstance.x >= 0}">
+						<span class="property-value" aria-labelledby="game-label">Hex: [${battleMechInstance.x+","+battleMechInstance.y}]</span>
+						</g:if>
+				</li>
+				</g:if>
+				
 				<g:if test="${battleMechInstance?.status}">
 				<li class="fieldcontain">
 					<span id="status-label" class="property-label"><g:message code="mech.status.label" default="Status" /></span>

@@ -66,7 +66,7 @@ var numRows = 0;
 var hexWidth = 84;
 var hexHeight = 72;
 
-var stage, queue, progress, hexMap;
+var stage, queue, progress, hexMap, units;
 
 function initGame(){
 	
@@ -103,6 +103,9 @@ function initGame(){
 	// load the board and its images
 	loadHexMap();
 	
+	// load units and their images
+	loadUnits();
+	
 	$('#spinner').fadeIn();
 	
 	createjs.Ticker.on("tick", tick);
@@ -132,6 +135,9 @@ function handleComplete(event) {
 	
 	// Initialize the hex map display objects
 	initHexMapDisplay();
+	
+	// Initialize the units display objects
+	initUnitsDisplay();
 }
 
 function tick(event) {
@@ -159,7 +165,6 @@ function loadHexMap() {
 			  var thisHex = val;
 			  
 			  if(thisHex != null){
-				  // TODO: Create HexDisplay object as subclass of DisplayObject
 				  var hexDisplay = new HexDisplay(thisHex.x, thisHex.y, thisHex.images);
 				  
 				  // Place the hex in the map
@@ -177,6 +182,37 @@ function loadHexMap() {
 						  alreadyManifested[img] = true;
 					  }
 				  });
+			  }
+		  });
+		  
+		  queue.loadManifest(manifest);
+	  });
+}
+
+function loadUnits() {
+	
+	$.getJSON("game/getUnits", {
+	    gameId: "1"
+	  })
+	  .fail(function(jqxhr, textStatus, error) {
+		  var err = textStatus + ", " + error;
+		    console.log( "Request Failed: " + err );
+	  })
+	  .done(function( data ) {
+		  
+		  units = [];
+		  
+		  var manifest = [];
+		  var alreadyManifested = {};
+		  $.each(data, function(index, thisUnit) {
+			  if(thisUnit != null){
+				  var unitDisplay = new DisplayObject(thisUnit.x, thisUnit.y, [thisUnit.image]);
+				  units.push(unitDisplay);
+				  
+				  if(alreadyManifested[thisUnit.image] == null){
+					  manifest.push({id:thisUnit.image, src:"assets/"+thisUnit.image});
+					  alreadyManifested[thisUnit.image] = true;
+				  }
 			  }
 		  });
 		  
@@ -255,4 +291,24 @@ function initHexMapDisplay() {
 			});
 		}
 	}
+}
+
+function initUnitsDisplay() {
+	if(units == null){return;}
+	
+	$.each(units, function(index, thisDisplayUnit) {
+		
+		var xOffset = thisDisplayUnit.x * (3 * hexWidth / 4);
+		var yOffset = thisDisplayUnit.y * hexHeight;
+		
+		var thisUnitImages = thisDisplayUnit.getImages();
+		
+		$.each(thisUnitImages, function(i, img){
+			// add the unit images to the stage
+			var unitImg = new createjs.Bitmap(queue.getResult(img));
+			unitImg.x = xOffset;
+			unitImg.y = yOffset;
+			stage.addChild(unitImg);
+		});
+	});
 }

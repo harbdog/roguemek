@@ -33,4 +33,20 @@ class Game {
 	def beforeUpdate() {
 		updateDate = new Date()
 	}
+	
+	public def getUnitsRender() {
+		def unitsRender = []
+		
+		this.units?.each { u ->
+			def uRender = [
+				x: u.x,
+				y: u.y,
+				image: u.image
+			]
+			
+			unitsRender.add(uRender)
+		}
+		
+		return unitsRender
+	}
 }

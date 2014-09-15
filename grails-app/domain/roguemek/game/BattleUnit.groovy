@@ -11,6 +11,10 @@ class BattleUnit {
 
 	Pilot ownerPilot
 	
+	Game battleGame
+	Integer x
+	Integer y
+	
 	Character status = STATUS_ACTIVE
 	
 	String image
@@ -26,6 +30,10 @@ class BattleUnit {
 	
     static constraints = {
 		ownerPilot nullable: true
+		battleGame nullable: true
+		x nullable: true
+		y nullable: true
+		
 		image nullable: false
 		
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED]
