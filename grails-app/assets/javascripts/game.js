@@ -16,46 +16,56 @@ $(window).ready(function(){
 	initGame(); 
 });
 
-// Base class for a displayed object
-function DisplayObject(x, y, images) {
-	this.x = x;
-	this.y = y;
-	
-	if(images == null){
-		images = [];
-	}
-	this.images = images;
-}
-DisplayObject.prototype.getX = function() {
-	return this.x;
-}
-DisplayObject.prototype.getY = function() {
-	return this.y;
-}
-DisplayObject.prototype.isXOdd = function() {
-	return (this.x & 1 == 1);
-}
-DisplayObject.prototype.getImages = function() {
-	return this.images;
+function isXOdd(X) {
+	return (X & 1 == 1);
 }
 
 // Class for displaying each Hex
-function HexDisplay(x, y, images) {
-	this.initialize(x, y, images);
+function HexDisplay(hexX, hexY, images) {
+	this.initialize(hexX, hexY, images);
 }
-HexDisplay.prototype = new createjs.DisplayObject();
-HexDisplay.prototype.DisplayObject_initialize = HexDisplay.prototype.initialize;
-HexDisplay.prototype.initialize = function(x, y, images) {
-	this.DisplayObject_initialize();
-	this.x = x;
-	this.y = y;
+HexDisplay.prototype = new createjs.Container();
+HexDisplay.prototype.Container_initialize = HexDisplay.prototype.initialize;
+HexDisplay.prototype.initialize = function(hexX, hexY, images) {
+	this.Container_initialize();
+	this.hexX = hexX;
+	this.hexY = hexY;
 	this.images = images;
 }
 HexDisplay.prototype.isXOdd = function() {
-	return (this.x & 1 == 1);
+	return isXOdd(this.hexX);
 }
 HexDisplay.prototype.getImages = function() {
 	return this.images;
+}
+
+//Class for displaying each Unit
+function UnitDisplay(hexX, hexY, heading, imageStr) {
+	this.initialize(hexX, hexY, heading, imageStr);
+}
+UnitDisplay.prototype = new createjs.Bitmap();
+UnitDisplay.prototype.Bitmap_initialize = UnitDisplay.prototype.initialize;
+UnitDisplay.prototype.initialize = function(hexX, hexY, heading, imageStr) {
+	this.Bitmap_initialize();
+	this.hexX = hexX;
+	this.hexY = hexY;
+	this.heading = heading;
+	this.imageStr = imageStr;
+}
+UnitDisplay.prototype.getImageString = function() {
+	return this.imageStr;
+}
+UnitDisplay.prototype.updateXYRot = function() {
+	this.x = this.hexX * (3 * hexWidth / 4) + this.regX;
+	
+	if(isXOdd(this.hexX)){
+		this.y = (hexHeight / 2) + (this.hexY * hexHeight) + this.regY;
+	}
+	else{
+		this.y = this.hexY * hexHeight + this.regY;
+	}
+	
+	this.rotation = HEADING_ANGLE[this.heading];
 }
 
 // Create HexMap variables 
@@ -65,6 +75,15 @@ var numRows = 0;
 //all hex images are the same size
 var hexWidth = 84;
 var hexHeight = 72;
+
+// STATIC variables
+var HEADING_N = 0;
+var HEADING_NE = 1;
+var HEADING_SE = 2;
+var HEADING_S = 3;
+var HEADING_SW = 4;
+var HEADING_NW = 5;
+var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 
 var stage, queue, progress, hexMap, units;
 
@@ -88,6 +107,9 @@ function initGame(){
 	
 	// add resizing event
 	window.addEventListener('resize', resize_canvas, false);
+	
+	// add keyboard listener.
+	window.addEventListener('keydown', handleKeyboard, true);  
 	
 	// set up image loading queue handler
 	queue = new createjs.LoadQueue();
@@ -138,6 +160,50 @@ function handleComplete(event) {
 	
 	// Initialize the units display objects
 	initUnitsDisplay();
+}
+
+//TESTING (since this will later be handled with server interaction)
+function handleKeyboard(event) {
+	var pressedForward = false;
+	var pressedLeft = false;
+	var pressedRight = false;
+	
+    switch (event.keyCode) {
+        // left arrow
+        case 37:
+        	pressedLeft = true;
+            break;
+        // right arrow
+        case 39:
+        	pressedRight = true;
+            break;
+        // down arrow
+        case 40:
+            break;
+        // up arrow 
+        case 38:
+        	pressedForward = true;
+            break;
+    }
+    
+    $.each(units, function(index, thisDisplayUnit) {
+    	// testing rotation updates
+    	if(pressedLeft){
+    		thisDisplayUnit.heading = (thisDisplayUnit.heading + 5) % 6;
+    	}
+    	else if(pressedRight){
+    		thisDisplayUnit.heading = (thisDisplayUnit.heading + 1) % 6;
+    	}
+		
+    	else if(pressedForward){
+			//testing move forward updates
+			var newXY = getForwardCoords([thisDisplayUnit.hexX, thisDisplayUnit.hexY], thisDisplayUnit.heading);
+			thisDisplayUnit.hexX = newXY[0];
+			thisDisplayUnit.hexY = newXY[1];
+    	}
+    	
+    	thisDisplayUnit.updateXYRot();
+	});
 }
 
 function tick(event) {
@@ -206,7 +272,7 @@ function loadUnits() {
 		  var alreadyManifested = {};
 		  $.each(data, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  var unitDisplay = new DisplayObject(thisUnit.x, thisUnit.y, [thisUnit.image]);
+				  var unitDisplay = new UnitDisplay(thisUnit.x, thisUnit.y, HEADING_NE, thisUnit.image);
 				  units.push(unitDisplay);
 				  
 				  if(alreadyManifested[thisUnit.image] == null){
@@ -287,8 +353,11 @@ function initHexMapDisplay() {
 				var hexImg = new createjs.Bitmap(queue.getResult(img));
 				hexImg.x = xOffset;
 				hexImg.y = yOffset;
-				stage.addChild(hexImg);
+				
+				thisDisplayHex.addChild(hexImg);
 			});
+			
+			stage.addChild(thisDisplayHex);
 		}
 	}
 }
@@ -297,18 +366,74 @@ function initUnitsDisplay() {
 	if(units == null){return;}
 	
 	$.each(units, function(index, thisDisplayUnit) {
+		var img = thisDisplayUnit.getImageString();
+		thisDisplayUnit.image = queue.getResult(img)
 		
-		var xOffset = thisDisplayUnit.x * (3 * hexWidth / 4);
-		var yOffset = thisDisplayUnit.y * hexHeight;
+		// adjust the rotation around its own center (which also adjusts its x/y reference point)
+		thisDisplayUnit.regX = thisDisplayUnit.image.width/2;
+		thisDisplayUnit.regY = thisDisplayUnit.image.height/2;
 		
-		var thisUnitImages = thisDisplayUnit.getImages();
+		thisDisplayUnit.updateXYRot();
 		
-		$.each(thisUnitImages, function(i, img){
-			// add the unit images to the stage
-			var unitImg = new createjs.Bitmap(queue.getResult(img));
-			unitImg.x = xOffset;
-			unitImg.y = yOffset;
-			stage.addChild(unitImg);
-		});
+		stage.addChild(thisDisplayUnit);
 	});
+}
+
+// TESTING ALSO
+function getForwardCoords(fromCoords, heading){
+	var x = fromCoords[0];
+	var y = fromCoords[1];
+	
+	var newXY = [x, y];
+	switch(heading){
+		case 0:
+			if(y > 0){
+				newXY = [x,y-1];
+			}
+			break;
+			
+		case 1:
+			if(x % 2 == 0 && x < numCols - 1 && y > 0){
+				newXY = [x+1,y-1];
+			}
+			else if(x % 2 != 0 && x < numCols - 1){
+				newXY = [x+1,y];
+			}
+			break;
+			
+		case 2:
+			if(x % 2 == 0 && x < numCols - 1){
+				newXY = [x+1,y];
+			}
+			else if(x % 2 != 0 && x < numCols - 1 && y < numRows - 1){
+				newXY = [x+1,y+1];
+			}
+			break;
+			
+		case 3:
+			if(y < numRows - 1){
+				newXY = [x,y+1];
+			}
+			break;
+			
+		case 4:
+			if(x % 2 == 0 && x > 0){
+				newXY = [x-1,y];
+			}
+			else if(x % 2 != 0 && x > 0 && y < numRows - 1){
+				newXY = [x-1,y+1];
+			}
+			break;
+			
+		case 5:
+			if(x % 2 == 0 && x > 0 && y > 0){
+				newXY = [x-1,y-1];
+			}
+			else if(x % 2 != 0 && x > 0){
+				newXY = [x-1,y];
+			}
+			break;
+	}
+	
+	return newXY;
 }
