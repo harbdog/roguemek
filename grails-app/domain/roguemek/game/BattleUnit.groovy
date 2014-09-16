@@ -11,7 +11,6 @@ class BattleUnit {
 
 	Pilot ownerPilot
 	
-	Game battleGame
 	Integer x
 	Integer y
 	
@@ -30,7 +29,6 @@ class BattleUnit {
 	
     static constraints = {
 		ownerPilot nullable: true
-		battleGame nullable: true
 		x nullable: true
 		y nullable: true
 		

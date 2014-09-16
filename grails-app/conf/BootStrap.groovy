@@ -111,6 +111,8 @@ class BootStrap {
 		
 		// Initialize a sample BattleMech
 		def battleMech = new BattleMech(ownerPilot: Pilot.get(1), mech: Mech.get(1))
+		battleMech.x = 0
+		battleMech.y = 0
 		if(!battleMech.validate()) {
 			log.error("Errors with battle mech "+battleMech.mech?.name+":\n")
 			battleMech.errors.allErrors.each {
@@ -126,11 +128,6 @@ class BootStrap {
 		
 		// Initialize a sample Game
 		Game sampleGame = new Game(ownerPilot: Pilot.get(1), pilots: [Pilot.get(1)], units: [battleMech], board: boardMap)
-		
-		// Set the game and hex location on the BattleMech
-		battleMech.battleGame = sampleGame
-		battleMech.x = 0
-		battleMech.y = 0
 		
 		if(!sampleGame.validate()) {
 			log.error("Errors with game:\n")

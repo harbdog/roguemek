@@ -43,10 +43,10 @@ HexDisplay.prototype.getImages = function() {
 function UnitDisplay(hexX, hexY, heading, imageStr) {
 	this.initialize(hexX, hexY, heading, imageStr);
 }
-UnitDisplay.prototype = new createjs.Bitmap();
-UnitDisplay.prototype.Bitmap_initialize = UnitDisplay.prototype.initialize;
+UnitDisplay.prototype = new createjs.Container();
+UnitDisplay.prototype.Container_initialize = UnitDisplay.prototype.initialize;
 UnitDisplay.prototype.initialize = function(hexX, hexY, heading, imageStr) {
-	this.Bitmap_initialize();
+	this.Container_initialize();
 	this.hexX = hexX;
 	this.hexY = hexY;
 	this.heading = heading;
@@ -272,7 +272,7 @@ function loadUnits() {
 		  var alreadyManifested = {};
 		  $.each(data, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  var unitDisplay = new UnitDisplay(thisUnit.x, thisUnit.y, HEADING_NE, thisUnit.image);
+				  var unitDisplay = new UnitDisplay(thisUnit.x, thisUnit.y, HEADING_S, thisUnit.image);
 				  units.push(unitDisplay);
 				  
 				  if(alreadyManifested[thisUnit.image] == null){
@@ -347,13 +347,13 @@ function initHexMapDisplay() {
 				yOffset = (hexHeight / 2) + (y * hexHeight);
 			}
 			
+			thisDisplayHex.x = xOffset;
+			thisDisplayHex.y = yOffset;
+			
 			var thisHexImages = thisDisplayHex.getImages();
 			$.each(thisHexImages, function(i, img){
 				// add the hex images to the stage
 				var hexImg = new createjs.Bitmap(queue.getResult(img));
-				hexImg.x = xOffset;
-				hexImg.y = yOffset;
-				
 				thisDisplayHex.addChild(hexImg);
 			});
 			
@@ -366,14 +366,32 @@ function initUnitsDisplay() {
 	if(units == null){return;}
 	
 	$.each(units, function(index, thisDisplayUnit) {
-		var img = thisDisplayUnit.getImageString();
-		thisDisplayUnit.image = queue.getResult(img)
+		var imgStr = thisDisplayUnit.getImageString();
+		var image = queue.getResult(imgStr)
 		
 		// adjust the rotation around its own center (which also adjusts its x/y reference point)
-		thisDisplayUnit.regX = thisDisplayUnit.image.width/2;
-		thisDisplayUnit.regY = thisDisplayUnit.image.height/2;
+		thisDisplayUnit.regX = image.width/2;
+		thisDisplayUnit.regY = image.height/2;
+		
+		// make the unit just a bit smaller since it currently is same size as the hex
+		thisDisplayUnit.scaleX = 0.8;
+		thisDisplayUnit.scaleY = 0.8;
 		
 		thisDisplayUnit.updateXYRot();
+		
+		// load the unit image as a Bitmap
+		var unitImg = new createjs.Bitmap(image);
+		thisDisplayUnit.addChild(unitImg);
+		
+		// load the unit image again and apply alpha color filter
+		var unitAlphaImg = new createjs.Bitmap(image);
+		unitAlphaImg.filters = [
+	        new createjs.ColorFilter(0,0,0,0.5, 
+	        						 255,0,0,0)
+	    ];
+		unitAlphaImg.cache(0, 0, image.width, image.height);
+		thisDisplayUnit.addChild(unitAlphaImg);
+		
 		
 		stage.addChild(thisDisplayUnit);
 	});
