@@ -189,21 +189,64 @@ function handleKeyboard(event) {
     $.each(units, function(index, thisDisplayUnit) {
     	// testing rotation updates
     	if(pressedLeft){
-    		thisDisplayUnit.heading = (thisDisplayUnit.heading + 5) % 6;
+    		rotate(false);
     	}
     	else if(pressedRight){
-    		thisDisplayUnit.heading = (thisDisplayUnit.heading + 1) % 6;
+    		rotate(true);
     	}
-		
     	else if(pressedForward){
 			//testing move forward updates
-			var newXY = getForwardCoords([thisDisplayUnit.hexX, thisDisplayUnit.hexY], thisDisplayUnit.heading);
-			thisDisplayUnit.hexX = newXY[0];
-			thisDisplayUnit.hexY = newXY[1];
+			move();
     	}
-    	
-    	thisDisplayUnit.updateXYRot();
 	});
+}
+
+function move() {
+	
+	$.getJSON("game/move", {
+		gameId: "1",
+		forward: true,
+		jumping: false
+	  })
+	  .fail(function(jqxhr, textStatus, error) {
+		  var err = textStatus + ", " + error;
+		    console.log( "Request Failed: " + err );
+	  })
+	  .done(function( data ) {
+		  // update the unit based on new data
+		  console.log("move "+data.unit+":"+data.x+","+data.y+">"+data.heading);
+		  
+		  var thisUnit = units[data.unit];
+		  thisUnit.hexX = data.x;
+		  thisUnit.hexY = data.y;
+		  thisUnit.heading = data.heading;
+		  
+		  thisUnit.updateXYRot();
+	  });
+}
+
+function rotate(rotation) {
+	
+	$.getJSON("game/rotate", {
+		gameId: "1",
+		rotation: rotation,
+		jumping: false
+	  })
+	  .fail(function(jqxhr, textStatus, error) {
+		  var err = textStatus + ", " + error;
+		    console.log( "Request Failed: " + err );
+	  })
+	  .done(function( data ) {
+		  // update the unit based on new data
+		  console.log("rotate "+data.unit+":"+data.x+","+data.y+">"+data.heading);
+		  
+		  var thisUnit = units[data.unit];
+		  thisUnit.hexX = data.x;
+		  thisUnit.hexY = data.y;
+		  thisUnit.heading = data.heading;
+		  
+		  thisUnit.updateXYRot();
+	  });
 }
 
 function tick(event) {
@@ -266,14 +309,14 @@ function loadUnits() {
 	  })
 	  .done(function( data ) {
 		  
-		  units = [];
+		  units = {};
 		  
 		  var manifest = [];
 		  var alreadyManifested = {};
 		  $.each(data, function(index, thisUnit) {
 			  if(thisUnit != null){
 				  var unitDisplay = new UnitDisplay(thisUnit.x, thisUnit.y, HEADING_S, thisUnit.image);
-				  units.push(unitDisplay);
+				  units[thisUnit.unit] = unitDisplay;
 				  
 				  if(alreadyManifested[thisUnit.image] == null){
 					  manifest.push({id:thisUnit.image, src:"assets/"+thisUnit.image});
@@ -285,6 +328,7 @@ function loadUnits() {
 		  queue.loadManifest(manifest);
 	  });
 }
+
 
 // Track when the stage map is dragged to pan the board
 var stageInitDragMoveX = null;

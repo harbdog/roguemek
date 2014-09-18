@@ -25,7 +25,7 @@
 			
 				<% 
 					def mechInstance = battleMechInstance?.mech
-					def pilotInstance = battleMechInstance?.ownerPilot
+					def pilotInstance = battleMechInstance?.pilot
 				 %>
 			
 				<g:if test="${mechInstance}">
@@ -43,22 +43,10 @@
 			
 				<g:if test="${pilotInstance}">
 				<li class="fieldcontain">
-					<span id="ownerPilot-label" class="property-label"><g:message code="battleMech.ownerPilot.label" default="Owner Pilot" /></span>
+					<span id="pilot-label" class="property-label"><g:message code="battleMech.pilot.label" default="Pilot" /></span>
 					
-						<span class="property-value" aria-labelledby="ownerPilot-label"><g:link controller="pilot" action="show" id="${pilotInstance?.id}">${pilotInstance?.firstName +" \""+pilotInstance?.ownerUser?.callsign+"\" "+pilotInstance?.lastName}</g:link></span>
+						<span class="property-value" aria-labelledby="pilot-label"><g:link controller="pilot" action="show" id="${pilotInstance?.id}">${pilotInstance?.firstName +" \""+pilotInstance?.ownerUser?.callsign+"\" "+pilotInstance?.lastName}</g:link></span>
 					
-				</li>
-				</g:if>
-				
-				<g:if test="${battleMechInstance?.battleGame}">
-				<li class="fieldcontain">
-					<span id="game-label" class="property-label"><g:message code="mech.game.label" default="Game" /></span>
-					
-						<span class="property-value" aria-labelledby="game-label"><g:link controller="game" action="show" id="${battleMechInstance.battleGame?.id}">ID: ${fieldValue(bean: battleMechInstance.battleGame, field: "id")}</g:link></span>
-					
-						<g:if test="${battleMechInstance.x >= 0}">
-						<span class="property-value" aria-labelledby="game-label">Hex: [${battleMechInstance.x+","+battleMechInstance.y}]</span>
-						</g:if>
 				</li>
 				</g:if>
 				

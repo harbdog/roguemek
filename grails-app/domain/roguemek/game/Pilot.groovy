@@ -9,7 +9,6 @@ class Pilot {
 	User ownerUser
 	Character status
 	
-	BattleUnit unit
 	static hasMany = [ownedUnits:BattleUnit]
 	
 	// STATIC value mappings
@@ -23,8 +22,6 @@ class Pilot {
 		ownerUser nullable: false
 		
 		status inList: [STATUS_ACTIVE, STATUS_DECEASED, STATUS_RETIRED]
-		
-		unit nullable: true
     }
 	
 	@Override

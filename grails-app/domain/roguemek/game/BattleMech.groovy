@@ -56,7 +56,7 @@ class BattleMech extends BattleUnit {
 			mech.crits.each { equipId ->
 				def thisEquip = Equipment.get(equipId)
 				
-				BattleEquipment bEquip = new BattleEquipment(ownerPilot: ownerPilot, equipment: Equipment.get(equipId))
+				BattleEquipment bEquip = new BattleEquipment(ownerPilot: pilot, equipment: Equipment.get(equipId));
 				bEquip.save flush:true
 				
 				crits[counter++] = bEquip.id

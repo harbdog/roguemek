@@ -11,12 +11,12 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: battleMechInstance, field: 'ownerPilot', 'error')} required">
-	<label for="ownerPilot">
-		<g:message code="battleMech.ownerPilot.label" default="Owner Pilot" />
+<div class="fieldcontain ${hasErrors(bean: battleMechInstance, field: 'pilot', 'error')} required">
+	<label for="pilot">
+		<g:message code="battleMech.pilot.label" default="Owner Pilot" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="ownerPilot" name="ownerPilot.id" from="${roguemek.game.Pilot.list()}" optionKey="id" required="" optionValue="${{it?.firstName+" \""+it?.ownerUser?.callsign+"\" "+it?.lastName}}" value="${battleMechInstance?.ownerPilot?.id}" class="many-to-one"/>
+	<g:select id="pilot" name="pilot.id" from="${roguemek.game.Pilot.list()}" optionKey="id" required="" optionValue="${{it?.firstName+" \""+it?.ownerUser?.callsign+"\" "+it?.lastName}}" value="${battleMechInstance?.pilot?.id}" class="many-to-one"/>
 
 </div>
 
