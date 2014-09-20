@@ -15,23 +15,19 @@ class GameController {
 		log.info('Starting the index action...')
 	}
 	
-	def getHexMap() {
+	def getGameElements() {
 		Game g = Game.get(params.gameId)
 		HexMap b = g?.board
 		if(g == null || b == null) {
 			return
 		}
 		
-		render b.getHexMapRender() as JSON
-	}
-	
-	def getUnits() {
-		Game g = Game.get(params.gameId)
-		if(g == null) {
-			return
-		}
+		def elements = [
+			board: b.getHexMapRender(),
+			units: g.getUnitsRender()
+		]
 		
-		render g.getUnitsRender() as JSON
+		render elements as JSON
 	}
 	
 	def action() {

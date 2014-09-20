@@ -4,12 +4,6 @@
 
 function tick(event) {
 	stage.update(event);
-	
-	if(hexImagesReady && unitImagesReady){
-		queue.loadManifest(manifest);
-		hexImagesReady = false;
-		unitImagesReady = false;
-	}
 }
 
 function handleProgress(event) {

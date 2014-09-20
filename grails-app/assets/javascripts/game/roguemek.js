@@ -7,53 +7,7 @@ function isXOdd(X) {
 	return (X & 1 == 1);
 }
 
-// Class for displaying each Hex
-function HexDisplay(hexX, hexY, images) {
-	this.initialize(hexX, hexY, images);
-}
-HexDisplay.prototype = new createjs.Container();
-HexDisplay.prototype.Container_initialize = HexDisplay.prototype.initialize;
-HexDisplay.prototype.initialize = function(hexX, hexY, images) {
-	this.Container_initialize();
-	this.hexX = hexX;
-	this.hexY = hexY;
-	this.images = images;
-}
-HexDisplay.prototype.isXOdd = function() {
-	return isXOdd(this.hexX);
-}
-HexDisplay.prototype.getImages = function() {
-	return this.images;
-}
 
-//Class for displaying each Unit
-function UnitDisplay(hexX, hexY, heading, imageStr) {
-	this.initialize(hexX, hexY, heading, imageStr);
-}
-UnitDisplay.prototype = new createjs.Container();
-UnitDisplay.prototype.Container_initialize = UnitDisplay.prototype.initialize;
-UnitDisplay.prototype.initialize = function(hexX, hexY, heading, imageStr) {
-	this.Container_initialize();
-	this.hexX = hexX;
-	this.hexY = hexY;
-	this.heading = heading;
-	this.imageStr = imageStr;
-}
-UnitDisplay.prototype.getImageString = function() {
-	return this.imageStr;
-}
-UnitDisplay.prototype.updateXYRot = function() {
-	this.x = this.hexX * (3 * hexWidth / 4) + this.regX;
-	
-	if(isXOdd(this.hexX)){
-		this.y = (hexHeight / 2) + (this.hexY * hexHeight) + this.regY;
-	}
-	else{
-		this.y = this.hexY * hexHeight + this.regY;
-	}
-	
-	this.rotation = HEADING_ANGLE[this.heading];
-}
 
 // Create HexMap variables 
 var numCols = 0;
@@ -72,12 +26,12 @@ var HEADING_SW = 4;
 var HEADING_NW = 5;
 var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 
+// Global variables used throughout the game
 var stage, queue, progress, hexMap, units;
 
-var hexImagesReady, unitImagesReady;
-
-var manifest = [];
-var alreadyManifested = {};
+// Track when the stage map is dragged to pan the board
+var stageInitDragMoveX = null;
+var stageInitDragMoveY = null;
 
 function initGame(){
 	
@@ -107,11 +61,8 @@ function initGame(){
 	stage.addChild(progress);
 	
 	
-	// load the board and its images
-	loadHexMap();
-	
-	// load units and their images
-	loadUnits();
+	// load the board, units and their images
+	loadGameElements();
 	
 	$('#spinner').fadeIn();
 	
@@ -126,64 +77,9 @@ function resize_canvas(){
 	}
 }
 
-
-
-function move() {
+function loadGameElements() {
 	
-	$.getJSON("game/action", {
-		perform: "move",
-		gameId: "1",
-		forward: true,
-		jumping: false
-	  })
-	  .fail(function(jqxhr, textStatus, error) {
-		  var err = textStatus + ", " + error;
-		    console.log( "Request Failed: " + err );
-	  })
-	  .done(function( data ) {
-		  // update the unit based on new data
-		  console.log("move "+data.unit+":"+data.x+","+data.y+">"+data.heading);
-		  if(data.unit == null){
-			  return;
-		  }
-		  
-		  var thisUnit = units[data.unit];
-		  thisUnit.hexX = data.x;
-		  thisUnit.hexY = data.y;
-		  thisUnit.heading = data.heading;
-		  
-		  thisUnit.updateXYRot();
-	  });
-}
-
-function rotate(rotation) {
-	
-	$.getJSON("game/action", {
-		perform: "rotate",
-		gameId: "1",
-		rotation: rotation,
-		jumping: false
-	  })
-	  .fail(function(jqxhr, textStatus, error) {
-		  var err = textStatus + ", " + error;
-		    console.log( "Request Failed: " + err );
-	  })
-	  .done(function( data ) {
-		  // update the unit based on new data
-		  console.log("rotate "+data.unit+":"+data.x+","+data.y+">"+data.heading);
-		  
-		  var thisUnit = units[data.unit];
-		  thisUnit.hexX = data.x;
-		  thisUnit.hexY = data.y;
-		  thisUnit.heading = data.heading;
-		  
-		  thisUnit.updateXYRot();
-	  });
-}
-
-function loadHexMap() {
-	
-	$.getJSON("game/getHexMap", {
+	$.getJSON("game/getGameElements", {
 	    gameId: "1"
 	  })
 	  .fail(function(jqxhr, textStatus, error) {
@@ -191,12 +87,18 @@ function loadHexMap() {
 		    console.log( "Request Failed: " + err );
 	  })
 	  .done(function( data ) {
+
+		  var manifest = [];
+		  var alreadyManifested = {};
 		  
-		  numCols = data.numCols;
-		  numRows = data.numRows;
+		  units = {};
 		  hexMap = [];
 		  
-		  $.each(data.hexMap, function(key, val) {
+		  numCols = data.board.numCols;
+		  numRows = data.board.numRows;
+		  
+		  // create the board hex display
+		  $.each(data.board.hexMap, function(key, val) {
 			  var thisHex = val;
 			  
 			  if(thisHex != null){
@@ -220,24 +122,8 @@ function loadHexMap() {
 			  }
 		  });
 		  
-		  hexImagesReady = true;
-	  });
-}
-
-function loadUnits() {
-	
-	$.getJSON("game/getUnits", {
-	    gameId: "1"
-	  })
-	  .fail(function(jqxhr, textStatus, error) {
-		  var err = textStatus + ", " + error;
-		    console.log( "Request Failed: " + err );
-	  })
-	  .done(function( data ) {
-		  
-		  units = {};
-		  
-		  $.each(data, function(index, thisUnit) {
+		  // create each unit display
+		  $.each(data.units, function(index, thisUnit) {
 			  if(thisUnit != null){
 				  var unitDisplay = new UnitDisplay(thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.image);
 				  units[thisUnit.unit] = unitDisplay;
@@ -249,14 +135,9 @@ function loadUnits() {
 			  }
 		  });
 		  
-		  unitImagesReady = true;
+		  queue.loadManifest(manifest);
 	  });
 }
-
-
-// Track when the stage map is dragged to pan the board
-var stageInitDragMoveX = null;
-var stageInitDragMoveY = null;
 
 function initHexMapDisplay() {
 	if(hexMap == null){return;}
@@ -363,63 +244,4 @@ function initUnitsDisplay() {
 		
 		stage.addChild(thisDisplayUnit);
 	});
-}
-
-// TESTING ALSO
-function getForwardCoords(fromCoords, heading){
-	var x = fromCoords[0];
-	var y = fromCoords[1];
-	
-	var newXY = [x, y];
-	switch(heading){
-		case 0:
-			if(y > 0){
-				newXY = [x,y-1];
-			}
-			break;
-			
-		case 1:
-			if(x % 2 == 0 && x < numCols - 1 && y > 0){
-				newXY = [x+1,y-1];
-			}
-			else if(x % 2 != 0 && x < numCols - 1){
-				newXY = [x+1,y];
-			}
-			break;
-			
-		case 2:
-			if(x % 2 == 0 && x < numCols - 1){
-				newXY = [x+1,y];
-			}
-			else if(x % 2 != 0 && x < numCols - 1 && y < numRows - 1){
-				newXY = [x+1,y+1];
-			}
-			break;
-			
-		case 3:
-			if(y < numRows - 1){
-				newXY = [x,y+1];
-			}
-			break;
-			
-		case 4:
-			if(x % 2 == 0 && x > 0){
-				newXY = [x-1,y];
-			}
-			else if(x % 2 != 0 && x > 0 && y < numRows - 1){
-				newXY = [x-1,y+1];
-			}
-			break;
-			
-		case 5:
-			if(x % 2 == 0 && x > 0 && y > 0){
-				newXY = [x-1,y-1];
-			}
-			else if(x % 2 != 0 && x > 0){
-				newXY = [x-1,y];
-			}
-			break;
-	}
-	
-	return newXY;
 }
