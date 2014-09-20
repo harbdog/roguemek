@@ -1,13 +1,10 @@
-// This is a manifest file that'll be compiled into application.js.
+// This is a manifest file that loads the javascript files needed for the non-gameplay aspects.
 //
 // Any JavaScript file within this directory can be referenced here using a relative path.
 //
-// You're free to add application-wide JavaScript to this file, but it's generally better 
-// to create separate JavaScript files as needed.
-//
 //= require jquery
 //= require jquery.form.js
-//= require_tree .
+//= require createjs-2013.12.12.min.js
 //= require_self
 
 if (typeof jQuery !== 'undefined') {
@@ -41,21 +38,21 @@ function init(){
 	});
 	
 	// Test for instant search to create links in a panel
-	$("#searchField").keyup(function() {
+	/*$("#searchField").keyup(function() {
 		console.log("value: "+this.value);
 		$("#searchResults").load("RogueMek/search?q="+this.value);
-	});
+	});*/
 	
 	// Load a #mechLinkN into the #mechPanel
-	$("a[id^='mechLink']").click (function() {
+	/*$("a[id^='mechLink']").click (function() {
 		var mechLinkId = this.id.substring(8);
         return showMech(mechLinkId);
-    });
+    });*/
 	
 	// Testing weapons fire on the BattleMech model using a Weapon
-	$("#testWeaponForm").ajaxForm(function(result) {
+	/*$("#testWeaponForm").ajaxForm(function(result) {
 		$('#testWeaponResults').html(result);
-	});
+	});*/
 }
 
 function showMech(mechId) {
