@@ -4,7 +4,6 @@ import static org.springframework.http.HttpStatus.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import grails.converters.*
-import roguemek.game.*
 import roguemek.model.*
 
 @Transactional(readOnly = true)
@@ -35,35 +34,9 @@ class GameController {
 		render g.getUnitsRender() as JSON
 	}
 	
-	def move() {
-		Game g = Game.get(params.gameId)
-		if(g == null) {
-			return
-		}
-		
-		BattleUnit u = g.getUnit(0)
-		boolean forward = (params.forward != null) ? params.forward : true
-		boolean jumping = (params.jumping != null) ? params.jumping : false
-		
-		render g.move(u, forward, jumping) as JSON
-	}
-	
-	def rotate() {
-		Game g = Game.get(params.gameId)
-		if(g == null) {
-			return
-		}
-		
-		BattleUnit u = g.getUnit(0)
-		boolean rotation = (params.rotation != null) ? Boolean.valueOf(params.rotation) : true
-		boolean jumping = (params.jumping != null) ? params.jumping : false
-		
-		if(rotation) {
-			render g.rotateHeadingCW(u, jumping) as JSON
-		}
-		else {
-			render g.rotateHeadingCCW(u, jumping) as JSON
-		}
+	def action() {
+		GameControllerHelper helper = new GameControllerHelper(params)
+		render helper.performAction() as JSON
 	}
 
 	@Secured(['ROLE_ADMIN'])

@@ -42,6 +42,7 @@ class Game {
 				unit: u.id,
 				x: u.x,
 				y: u.y,
+				heading: u.heading,
 				image: u.image
 			]
 			

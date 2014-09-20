@@ -203,7 +203,8 @@ function handleKeyboard(event) {
 
 function move() {
 	
-	$.getJSON("game/move", {
+	$.getJSON("game/action", {
+		perform: "move",
 		gameId: "1",
 		forward: true,
 		jumping: false
@@ -215,6 +216,9 @@ function move() {
 	  .done(function( data ) {
 		  // update the unit based on new data
 		  console.log("move "+data.unit+":"+data.x+","+data.y+">"+data.heading);
+		  if(data.unit == null){
+			  return;
+		  }
 		  
 		  var thisUnit = units[data.unit];
 		  thisUnit.hexX = data.x;
@@ -227,7 +231,8 @@ function move() {
 
 function rotate(rotation) {
 	
-	$.getJSON("game/rotate", {
+	$.getJSON("game/action", {
+		perform: "rotate",
 		gameId: "1",
 		rotation: rotation,
 		jumping: false
@@ -315,7 +320,7 @@ function loadUnits() {
 		  var alreadyManifested = {};
 		  $.each(data, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  var unitDisplay = new UnitDisplay(thisUnit.x, thisUnit.y, HEADING_S, thisUnit.image);
+				  var unitDisplay = new UnitDisplay(thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.image);
 				  units[thisUnit.unit] = unitDisplay;
 				  
 				  if(alreadyManifested[thisUnit.image] == null){
