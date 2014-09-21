@@ -69,6 +69,17 @@ class GameController {
 		
 		render helper.performAction() as JSON
 	}
+	
+	/**
+	 * This action is used to poll the server for continuous updates to the game
+	 * @render JSON object containing updates to relay back to the client
+	 */
+	def poll() {
+		Thread.sleep(5000)
+		
+		def updates = [test:"test", date: new Date()]
+		render updates as JSON
+	}
 
 	@Secured(['ROLE_ADMIN'])
     def list(Integer max) {

@@ -3,6 +3,8 @@
  */
 
 function move() {
+	// make sure the player can't make another request until this one is complete
+	playerActionReady = false;
 	
 	$.getJSON("game/action", {
 		perform: "move",
@@ -26,10 +28,15 @@ function move() {
 		  thisUnit.heading = data.heading;
 		  
 		  thisUnit.updateXYRot();
+	  })
+	  .always(function() {
+		  playerActionReady = true;
 	  });
 }
 
 function rotate(rotation) {
+	// make sure the player can't make another request until this one is complete
+	playerActionReady = false;
 	
 	$.getJSON("game/action", {
 		perform: "rotate",
@@ -38,7 +45,7 @@ function rotate(rotation) {
 	  })
 	  .fail(function(jqxhr, textStatus, error) {
 		  var err = textStatus + ", " + error;
-		    console.log( "Request Failed: " + err );
+		  console.log( "Request Failed: " + err );
 	  })
 	  .done(function( data ) {
 		  // update the unit based on new data
@@ -50,5 +57,8 @@ function rotate(rotation) {
 		  thisUnit.heading = data.heading;
 		  
 		  thisUnit.updateXYRot();
+	  })
+	  .always(function() {
+		  playerActionReady = true;
 	  });
 }

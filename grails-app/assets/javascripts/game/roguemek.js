@@ -29,6 +29,12 @@ var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 // Global variables used throughout the game
 var stage, queue, progress, hexMap, units;
 
+// Keep track of which unit's turn it currently is
+var playerTurnIndex = 0;
+
+// Keep track of when actions are ready to be performed during the player turn
+var playerActionReady = false;
+
 // Track when the stage map is dragged to pan the board
 var stageInitDragMoveX = null;
 var stageInitDragMoveY = null;
@@ -244,3 +250,9 @@ function initUnitsDisplay() {
 		stage.addChild(thisDisplayUnit);
 	});
 }
+
+(function poll(){
+    $.ajax({ url: "game/poll", success: function(data){
+        console.log("polled data: "+data.date);
+    }, dataType: "json", complete: poll, timeout: 30000 });
+})();

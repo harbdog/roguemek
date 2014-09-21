@@ -135,10 +135,25 @@ class BootStrap {
 		
 			log.info('Initialized battle mech '+battleMech.mech.name)
 		}
-		assert BattleMech.count() == 1
+		
+		// and another BattleMech
+		def battleMech2 = new BattleMech(pilot: Pilot.get(2), mech: Mech.get(2), x: 1, y: 1, heading: 0)
+		if(!battleMech2.validate()) {
+			log.error("Errors with battle mech "+battleMech2.mech?.name+":\n")
+			battleMech2.errors.allErrors.each {
+				log.error(it)
+			}
+		}
+		else {
+			battleMech2.save()
+		
+			log.info('Initialized battle mech '+battleMech2.mech.name)
+		}
+		
+		assert BattleMech.count() == 2
 		
 		// Initialize a sample Game
-		Game sampleGame = new Game(ownerPilot: Pilot.get(1), pilots: [Pilot.get(1)], units: [battleMech], board: boardMap)
+		Game sampleGame = new Game(ownerPilot: Pilot.get(1), pilots: [Pilot.get(1), Pilot.get(2)], units: [battleMech, battleMech2], board: boardMap)
 		
 		if(!sampleGame.validate()) {
 			log.error("Errors with game:\n")

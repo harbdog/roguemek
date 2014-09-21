@@ -51,15 +51,21 @@ function handleKeyboard(event) {
             break;
     }
     
-	// testing rotation updates
-	if(pressedLeft){
-		rotate(false);
-	}
-	else if(pressedRight){
-		rotate(true);
-	}
-	else if(pressedForward){
-		//testing move forward updates
-		move();
-	}
+    if(playerActionReady){
+		// testing rotation updates
+		if(pressedLeft){
+			rotate(false);
+		}
+		else if(pressedRight){
+			rotate(true);
+		}
+		else if(pressedForward){
+			//testing move forward updates
+			move();
+		}
+    }
+    else{
+    	// TODO: tell player to wait until their turn and ready for action
+    	console.log("Waiting...")
+    }
 }
