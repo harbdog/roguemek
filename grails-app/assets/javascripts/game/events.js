@@ -51,17 +51,15 @@ function handleKeyboard(event) {
             break;
     }
     
-    $.each(units, function(index, thisDisplayUnit) {
-    	// testing rotation updates
-    	if(pressedLeft){
-    		rotate(false);
-    	}
-    	else if(pressedRight){
-    		rotate(true);
-    	}
-    	else if(pressedForward){
-			//testing move forward updates
-			move();
-    	}
-	});
+	// testing rotation updates
+	if(pressedLeft){
+		rotate(false);
+	}
+	else if(pressedRight){
+		rotate(true);
+	}
+	else if(pressedForward){
+		//testing move forward updates
+		move();
+	}
 }
