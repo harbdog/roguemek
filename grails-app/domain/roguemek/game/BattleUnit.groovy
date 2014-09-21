@@ -12,9 +12,9 @@ class BattleUnit {
 
 	Pilot pilot	// pilot can be a Pilot other than the owner of the unit
 	
-	Integer x
-	Integer y
-	Integer heading
+	Integer x = 0
+	Integer y = 0
+	Integer heading = 0
 	Integer actionPoints = 0
 	Integer jumpPoints = 0
 	Integer heat = 0

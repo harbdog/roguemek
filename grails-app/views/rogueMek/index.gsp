@@ -30,9 +30,19 @@
 					
 						<g:each in="${userInstance.pilots}" var="p">
 						<%
-							def g = Game.findByOwnerPilot(p)
+							// TODO: The findByPilots query was failing, so doing it the dumb way just to get past, fix it later?
+							def gameList = Game.getAll()
+							def g = null
+							gameList.each { thisGame ->
+								if(thisGame.pilots?.contains(p)){
+									g = thisGame
+									return
+								}
+							}
 						%>
-						<span class="property-value" aria-labelledby="pilots-label"><g:link action="playGame" params='[game:"${g.id}", pilot:"${p.id}"]'>${p?.firstName+" "+p?.lastName} - Game ID:${g.id}</g:link></span>
+							<g:if test="${g}">
+								<span class="property-value" aria-labelledby="pilots-label"><g:link action="playGame" params='[game:"${g.id}", pilot:"${p.id}"]'>${p?.firstName+" "+p?.lastName} - Game ID:${g.id}</g:link></span>
+							</g:if>
 						</g:each>
 					
 				</li>
