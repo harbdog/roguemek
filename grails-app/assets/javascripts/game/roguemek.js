@@ -80,7 +80,6 @@ function resize_canvas(){
 function loadGameElements() {
 	
 	$.getJSON("game/getGameElements", {
-	    gameId: "1"
 	  })
 	  .fail(function(jqxhr, textStatus, error) {
 		  var err = textStatus + ", " + error;

@@ -79,6 +79,19 @@ class BootStrap {
 			
 				log.info('Initialized test user '+testUser.username)
 			}
+			
+			def testPilot = new Pilot(firstName: "Testy", lastName: "Tester", ownerUser: testUser, status: Pilot.STATUS_ACTIVE)
+			if(!testPilot.validate()) {
+				log.error("Errors with pilot "+testPilot.firstName+":\n")
+				testPilot.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				testPilot.save()
+			
+				log.info('Initialized test pilot '+testPilot.firstName)
+			}
 		}
 		
 		UserRole.create testUser, userRole, true
@@ -86,7 +99,7 @@ class BootStrap {
 		assert User.count() == 2
 		assert Role.count() == 3
 		assert UserRole.count() == 4
-		assert Pilot.count() == 1
+		assert Pilot.count() == 2
 		
 		
 		// Initialize factions

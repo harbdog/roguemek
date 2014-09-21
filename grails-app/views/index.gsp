@@ -5,7 +5,9 @@
 		<title>RogueMek</title>
 	</head>
 	<body id="body">
-		<h1>Prepare for <g:link controller="game" action="index">Battle!</g:link></h1>
-		<p>Mechwarrior, are you ready?</p>
+		<sec:ifLoggedIn>
+			<h1>Prepare for <g:link controller="rogueMek" action="index">Battle!</g:link></h1>
+			<p>Mechwarrior, are you ready?</p>
+		</sec:ifLoggedIn>
 	</body>
 </html>

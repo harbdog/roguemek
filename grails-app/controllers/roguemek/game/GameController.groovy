@@ -4,19 +4,46 @@ import static org.springframework.http.HttpStatus.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import grails.converters.*
+import roguemek.*
 import roguemek.model.*
 
 @Transactional(readOnly = true)
 class GameController {
+	
+	transient springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
 	def index() {
-		log.info('Starting the index action...')
+		def doRedirect = false;
+		
+		if(springSecurityService.isLoggedIn()) {
+			Game g = Game.get(session.game)
+			Pilot p = Pilot.get(session.pilot)
+			
+			if(g == null || p == null) {
+				doRedirect = true
+			}
+			else {
+				BattleUnit u = BattleUnit.get(session.unit)
+				log.info("User "+currentUser()?.username+" joining Game("+g.id+") with Pilot("+p.toString()+") in Unit "+u)
+			}
+		}
+		else {
+			doRedirect = true
+		}
+		
+		if(doRedirect) {
+			redirect controller: "RogueMek"
+		}
 	}
 	
+	/**
+	 * This action is only called when the client first loads the game and is initializing.
+	 * @render JSON object containing the game elements such as hex map and units
+	 */
 	def getGameElements() {
-		Game g = Game.get(params.gameId)
+		Game g = Game.get(session.game)
 		HexMap b = g?.board
 		if(g == null || b == null) {
 			return
@@ -29,9 +56,17 @@ class GameController {
 		
 		render elements as JSON
 	}
-	
+
+	/**
+	 * This action is called for any client action sent to the server for play and routes to 
+	 * the helper for performing, which will then return messages to relay back to the client.
+	 * @render JSON object containing messages to relay back to the client
+	 */
 	def action() {
-		GameControllerHelper helper = new GameControllerHelper(params)
+		Game g = Game.get(session.game)
+		BattleUnit u = BattleUnit.get(session.unit)
+		GameControllerHelper helper = new GameControllerHelper(g, u, params)
+		
 		render helper.performAction() as JSON
 	}
 
@@ -150,6 +185,10 @@ class GameController {
             '*'{ render status: NO_CONTENT }
         }
     }
+	
+	private currentUser() {
+		return User.get(springSecurityService.principal.id)
+	}
 
     protected void notFound() {
         request.withFormat {

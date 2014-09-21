@@ -6,7 +6,6 @@ function move() {
 	
 	$.getJSON("game/action", {
 		perform: "move",
-		gameId: "1",
 		forward: true,
 		jumping: false
 	  })
@@ -34,7 +33,6 @@ function rotate(rotation) {
 	
 	$.getJSON("game/action", {
 		perform: "rotate",
-		gameId: "1",
 		rotation: rotation,
 		jumping: false
 	  })

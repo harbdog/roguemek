@@ -8,7 +8,37 @@
 		<title>RogueMek</title>
 	</head>
 	<body id="body">
-		<h1>Prepare for <g:link controller="game" action="index">Battle!</g:link></h1>
-		<p>Mechwarrior, are you ready?</p>
+		<div id="show-user" class="content scaffold-show" role="main">
+			<h1>Select a game to play</h1>
+			<g:if test="${flash.message}">
+			<div class="message" role="status">${flash.message}</div>
+			</g:if>
+			<ol class="property-list user">
+			
+				<g:if test="${userInstance?.callsign}">
+				<li class="fieldcontain">
+					<span id="callsign-label" class="property-label"><g:message code="user.callsign.label" default="Callsign" /></span>
+					
+						<span class="property-value" aria-labelledby="callsign-label"><g:fieldValue bean="${userInstance}" field="callsign"/></span>
+					
+				</li>
+				</g:if>
+			
+				<g:if test="${userInstance?.pilots}">
+				<li class="fieldcontain">
+					<span id="pilots-label" class="property-label"><g:message code="user.pilots.label" default="Pilots" /></span>
+					
+						<g:each in="${userInstance.pilots}" var="p">
+						<%
+							def g = Game.findByOwnerPilot(p)
+						%>
+						<span class="property-value" aria-labelledby="pilots-label"><g:link action="playGame" params='[game:"${g.id}", pilot:"${p.id}"]'>${p?.firstName+" "+p?.lastName} - Game ID:${g.id}</g:link></span>
+						</g:each>
+					
+				</li>
+				</g:if>
+			
+			</ol>
+		</div>
 	</body>
 </html>

@@ -7,14 +7,15 @@ class GameControllerHelper {
 	Map params
 	
 	Game game
+	BattleUnit unit
 	String action
 	
-	public GameControllerHelper(Map params) {
+	public GameControllerHelper(Game g, BattleUnit u, Map params) {
+		this.game = g
+		this.unit = u
 		this.params = params
 		
-		this.game = Game.get(params.gameId)
-		
-		// the params.action is already in use by the controller action
+		// params.action is already in use by the controller action
 		this.action = params.perform
 	}
 	
@@ -34,29 +35,31 @@ class GameControllerHelper {
 	 * @return
 	 */
 	private def methodMissing(String name, args) {
-		log.info("Missing action name="+name+", args="+args)
+		log.error("Missing action name="+name+", args="+args)
 		
-		// TODO: return with some error about missing action
+		// TODO: return with some error game message about missing action
 	}
 	
-	private def move() {		
-		BattleUnit u = game.getUnit(0)
+	private def move() {
+		if(this.unit == null) return
+		
 		boolean forward = (params.forward != null) ? params.forward : true
 		boolean jumping = (params.jumping != null) ? params.jumping : false
 		
-		return game.move(u, forward, jumping)
+		return game.move(this.unit, forward, jumping)
 	}
 	
 	private def rotate() {
-		BattleUnit u = game.getUnit(0)
+		if(this.unit == null) return
+		
 		boolean rotation = (params.rotation != null) ? Boolean.valueOf(params.rotation) : true
 		boolean jumping = (params.jumping != null) ? params.jumping : false
 		
 		if(rotation) {
-			return game.rotateHeadingCW(u, jumping)
+			return game.rotateHeadingCW(this.unit, jumping)
 		}
 		else {
-			return game.rotateHeadingCCW(u, jumping)
+			return game.rotateHeadingCCW(this.unit, jumping)
 		}
 	}
 }
