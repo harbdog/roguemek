@@ -64,7 +64,7 @@ class GameControllerHelper {
 		boolean forward = (params.forward != null) ? params.forward : true
 		boolean jumping = (params.jumping != null) ? params.jumping : false
 		
-		return game.move(this.unit, forward, jumping)
+		return new GameHelper(this.game).move(this.unit, forward, jumping)
 	}
 	
 	private def rotate() {
@@ -74,10 +74,10 @@ class GameControllerHelper {
 		boolean jumping = (params.jumping != null) ? params.jumping : false
 		
 		if(rotation) {
-			return game.rotateHeadingCW(this.unit, jumping)
+			return new GameHelper(this.game).rotateHeadingCW(this.unit, jumping)
 		}
 		else {
-			return game.rotateHeadingCCW(this.unit, jumping)
+			return new GameHelper(this.game).rotateHeadingCCW(this.unit, jumping)
 		}
 	}
 }

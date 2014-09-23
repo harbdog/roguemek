@@ -49,9 +49,11 @@ class GameController {
 			return
 		}
 		
+		GameHelper h = new GameHelper(g)
+		
 		def elements = [
-			board: b.getHexMapRender(),
-			units: g.getUnitsRender()
+			board: h.getHexMapRender(),
+			units: h.getUnitsRender()
 		]
 		
 		render elements as JSON
