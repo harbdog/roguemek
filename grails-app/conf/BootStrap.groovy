@@ -1,11 +1,8 @@
 import javax.servlet.ServletContext
 
 import roguemek.*
-import roguemek.assets.HexTileset;
-import roguemek.game.BattleMech
-import roguemek.game.Game
-import roguemek.game.HexMap
-import roguemek.game.Pilot;
+import roguemek.assets.*
+import roguemek.game.*
 import roguemek.model.*
 
 class BootStrap {
@@ -166,7 +163,6 @@ class BootStrap {
 			battleMech.save()
 			log.info('Initialized game '+sampleGame.id)
 		}
-		
     }
     def destroy = {
     }

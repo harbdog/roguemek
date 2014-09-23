@@ -3,6 +3,7 @@ package roguemek.game
 import roguemek.User
 
 class Pilot {
+	private static final Date NULL_DATE = new Date(0)
 
 	String firstName
 	String lastName
@@ -10,6 +11,8 @@ class Pilot {
 	Character status
 	
 	static hasMany = [ownedUnits:BattleUnit]
+	
+	Date lastUpdate = NULL_DATE
 	
 	// STATIC value mappings
 	static Character STATUS_ACTIVE = 'A'

@@ -64,8 +64,9 @@ class GameController {
 	 */
 	def action() {
 		Game g = Game.get(session.game)
+		Pilot p = Pilot.get(session.pilot)
 		BattleUnit u = BattleUnit.get(session.unit)
-		GameControllerHelper helper = new GameControllerHelper(g, u, params)
+		GameControllerHelper helper = new GameControllerHelper(g, p, u, params)
 		
 		render helper.performAction() as JSON
 	}
@@ -75,10 +76,15 @@ class GameController {
 	 * @render JSON object containing updates to relay back to the client
 	 */
 	def poll() {
-		Thread.sleep(5000)
+		Game g = Game.get(session.game)
+		Pilot p = Pilot.get(session.pilot)
+		BattleUnit u = BattleUnit.get(session.unit)
+		GameControllerHelper helper = new GameControllerHelper(g, p, u, params)
 		
-		def updates = [test:"test", date: new Date()]
-		render updates as JSON
+		// Testing slight delay
+		Thread.sleep(350)
+		
+		render helper.performPoll() as JSON
 	}
 
 	@Secured(['ROLE_ADMIN'])

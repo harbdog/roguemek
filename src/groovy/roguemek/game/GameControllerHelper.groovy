@@ -1,17 +1,25 @@
 package roguemek.game
 
+import org.apache.commons.logging.LogFactory
+import org.apache.commons.logging.Log
+
 /**
  * Class used to route to specific actions from the GameController and return the response.
  */
 class GameControllerHelper {
+	private static Log log = LogFactory.getLog(this)
+	
 	Map params
 	
 	Game game
+	Pilot pilot
 	BattleUnit unit
 	String action
 	
-	public GameControllerHelper(Game g, BattleUnit u, Map params) {
+	
+	public GameControllerHelper(Game g, Pilot p, BattleUnit u, Map params) {
 		this.game = g
+		this.pilot = p
 		this.unit = u
 		this.params = params
 		
@@ -26,6 +34,16 @@ class GameControllerHelper {
 	public def performAction() {
 		if(this.action == null) return
 		return this."$action"()
+	}
+	
+	/**
+	 * Handles the constant long polling from each client to await updates to the game.
+	 * @return The map of messages to be converted to JSON at the controller back to the client.
+	 */
+	public def performPoll() {
+		//Date lastUpdate = this.pilot.lastUpdate
+		Date lastUpdate = GameMessage.addMessageUpdates(this.game)
+		return [date: lastUpdate]
 	}
 	
 	/**
