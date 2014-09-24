@@ -17,7 +17,6 @@ function handleProgress(event) {
 }
 
 function handleComplete(event) {
-	$('#spinner').fadeOut();
 	stage.removeChild(progress);
 	
 	// Initialize the hex map display objects

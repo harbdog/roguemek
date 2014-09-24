@@ -66,11 +66,11 @@ function initGame(){
 	progress.graphics.beginStroke("#000000").drawRect(0,0,100,20);
 	stage.addChild(progress);
 	
-	
 	// load the board, units and their images
 	loadGameElements();
 	
-	$('#spinner').fadeIn();
+	// begin long polling for game updates during play
+	poll();
 	
 	createjs.Ticker.on("tick", tick);
 	createjs.Ticker.setFPS(30);
@@ -251,8 +251,8 @@ function initUnitsDisplay() {
 	});
 }
 
-(function poll(){
+function poll() {
     $.ajax({ url: "game/poll", success: function(data){
         console.log("polled data: "+data.date);
     }, dataType: "json", complete: poll, timeout: 30000 });
-})();
+}

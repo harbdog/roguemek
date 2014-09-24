@@ -43,6 +43,9 @@ class GameControllerHelper {
 	public def performPoll() {
 		//Date lastUpdate = this.pilot.lastUpdate
 		Date lastUpdate = GameMessage.addMessageUpdates(this.game)
+		
+		log.info("UPDATES SINCE 2 SECONDS AGO: "+GameMessage.getMessageUpdates(new Date(lastUpdate.getTime() - 2000), this.game))
+		
 		return [date: lastUpdate]
 	}
 	

@@ -10,17 +10,19 @@ import org.apache.commons.logging.Log
 class GameMessage implements Comparable{
 	private static Log log = LogFactory.getLog(this)
 	
-	Date date
-	String message
+	long time = 0
+	String message = ""
+	def data = []
 	
 	// Map used to store date[gameId]=[messages,...] for polling responses
 	private static concurrentUpdates = new ConcurrentHashMap(16, 0.75, 16)
 	private static int timeToKeepMessages = 5000	// in milliseconds
 	private static Thread messageCleanupThread
 	
-	public GameMessage(String message) {
-		this.date = new Date()
+	public GameMessage(String message, Map data) {
+		this.time = new Date().getTime()
 		this.message = message
+		this.data = data
 	}
 	
 	public static void startMessageCleanupThread() {
@@ -54,7 +56,7 @@ class GameMessage implements Comparable{
 			GameMessage.startMessageCleanupThread()
 		}
 		
-		Date keyDate = DateUtils.round(new Date(), Calendar.SECOND)
+		Date keyDate = GameMessage.getKeyDate(new Date())
 		
 		ConcurrentHashMap gameUpdates = GameMessage.concurrentUpdates.putIfAbsent(keyDate, new ConcurrentHashMap(5, 0.5, 5))
 		if(gameUpdates == null) {
@@ -70,7 +72,7 @@ class GameMessage implements Comparable{
 		int randNum = new Random().nextInt(4)
 		String randMessage = "Game status message number " + new Random().nextInt(1000)
 		for(int i=0; i<randNum; i++) {
-			GameMessage gm = new GameMessage(randMessage)
+			GameMessage gm = new GameMessage(randMessage, [rand1: new Random().nextInt(1000), rand2: new Random().nextInt(1000)])
 			timeUpdates.add(gm)
 		}
 		
@@ -79,14 +81,54 @@ class GameMessage implements Comparable{
 		return keyDate
 	}
 	
-	public static ConcurrentSkipListSet getMessageUpdates(Date sinceDate, Game game) {
-		return null
+	/**
+	 * Gets only the messages that have been created in the given game since the date provided
+	 * @param sinceDate
+	 * @param game
+	 * @return
+	 */
+	public static List getMessageUpdates(Date sinceDate, Game game) {
+		ArrayList updates = new ArrayList()
+		
+		// The date to use for key comparison needs to be slightly earlier than the sinceDate to 
+		// account for rounding of the date keys used in the hash 
+		long sinceTime = sinceDate.getTime()
+		Date compareDate = new Date(sinceTime - 500)
+		
+		for(Date keyDate in GameMessage.concurrentUpdates.keySet()) {
+			if(keyDate.before(compareDate)) {
+				// only interested in key dates at or after the comparison date
+				continue
+			}
+			
+			ConcurrentHashMap gameUpdates = GameMessage.concurrentUpdates.get(keyDate)
+			ConcurrentSkipListSet timeUpdates = gameUpdates.get(game.id)
+			
+			if(timeUpdates == null) {
+				// no messages for this game during this time
+				continue
+			}
+			
+			GameMessage compareGM = new GameMessage(null, null)
+			compareGM.time = sinceTime
+			updates.addAll(timeUpdates.tailSet(compareGM, false))
+		}
+		
+		return updates
+	}
+	
+	/**
+	 * Generates the date key that will be used to keep messages together by chunks of time
+	 * @return
+	 */
+	private static Date getKeyDate(Date srcDate) {
+		return DateUtils.round(srcDate, Calendar.SECOND)
 	}
 
 	@Override
 	public int compareTo(Object o) {
-		if(o instanceof GameMessage && o.date != null) {
-			return this.date.compareTo(o.date)
+		if(o instanceof GameMessage && o.time != null) {
+			return this.time.compareTo(o.time)
 		}
 		
 		return 1
@@ -94,6 +136,6 @@ class GameMessage implements Comparable{
 	
 	@Override
 	public String toString() {
-		return "["+this.date+"] "+this.message
+		return "["+this.time+"] "+this.message+" {"+this.data+"}"
 	}
 }
