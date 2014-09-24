@@ -62,3 +62,22 @@ function rotate(rotation) {
 		  playerActionReady = true;
 	  });
 }
+
+function pollUpdate(updates) {
+	if(updates == null) return;
+	
+	$.each(updates, function(i, thisUpdate) {
+		console.log("["+thisUpdate.time+"] "+thisUpdate.message);
+		
+		$.each(thisUpdate, function(j, data) {
+			if(data.unit != null){
+				var thisUnit = units[data.unit];
+				thisUnit.hexX = data.x;
+				thisUnit.hexY = data.y;
+				thisUnit.heading = data.heading;
+				  
+				thisUnit.updateXYRot();
+			}
+		});
+	});
+}

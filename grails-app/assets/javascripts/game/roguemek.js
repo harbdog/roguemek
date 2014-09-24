@@ -253,6 +253,10 @@ function initUnitsDisplay() {
 
 function poll() {
     $.ajax({ url: "game/poll", success: function(data){
-        console.log("polled data: "+data.date);
+    	
+    	// call the method that updates the client based on the polled return data
+    	console.log("polled date: "+data.date);
+        pollUpdate(data.updates);
+        
     }, dataType: "json", complete: poll, timeout: 30000 });
 }
