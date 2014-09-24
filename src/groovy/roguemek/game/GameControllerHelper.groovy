@@ -41,10 +41,33 @@ class GameControllerHelper {
 	 * @return The map of messages to be converted to JSON at the controller back to the client.
 	 */
 	public def performPoll() {
-		//Date lastUpdate = this.pilot.lastUpdate
-		Date lastUpdate = GameMessage.addMessageUpdates(this.game)
+		Date lastUpdate = this.pilot.lastUpdate
 		
-		log.info("UPDATES SINCE 2 SECONDS AGO: "+GameMessage.getMessageUpdates(new Date(lastUpdate.getTime() - 2000), this.game))
+		int tries = 0
+		
+		while(true) {
+			if(tries >= 50) {
+				// give up and respond with no data after so many tries otherwise 
+				// the client will assume the worst and start a new poll thread
+				break
+			}
+			
+			ArrayList updates = GameMessage.getMessageUpdates(lastUpdate, this.game)
+			
+			// set the pilot last update time to the last message's time
+			if(updates != null && !updates.isEmpty()) {
+				log.info("UPDATES: "+updates)
+				
+				lastUpdate = new Date(updates.last().getTime())
+				this.pilot.lastUpdate = lastUpdate
+				this.pilot.save flush: true
+				
+				return [date: lastUpdate, updates: updates]
+			}
+			
+			tries ++
+			Thread.sleep(500)
+		}
 		
 		return [date: lastUpdate]
 	}

@@ -1,6 +1,11 @@
 package roguemek.game
 
+import org.apache.commons.logging.LogFactory
+import org.apache.commons.logging.Log
+
 class GameHelper {
+	private static Log log = LogFactory.getLog(this)
+	
 	Game game
 	HexMap board
 	
@@ -58,12 +63,16 @@ class GameHelper {
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
-		return [
+		def data = [
 			unit: unit.id,
 			x: unit.x,
 			y: unit.y,
 			heading: unit.heading
 		]
+		
+		Date update = GameMessage.addMessageUpdate(this.game, "Unit "+unit+" moved to "+unit.x+","+unit.y, data)
+		
+		return data
 	}
 	
 	public def rotateHeading(BattleUnit unit, int newHeading, boolean jumping){
@@ -73,12 +82,16 @@ class GameHelper {
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
-		return [
+		def data = [
 			unit: unit.id,
 			x: unit.x,
 			y: unit.y,
 			heading: unit.heading
 		]
+		
+		Date update = GameMessage.addMessageUpdate(this.game, "Unit "+unit+" rotated to heading "+unit.heading, data)
+		
+		return data
 	}
 	
 	// rotates the given heading Clockwise

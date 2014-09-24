@@ -31,7 +31,7 @@ class GameMessage implements Comparable{
 				boolean flag = true;
 				while(flag){
 					Date compareDate = new Date(new Date().getTime() - timeToKeepMessages)
-					for(Date keyDate in GameMessage.concurrentUpdates.keySet()) {
+					for(Date keyDate in GameMessage.concurrentUpdates.keys()) {
 						if(keyDate.before(compareDate)) {
 							GameMessage.concurrentUpdates.remove(keyDate)
 						}
@@ -50,7 +50,7 @@ class GameMessage implements Comparable{
 		messageCleanupThread.start()	// start thread in the background
 	}
 	
-	public static Date addMessageUpdates(Game game) {
+	public static Date addMessageUpdate(Game game, String message, Map data) {
 		if(messageCleanupThread == null || !messageCleanupThread.isAlive()) {
 			log.error("Restarted GameMessage cleanup thread!")
 			GameMessage.startMessageCleanupThread()
@@ -68,17 +68,11 @@ class GameMessage implements Comparable{
 			timeUpdates = gameUpdates.get(game.id)
 		}
 		
-		//Testing randomly generated number of messages
-		int randNum = new Random().nextInt(4)
-		String randMessage = "Game status message number " + new Random().nextInt(1000)
-		for(int i=0; i<randNum; i++) {
-			GameMessage gm = new GameMessage(randMessage, [rand1: new Random().nextInt(1000), rand2: new Random().nextInt(1000)])
-			timeUpdates.add(gm)
-		}
+		// create and add the game message with the info
+		GameMessage gm = new GameMessage(message, data)
+		timeUpdates.add(gm)
 		
-		log.info("added "+keyDate+" ("+game.id+"): "+timeUpdates)
-		
-		return keyDate
+		return new Date(gm.time)
 	}
 	
 	/**
@@ -95,7 +89,7 @@ class GameMessage implements Comparable{
 		long sinceTime = sinceDate.getTime()
 		Date compareDate = new Date(sinceTime - 500)
 		
-		for(Date keyDate in GameMessage.concurrentUpdates.keySet()) {
+		for(Date keyDate in GameMessage.concurrentUpdates.keys()) {
 			if(keyDate.before(compareDate)) {
 				// only interested in key dates at or after the comparison date
 				continue
@@ -113,6 +107,9 @@ class GameMessage implements Comparable{
 			compareGM.time = sinceTime
 			updates.addAll(timeUpdates.tailSet(compareGM, false))
 		}
+		
+		// sort the array by the GameMessage times
+		Collections.sort(updates)
 		
 		return updates
 	}

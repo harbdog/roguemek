@@ -83,8 +83,8 @@ class GameController {
 		BattleUnit u = BattleUnit.get(session.unit)
 		GameControllerHelper helper = new GameControllerHelper(g, p, u, params)
 		
-		// Testing slight delay
-		Thread.sleep(350)
+		// Give a slight delay before polling to give a small amount of time for an update to actually occur
+		Thread.sleep(250)
 		
 		render helper.performPoll() as JSON
 	}

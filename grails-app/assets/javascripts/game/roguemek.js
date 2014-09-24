@@ -33,7 +33,7 @@ var stage, queue, progress, hexMap, units;
 var playerTurnIndex = 0;
 
 // Keep track of when actions are ready to be performed during the player turn
-var playerActionReady = false;
+var playerActionReady = true;
 
 // Track when the stage map is dragged to pan the board
 var stageInitDragMoveX = null;
