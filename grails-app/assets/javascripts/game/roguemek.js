@@ -7,6 +7,80 @@ function isXOdd(X) {
 	return (X & 1 == 1);
 }
 
+// TODO: Move Coords to a new appropriately named js file
+function Coords(x, y) {
+	this.initialize(x, y);
+}
+Coords.prototype.initialize = function(x, y) {
+	this.setLocation(x, y);
+}
+Coords.prototype.setLocation = function(x, y) {
+	this.x = x;
+	this.y = y;
+}
+Coords.prototype.equals = function(thatCoord) {
+	if(thatCoord == null) return false;
+	return (this.x == thatCoord.x && this.y == thatCoord.y);
+}
+Coords.prototype.isXOdd = function() {
+	return isXOdd(this.x);
+}
+Coords.prototype.translated = function(direction) {
+	return new Coords(xInDirection(this.x, this.y, direction), yInDirection(this.x, this.y, direction));
+}
+Coords.prototype.getAdjacentCoords = function() {
+	var adjacents = [];
+	for (var dir = 0; dir < 6; dir++) {
+        var adj = this.translated(dir);
+        if(adj.x >= 0 && adj.x < numCols && adj.y >= 0 && adj.y < numRows){
+        	adjacents[dir] = adj;
+        }
+	}
+	return adjacents;
+}
+Coords.prototype.toString = function() {
+	return "["+this.x+","+this.y+"]";
+}
+
+/**
+ * Returns the x parameter of the coordinates in the direction
+ *
+ * based off of the same method from MegaMek (Coords.java)
+ */
+function xInDirection(x, y, direction) {
+	 switch (direction) {
+		 case 1 :
+		 case 2 :
+			 return x + 1;
+		 case 4 :
+		 case 5 :
+			 return x - 1;
+		 default :
+			 return x;
+	 }
+}
+
+/**
+ * Returns the y parameter of the coordinates in the direction
+ *
+ * based off of the same method from MegaMek (Coords.java)
+ */
+function yInDirection(x, y, direction) {
+	switch (direction) {
+		case 0 : 
+			return y - 1;
+		case 1 : 
+		case 5 :
+			return y - ((x + 1) & 1);
+		case 2 : 
+		case 4 : 
+			return y + (x & 1);
+		case 3 : 
+			return y + 1;
+		default :
+			return y;
+	}
+}
 
 
 // Create HexMap variables 
@@ -29,6 +103,9 @@ var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 // Global variables used throughout the game
 var stage, queue, progress, hexMap, units;
 
+// Keep track of which unit belongs to the player
+var playerUnit;
+
 // Keep track of which unit's turn it currently is
 var playerTurnIndex = 0;
 
@@ -46,9 +123,6 @@ function initGame(){
 	
 	// apply Touch capability for touch screens
 	createjs.Touch.enable(stage);
-	
-	// set full window size for canvas
-	resize_canvas();
 	
 	// add resizing event
 	window.addEventListener('resize', resize_canvas, false);
@@ -80,6 +154,19 @@ function resize_canvas(){
 	if(stage != null){
 		stage.canvas.width = window.innerWidth - 5;
 		stage.canvas.height = window.innerHeight - 5;
+		
+		// Keep the board from shifting to the center the first time it is dragged if the windows is wider than the board
+		if(stage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
+			console.log("stage width "+stage.canvas.width);
+			console.log("board width "+(numCols+1)+" * "+(3 * hexWidth / 4)+"="+((numCols+1) * (3 * hexWidth / 4)));
+			
+		    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
+		    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
+		    }
+		    if(stage.x > (3 * hexWidth / 4)) {
+		    	stage.x = (3 * hexWidth / 4);
+		    }
+		}
 	}
 }
 
@@ -109,6 +196,10 @@ function loadGameElements() {
 			  if(thisHex != null){
 				  var hexDisplay = new HexDisplay(thisHex.x, thisHex.y, thisHex.images);
 				  
+				  // add mouse listener
+				  hexDisplay.on("click", handleHexClick);
+				  hexDisplay.mouseChildren = false;
+				  
 				  // Place the hex in the map
 				  var hexRow = hexMap[thisHex.y];
 				  if(hexRow == null){
@@ -130,7 +221,17 @@ function loadGameElements() {
 		  // create each unit display
 		  $.each(data.units, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  var unitDisplay = new UnitDisplay(thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.image);
+				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.image);
+				  
+				  if(data.playerUnit == thisUnit.unit){
+					  playerUnit = unitDisplay;
+				  }
+				  
+				  // add mouse listener
+				  unitDisplay.on("click", handleUnitClick);
+				  unitDisplay.mouseChildren = false;
+				  
+				  // add to unit list
 				  units[thisUnit.unit] = unitDisplay;
 				  
 				  if(alreadyManifested[thisUnit.image] == null){
@@ -154,8 +255,16 @@ function initHexMapDisplay() {
 			stageInitDragMoveY = evt.stageY - stage.y;
 		}
 		
-	    stage.x = evt.stageX - stageInitDragMoveX;
-	    stage.y = evt.stageY - stageInitDragMoveY;
+		var newX = evt.stageX - stageInitDragMoveX;
+		var newY = evt.stageY - stageInitDragMoveY;
+		
+		if(Math.abs(stage.x - newX) < 10 && Math.abs(stage.y - newY) < 10){
+			// do not start moving the stage until there is a clear intent to drag a reasonable small distance
+			return;
+		}
+		
+	    stage.x = newX;
+	    stage.y = newY;
 	    
 	    // Keep the board from going off the window too much
 	    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
@@ -214,6 +323,9 @@ function initHexMapDisplay() {
 			stage.addChild(thisDisplayHex);
 		}
 	}
+	
+	// resize the canvas and adjust the board to the canvas on first load
+	resize_canvas();
 }
 
 function initUnitsDisplay() {

@@ -87,8 +87,8 @@ class GameControllerHelper {
 	private def move() {
 		if(this.unit == null) return
 		
-		boolean forward = (params.forward != null) ? params.forward : true
-		boolean jumping = (params.jumping != null) ? params.jumping : false
+		boolean forward = (params.forward != null) ? Boolean.valueOf(params.forward) : true
+		boolean jumping = (params.jumping != null) ? Boolean.valueOf(params.jumping) : false
 		
 		return new GameHelper(this.game).move(this.unit, forward, jumping)
 	}

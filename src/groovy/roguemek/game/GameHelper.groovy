@@ -59,7 +59,10 @@ class GameHelper {
 	public def move(BattleUnit unit, boolean forward, boolean jumping) {
 		// TODO: use actionPoints
 		
-		BattleUnit.setLocation(unit, this.getForwardCoords(unit.getLocation(), unit.heading))
+		def moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
+		
+		// When ready to move, set the new location of the unit
+		BattleUnit.setLocation(unit, this.getForwardCoords(unit.getLocation(), moveHeading))
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
