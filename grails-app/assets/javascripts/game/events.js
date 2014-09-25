@@ -52,13 +52,10 @@ function handleHexClick(event) {
 					move(false);
 				}
 				else {
-					var cwHeading = (playerUnit.heading + 1) % 6;
-					var ccwHeading = (playerUnit.heading + 5) % 6;
+					var cwHeadings = [(playerUnit.heading + 1) % 6, (playerUnit.heading + 2) % 6];
+					var ccwHeadings = [(playerUnit.heading - 1) % 6, (playerUnit.heading - 2) % 6];
 					
-					var cwOffset = Math.abs(toHeading - cwHeading);
-					var ccwOffset = Math.abs(toHeading - ccwHeading);
-					
-					if(cwOffset <= ccwOffset){
+					if(jQuery.inArray( toHeading, cwHeadings ) >= 0){
 						// rotate Heading CW
 						rotate(true);
 					}
