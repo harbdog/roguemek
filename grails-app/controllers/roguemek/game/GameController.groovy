@@ -25,8 +25,25 @@ class GameController {
 				doRedirect = true
 			}
 			else {
-				BattleUnit u = BattleUnit.get(session.unit)
-				log.info("User "+currentUser()?.username+" joining Game("+g.id+") with Pilot("+p.toString()+") in Unit "+u)
+				if(g.gameState == Game.GAME_INIT) {
+					if(g.ownerPilot == p) {
+						// TODO: give ownerPilot a button to start the game instead of auto starting
+						log.info("Game("+g.id+") ownerPilot "+p.toString()+" is starting the game")
+						
+						GameHelper h = new GameHelper(g)
+						h.initializeGame()
+					}
+					else {
+						// TODO: give participant pilots a screen showing they are waiting for the owner to start
+					}
+				}
+				else if(g.gameState == Game.GAME_OVER) {
+					// TODO: give a screen that the game is over with some results
+				}
+				else {
+					BattleUnit u = BattleUnit.get(session.unit)
+					log.info("User "+currentUser()?.username+" joining Game("+g.id+") with Pilot("+p.toString()+") in Unit "+u)
+				}
 			}
 		}
 		else {

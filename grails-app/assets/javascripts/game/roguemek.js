@@ -127,8 +127,8 @@ function initGame(){
 	// add resizing event
 	window.addEventListener('resize', resize_canvas, false);
 	
-	// add keyboard listener.
-	window.addEventListener('keydown', handleKeyboard, true);  
+	// add keyboard listener
+	addEventHandlers();
 	
 	// set up image loading queue handler
 	queue = new createjs.LoadQueue();

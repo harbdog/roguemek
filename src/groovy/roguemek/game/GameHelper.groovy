@@ -15,6 +15,64 @@ class GameHelper {
 	}
 	
 	/**
+	 * Starts the game so it is ready to play the first turn
+	 */
+	public def initializeGame() {
+		if(this.game.gameState != Game.GAME_INIT) return
+		
+		this.game.gameState = Game.GAME_ACTIVE
+		this.game.gameTurn = 0
+		
+		// TODO: perform initiative roll on first and every 4 turns after to change up the order of the units turn
+		// this.game.units...
+		this.game.unitTurn = 0
+		
+		// get the first unit ready for its turn
+		initializeTurnUnit()
+		
+		this.game.save flush: true
+	}
+	
+	/**
+	 * Starts the next unit's turn
+	 * @return
+	 */
+	public def initializeNextTurn() {
+		this.game.unitTurn ++
+		// TODO: account for destroyed units
+		
+		if(this.game.unitTurn >= this.game.units.size()) {
+			this.game.gameTurn ++
+			this.game.unitTurn = 0
+		}
+		
+		// update the next unit for its new turn
+		initializeTurnUnit()
+		
+		this.game.save flush: true
+		
+		// TODO: return and add game message about the next unit's turn
+	}
+	
+	/**
+	 * Initializes the unit for its next turn (updates AP, heat, etc.)
+	 * @return
+	 */
+	private def initializeTurnUnit() {
+		BattleUnit unit = this.game.units.get(this.game.unitTurn)
+		// TODO: generate actual amount of AP/JP per turn
+		unit.actionPoints = 1
+		unit.jumpPoints = 0
+		
+		// TODO: update unit.heat value based on heat sinks and current heat amount 
+		// unit.heat = ...
+		
+		unit.damageTakenThisTurn = 0
+		
+		unit.save flush: true
+	}
+	
+	/**
 	 * Gets all applicable data for the board HexMap object that can be turned into JSON for initializing the client
 	 * @return
 	 */
@@ -57,8 +115,11 @@ class GameHelper {
 	}
 	
 	public def move(BattleUnit unit, boolean forward, boolean jumping) {
-		// TODO: use actionPoints
+		if(unit.actionPoints == 0) return
 		
+		// TODO: use actionPoints
+		unit.actionPoints -= 1
+				
 		def moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
 		
 		// When ready to move, set the new location of the unit
@@ -69,30 +130,41 @@ class GameHelper {
 		def data = [
 			unit: unit.id,
 			x: unit.x,
-			y: unit.y,
-			heading: unit.heading
+			y: unit.y
 		]
 		
 		Date update = GameMessage.addMessageUpdate(this.game, "Unit "+unit+" moved to "+unit.x+","+unit.y, data)
+		
+		if(unit.actionPoints == 0) {
+			// automatically end the unit's turn if it has run out of AP
+			this.initializeNextTurn()
+		}
 		
 		return data
 	}
 	
 	public def rotateHeading(BattleUnit unit, int newHeading, boolean jumping){
-		// TODO: use actionPoints
+		if(unit.actionPoints == 0) return
 		
+		// TODO: use actionPoints
+		unit.actionPoints -= 1
+		
+		// When ready to rotate, set the new location of the unit
 		unit.setHeading(newHeading);
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
 		def data = [
 			unit: unit.id,
-			x: unit.x,
-			y: unit.y,
 			heading: unit.heading
 		]
 		
 		Date update = GameMessage.addMessageUpdate(this.game, "Unit "+unit+" rotated to heading "+unit.heading, data)
+		
+		if(unit.actionPoints == 0) {
+			// automatically end the unit's turn if it has run out of AP
+			this.initializeNextTurn()
+		}
 		
 		return data
 	}

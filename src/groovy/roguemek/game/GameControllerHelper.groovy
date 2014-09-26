@@ -106,4 +106,10 @@ class GameControllerHelper {
 			return new GameHelper(this.game).rotateHeadingCCW(this.unit, jumping)
 		}
 	}
+	
+	private def skip() {
+		if(this.unit == null) return
+		
+		return new GameHelper(this.game).initializeNextTurn()
+	}
 }

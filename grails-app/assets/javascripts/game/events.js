@@ -79,47 +79,96 @@ function handleUnitClick(event) {
 	console.log("clicked "+x+","+y+": "+unit); 
 }
 
-function handleKeyboard(event) {
-	var pressedForward = false;
-	var pressedBackward = false;
-	var pressedLeft = false;
-	var pressedRight = false;
+//Using jQuery add the event handlers after the DOM is loaded
+function addEventHandlers() {
+	// add event handler for key presses
+	document.onkeypress = function(e){
+		var charCode = e.which || e.keyCode;
+		var key = String.fromCharCode(charCode);
+		
+		handleKeyPress(key);
+		
+		e.preventDefault();
+	};
 	
-    switch (event.keyCode) {
-        // left arrow
-        case 37:
-        	pressedLeft = true;
-            break;
-        // right arrow
-        case 39:
-        	pressedRight = true;
-            break;
-        // down arrow
-        case 40:
-        	pressedBackward = true;
-            break;
-        // up arrow 
-        case 38:
-        	pressedForward = true;
-            break;
-    }
-    
-    if(playerActionReady){
-		if(pressedLeft){
-			rotate(false);
+	specialKeyCodes = [8, 9, 13, 16, 17, 18, 27, 32, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46];
+	window.addEventListener("keydown", function(e) {
+		// handle special keys which don't have char codes, such as space and arrow keys
+		if(specialKeyCodes.indexOf(e.keyCode) > -1) {
+			e.preventDefault();
+			
+			var key = "";
+			switch(e.keyCode){
+				case 8:		key = "backspace";
+							break;
+				case 9:		key = "tab";
+							break;
+				case 13:	key = "enter";
+							break;
+				case 16:	key = "shift";
+							break;
+				case 17:	key = "ctrl";
+							break;
+				case 18:	key = "alt";
+							break;
+				case 27:	key = "escape";
+							break;
+				case 32:	key = "space";
+							break;
+				case 33:	key = "pgup";
+							break;
+				case 34:	key = "pgdn";
+							break;
+				case 35:	key = "end";
+							break;
+				case 36:	key = "home";
+							break;
+				case 37:	key = "left";
+							break;
+				case 38:	key = "up";
+							break;
+				case 39:	key = "right";
+							break;
+				case 40:	key = "down";
+							break;
+				case 45:	key = "insert";
+							break;
+				case 46:	key = "delete";
+							break;
+				default:	key = "undefined";
+							break;
+			}
+			
+			handleKeyPress(key);
 		}
-		else if(pressedRight){
-			rotate(true);
-		}
-		else if(pressedForward){
-			move(true);
-		}
-		else if(pressedBackward){
-			move(false);
-		}
-    }
-    else{
-    	// TODO: tell player to wait until their turn and ready for action
-    	console.log("Waiting...")
-    }
+	}, false);
+}
+
+function handleKeyPress(key) {
+	if(!playerActionReady){
+		// TODO: alternate actions if pressed when not player turns or between being ready for next action
+		console.log("Waiting...")
+		return;
+	}
+	
+	if(key == "." || key == "space" || key == "enter"){
+		// Skip the remainder of the turn
+		skip();
+	}
+	else if(key == "a" || key == "left"){
+		// turn left/CCW
+		rotate(false);
+	}
+	else if(key == "d" || key == "right"){
+		// turn right/CW
+		rotate(true);
+	}
+	else if(key == "w" || key == "up"){
+		// move forward
+		move(true);
+	}
+	else if(key == "s" || key == "down"){
+		// move backward
+		move(false);
+	}
 }

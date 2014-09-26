@@ -23,8 +23,12 @@ function move(forward) {
 		  }
 		  
 		  var thisUnit = units[data.unit];
-		  thisUnit.setHexLocation(data.x, data.y);
-		  thisUnit.heading = data.heading;
+		  if(data.x != null && data.y != null){
+			  thisUnit.setHexLocation(data.x, data.y);
+		  }
+		  if(data.heading != null){
+			  thisUnit.heading = data.heading;
+		  }
 		  
 		  thisUnit.updateXYRot();
 	  })
@@ -49,12 +53,38 @@ function rotate(rotation) {
 	  .done(function( data ) {
 		  // update the unit based on new data
 		  console.log("rotate "+data.unit+":"+data.x+","+data.y+">"+data.heading);
+		  if(data.unit == null){
+			  return;
+		  }
 		  
 		  var thisUnit = units[data.unit];
-		  thisUnit.setHexLocation(data.x, data.y);
-		  thisUnit.heading = data.heading;
+		  if(data.x != null && data.y != null){
+			  thisUnit.setHexLocation(data.x, data.y);
+		  }
+		  if(data.heading != null){
+			  thisUnit.heading = data.heading;
+		  }
 		  
 		  thisUnit.updateXYRot();
+	  })
+	  .always(function() {
+		  playerActionReady = true;
+	  });
+}
+
+function skip() {
+	// make sure the player can't make another request until this one is complete
+	playerActionReady = false;
+	
+	$.getJSON("game/action", {
+		perform: "skip"
+	  })
+	  .fail(function(jqxhr, textStatus, error) {
+		  var err = textStatus + ", " + error;
+		  console.log( "Request Failed: " + err );
+	  })
+	  .done(function( data ) {
+		  console.log("skipped turn");
 	  })
 	  .always(function() {
 		  playerActionReady = true;
@@ -70,8 +100,12 @@ function pollUpdate(updates) {
 		$.each(thisUpdate, function(j, data) {
 			if(data.unit != null){
 				var thisUnit = units[data.unit];
-				thisUnit.setHexLocation(data.x, data.y);
-				thisUnit.heading = data.heading;
+				if(data.x != null && data.y != null){
+					thisUnit.setHexLocation(data.x, data.y);
+				}
+				if(data.heading != null){
+					thisUnit.heading = data.heading;
+				}
 				  
 				thisUnit.updateXYRot();
 			}

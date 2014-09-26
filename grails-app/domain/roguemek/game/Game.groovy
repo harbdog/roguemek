@@ -5,8 +5,12 @@ class Game {
 
 	Pilot ownerPilot
 	
+	List units
 	static hasMany = [pilots:Pilot, units:BattleUnit]
-	Character gameState = GAME_ACTIVE
+	Integer unitTurn = 0
+	
+	Integer gameTurn = 0
+	Character gameState = GAME_INIT
 	
 	HexMap board
 	
@@ -14,12 +18,15 @@ class Game {
 	Date updateDate = NULL_DATE
 	
 	// STATIC value mappings
+	public static final GAME_INIT = 'I'
 	public static final GAME_ACTIVE = 'A'
 	public static final GAME_PAUSED = 'P'
 	public static final GAME_OVER = 'O'
 	
     static constraints = {
 		ownerPilot nullable: false
+		unitTurn min: 0
+		gameTurn min: 0
 		gameState nullable: false
     }
 	
