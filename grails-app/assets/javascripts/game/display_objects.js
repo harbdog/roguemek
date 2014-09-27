@@ -33,17 +33,19 @@ HexDisplay.prototype.toString = function() {
 }
 
 //Class for displaying each Unit
-function UnitDisplay(id, hexX, hexY, heading, imageStr) {
-	this.initialize(id, hexX, hexY, heading, imageStr);
+function UnitDisplay(id, hexX, hexY, heading, actionPoints, imageStr, rgb) {
+	this.initialize(id, hexX, hexY, heading, actionPoints, imageStr, rgb);
 }
 UnitDisplay.prototype = new createjs.Container();
 UnitDisplay.prototype.Container_initialize = UnitDisplay.prototype.initialize;
-UnitDisplay.prototype.initialize = function(id, hexX, hexY, heading, imageStr) {
+UnitDisplay.prototype.initialize = function(id, hexX, hexY, heading, actionPoints, imageStr, rgb) {
 	this.Container_initialize();
 	this.id = id;
 	this.setHexLocation(hexX, hexY);
 	this.heading = heading;
+	this.actionPoints = actionPoints;
 	this.imageStr = imageStr;
+	this.rgb = rgb
 }
 UnitDisplay.prototype.getImageString = function() {
 	return this.imageStr;

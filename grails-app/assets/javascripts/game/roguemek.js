@@ -103,6 +103,11 @@ var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 // Global variables used throughout the game
 var stage, queue, progress, hexMap, units;
 
+// Display element to keep track of player AP
+var apDisplay = new createjs.Text("", "20px Arial", "#FFFFFF");
+apDisplay.x = 10;
+apDisplay.y = 10;
+
 // Keep track of which unit belongs to the player
 var playerUnit;
 
@@ -221,7 +226,7 @@ function loadGameElements() {
 		  // create each unit display
 		  $.each(data.units, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.image);
+				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.actionPoints, thisUnit.image, thisUnit.rgb);
 				  
 				  if(data.playerUnit == thisUnit.unit){
 					  playerUnit = unitDisplay;
@@ -280,6 +285,9 @@ function initHexMapDisplay() {
 	    if(stage.y > (hexHeight / 2)) {
 	    	stage.y = (hexHeight / 2);
 	    }
+	    
+	    apDisplay.x = -stage.x + 10;
+	    apDisplay.y = -stage.y + 10;
 	});
 	stage.on("pressup", function(evt) { 
 		// reset click and drag map panning
@@ -333,7 +341,8 @@ function initUnitsDisplay() {
 	
 	$.each(units, function(index, thisDisplayUnit) {
 		var imgStr = thisDisplayUnit.getImageString();
-		var image = queue.getResult(imgStr)
+		var image = queue.getResult(imgStr);
+		var rgb = thisDisplayUnit.rgb;
 		
 		// adjust the rotation around its own center (which also adjusts its x/y reference point)
 		thisDisplayUnit.regX = image.width/2;
@@ -353,7 +362,7 @@ function initUnitsDisplay() {
 		var unitAlphaImg = new createjs.Bitmap(image);
 		unitAlphaImg.filters = [
 	        new createjs.ColorFilter(0,0,0,0.5, 
-	        						 255,0,0,0)
+	        						 rgb[0],rgb[1],rgb[2],0)
 	    ];
 		unitAlphaImg.cache(0, 0, image.width, image.height);
 		thisDisplayUnit.addChild(unitAlphaImg);

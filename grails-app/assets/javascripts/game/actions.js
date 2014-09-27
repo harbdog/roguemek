@@ -100,14 +100,34 @@ function pollUpdate(updates) {
 		$.each(thisUpdate, function(j, data) {
 			if(data.unit != null){
 				var thisUnit = units[data.unit];
-				if(data.x != null && data.y != null){
+				if(data.x != null && data.y != null) {
 					thisUnit.setHexLocation(data.x, data.y);
 				}
-				if(data.heading != null){
+				if(data.heading != null) {
 					thisUnit.heading = data.heading;
+				}
+				if(data.actionPoints != null) {
+					thisUnit.actionPoints = data.actionPoints;
 				}
 				  
 				thisUnit.updateXYRot();
+				
+				if(playerUnit.id == thisUnit.id) {
+					apDisplay.text = "AP: "+thisUnit.actionPoints;
+				}
+			}
+			else if(data.turnUnit != null) {
+				var turnUnit = units[data.turnUnit];
+				
+				if(data.actionPoints != null){
+					turnUnit.actionPoints = data.actionPoints;
+				}
+				
+				// TODO: indicate non-player unit turn starting
+				
+				if(playerUnit.id == turnUnit.id){
+					apDisplay.text = "AP: "+turnUnit.actionPoints;
+				}
 			}
 		});
 	});

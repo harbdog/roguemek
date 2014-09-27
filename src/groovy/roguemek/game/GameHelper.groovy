@@ -52,6 +52,15 @@ class GameHelper {
 		this.game.save flush: true
 		
 		// TODO: return and add game message about the next unit's turn
+		BattleUnit turnUnit = this.game.units.get(this.game.unitTurn)
+		def data = [
+			turnUnit: turnUnit.id,
+			actionPoints: turnUnit.actionPoints,
+		]
+		
+		Date update = GameMessage.addMessageUpdate(this.game, "New turn for Unit "+turnUnit+".", data)
+		
+		return data
 	}
 	
 	/**
@@ -61,7 +70,7 @@ class GameHelper {
 	private def initializeTurnUnit() {
 		BattleUnit unit = this.game.units.get(this.game.unitTurn)
 		// TODO: generate actual amount of AP/JP per turn
-		unit.actionPoints = 1
+		unit.actionPoints = 3
 		unit.jumpPoints = 0
 		
 		// TODO: update unit.heat value based on heat sinks and current heat amount 
@@ -105,7 +114,9 @@ class GameHelper {
 				x: u.x,
 				y: u.y,
 				heading: u.heading,
-				image: u.image
+				actionPoints: u.actionPoints,
+				image: u.image,
+				rgb: [u.rgb[0], u.rgb[1], u.rgb[2]]
 			]
 			
 			unitsRender.add(uRender)
@@ -130,7 +141,8 @@ class GameHelper {
 		def data = [
 			unit: unit.id,
 			x: unit.x,
-			y: unit.y
+			y: unit.y,
+			actionPoints: unit.actionPoints
 		]
 		
 		Date update = GameMessage.addMessageUpdate(this.game, "Unit "+unit+" moved to "+unit.x+","+unit.y, data)
@@ -156,7 +168,8 @@ class GameHelper {
 		
 		def data = [
 			unit: unit.id,
-			heading: unit.heading
+			heading: unit.heading,
+			actionPoints: unit.actionPoints
 		]
 		
 		Date update = GameMessage.addMessageUpdate(this.game, "Unit "+unit+" rotated to heading "+unit.heading, data)

@@ -24,6 +24,10 @@ function handleComplete(event) {
 	
 	// Initialize the units display objects
 	initUnitsDisplay();
+	
+	// Initialize player AP display
+	apDisplay.text = "AP: "+playerUnit.actionPoints;
+	stage.addChild(apDisplay);
 }
 
 function handleHexClick(event) {

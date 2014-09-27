@@ -26,6 +26,7 @@ class BattleUnit {
 	Character status = STATUS_ACTIVE
 	
 	String image
+	Short[] rgb = [100,100,100]
 	
 	// STATIC value mappings
 	public static final Character STATUS_ACTIVE = 'A'
@@ -59,6 +60,7 @@ class BattleUnit {
 		prone nullable: false
 		
 		image nullable: false
+		rgb size: 3..3
 		
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED]
     }

@@ -11,8 +11,8 @@ class BattleMech extends BattleUnit {
 	Mech mech
 	
 	// Storing Mech's armor, internals, and crits which can take damage during battle
-	Integer[] armor
-	Integer[] internals
+	Short[] armor
+	Short[] internals
 	
 	List crits
 	static hasMany = [crits: long]
