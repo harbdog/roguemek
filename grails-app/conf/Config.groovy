@@ -157,6 +157,8 @@ grails.plugin.springsecurity.useSecurityEventListener = true
 grails.plugin.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
 	roguemek.User.updateLastLogin(appCtx.springSecurityService.currentUser.id)
 }
+grails.plugin.springsecurity.logout.handlerNames = 
+	['rememberMeServices', 'securityContextLogoutHandler',  'securityEventListener']
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':							['permitAll'],
 	'/index':						['permitAll'],
