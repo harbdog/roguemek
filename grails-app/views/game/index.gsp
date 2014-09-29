@@ -12,6 +12,8 @@
 			<canvas id="canvas">
 		        Your browser dosen't support HTML5, upgrade to a recent browser version!
 		    </canvas>
+		    
+		    <div id="fpsDiv" style="color:white; top:0px; right:0px"></div>
 	    </div>
 	</body>
 </html>

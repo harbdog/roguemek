@@ -101,7 +101,7 @@ var HEADING_NW = 5;
 var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 
 // Global variables used throughout the game
-var stage, queue, progress, hexMap, units;
+var stage, queue, progress, fpsDisplay, hexMap, units;
 
 // Display element to keep track of player AP
 var apDisplay = new createjs.Text("", "20px Arial", "#FFFFFF");
@@ -150,7 +150,7 @@ function initGame(){
 	
 	// begin long polling for game updates during play
 	poll();
-	
+		
 	createjs.Ticker.on("tick", tick);
 	createjs.Ticker.setFPS(30);
 }
@@ -288,6 +288,9 @@ function initHexMapDisplay() {
 	    
 	    apDisplay.x = -stage.x + 10;
 	    apDisplay.y = -stage.y + 10;
+	    
+	    fpsDisplay.x = -stage.x - 10;
+	    fpsDisplay.y = -stage.y + 10;
 	});
 	stage.on("pressup", function(evt) { 
 		// reset click and drag map panning

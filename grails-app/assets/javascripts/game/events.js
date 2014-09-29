@@ -3,6 +3,11 @@
  */
 
 function tick(event) {
+	
+	if(fpsDisplay != null) {
+		fpsDisplay.htmlElement.innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
+	}
+	
 	stage.update(event);
 }
 
@@ -28,6 +33,13 @@ function handleComplete(event) {
 	// Initialize player AP display
 	apDisplay.text = "AP: "+playerUnit.actionPoints;
 	stage.addChild(apDisplay);
+	
+	// Initialize FPS counter
+	var fpsDiv = document.getElementById("fpsDiv");
+	fpsDisplay = new createjs.DOMElement(fpsDiv);
+	fpsDisplay.x = -10;
+	fpsDisplay.y = 10;
+    stage.addChild(fpsDisplay);
 }
 
 function handleHexClick(event) {
