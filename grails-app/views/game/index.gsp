@@ -8,12 +8,19 @@
 		<title>RogueMek</title>
 	</head>
 	<body id="body">
-		<div id="container" style="position:absolute; left:0px; top:0px; border:0px solid; width:100%; height:100%; margin: 0px;">
+		<div id="playerDiv">
+			<div id="mapDiv">map</div>
+			<div id="infoDiv">mech/player info</div>
+			<div id="htalDiv">HTAL</div>
+			<div id="statsDiv">mech stats</div>
+			<div id="heatDiv">mech heat</div>
+		</div>
+		<div id="canvasDiv">
 			<canvas id="canvas">
 		        Your browser dosen't support HTML5, upgrade to a recent browser version!
 		    </canvas>
 		    
-		    <div id="fpsDiv" style="color:white; top:0px; right:0px"></div>
+		    <div id="fpsDiv"></div>
 	    </div>
 	</body>
 </html>

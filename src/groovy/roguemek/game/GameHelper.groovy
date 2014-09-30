@@ -111,10 +111,15 @@ class GameHelper {
 		game.units?.each { u ->
 			def uRender = [
 				unit: u.id,
+				callsign: u.pilot.ownerUser?.callsign,
+				name: u.mech?.name,
+				chassisVariant: u.mech?.chassis+"-"+u.mech?.variant,
 				x: u.x,
 				y: u.y,
 				heading: u.heading,
 				actionPoints: u.actionPoints,
+				jumpPoints: u.jumpPoints,
+				heat: u.heat,
 				image: u.image,
 				rgb: [u.rgb[0], u.rgb[1], u.rgb[2]]
 			]

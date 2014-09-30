@@ -1,5 +1,5 @@
 /**
- * Definitions for displayable object classes and their methods
+ * display_objects.js - Definitions for displayable object classes and their methods
  */
 
 // Class for displaying each Hex
@@ -33,17 +33,16 @@ HexDisplay.prototype.toString = function() {
 }
 
 //Class for displaying each Unit
-function UnitDisplay(id, hexX, hexY, heading, actionPoints, imageStr, rgb) {
-	this.initialize(id, hexX, hexY, heading, actionPoints, imageStr, rgb);
+function UnitDisplay(id, hexX, hexY, heading, imageStr, rgb) {
+	this.initialize(id, hexX, hexY, heading, imageStr, rgb);
 }
 UnitDisplay.prototype = new createjs.Container();
 UnitDisplay.prototype.Container_initialize = UnitDisplay.prototype.initialize;
-UnitDisplay.prototype.initialize = function(id, hexX, hexY, heading, actionPoints, imageStr, rgb) {
+UnitDisplay.prototype.initialize = function(id, hexX, hexY, heading, imageStr, rgb) {
 	this.Container_initialize();
 	this.id = id;
 	this.setHexLocation(hexX, hexY);
 	this.heading = heading;
-	this.actionPoints = actionPoints;
 	this.imageStr = imageStr;
 	this.rgb = rgb
 }

@@ -1,5 +1,5 @@
 /**
- * Handles all events for the game
+ * events.js - Handles all events for the game
  */
 
 function tick(event) {
@@ -30,9 +30,14 @@ function handleComplete(event) {
 	// Initialize the units display objects
 	initUnitsDisplay();
 	
+	// Initialize the player UI
+	initPlayerUI();
+	setPlayerInfo(playerUnit.name+" "+playerUnit.chassisVariant, playerUnit.callsign);
+	
 	// Initialize player AP display
-	apDisplay.text = "AP: "+playerUnit.actionPoints;
-	stage.addChild(apDisplay);
+	setActionPoints(playerUnit.actionPoints);
+	setJumpPoints(playerUnit.jumpPoints);
+	setHeatDisplay(playerUnit.heat);
 	
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");

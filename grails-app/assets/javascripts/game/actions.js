@@ -1,5 +1,5 @@
 /**
- * Handles all JSON actions for the game
+ * actions.js - Handles all JSON actions for the game
  */
 
 function move(forward) {
@@ -113,7 +113,9 @@ function pollUpdate(updates) {
 				thisUnit.updateXYRot();
 				
 				if(playerUnit.id == thisUnit.id) {
-					apDisplay.text = "AP: "+thisUnit.actionPoints;
+					setActionPoints(thisUnit.actionPoints);
+					setJumpPoints(thisUnit.jumpPoints);
+					setHeatDisplay(thisUnit.heat);
 				}
 			}
 			else if(data.turnUnit != null) {
@@ -126,7 +128,9 @@ function pollUpdate(updates) {
 				// TODO: indicate non-player unit turn starting
 				
 				if(playerUnit.id == turnUnit.id){
-					apDisplay.text = "AP: "+turnUnit.actionPoints;
+					setActionPoints(turnUnit.actionPoints);
+					setJumpPoints(turnUnit.jumpPoints);
+					setHeatDisplay(turnUnit.heat);
 				}
 			}
 		});

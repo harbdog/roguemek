@@ -103,11 +103,6 @@ var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 // Global variables used throughout the game
 var stage, queue, progress, fpsDisplay, hexMap, units;
 
-// Display element to keep track of player AP
-var apDisplay = new createjs.Text("", "20px Arial", "#FFFFFF");
-apDisplay.x = 10;
-apDisplay.y = 10;
-
 // Keep track of which unit belongs to the player
 var playerUnit;
 
@@ -157,13 +152,15 @@ function initGame(){
 
 function resize_canvas(){
 	if(stage != null){
-		stage.canvas.width = window.innerWidth - 5;
+		stage.canvas.width = window.innerWidth - 200;
 		stage.canvas.height = window.innerHeight - 5;
+		
+		console.log("resizing to "+stage.canvas.width+"x"+stage.canvas.height);
 		
 		// Keep the board from shifting to the center the first time it is dragged if the windows is wider than the board
 		if(stage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
-			console.log("stage width "+stage.canvas.width);
-			console.log("board width "+(numCols+1)+" * "+(3 * hexWidth / 4)+"="+((numCols+1) * (3 * hexWidth / 4)));
+			console.log("stage width "+stage.canvas.width+" > "+
+				"board width "+(numCols+1)+" * "+(3 * hexWidth / 4)+"="+((numCols+1) * (3 * hexWidth / 4)));
 			
 		    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
 		    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
@@ -226,7 +223,13 @@ function loadGameElements() {
 		  // create each unit display
 		  $.each(data.units, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.actionPoints, thisUnit.image, thisUnit.rgb);
+				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.image, thisUnit.rgb);
+				  unitDisplay.actionPoints = thisUnit.actionPoints;
+				  unitDisplay.jumpPoints = thisUnit.jumpPoints;
+				  unitDisplay.heat = thisUnit.heat;
+				  unitDisplay.callsign = thisUnit.callsign;
+				  unitDisplay.name = thisUnit.name;
+				  unitDisplay.chassisVariant = thisUnit.chassisVariant;
 				  
 				  if(data.playerUnit == thisUnit.unit){
 					  playerUnit = unitDisplay;
@@ -285,9 +288,6 @@ function initHexMapDisplay() {
 	    if(stage.y > (hexHeight / 2)) {
 	    	stage.y = (hexHeight / 2);
 	    }
-	    
-	    apDisplay.x = -stage.x + 10;
-	    apDisplay.y = -stage.y + 10;
 	    
 	    fpsDisplay.x = -stage.x - 10;
 	    fpsDisplay.y = -stage.y + 10;
