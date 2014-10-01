@@ -38,6 +38,7 @@ function handleComplete(event) {
 	setActionPoints(playerUnit.actionPoints);
 	setJumpPoints(playerUnit.jumpPoints);
 	setHeatDisplay(playerUnit.heat);
+	setArmorDisplay(playerUnit.armor, playerUnit.internals);
 	
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");

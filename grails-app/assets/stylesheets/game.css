@@ -33,6 +33,7 @@ body {
 #playerDiv div{
 	color: #FFFFFF;
 	margin: 5px 5px 5px 0px;
+	font-family: monospace;
 }
 
 #canvasDiv {
@@ -62,6 +63,7 @@ body {
 	border-color: yellow;
 	border-style: dotted;
 	/* Border is just for testing spacing */
+	font-size: 125%;
 	
 }
 
@@ -69,16 +71,20 @@ body {
 	border-color: orange;
 	border-style: dotted;
 	/* Border is just for testing spacing */
+	font-size: 85%;
+	text-align: center;
 }
 
 #statsDiv {
 	border-color: blue;
 	border-style: dotted;
 	/* Border is just for testing spacing */
+	font-size: 150%;
 }
 
 #heatDiv {
 	border-color: red;
 	border-style: dotted;
 	/* Border is just for testing spacing */
+	font-size: 150%;
 }

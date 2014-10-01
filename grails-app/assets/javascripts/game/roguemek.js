@@ -100,6 +100,19 @@ var HEADING_SW = 4;
 var HEADING_NW = 5;
 var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 
+//static location indices
+var HEAD = 0;
+var LEFT_ARM = 1;
+var LEFT_TORSO = 2;
+var CENTER_TORSO = 3;
+var RIGHT_TORSO = 4;
+var RIGHT_ARM = 5;
+var LEFT_LEG = 6;
+var RIGHT_LEG = 7;
+var LEFT_REAR = 8;
+var CENTER_REAR = 9;
+var RIGHT_REAR = 10;
+
 // Global variables used throughout the game
 var stage, queue, progress, fpsDisplay, hexMap, units;
 
@@ -230,6 +243,8 @@ function loadGameElements() {
 				  unitDisplay.callsign = thisUnit.callsign;
 				  unitDisplay.name = thisUnit.name;
 				  unitDisplay.chassisVariant = thisUnit.chassisVariant;
+				  unitDisplay.armor = thisUnit.armor;
+				  unitDisplay.internals = thisUnit.internals;
 				  
 				  if(data.playerUnit == thisUnit.unit){
 					  playerUnit = unitDisplay;

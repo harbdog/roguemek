@@ -109,17 +109,36 @@ class GameHelper {
 		def unitsRender = []
 		
 		game.units?.each { u ->
+			
+			def chassisVariant = u.mech ? u.mech.chassis+"-"+u.mech.variant : null
+			
+			def armor = []
+			if(u.armor != null) {
+				for(int i=0; i<u.armor.length; i++) {
+					armor[i] = u.armor[i]
+				}
+			}
+			
+			def internals = []
+			if(u.internals != null) {
+				for(int i=0; i<u.internals.length; i++) {
+					internals[i] = u.internals[i]
+				}
+			}
+			
 			def uRender = [
 				unit: u.id,
-				callsign: u.pilot.ownerUser?.callsign,
+				callsign: u.pilot?.ownerUser?.callsign,
 				name: u.mech?.name,
-				chassisVariant: u.mech?.chassis+"-"+u.mech?.variant,
+				chassisVariant: chassisVariant,
 				x: u.x,
 				y: u.y,
 				heading: u.heading,
 				actionPoints: u.actionPoints,
 				jumpPoints: u.jumpPoints,
 				heat: u.heat,
+				armor: armor,
+				internals: internals,
 				image: u.image,
 				rgb: [u.rgb[0], u.rgb[1], u.rgb[2]]
 			]

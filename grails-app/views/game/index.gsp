@@ -9,11 +9,11 @@
 	</head>
 	<body id="body">
 		<div id="playerDiv">
-			<div id="mapDiv">map</div>
-			<div id="infoDiv">mech/player info</div>
-			<div id="htalDiv">HTAL</div>
-			<div id="statsDiv">mech stats</div>
-			<div id="heatDiv">mech heat</div>
+			<div id="infoDiv"></div>
+			<div id="mapDiv"></div>
+			<div id="statsDiv"></div>
+			<div id="htalDiv"></div>
+			<div id="heatDiv"></div>
 		</div>
 		<div id="canvasDiv">
 			<canvas id="canvas">
