@@ -2,6 +2,7 @@ package roguemek.game
 
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
+import roguemek.model.*
 
 class GameHelper {
 	private static Log log = LogFactory.getLog(this)
@@ -108,22 +109,34 @@ class GameHelper {
 	public def getUnitsRender() {
 		def unitsRender = []
 		
-		game.units?.each { u ->
+		game.units?.each { BattleUnit u ->
 			
-			def chassisVariant = u.mech ? u.mech.chassis+"-"+u.mech.variant : null
+			def armor = null
+			def internals = null
+			def chassisVariant = null
+			def crits = null
 			
-			def armor = []
-			if(u.armor != null) {
-				for(int i=0; i<u.armor.length; i++) {
-					armor[i] = u.armor[i]
+			if(u instanceof BattleMech) {
+				Mech m = u.mech
+				chassisVariant = (m == null) ?: m.chassis+"-"+m.variant
+				
+				armor = []
+				if(u.armor != null) {
+					int armorSize = u.armor.size();
+					for(int i=0; i<armorSize; i++) {
+						armor[i] = u.armor[i]
+					}
 				}
-			}
-			
-			def internals = []
-			if(u.internals != null) {
-				for(int i=0; i<u.internals.length; i++) {
-					internals[i] = u.internals[i]
+				
+				internals = []
+				if(u.internals != null) {
+					int internalSize = u.internals.size()
+					for(int i=0; i<internalSize; i++) {
+						internals[i] = u.internals[i]
+					}
 				}
+				
+				crits = getCritsRender(u)
 			}
 			
 			def uRender = [
@@ -134,11 +147,13 @@ class GameHelper {
 				x: u.x,
 				y: u.y,
 				heading: u.heading,
+				status: String.valueOf(u.status),
 				actionPoints: u.actionPoints,
 				jumpPoints: u.jumpPoints,
 				heat: u.heat,
 				armor: armor,
 				internals: internals,
+				crits: crits,
 				image: u.image,
 				rgb: [u.rgb[0], u.rgb[1], u.rgb[2]]
 			]
@@ -147,6 +162,68 @@ class GameHelper {
 		}
 		
 		return unitsRender
+	}
+	
+	/**
+	 * Converts each critical slot into a form that can be turned into JSON for the client
+	 * @return
+	 */
+	public def getCritsRender(BattleUnit u) {
+		if(u == null) return null
+		
+		def critsRender = []
+		if(u instanceof BattleMech) {
+			for(int i=0; i<u.crits.size(); i++) {
+				critsRender[i] = getEquipmentRender(BattleEquipment.get(u.crits[i]))
+			}
+		}
+		
+		return critsRender
+	}
+	
+	public def getEquipmentRender(BattleEquipment equip) {
+		if(equip == null) return null
+		
+		Equipment e = equip.equipment
+		
+		// Basic Equipment stuff first
+		def equipRender = [
+			name: e.name,
+			shortName: e.shortName,
+			status: String.valueOf(equip.status),
+			type: "Equipment"
+		]
+		
+		if(e instanceof HeatSink) {
+			equipRender.type = "HeatSink"
+			equipRender.dissipation = e.dissipation
+		}
+		
+		if(e instanceof Ammo) {
+			equipRender.type = "Ammo"
+			equipRender.ammoPerTon = e.ammoPerTon
+			equipRender.ammoRemains = e.ammoPerTon	// TODO: model ammo consumption and remaining ammo
+			equipRender.ammoExplosive = e.explosive
+		}
+		
+		if(e instanceof Weapon) {
+			equipRender.type = "Weapon"
+			equipRender.damage = e.damage
+			equipRender.heat = e.heat
+			equipRender.cycle = e.cycle	// TODO: model cycle time remaining
+			equipRender.projectiles = e.projectiles
+			equipRender.minRange = e.minRange
+			equipRender.shortRange = e.shortRange
+			equipRender.mediumRange = e.mediumRange
+			equipRender.longRange = e.longRange
+			// TODO: model e.ammoTypes as something the client can associate or determine ammoRemains by Weapon instead
+		}
+		
+		if(e instanceof JumpJet) {
+			equipRender.type = "JumpJet"
+		}
+		
+		return equipRender
 	}
 	
 	public def move(BattleUnit unit, boolean forward, boolean jumping) {

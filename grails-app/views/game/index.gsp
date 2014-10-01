@@ -17,7 +17,7 @@
 		</div>
 		<div id="canvasDiv">
 			<canvas id="canvas">
-		        Your browser dosen't support HTML5, upgrade to a recent browser version!
+		        Your browser doesn't support HTML5, upgrade to a recent browser version!
 		    </canvas>
 		    
 		    <div id="fpsDiv"></div>

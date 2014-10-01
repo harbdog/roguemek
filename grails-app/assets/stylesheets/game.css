@@ -28,6 +28,7 @@ body {
 	margin: 0px;
 	border-style: none;
 	background-color: #000000;
+	background: linear-gradient(#000000, #AAAAAA);
 }
 
 #playerDiv div{
@@ -43,7 +44,6 @@ body {
 	height: 100%;
 	margin: 0px;
 	border: 0px solid;
-	background-color: #000000;
 }
 
 #fpsDiv {

@@ -168,7 +168,7 @@ function resize_canvas(){
 		stage.canvas.width = window.innerWidth - 200;
 		stage.canvas.height = window.innerHeight - 5;
 		
-		console.log("resizing to "+stage.canvas.width+"x"+stage.canvas.height);
+		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+stage.canvas.width+"x"+stage.canvas.height);
 		
 		// Keep the board from shifting to the center the first time it is dragged if the windows is wider than the board
 		if(stage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
@@ -245,6 +245,9 @@ function loadGameElements() {
 				  unitDisplay.chassisVariant = thisUnit.chassisVariant;
 				  unitDisplay.armor = thisUnit.armor;
 				  unitDisplay.internals = thisUnit.internals;
+				  
+				  // TODO: create equipment/weapon/ammo etc class objects to hold the crits objects
+				  console.log(thisUnit.crits);
 				  
 				  if(data.playerUnit == thisUnit.unit){
 					  playerUnit = unitDisplay;
