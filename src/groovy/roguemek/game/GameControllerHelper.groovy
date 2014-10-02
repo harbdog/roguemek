@@ -33,6 +33,9 @@ class GameControllerHelper {
 	 */
 	public def performAction() {
 		if(this.action == null) return
+		
+		// TODO: only allow certain actions during another player's turn (do not allow move, rotate, skip when not their turn)
+		
 		return this."$action"()
 	}
 	
@@ -84,6 +87,10 @@ class GameControllerHelper {
 		// TODO: return with some error game message about missing action
 	}
 	
+	/**
+	 * Request from the client to move the unit forward/backward
+	 * @return
+	 */
 	private def move() {
 		if(this.unit == null) return
 		
@@ -93,6 +100,10 @@ class GameControllerHelper {
 		return new GameHelper(this.game).move(this.unit, forward, jumping)
 	}
 	
+	/**
+	 * Request from the client to rotate the unit CW/CCW
+	 * @return
+	 */
 	private def rotate() {
 		if(this.unit == null) return
 		
@@ -107,6 +118,10 @@ class GameControllerHelper {
 		}
 	}
 	
+	/**
+	 * Request from the client to skip the remainder of their turn
+	 * @return
+	 */
 	private def skip() {
 		if(this.unit == null) return
 		

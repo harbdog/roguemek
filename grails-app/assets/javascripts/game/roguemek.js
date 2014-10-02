@@ -100,7 +100,7 @@ var HEADING_SW = 4;
 var HEADING_NW = 5;
 var HEADING_ANGLE = [0, 60, 120, 180, 240, 300];
 
-//static location indices
+// STATIC location indices
 var HEAD = 0;
 var LEFT_ARM = 1;
 var LEFT_TORSO = 2;
@@ -112,6 +112,13 @@ var RIGHT_LEG = 7;
 var LEFT_REAR = 8;
 var CENTER_REAR = 9;
 var RIGHT_REAR = 10;
+
+// STATIC equipment type strings
+var TYPE_EQUIPMENT = "Equipment";
+var TYPE_WEAPON = "Weapon";
+var TYPE_AMMO = "Ammo";
+var TYPE_JUMP_JET = "JumpJet";
+var TYPE_HEAT_SINK = "HeatSink";
 
 // Global variables used throughout the game
 var stage, queue, progress, fpsDisplay, hexMap, units;
@@ -129,6 +136,9 @@ var playerActionReady = true;
 var stageInitDragMoveX = null;
 var stageInitDragMoveY = null;
 
+/**
+ * Gets the game ready to play
+ */
 function initGame(){
 	
 	// Create the EaselJS stage
@@ -163,6 +173,9 @@ function initGame(){
 	createjs.Ticker.setFPS(30);
 }
 
+/**
+ * Resizes the canvas based on the current browser window size
+ */
 function resize_canvas(){
 	if(stage != null){
 		stage.canvas.width = window.innerWidth - 200;
@@ -185,6 +198,9 @@ function resize_canvas(){
 	}
 }
 
+/**
+ * Loads all initial game elements from the server to begin the game
+ */
 function loadGameElements() {
 	
 	$.getJSON("game/getGameElements", {
@@ -205,9 +221,7 @@ function loadGameElements() {
 		  numRows = data.board.numRows;
 		  
 		  // create the board hex display
-		  $.each(data.board.hexMap, function(key, val) {
-			  var thisHex = val;
-			  
+		  $.each(data.board.hexMap, function(key, thisHex) {
 			  if(thisHex != null){
 				  var hexDisplay = new HexDisplay(thisHex.x, thisHex.y, thisHex.images);
 				  
@@ -246,9 +260,9 @@ function loadGameElements() {
 				  unitDisplay.armor = thisUnit.armor;
 				  unitDisplay.internals = thisUnit.internals;
 				  
-				  // TODO: create equipment/weapon/ammo etc class objects to hold the crits objects
-				  console.log(thisUnit.crits);
-				  
+				  unitDisplay.crits = thisUnit.crits;
+				  unitDisplay.weapons = initUnitWeapons(thisUnit);
+
 				  if(data.playerUnit == thisUnit.unit){
 					  playerUnit = unitDisplay;
 				  }
@@ -271,6 +285,30 @@ function loadGameElements() {
 	  });
 }
 
+/**
+ * Initializes a Unit's Weapon objects from the crits that have been loaded
+ * @param unit
+ */
+function initUnitWeapons(unit) {
+	if(unit == null || unit.crits == null) return null;
+	
+	var weapons = {};
+	
+	$.each(unit.crits, function(index, c) {
+		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
+			var w = new Weapon(c.name, c.shortName, c.damage, c.heat, 
+								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
+			
+			weapons[c.id] = w;
+		}
+	});
+	
+	return weapons;
+}
+
+/**
+ * Initializes the display of the board hex map on the stage
+ */
 function initHexMapDisplay() {
 	if(hexMap == null){return;}
 	
@@ -357,6 +395,9 @@ function initHexMapDisplay() {
 	resize_canvas();
 }
 
+/**
+ * Initializes the display of each unit in the game on the stage
+ */
 function initUnitsDisplay() {
 	if(units == null){return;}
 	
@@ -393,6 +434,9 @@ function initUnitsDisplay() {
 	});
 }
 
+/**
+ * Long polling to retrieve updates from the game asynchronously
+ */
 function poll() {
     $.ajax({ url: "game/poll", success: function(data){
     	

@@ -165,7 +165,7 @@ class GameHelper {
 	}
 	
 	/**
-	 * Converts each critical slot into a form that can be turned into JSON for the client
+	 * Gets each critical slot into a form that can be turned into JSON for the client
 	 * @return
 	 */
 	public def getCritsRender(BattleUnit u) {
@@ -181,6 +181,11 @@ class GameHelper {
 		return critsRender
 	}
 	
+	/**
+	 * Gets a JSON compatible form of Equipment data for the client
+	 * @param equip
+	 * @return
+	 */
 	public def getEquipmentRender(BattleEquipment equip) {
 		if(equip == null) return null
 		
@@ -188,6 +193,7 @@ class GameHelper {
 		
 		// Basic Equipment stuff first
 		def equipRender = [
+			id: equip.id,	// TODO: BattleEquipment initialization will need to be changed so equipment taking >1 slots point to same id
 			name: e.name,
 			shortName: e.shortName,
 			status: String.valueOf(equip.status),
@@ -226,6 +232,13 @@ class GameHelper {
 		return equipRender
 	}
 	
+	/**
+	 * Moves the unit in a forward/backward direction
+	 * @param unit
+	 * @param forward
+	 * @param jumping
+	 * @return
+	 */
 	public def move(BattleUnit unit, boolean forward, boolean jumping) {
 		if(unit.actionPoints == 0) return
 		
@@ -256,6 +269,13 @@ class GameHelper {
 		return data
 	}
 	
+	/**
+	 * Rotates the unit to the given heading
+	 * @param unit
+	 * @param newHeading
+	 * @param jumping
+	 * @return
+	 */
 	public def rotateHeading(BattleUnit unit, int newHeading, boolean jumping){
 		if(unit.actionPoints == 0) return
 		
@@ -283,23 +303,50 @@ class GameHelper {
 		return data
 	}
 	
-	// rotates the given heading Clockwise
+	/** 
+	 * Rotates the given unit's heading Clockwise
+	 * @param unit
+	 * @param jumping
+	 * @return
+	 */
 	public def rotateHeadingCW(BattleUnit unit, boolean jumping){
 		return this.rotateHeading(unit, GameHelper.getRotateHeadingCW(unit.heading), jumping);
 	}
+	
+	/**
+	 * Returns the Clockwise heading relative to the given heading
+	 * @param heading
+	 * @return
+	 */
 	public static int getRotateHeadingCW(heading){
 		return (heading + 1) % 6;
 	}
 	
-	// rotates the given heading Counter Clockwise
+	/** 
+	 * Rotates the given unit's heading Counter Clockwise
+	 * @param unit
+	 * @param jumping
+	 * @return
+	 */
 	public def rotateHeadingCCW(BattleUnit unit, boolean jumping){
 		return this.rotateHeading(unit, GameHelper.getRotateHeadingCCW(unit.heading), jumping);
 	}
+	
+	/**
+	 * Returns the Counter Clockwise heading relative to the given heading
+	 * @param heading
+	 * @return
+	 */
 	public static int getRotateHeadingCCW(heading){
 		return (heading + 5) % 6;
 	}
 	
-	// Gets the coordinate of the hex that would be in front of the given coordinates+heading
+	/**
+	 * Gets the coordinate of the hex that would be in front of the given coordinates+heading
+	 * @param fromCoords
+	 * @param heading
+	 * @return
+	 */
 	public Coords getForwardCoords(Coords fromCoords, int heading) {
 		def x = fromCoords.x;
 		def y = fromCoords.y;
