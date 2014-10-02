@@ -2,16 +2,24 @@
  * player_ui.js - Methods that handle the non-canvas player UI
  */
 
-var mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay;
+var mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsDisplay, targetDisplay;
 
 var apDisplaying, jpDisplaying;
 
 function initPlayerUI() {
 	mapDisplay = document.getElementById("mapDiv");
+	mapDisplay.innerHTML = "map";	// TODO: a map
+	
 	playerInfoDisplay = document.getElementById("infoDiv");
 	unitStatsDisplay = document.getElementById("statsDiv");
 	unitArmorDisplay = document.getElementById("htalDiv");
 	unitHeatDisplay = document.getElementById("heatDiv");
+	
+	weaponsDisplay = new createjs.DOMElement(document.getElementById("weaponsDiv"));
+    stage.addChild(weaponsDisplay);
+    
+	targetDisplay = new createjs.DOMElement(document.getElementById("targetDiv"));
+	stage.addChild(targetDisplay);
 }
 
 function setPlayerInfo(unitName, playerName) {
@@ -74,4 +82,36 @@ function setArmorDisplay(armor, internals) {
 
 function setHeatDisplay(heat) {
 	unitHeatDisplay.innerHTML = "<p>Heat "+heat+"</p>";
+}
+
+function setWeaponsDisplay(weapons) {
+	// TESTING
+	var testingStr = "";
+	
+	var i = 1;
+	$.each(weapons, function(key, w) {
+		testingStr += (i++)+"."+w.shortName + " ";
+	});
+	
+	weaponsDisplay.alpha = 0.5;
+	weaponsDisplay.htmlElement.innerHTML = testingStr;
+}
+
+function setTargetDisplay(target) {
+	if(target == null) return;
+	
+	// TESTING
+	console.log(target.toString());
+	
+	var testingStr = "";
+	
+	var i = 1;
+	$.each(target.weapons, function(key, w) {
+		testingStr += (i++)+"."+w.shortName + "<br/>";
+	});
+	
+	targetDisplay.x = target.x + hexWidth/3;
+	targetDisplay.y = target.y - hexHeight/2;
+	targetDisplay.alpha = 0.5;
+	targetDisplay.htmlElement.innerHTML = testingStr;
 }

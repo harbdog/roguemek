@@ -17,6 +17,7 @@ body {
      -moz-user-select: -moz-none;
       -ms-user-select: none;
           user-select: none;
+          font-family: monospace;
 }
 
 #playerDiv {
@@ -34,7 +35,6 @@ body {
 #playerDiv div{
 	color: #FFFFFF;
 	margin: 5px 5px 5px 0px;
-	font-family: monospace;
 }
 
 #canvasDiv {
@@ -50,6 +50,23 @@ body {
 	top: 0px;
 	right: 0px;
 	color: #FFFFFF;
+}
+
+#weaponsDiv {
+	bottom: 5px;
+	width: 100%;
+	border-style: solid none none none;
+	background-color: #FFFFFF;
+	color: #000000;
+	font-size: 125%;
+}
+
+#targetDiv {
+	top: 0px;
+	left: 0px;
+	border: 1px dotted black;
+	background-color: black;
+	color: red;
 }
 
 #mapDiv {

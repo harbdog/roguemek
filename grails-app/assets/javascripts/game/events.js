@@ -40,6 +40,9 @@ function handleComplete(event) {
 	setHeatDisplay(playerUnit.heat);
 	setArmorDisplay(playerUnit.armor, playerUnit.internals);
 	
+	// TESTING weapons display
+	setWeaponsDisplay(playerUnit.weapons);
+	
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");
 	fpsDisplay = new createjs.DOMElement(fpsDiv);
@@ -99,6 +102,10 @@ function handleUnitClick(event) {
 	var unit = event.target;
 	
 	console.log("clicked "+x+","+y+": "+unit); 
+	
+	if(playerUnit != unit) {
+		setTargetDisplay(unit);
+	}
 }
 
 //Using jQuery add the event handlers after the DOM is loaded

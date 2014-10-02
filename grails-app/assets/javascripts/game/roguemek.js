@@ -345,8 +345,12 @@ function initHexMapDisplay() {
 	    	stage.y = (hexHeight / 2);
 	    }
 	    
+	    // TODO: handle stage overlay movement in a more automatic fashion?
 	    fpsDisplay.x = -stage.x - 10;
 	    fpsDisplay.y = -stage.y + 10;
+	    
+	    weaponsDisplay.x = -stage.x;
+	    weaponsDisplay.y = -stage.y;
 	});
 	stage.on("pressup", function(evt) { 
 		// reset click and drag map panning

@@ -16,11 +16,14 @@
 			<div id="heatDiv"></div>
 		</div>
 		<div id="canvasDiv">
+			<div id="fpsDiv"></div>
 			<canvas id="canvas">
 		        Your browser doesn't support HTML5, upgrade to a recent browser version!
 		    </canvas>
 		    
-		    <div id="fpsDiv"></div>
+		    <div id="targetDiv"></div>
+		    
+		    <div id="weaponsDiv"></div>
 	    </div>
 	</body>
 </html>
