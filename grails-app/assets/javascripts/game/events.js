@@ -8,6 +8,8 @@ function tick(event) {
 		fpsDisplay.htmlElement.innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
 	}
 	
+	// TODO: only update when something actually needs to be updated on screen
+	
 	stage.update(event);
 }
 

@@ -10,7 +10,7 @@ class BattleEquipment {
 	Pilot ownerPilot
 	Equipment equipment
 	
-	Integer criticalHits = 0
+	Byte[] criticalHits = []
 	Character status = STATUS_ACTIVE
 	
 	// STATIC value mappings
@@ -22,7 +22,7 @@ class BattleEquipment {
 		ownerPilot nullable: false
 		equipment nullable: false
 		
-		criticalHits min: 0
+		criticalHits nullable: false
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED, STATUS_DAMAGED]
     }
 	

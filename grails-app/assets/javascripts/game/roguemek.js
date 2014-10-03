@@ -170,7 +170,7 @@ function initGame(){
 	poll();
 		
 	createjs.Ticker.on("tick", tick);
-	createjs.Ticker.setFPS(30);
+	createjs.Ticker.setFPS(60);
 }
 
 /**

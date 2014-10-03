@@ -53,13 +53,29 @@ class BattleMech extends BattleUnit {
 			// convert Equipment to BattleEquipment to store in crits
 			def counter = 0
 			crits = new long[78]
+			
+			// keep track of equipment with >1 crit slots so they can point to the same id
+			BattleEquipment prevCritEquip;
+			int prevCritNum = 1;
+			
 			mech.crits.each { equipId ->
-				def thisEquip = Equipment.get(equipId)
+				Equipment thisEquip = Equipment.get(equipId)
 				
-				BattleEquipment bEquip = new BattleEquipment(ownerPilot: pilot, equipment: Equipment.get(equipId));
-				bEquip.save flush:true
-				
-				crits[counter++] = bEquip.id
+				if(prevCritEquip != null && prevCritEquip.equipment.id == equipId &&
+						thisEquip.crits > 1 && thisEquip.crits > prevCritNum) {
+					// this crit is a continuation of the same equipment before it
+					prevCritNum ++
+					crits[counter++] = prevCritEquip.id
+				}
+				else {
+					BattleEquipment bEquip = new BattleEquipment(ownerPilot: pilot, equipment: Equipment.get(equipId));
+					bEquip.save flush:true
+					
+					prevCritEquip = bEquip
+					prevCritNum = 1
+					
+					crits[counter++] = bEquip.id
+				}
 			}
 		}
 	}
