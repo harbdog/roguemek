@@ -16,7 +16,7 @@ function tick(event) {
  */
 function resize_canvas(){
 	if(stage != null){
-		stage.canvas.width = window.innerWidth - 200;
+		stage.canvas.width = window.innerWidth - 5;
 		stage.canvas.height = window.innerHeight - 5;
 		
 		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+stage.canvas.width+"x"+stage.canvas.height);

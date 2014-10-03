@@ -67,7 +67,7 @@ UnitDisplay.prototype.hexY = function() {
 	return this.coords.y;
 }
 UnitDisplay.prototype.updateXYRot = function() {
-	this.x = this.hexX() * (3 * hexWidth / 4) + this.regX;
+	this.x = xBoardOffset + this.hexX() * (3 * hexWidth / 4) + this.regX;
 	
 	if(this.coords.isXOdd()){
 		this.y = (hexHeight / 2) + (this.hexY() * hexHeight) + this.regY;

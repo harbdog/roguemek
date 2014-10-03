@@ -18,14 +18,15 @@
 		    <div id="targetDiv"></div>
 		    
 		    <div id="weaponsDiv"></div>
+		    
+		    <div id="playerDiv">
+				<div id="infoDiv"></div>
+				<div id="mapDiv"></div>
+				<div id="statsDiv"></div>
+				<div id="htalDiv"></div>
+				<div id="heatDiv"></div>
+			</div>
 	    </div>
 	    
-	    <div id="playerDiv">
-			<div id="infoDiv"></div>
-			<div id="mapDiv"></div>
-			<div id="statsDiv"></div>
-			<div id="htalDiv"></div>
-			<div id="heatDiv"></div>
-		</div>
 	</body>
 </html>

@@ -4,6 +4,12 @@
 
 var mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay;
 
+// X direction offset for the Board due to the player display bar
+var xBoardOffset = 200;
+
+// Y direction offset for the Weapon display
+var yWeaponsOffset = -100;
+
 var apDisplaying, jpDisplaying;
 
 function initPlayerUI() {
@@ -104,8 +110,8 @@ function setWeaponsDisplay(weapons) {
 	});
 	
 	weaponsContainer.alpha = 0;
-	weaponsContainer.x = -stage.x;
-    weaponsContainer.y = -stage.y + stage.canvas.height - 100;
+	weaponsContainer.x = -stage.x + xBoardOffset;
+    weaponsContainer.y = -stage.y + stage.canvas.height + yWeaponsOffset;
 	weaponsDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(weaponsContainer);
 	

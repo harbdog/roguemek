@@ -306,26 +306,26 @@ function initHexMapDisplay() {
 	    stage.y = newY;
 	    
 	    // Keep the board from going off the window too much
-	    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
-	    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
+	    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width - xBoardOffset){
+	    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width - xBoardOffset;
 	    }
-	    if(stage.x > (3 * hexWidth / 4)) {
-	    	stage.x = (3 * hexWidth / 4);
+	    if(stage.x > 0) {
+	    	stage.x = 0;
 	    }
 	    
 	    if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height){
 	    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height;
 	    }
-	    if(stage.y > (hexHeight / 2)) {
-	    	stage.y = (hexHeight / 2);
+	    if(stage.y > 0) {
+	    	stage.y = 0;
 	    }
 	    
 	    // TODO: handle stage overlay movement in a more automatic fashion?
 	    fpsDisplay.x = -stage.x - 10;
 	    fpsDisplay.y = -stage.y + 10;
 	    
-	    weaponsContainer.x = -stage.x;
-	    weaponsContainer.y = -stage.y + stage.canvas.height - 100;
+	    weaponsContainer.x = -stage.x + xBoardOffset;
+	    weaponsContainer.y = -stage.y + stage.canvas.height + yWeaponsOffset;
 	});
 	stage.on("pressup", function(evt) { 
 		// reset click and drag map panning
@@ -349,7 +349,7 @@ function initHexMapDisplay() {
 				continue;
 			}
 			
-			var xOffset = x * (3 * hexWidth / 4);
+			var xOffset = xBoardOffset + x * (3 * hexWidth / 4);
 			var yOffset = y * hexHeight;
 			
 			if(thisDisplayHex.isXOdd()){
