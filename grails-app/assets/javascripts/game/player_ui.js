@@ -2,7 +2,7 @@
  * player_ui.js - Methods that handle the non-canvas player UI
  */
 
-var mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsDisplay, targetDisplay;
+var mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay;
 
 var apDisplaying, jpDisplaying;
 
@@ -15,11 +15,21 @@ function initPlayerUI() {
 	unitArmorDisplay = document.getElementById("htalDiv");
 	unitHeatDisplay = document.getElementById("heatDiv");
 	
+	weaponsContainer = new createjs.Container();
+	var weaponsBackground = new createjs.Shape();
+	weaponsBackground.graphics.beginFill("#FFFFFF").drawRect(0, 0, stage.canvas.width, 100);
+	weaponsBackground.alpha = 0.5;
 	weaponsDisplay = new createjs.DOMElement(document.getElementById("weaponsDiv"));
-    stage.addChild(weaponsDisplay);
+	weaponsContainer.addChild(weaponsBackground);
+	weaponsContainer.addChild(weaponsDisplay);
     
+    targetContainer = new createjs.Container();
+	var targetBackground = new createjs.Shape();
+	targetBackground.graphics.beginFill("#000000").drawRect(0, 0, 200, 300);
+	targetBackground.alpha = 0.5;
 	targetDisplay = new createjs.DOMElement(document.getElementById("targetDiv"));
-	stage.addChild(targetDisplay);
+	targetContainer.addChild(targetBackground);
+	targetContainer.addChild(targetDisplay);
 }
 
 function setPlayerInfo(unitName, playerName) {
@@ -93,8 +103,13 @@ function setWeaponsDisplay(weapons) {
 		testingStr += (i++)+"."+w.shortName + " ";
 	});
 	
-	weaponsDisplay.alpha = 0.5;
+	weaponsContainer.alpha = 0;
+	weaponsContainer.x = -stage.x;
+    weaponsContainer.y = -stage.y + stage.canvas.height - 100;
 	weaponsDisplay.htmlElement.innerHTML = testingStr;
+	stage.addChild(weaponsContainer);
+	
+	createjs.Tween.get(weaponsContainer).to({alpha: 1}, 1000);
 }
 
 function setTargetDisplay(target) {
@@ -110,8 +125,11 @@ function setTargetDisplay(target) {
 		testingStr += (i++)+"."+w.shortName + "<br/>";
 	});
 	
-	targetDisplay.x = target.x + hexWidth/3;
-	targetDisplay.y = target.y - hexHeight/2;
-	targetDisplay.alpha = 0.5;
+	targetContainer.alpha = 0;
+	targetContainer.x = target.x + hexWidth/3;
+	targetContainer.y = target.y - hexHeight/2;
 	targetDisplay.htmlElement.innerHTML = testingStr;
+	stage.addChild(targetContainer);
+	
+	createjs.Tween.get(targetContainer).to({alpha: 1}, 500);
 }

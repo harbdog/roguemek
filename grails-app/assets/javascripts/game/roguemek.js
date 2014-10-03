@@ -174,31 +174,6 @@ function initGame(){
 }
 
 /**
- * Resizes the canvas based on the current browser window size
- */
-function resize_canvas(){
-	if(stage != null){
-		stage.canvas.width = window.innerWidth - 200;
-		stage.canvas.height = window.innerHeight - 5;
-		
-		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+stage.canvas.width+"x"+stage.canvas.height);
-		
-		// Keep the board from shifting to the center the first time it is dragged if the windows is wider than the board
-		if(stage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
-			console.log("stage width "+stage.canvas.width+" > "+
-				"board width "+(numCols+1)+" * "+(3 * hexWidth / 4)+"="+((numCols+1) * (3 * hexWidth / 4)));
-			
-		    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
-		    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
-		    }
-		    if(stage.x > (3 * hexWidth / 4)) {
-		    	stage.x = (3 * hexWidth / 4);
-		    }
-		}
-	}
-}
-
-/**
  * Loads all initial game elements from the server to begin the game
  */
 function loadGameElements() {
@@ -349,8 +324,8 @@ function initHexMapDisplay() {
 	    fpsDisplay.x = -stage.x - 10;
 	    fpsDisplay.y = -stage.y + 10;
 	    
-	    weaponsDisplay.x = -stage.x;
-	    weaponsDisplay.y = -stage.y;
+	    weaponsContainer.x = -stage.x;
+	    weaponsContainer.y = -stage.y + stage.canvas.height - 100;
 	});
 	stage.on("pressup", function(evt) { 
 		// reset click and drag map panning

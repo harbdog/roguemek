@@ -33,8 +33,9 @@ body {
 }
 
 #playerDiv div{
-	color: #FFFFFF;
+	cursor: default;
 	margin: 5px 5px 5px 0px;
+	color: #FFFFFF;
 }
 
 #canvasDiv {
@@ -53,19 +54,17 @@ body {
 }
 
 #weaponsDiv {
-	bottom: 5px;
-	width: 100%;
-	border-style: solid none none none;
-	background-color: #FFFFFF;
+	cursor: default;
+	top: 0px;
+	left: 0px;
 	color: #000000;
 	font-size: 125%;
 }
 
 #targetDiv {
+	cursor: default;
 	top: 0px;
 	left: 0px;
-	border: 1px dotted black;
-	background-color: black;
 	color: red;
 }
 

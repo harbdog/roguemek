@@ -8,13 +8,7 @@
 		<title>RogueMek</title>
 	</head>
 	<body id="body">
-		<div id="playerDiv">
-			<div id="infoDiv"></div>
-			<div id="mapDiv"></div>
-			<div id="statsDiv"></div>
-			<div id="htalDiv"></div>
-			<div id="heatDiv"></div>
-		</div>
+		
 		<div id="canvasDiv">
 			<div id="fpsDiv"></div>
 			<canvas id="canvas">
@@ -25,5 +19,13 @@
 		    
 		    <div id="weaponsDiv"></div>
 	    </div>
+	    
+	    <div id="playerDiv">
+			<div id="infoDiv"></div>
+			<div id="mapDiv"></div>
+			<div id="statsDiv"></div>
+			<div id="htalDiv"></div>
+			<div id="heatDiv"></div>
+		</div>
 	</body>
 </html>

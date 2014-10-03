@@ -11,6 +11,31 @@ function tick(event) {
 	stage.update(event);
 }
 
+/**
+ * Resizes the canvas based on the current browser window size
+ */
+function resize_canvas(){
+	if(stage != null){
+		stage.canvas.width = window.innerWidth - 200;
+		stage.canvas.height = window.innerHeight - 5;
+		
+		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+stage.canvas.width+"x"+stage.canvas.height);
+		
+		// Keep the board from shifting to the center the first time it is dragged if the windows is wider than the board
+		if(stage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
+			console.log("stage width "+stage.canvas.width+" > "+
+				"board width "+(numCols+1)+" * "+(3 * hexWidth / 4)+"="+((numCols+1) * (3 * hexWidth / 4)));
+			
+		    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
+		    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
+		    }
+		    if(stage.x > (3 * hexWidth / 4)) {
+		    	stage.x = (3 * hexWidth / 4);
+		    }
+		}
+	}
+}
+
 function handleProgress(event) {
 	progress.graphics.clear();
     
