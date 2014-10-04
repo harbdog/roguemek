@@ -4,6 +4,12 @@ import roguemek.game.Pilot;
 
 class User {
 	private static final Date NULL_DATE = new Date(0)
+	
+	String id
+	static mapping= {
+		id generator: 'uuid'
+		password column: '`password`'
+	}
 
 	transient springSecurityService
 
@@ -25,10 +31,6 @@ class User {
 		username email:true, unique:true
 		callsign blank: false, unique: true
 		password blank: false
-	}
-
-	static mapping = {
-		password column: '`password`'
 	}
 
 	Set<Role> getAuthorities() {

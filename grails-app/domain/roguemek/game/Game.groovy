@@ -2,6 +2,11 @@ package roguemek.game
 
 class Game {
 	private static final Date NULL_DATE = new Date(0)
+	
+	String id
+	static mapping= {
+		id generator: 'uuid'
+	}
 
 	Pilot ownerPilot
 	

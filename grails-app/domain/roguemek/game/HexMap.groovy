@@ -1,12 +1,17 @@
 package roguemek.game
 
 class HexMap {
+	
+	String id
+	static mapping= {
+		id generator: 'uuid'
+	}
 
 	Integer numCols
 	Integer numRows
 	
 	List hexMap
-	static hasMany = [hexMap: long]
+	static hasMany = [hexMap: String]
 	
     static constraints = {
 		numRows min: 0
@@ -17,37 +22,36 @@ class HexMap {
 		def numCols = 0
 		def numRows = 0
 		
-		long[] hexMap
+		String[] hexMap
 		
 		try {
 			FileInputStream fs = new FileInputStream(boardFile)
 			StreamTokenizer st = new StreamTokenizer(fs)
-			st.eolIsSignificant(true);
-			st.commentChar((int)'#');
-			st.quoteChar((int)'"');
-			st.wordChars((int)'_', (int)'_');
+			st.eolIsSignificant(true)
+			st.commentChar((int)'#')
+			st.quoteChar((int)'"')
+			st.wordChars((int)'_', (int)'_')
 			
-			int x_pos = 1;
-			int y_pos = 1;
+			int x_pos = 1
+			int y_pos = 1
 			
 			while (st.nextToken() != StreamTokenizer.TT_EOF) {
-				if ((st.ttype == StreamTokenizer.TT_WORD)
-						&& st.sval.equalsIgnoreCase("size")) {
+				if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("size")) {
 					// read rest of line
-					String[] args = [ "0", "0" ];
-					int i = 0;
+					String[] args = [ "0", "0" ]
+					
+					int i = 0
 					while ((st.nextToken() == StreamTokenizer.TT_WORD)
 							|| (st.ttype == '"')
 							|| (st.ttype == StreamTokenizer.TT_NUMBER)) {
-						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval;
+						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval
 					}
-					numCols = Integer.parseInt(args[0]);
-					numRows = Integer.parseInt(args[1]);
+					numCols = Integer.parseInt(args[0])
+					numRows = Integer.parseInt(args[1])
 					
-					hexMap = new long[numCols*numRows]
+					hexMap = new String[numCols*numRows]
 					
-				} else if ((st.ttype == StreamTokenizer.TT_WORD)
-						&& st.sval.equalsIgnoreCase("option")) {
+				} else if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("option")) {
 					// TODO: read rest of line
 					/*String[] args = [ "", "" ];
 					int i = 0;
@@ -65,16 +69,16 @@ class HexMap {
 						}
 					}*/ // End exit_roads_to_pavement-option
 						
-				} else if ((st.ttype == StreamTokenizer.TT_WORD)
-						&& st.sval.equalsIgnoreCase("hex")) {
+				} else if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("hex")) {
 					// read rest of line
-					String[] args = [ "", "0", "", "" ];
-					int i = 0;
+					String[] args = [ "", "0", "", "" ]
+					
+					int i = 0
 					while ((st.nextToken() == StreamTokenizer.TT_WORD)
 							|| (st.ttype == '"')
 							|| (st.ttype == StreamTokenizer.TT_NUMBER)) {
 							
-						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval;
+						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval
 					}
 							
 					String hexCoords = args[0]
@@ -89,18 +93,17 @@ class HexMap {
 					
 					x_pos++;
 					if (x_pos > numCols) {
-						y_pos++;
-						x_pos = 1;
+						y_pos++
+						x_pos = 1
 					}
 					
-				} else if ((st.ttype == StreamTokenizer.TT_WORD)
-						&& st.sval.equalsIgnoreCase("end")) {
-					break;
+				} else if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("end")) {
+					break
 				}
 			}
 		} catch (IOException ex) {
-			System.err.println("i/o error reading board");
-			System.err.println(ex);
+			System.err.println("i/o error reading board")
+			System.err.println(ex)
 		}
 	
 		// TODO: if there are any nulls, the board file is invalid

@@ -15,7 +15,7 @@ class BattleMech extends BattleUnit {
 	Short[] internals
 	
 	List crits
-	static hasMany = [crits: long]
+	static hasMany = [crits: String]
 	
 	// static location indices
 	public static final HEAD = Mech.HEAD;
@@ -52,7 +52,7 @@ class BattleMech extends BattleUnit {
 			
 			// convert Equipment to BattleEquipment to store in crits
 			def counter = 0
-			crits = new long[78]
+			crits = new String[78]
 			
 			// keep track of equipment with >1 crit slots so they can point to the same id
 			BattleEquipment prevCritEquip;
@@ -68,7 +68,7 @@ class BattleMech extends BattleUnit {
 					crits[counter++] = prevCritEquip.id
 				}
 				else {
-					BattleEquipment bEquip = new BattleEquipment(ownerPilot: pilot, equipment: Equipment.get(equipId));
+					BattleEquipment bEquip = new BattleEquipment(ownerPilot: pilot, equipment: thisEquip);
 					bEquip.save flush:true
 					
 					prevCritEquip = bEquip

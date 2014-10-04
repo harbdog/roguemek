@@ -6,6 +6,11 @@ import roguemek.model.Equipment
  * Represents the owned equipment that can be taken into battle and be damaged or destroyed
  */
 class BattleEquipment {
+	
+	String id
+	static mapping= {
+		id generator: 'uuid'
+	}
 
 	Pilot ownerPilot
 	Equipment equipment

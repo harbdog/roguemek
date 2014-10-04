@@ -27,6 +27,7 @@ class BootStrap {
 		
 		// Create Admin user with all Roles
 		def adminUser = User.findByUsername(adminEmail)
+		def adminPilot
 		if(!adminUser) {
 			// initialize testing admin user
 			adminUser = new User(username: adminEmail, callsign: adminCallsign, password: adminPassword, enabled: true)
@@ -37,12 +38,12 @@ class BootStrap {
 				}
 			}
 			else {
-				adminUser.save()
+				adminUser.save flush:true
 			
 				log.info('Initialized admin user '+adminUser.username)
 			}
 			
-			def adminPilot = new Pilot(firstName: "Rogue", lastName: "Mek", ownerUser: adminUser, status: Pilot.STATUS_ACTIVE)
+			adminPilot = new Pilot(firstName: "Rogue", lastName: "Mek", ownerUser: adminUser, status: Pilot.STATUS_ACTIVE)
 			if(!adminPilot.validate()) {
 				log.error("Errors with pilot "+adminPilot.firstName+":\n")
 				adminPilot.errors.allErrors.each {
@@ -50,7 +51,7 @@ class BootStrap {
 				}
 			}
 			else {
-				adminPilot.save()
+				adminPilot.save flush:true
 			
 				log.info('Initialized admin pilot '+adminPilot.firstName)
 			}
@@ -62,6 +63,7 @@ class BootStrap {
 		
 		// Create test user with User role
 		def testUser = User.findByUsername(testEmail)
+		def testPilot
 		if(!testUser) {
 			// initialize testing admin user
 			testUser = new User(username: testEmail, callsign: testCallsign, password: testPassword, enabled: true)
@@ -72,12 +74,12 @@ class BootStrap {
 				}
 			}
 			else {
-				testUser.save()
+				testUser.save flush:true
 			
 				log.info('Initialized test user '+testUser.username)
 			}
 			
-			def testPilot = new Pilot(firstName: "Testy", lastName: "Tester", ownerUser: testUser, status: Pilot.STATUS_ACTIVE)
+			testPilot = new Pilot(firstName: "Testy", lastName: "Tester", ownerUser: testUser, status: Pilot.STATUS_ACTIVE)
 			if(!testPilot.validate()) {
 				log.error("Errors with pilot "+testPilot.firstName+":\n")
 				testPilot.errors.allErrors.each {
@@ -85,7 +87,7 @@ class BootStrap {
 				}
 			}
 			else {
-				testPilot.save()
+				testPilot.save flush:true
 			
 				log.info('Initialized test pilot '+testPilot.firstName)
 			}
@@ -120,7 +122,7 @@ class BootStrap {
 		HexMap boardMap = HexMap.loadBoardFile(boardFile)
 		
 		// Initialize a sample BattleMech
-		def battleMech = new BattleMech(pilot: Pilot.get(1), mech: Mech.get(1), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
+		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.get(1), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
 		if(!battleMech.validate()) {
 			log.error("Errors with battle mech "+battleMech.mech?.name+":\n")
 			battleMech.errors.allErrors.each {
@@ -128,13 +130,13 @@ class BootStrap {
 			}
 		}
 		else {
-			battleMech.save()
+			battleMech.save flush:true
 		
 			log.info('Initialized battle mech '+battleMech.mech.name)
 		}
 		
 		// and another BattleMech
-		def battleMech2 = new BattleMech(pilot: Pilot.get(2), mech: Mech.get(2), x: 1, y: 1, heading: 0)
+		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.get(2), x: 1, y: 1, heading: 0)
 		if(!battleMech2.validate()) {
 			log.error("Errors with battle mech "+battleMech2.mech?.name+":\n")
 			battleMech2.errors.allErrors.each {
@@ -142,7 +144,7 @@ class BootStrap {
 			}
 		}
 		else {
-			battleMech2.save()
+			battleMech2.save flush:true
 		
 			log.info('Initialized battle mech '+battleMech2.mech.name)
 		}
@@ -150,7 +152,7 @@ class BootStrap {
 		assert BattleMech.count() == 2
 		
 		// Initialize a sample Game
-		Game sampleGame = new Game(ownerPilot: Pilot.get(1), pilots: [Pilot.get(1), Pilot.get(2)], units: [battleMech, battleMech2], board: boardMap)
+		Game sampleGame = new Game(ownerPilot: adminPilot, pilots: [adminPilot, testPilot], units: [battleMech, battleMech2], board: boardMap)
 		
 		if(!sampleGame.validate()) {
 			log.error("Errors with game:\n")
@@ -159,8 +161,8 @@ class BootStrap {
 			}
 		}
 		else {
-			sampleGame.save()
-			battleMech.save()
+			sampleGame.save flush:true
+			battleMech.save flush:true
 			log.info('Initialized game '+sampleGame.id)
 		}
     }

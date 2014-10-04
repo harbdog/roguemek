@@ -7,6 +7,11 @@ import roguemek.assets.HexTileset
 
 class Hex {
 	
+	String id
+	static mapping= {
+		id generator: 'uuid'
+	}
+	
 	Integer x
 	Integer y
 	Integer elevation

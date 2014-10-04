@@ -2,6 +2,7 @@ package roguemek.game
 
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
+
 import roguemek.game.Coords
 
 /**
@@ -9,6 +10,14 @@ import roguemek.game.Coords
  */
 class BattleUnit {
 	private static Log log = LogFactory.getLog(this)
+	
+	String id
+	static mapping = {
+		id generator: 'uuid'
+		
+		// All extending classes will get their own tables
+		tablePerHierarchy false
+	}
 
 	Pilot pilot	// pilot can be a Pilot other than the owner of the unit
 	
@@ -39,11 +48,6 @@ class BattleUnit {
 	public static final Integer HEADING_S = 3;
 	public static final Integer HEADING_SW = 4;
 	public static final Integer HEADING_NW = 5;
-	
-	static mapping = {
-		// All extending classes will get their own tables
-		tablePerHierarchy false
-	}
 	
     static constraints = {
 		pilot nullable: true
