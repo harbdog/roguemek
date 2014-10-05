@@ -1,7 +1,6 @@
 package roguemek.game
 
-import roguemek.model.Equipment
-import roguemek.model.Mech;
+import roguemek.model.*
 
 /**
  * Represents the owned mech that can be taken into battle
@@ -16,19 +15,6 @@ class BattleMech extends BattleUnit {
 	
 	List crits
 	static hasMany = [crits: String]
-	
-	// static location indices
-	public static final HEAD = Mech.HEAD;
-	public static final LEFT_ARM = Mech.LEFT_ARM;
-	public static final LEFT_TORSO = Mech.LEFT_TORSO;
-	public static final CENTER_TORSO = Mech.CENTER_TORSO;
-	public static final RIGHT_TORSO = Mech.RIGHT_TORSO;
-	public static final RIGHT_ARM = Mech.RIGHT_ARM;
-	public static final LEFT_LEG = Mech.LEFT_LEG;
-	public static final RIGHT_LEG = Mech.RIGHT_LEG;
-	public static final LEFT_REAR = Mech.LEFT_REAR;
-	public static final CENTER_REAR = Mech.CENTER_REAR;
-	public static final RIGHT_REAR = Mech.RIGHT_REAR;
 	
     static constraints = {
 		mech nullable: false
@@ -55,24 +41,42 @@ class BattleMech extends BattleUnit {
 			crits = new String[78]
 			
 			// keep track of equipment with >1 crit slots so they can point to the same id
-			BattleEquipment prevCritEquip;
-			int prevCritNum = 1;
+			def prevCritEquip = ["-1": null]
+			def prevCritNum = ["-1": 0]
 			
 			mech.crits.each { equipId ->
 				Equipment thisEquip = Equipment.get(equipId)
+				int location = Mech.getCritSectionIndexOf(counter)
 				
-				if(prevCritEquip != null && prevCritEquip.equipment.id == equipId &&
-						thisEquip.crits > 1 && thisEquip.crits > prevCritNum) {
+				int prevNum = prevCritNum[equipId] ?: 0
+				BattleEquipment prevEquip = prevCritEquip[equipId]
+				
+				if(prevNum > 0 && prevEquip != null &&
+						thisEquip.crits > 1 && thisEquip.crits > prevNum) {
 					// this crit is a continuation of the same equipment before it
-					prevCritNum ++
-					crits[counter++] = prevCritEquip.id
+					prevCritNum[equipId] = prevNum + 1
+					
+					if(prevEquip.location != location) {
+						// This equipment is spread across multiple crit sections, choose the ideal section
+						// (e.g. CT for Engine, LA/RA for split crit weapons like AC/20 or ArrowIV)
+						if(location == Mech.CENTER_TORSO || location == Mech.LEFT_ARM || location == Mech.RIGHT_ARM) {
+							prevEquip.location = location
+							prevEquip.save flush:true
+						}
+					}
+					
+					crits[counter++] = prevEquip.id
 				}
 				else {
-					BattleEquipment bEquip = new BattleEquipment(ownerPilot: pilot, equipment: thisEquip);
+					BattleEquipment bEquip = new BattleEquipment(ownerPilot: pilot, equipment: thisEquip)
+					bEquip.location = location
 					bEquip.save flush:true
 					
-					prevCritEquip = bEquip
-					prevCritNum = 1
+					if(thisEquip.crits > 1) {
+						// this crit needs to continue to subsequent locations for the same item
+						prevCritNum[equipId] = 1
+						prevCritEquip[equipId] = bEquip
+					}
 					
 					crits[counter++] = bEquip.id
 				}
@@ -81,11 +85,11 @@ class BattleMech extends BattleUnit {
 	}
 	
 	public void testDamage(int damage){
-		log.info "before damage: "+armor[CENTER_TORSO]
+		log.info "before damage: "+armor[Mech.CENTER_TORSO]
 		
-		armor[CENTER_TORSO] = armor[CENTER_TORSO] - damage
+		armor[Mech.CENTER_TORSO] = armor[Mech.CENTER_TORSO] - damage
 		
-		log.info "after damage: "+armor[CENTER_TORSO]
+		log.info "after damage: "+armor[Mech.CENTER_TORSO]
 		
 		save flush:true
 	}

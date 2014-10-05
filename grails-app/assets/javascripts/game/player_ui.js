@@ -106,7 +106,8 @@ function setWeaponsDisplay(weapons) {
 	
 	var i = 1;
 	$.each(weapons, function(key, w) {
-		testingStr += (i++)+"."+w.shortName + " ";
+		var locationStr = getLocationText(w.location);
+		testingStr += (i++)+"."+locationStr+"-"+w.shortName + " ";
 	});
 	
 	weaponsContainer.alpha = 0;
@@ -128,7 +129,8 @@ function setTargetDisplay(target) {
 	
 	var i = 1;
 	$.each(target.weapons, function(key, w) {
-		testingStr += (i++)+"."+w.shortName + "<br/>";
+		var locationStr = getLocationText(w.location);
+		testingStr += locationStr+"-"+w.shortName + "<br/>";
 	});
 	
 	targetContainer.alpha = 0;

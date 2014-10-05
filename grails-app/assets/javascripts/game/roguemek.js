@@ -7,41 +7,6 @@ function isXOdd(X) {
 	return (X & 1 == 1);
 }
 
-// TODO: Move Coords to a new appropriately named js file
-function Coords(x, y) {
-	this.initialize(x, y);
-}
-Coords.prototype.initialize = function(x, y) {
-	this.setLocation(x, y);
-}
-Coords.prototype.setLocation = function(x, y) {
-	this.x = x;
-	this.y = y;
-}
-Coords.prototype.equals = function(thatCoord) {
-	if(thatCoord == null) return false;
-	return (this.x == thatCoord.x && this.y == thatCoord.y);
-}
-Coords.prototype.isXOdd = function() {
-	return isXOdd(this.x);
-}
-Coords.prototype.translated = function(direction) {
-	return new Coords(xInDirection(this.x, this.y, direction), yInDirection(this.x, this.y, direction));
-}
-Coords.prototype.getAdjacentCoords = function() {
-	var adjacents = [];
-	for (var dir = 0; dir < 6; dir++) {
-        var adj = this.translated(dir);
-        if(adj.x >= 0 && adj.x < numCols && adj.y >= 0 && adj.y < numRows){
-        	adjacents[dir] = adj;
-        }
-	}
-	return adjacents;
-}
-Coords.prototype.toString = function() {
-	return "["+this.x+","+this.y+"]";
-}
-
 /**
  * Returns the x parameter of the coordinates in the direction
  *
@@ -271,7 +236,7 @@ function initUnitWeapons(unit) {
 	
 	$.each(unit.crits, function(index, c) {
 		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
-			var w = new Weapon(c.name, c.shortName, c.damage, c.heat, 
+			var w = new Weapon(c.name, c.shortName, c.location, c.damage, c.heat, 
 								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
 			
 			weapons[c.id] = w;
@@ -411,6 +376,88 @@ function initUnitsDisplay() {
 		
 		stage.addChild(thisDisplayUnit);
 	});
+}
+
+// returns shortened text of the hit location index
+function getLocationText(index){
+	var locText = "";
+	switch(index){
+		case HEAD:
+			locText = "HD";
+			break;
+		case LEFT_ARM:
+			locText = "LA";
+			break;
+		case LEFT_TORSO:
+			locText = "LT";
+			break;
+		case CENTER_TORSO:
+			locText = "CT";
+			break;
+		case RIGHT_TORSO:
+			locText = "RT";
+			break;
+		case RIGHT_ARM:
+			locText = "RA";
+			break;
+		case LEFT_LEG:
+			locText = "LL";
+			break;
+		case RIGHT_LEG:
+			locText = "RL";
+			break;
+		case LEFT_REAR:
+			locText = "LTR";
+			break;
+		case CENTER_REAR:
+			locText = "CTR";
+			break;
+		case RIGHT_REAR:
+			locText = "RTR";
+			break;
+	}
+	return locText;
+}
+
+// returns full name of the hit location index
+function getLocationName(index){
+	var locText = "";
+	switch(index){
+		case HEAD:
+			locText = "Head";
+			break;
+		case LEFT_ARM:
+			locText = "Left Arm";
+			break;
+		case LEFT_TORSO:
+			locText = "Left Torso";
+			break;
+		case CENTER_TORSO:
+			locText = "Center Torso";
+			break;
+		case RIGHT_TORSO:
+			locText = "Right Torso";
+			break;
+		case RIGHT_ARM:
+			locText = "Right Arm";
+			break;
+		case LEFT_LEG:
+			locText = "Left Leg";
+			break;
+		case RIGHT_LEG:
+			locText = "Right Leg";
+			break;
+		case LEFT_REAR:
+			locText = "Left Torso Rear";
+			break;
+		case CENTER_REAR:
+			locText = "Center Torso Rear";
+			break;
+		case RIGHT_REAR:
+			locText = "Right Torso Rear";
+			break;
+	}
+	return locText;
 }
 
 /**

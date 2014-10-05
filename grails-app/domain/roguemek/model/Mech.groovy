@@ -75,6 +75,9 @@ class Mech extends Unit {
 	public static final RIGHT_KICK_LOCATIONS = [RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG, RIGHT_LEG];
 	public static final REAR_KICK_LOCATIONS  = FRONT_KICK_LOCATIONS;
 	
+	public static final ALL_LOCATIONS = [HEAD, LEFT_ARM, LEFT_TORSO, CENTER_TORSO, RIGHT_TORSO, RIGHT_ARM, 
+										 LEFT_LEG, RIGHT_LEG, LEFT_REAR, CENTER_REAR, RIGHT_REAR]
+	
 	// internal structure points for each tonnage
 	public static final INTERNAL_STRUCTURE = [
 		//	T:		[HD,LA,LT,CT,RT,RA,LL,RL]
@@ -193,13 +196,39 @@ class Mech extends Unit {
 		return -1
 	}
 	
+	/**
+	 * Gets the crit section location index of the given critical slot index
+	 * @return
+	 */
+	public static int getCritSectionIndexOf(int critIndex) {
+		if(critIndex < 0) return -1
+		
+		int critSectionIndex = -1
+		
+		ALL_LOCATIONS.each { sectionIndex ->
+			int critSectionStart = Mech.getCritSectionStart(sectionIndex)
+			int critSectionEnd = Mech.getCritSectionEnd(sectionIndex)
+			
+			if(critIndex >= critSectionStart && critIndex <= critSectionEnd) {
+				critSectionIndex = sectionIndex
+			}
+		}
+		
+		return critSectionIndex
+	}
+	
+	/**
+	 * Gets the Equipment object at the given critical slot index
+	 * @param critIndex
+	 * @return
+	 */
 	public Equipment getEquipmentAt(int critIndex) {
 		def thisCritId = this.crits.getAt(critIndex)
 		return (thisCritId != null) ? Equipment.read(thisCritId) : null
 	}
 	
 	/**
-	 * Gets the Equipment array representing the crits array of just the given section 
+	 * Gets the Equipment array representing the crits array of just the given section location
 	 * @param critSectionIndex
 	 * @return
 	 */

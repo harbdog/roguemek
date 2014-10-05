@@ -1,6 +1,6 @@
 package roguemek.game
 
-import roguemek.model.Equipment
+import roguemek.model.*
 
 /**
  * Represents the owned equipment that can be taken into battle and be damaged or destroyed
@@ -15,6 +15,7 @@ class BattleEquipment {
 	Pilot ownerPilot
 	Equipment equipment
 	
+	Integer location
 	Byte[] criticalHits = []
 	Character status = STATUS_ACTIVE
 	
@@ -27,6 +28,7 @@ class BattleEquipment {
 		ownerPilot nullable: false
 		equipment nullable: false
 		
+		location inList: Mech.ALL_LOCATIONS
 		criticalHits nullable: false
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED, STATUS_DAMAGED]
     }

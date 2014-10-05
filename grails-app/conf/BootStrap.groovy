@@ -122,7 +122,7 @@ class BootStrap {
 		HexMap boardMap = HexMap.loadBoardFile(boardFile)
 		
 		// Initialize a sample BattleMech
-		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.get(1), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
+		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("King Crab"), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
 		if(!battleMech.validate()) {
 			log.error("Errors with battle mech "+battleMech.mech?.name+":\n")
 			battleMech.errors.allErrors.each {
@@ -136,7 +136,7 @@ class BootStrap {
 		}
 		
 		// and another BattleMech
-		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.get(2), x: 1, y: 1, heading: 0)
+		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Annihilator"), x: 1, y: 1, heading: 0)
 		if(!battleMech2.validate()) {
 			log.error("Errors with battle mech "+battleMech2.mech?.name+":\n")
 			battleMech2.errors.allErrors.each {

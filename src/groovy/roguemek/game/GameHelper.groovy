@@ -196,6 +196,7 @@ class GameHelper {
 			id: equip.id,	// TODO: BattleEquipment initialization will need to be changed so equipment taking >1 slots point to same id
 			name: e.name,
 			shortName: e.shortName,
+			location: equip.location,
 			status: String.valueOf(equip.status),
 			type: "Equipment"
 		]
