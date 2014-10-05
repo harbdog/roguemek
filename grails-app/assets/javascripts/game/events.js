@@ -135,6 +135,11 @@ function handleUnitClick(event) {
 	}
 }
 
+function handleTargetCloseClick(event) {
+	createjs.Tween.get(weaponsContainer).to({alpha: 0}, 250);
+	createjs.Tween.get(targetContainer).to({alpha: 0}, 250);
+}
+
 //Using jQuery add the event handlers after the DOM is loaded
 function addEventHandlers() {
 	// add event handler for key presses

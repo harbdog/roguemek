@@ -22,19 +22,33 @@ function initPlayerUI() {
 	unitHeatDisplay = document.getElementById("heatDiv");
 	
 	weaponsContainer = new createjs.Container();
+	// Create an alpha background for the weapons display
 	var weaponsBackground = new createjs.Shape();
-	weaponsBackground.graphics.beginFill("#FFFFFF").drawRect(0, 0, stage.canvas.width, 100);
+	weaponsBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width, 100);
 	weaponsBackground.alpha = 0.5;
+	// Get the div container for the weapons display
 	weaponsDisplay = new createjs.DOMElement(document.getElementById("weaponsDiv"));
 	weaponsContainer.addChild(weaponsBackground);
 	weaponsContainer.addChild(weaponsDisplay);
     
     targetContainer = new createjs.Container();
+    // Create and alpha background for the target display
 	var targetBackground = new createjs.Shape();
-	targetBackground.graphics.beginFill("#000000").drawRect(0, 0, 200, 300);
+	var targetWidth = 200;
+	var targetHeight = 300;
+	targetBackground.graphics.beginFill("#000000").drawRect(0, 0, targetWidth, targetHeight);
 	targetBackground.alpha = 0.5;
+	// Create an 'X' as an icon to close the weapons display
+	var targetClose = new createjs.Shape();
+	targetClose.graphics.s("#FFFFFF").ss(2,"round").mt(targetWidth-2, 0).lt(targetWidth-12, 10).mt(targetWidth-12, 0).lt(targetWidth-2, 10);
+	var targetCloseHit = new createjs.Shape();
+	targetCloseHit.graphics.beginFill("#000000").drawRect(targetWidth-12, 0, 10, 10);
+	targetClose.hitArea = targetCloseHit;
+	targetClose.on("click", handleTargetCloseClick);
+	// Get the div container for the target display
 	targetDisplay = new createjs.DOMElement(document.getElementById("targetDiv"));
 	targetContainer.addChild(targetBackground);
+	targetContainer.addChild(targetClose);
 	targetContainer.addChild(targetDisplay);
 }
 
@@ -115,8 +129,6 @@ function setWeaponsDisplay(weapons) {
     weaponsContainer.y = -stage.y + stage.canvas.height + yWeaponsOffset;
 	weaponsDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(weaponsContainer);
-	
-	createjs.Tween.get(weaponsContainer).to({alpha: 1}, 1000);
 }
 
 function setTargetDisplay(target) {
@@ -139,5 +151,6 @@ function setTargetDisplay(target) {
 	targetDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(targetContainer);
 	
+	createjs.Tween.get(weaponsContainer).to({alpha: 1}, 500);
 	createjs.Tween.get(targetContainer).to({alpha: 1}, 500);
 }
