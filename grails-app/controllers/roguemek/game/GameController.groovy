@@ -18,8 +18,8 @@ class GameController {
 		def doRedirect = false;
 		
 		if(springSecurityService.isLoggedIn()) {
-			Game g = Game.get(session.game)
-			Pilot p = Pilot.get(session.pilot)
+			Game g = Game.read(session.game)
+			Pilot p = Pilot.read(session.pilot)
 			
 			if(g == null || p == null) {
 				doRedirect = true
@@ -41,7 +41,7 @@ class GameController {
 					// TODO: give a screen that the game is over with some results
 				}
 				else {
-					BattleUnit u = BattleUnit.get(session.unit)
+					BattleUnit u = BattleUnit.read(session.unit)
 					log.info("User "+currentUser()?.username+" joining Game("+g.id+") with Pilot("+p.toString()+") in Unit "+u)
 				}
 			}
@@ -60,14 +60,14 @@ class GameController {
 	 * @render JSON object containing the game elements such as hex map and units
 	 */
 	def getGameElements() {
-		Game g = Game.get(session.game)
+		Game g = Game.read(session.game)
 		HexMap b = g?.board
 		if(g == null || b == null) {
 			return
 		}
 		
 		GameHelper h = new GameHelper(g)
-		BattleUnit u = BattleUnit.get(session.unit)
+		BattleUnit u = BattleUnit.read(session.unit)
 		
 		def elements = [
 			board: h.getHexMapRender(),

@@ -1,9 +1,14 @@
 package roguemek.game
 
+import org.springframework.transaction.annotation.Transactional
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 import roguemek.model.*
 
+/**
+ * Class used to act on specific actions from the GameControllerHelper and return the response.
+ */
+@Transactional
 class GameHelper {
 	private static Log log = LogFactory.getLog(this)
 	
@@ -209,21 +214,26 @@ class GameHelper {
 		if(e instanceof Ammo) {
 			equipRender.type = "Ammo"
 			equipRender.ammoPerTon = e.ammoPerTon
-			equipRender.ammoRemains = e.ammoPerTon	// TODO: model ammo consumption and remaining ammo
 			equipRender.ammoExplosive = e.explosive
+		}
+		if(equip instanceof BattleAmmo) {
+			equipRender.ammoRemaining = equip.ammoRemaining
 		}
 		
 		if(e instanceof Weapon) {
 			equipRender.type = "Weapon"
 			equipRender.damage = e.damage
 			equipRender.heat = e.heat
-			equipRender.cycle = e.cycle	// TODO: model cycle time remaining
+			equipRender.cycle = e.cycle
 			equipRender.projectiles = e.projectiles
 			equipRender.minRange = e.minRange
 			equipRender.shortRange = e.shortRange
 			equipRender.mediumRange = e.mediumRange
 			equipRender.longRange = e.longRange
-			// TODO: model e.ammoTypes as something the client can associate or determine ammoRemains by Weapon instead
+			// TODO: model e.ammoTypes as something the client can associate or determine ammoRemains by Weapon instead?
+		}
+		if(equip instanceof BattleWeapon) {
+			equipRender.cooldown = equip.cooldown
 		}
 		
 		if(e instanceof JumpJet) {
@@ -243,7 +253,7 @@ class GameHelper {
 	public def move(BattleUnit unit, boolean forward, boolean jumping) {
 		if(unit.actionPoints == 0) return
 		
-		// TODO: use actionPoints
+		// TODO: make sure the terrain can be entered and use proper amount of actionPoints 
 		unit.actionPoints -= 1
 				
 		def moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
@@ -280,7 +290,7 @@ class GameHelper {
 	public def rotateHeading(BattleUnit unit, int newHeading, boolean jumping){
 		if(unit.actionPoints == 0) return
 		
-		// TODO: use actionPoints
+		// use an actionPoint
 		unit.actionPoints -= 1
 		
 		// When ready to rotate, set the new location of the unit
@@ -404,6 +414,71 @@ class GameHelper {
 		}
 		
 		return newXY;
+	}
+	
+	/**
+	 * Fires a weapon at the target
+	 * @param unit
+	 * @param weapon
+	 * @param target
+	 * @return
+	 */
+	public def fireWeaponAtUnit(BattleUnit unit, BattleWeapon weapon, BattleUnit target) {
+		if(unit.actionPoints == 0) return
+		
+		// use an actionPoint (allow chain fired weapons to not end turn?)
+		unit.actionPoints -= 1
+		
+		// TODO: determine toHit using unit, weapon, and target combat variables
+		boolean weaponHit = true
+		
+		String message = "Unit "+unit+" fired "+weapon+" at "+target;
+		def data = [
+			unit: unit.id,
+			actionPoints: unit.actionPoints,
+			weaponHit: weaponHit
+		]
+		
+		if(weaponHit) {
+			// TODO: determine hit location based on relative position of the attack on the target
+			int hitLocation = Mech.FRONT_HIT_LOCATIONS[new Random().nextInt(12)]
+			
+			if(target instanceof BattleMech) {
+				BattleMech t = BattleMech.get(target.id)
+				def armorRemains = t.armor[hitLocation] - weapon.getDamage()
+				
+				if(armorRemains < 0) {
+					// internals take leftover damage
+					// TODO: handle internal damage transfer from REAR hit locations
+					def internalRemains = t.internals[hitLocation] + armorRemains
+					
+					
+					if(internalRemains < 0) {
+						// TODO: implement damage transfer from hit locations that are already destroyed internally
+						internalRemains = 0
+						t.internals[hitLocation] = internalRemains
+					}
+					
+					armorRemains = 0
+				}
+				
+				t.armor[hitLocation] = armorRemains
+				
+				t.save flush:true
+			}
+			
+			// TODO: if applicable, consume ammo
+		}
+		else {
+			
+		}
+		
+		Date update = GameMessage.addMessageUpdate(this.game, message, data)
+		
+		if(unit.actionPoints == 0) {
+			// automatically end the unit's turn if it has run out of AP
+			this.initializeNextTurn()
+		}
 	}
 	
 }

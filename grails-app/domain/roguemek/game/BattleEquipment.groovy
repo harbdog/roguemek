@@ -3,7 +3,7 @@ package roguemek.game
 import roguemek.model.*
 
 /**
- * Represents the owned equipment that can be taken into battle and be damaged or destroyed
+ * Represents the owned Equipment that can be taken into battle and be damaged or destroyed
  */
 class BattleEquipment {
 	

@@ -38,10 +38,11 @@ Coords.prototype.toString = function() {
 }
 
 // Class used to store Weapon information that may be used for display purposes at times
-function Weapon(name, shortName, damage, heat, minRange, range) {
-	this.initialize(name, shortName, damage, heat, minRange, range);
+function Weapon(id, name, shortName, damage, heat, minRange, range) {
+	this.initialize(id, name, shortName, damage, heat, minRange, range);
 }
-Weapon.prototype.initialize = function(name, shortName, location, damage, heat, minRange, range) {
+Weapon.prototype.initialize = function(id, name, shortName, location, damage, heat, minRange, range) {
+	this.id = id;
 	this.name = name;
 	this.shortName = shortName;
 	this.location = location;

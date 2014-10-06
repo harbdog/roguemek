@@ -90,6 +90,8 @@ var stage, queue, progress, fpsDisplay, hexMap, units;
 
 // Keep track of which unit belongs to the player
 var playerUnit;
+var playerWeapons;
+var playerTarget;
 
 // Keep track of which unit's turn it currently is
 var playerTurnIndex = 0;
@@ -236,7 +238,7 @@ function initUnitWeapons(unit) {
 	
 	$.each(unit.crits, function(index, c) {
 		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
-			var w = new Weapon(c.name, c.shortName, c.location, c.damage, c.heat, 
+			var w = new Weapon(c.id, c.name, c.shortName, c.location, c.damage, c.heat, 
 								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
 			
 			weapons[c.id] = w;

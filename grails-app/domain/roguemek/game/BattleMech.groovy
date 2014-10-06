@@ -45,40 +45,55 @@ class BattleMech extends BattleUnit {
 			def prevCritNum = ["-1": 0]
 			
 			mech.crits.each { equipId ->
-				Equipment thisEquip = Equipment.get(equipId)
+				Equipment thisEquip = Equipment.read(equipId)
 				int location = Mech.getCritSectionIndexOf(counter)
 				
 				int prevNum = prevCritNum[equipId] ?: 0
-				BattleEquipment prevEquip = prevCritEquip[equipId]
+				String prevEquipId = prevCritEquip[equipId]
 				
-				if(prevNum > 0 && prevEquip != null &&
+				if(prevNum > 0 && prevEquipId != null &&
 						thisEquip.crits > 1 && thisEquip.crits > prevNum) {
 					// this crit is a continuation of the same equipment before it
 					prevCritNum[equipId] = prevNum + 1
 					
-					if(prevEquip.location != location) {
+					BattleEquipment prevEquip = BattleEquipment.read(prevEquipId)
+					
+					if(prevEquip.location != location &&
+							(location == Mech.CENTER_TORSO || location == Mech.LEFT_ARM || location == Mech.RIGHT_ARM)) {
 						// This equipment is spread across multiple crit sections, choose the ideal section
 						// (e.g. CT for Engine, LA/RA for split crit weapons like AC/20 or ArrowIV)
-						if(location == Mech.CENTER_TORSO || location == Mech.LEFT_ARM || location == Mech.RIGHT_ARM) {
-							prevEquip.location = location
-							prevEquip.save flush:true
-						}
+						prevEquip = BattleEquipment.get(prevEquipId)
+						prevEquip.location = location
+						prevEquip.save flush:true
 					}
 					
-					crits[counter++] = prevEquip.id
+					crits[counter++] = prevEquipId
 				}
 				else {
-					BattleEquipment bEquip = new BattleEquipment(ownerPilot: pilot, equipment: thisEquip)
-					bEquip.location = location
+					BattleEquipment bEquip
+					def newEquipMap = [ownerPilot: pilot, equipment: thisEquip, location: location]
+					
+					if(thisEquip instanceof Weapon) {
+						bEquip = new BattleWeapon(newEquipMap)
+					}
+					else if(thisEquip instanceof Ammo) {
+						bEquip = new BattleAmmo(newEquipMap)
+					}
+					else {
+						bEquip = new BattleEquipment(newEquipMap)
+					}
+					
 					bEquip.save flush:true
 					
 					if(thisEquip.crits > 1) {
 						// this crit needs to continue to subsequent locations for the same item
 						prevCritNum[equipId] = 1
-						prevCritEquip[equipId] = bEquip
+						prevCritEquip[equipId] = bEquip.id
 					}
 					
 					crits[counter++] = bEquip.id
+					
+					bEquip.discard()
 				}
 			}
 		}

@@ -41,6 +41,7 @@ function initPlayerUI() {
 	// Create an 'X' as an icon to close the weapons display
 	var targetClose = new createjs.Shape();
 	targetClose.graphics.s("#FFFFFF").ss(2,"round").mt(targetWidth-2, 0).lt(targetWidth-12, 10).mt(targetWidth-12, 0).lt(targetWidth-2, 10);
+	targetClose.alpha = 0.75;
 	var targetCloseHit = new createjs.Shape();
 	targetCloseHit.graphics.beginFill("#000000").drawRect(targetWidth-12, 0, 10, 10);
 	targetClose.hitArea = targetCloseHit;
@@ -114,12 +115,17 @@ function setHeatDisplay(heat) {
 	unitHeatDisplay.innerHTML = "<p>Heat "+heat+"</p>";
 }
 
-function setWeaponsDisplay(weapons) {
+function updateWeaponsDisplay() {
+	var weapons = playerUnit.weapons;
+	playerWeapons = [];
+	
 	// TESTING
 	var testingStr = "";
 	
 	var i = 1;
 	$.each(weapons, function(key, w) {
+		playerWeapons[i-1] = w;
+		
 		var locationStr = getLocationText(w.location);
 		testingStr += (i++)+"."+locationStr+"-"+w.shortName + " ";
 	});
@@ -131,23 +137,40 @@ function setWeaponsDisplay(weapons) {
 	stage.addChild(weaponsContainer);
 }
 
-function setTargetDisplay(target) {
-	if(target == null) return;
+function updateTargetDisplay() {
+	if(playerTarget == null) return;
 	
 	// TESTING
-	console.log(target.toString());
+	console.log(playerTarget.toString());
 	
 	var testingStr = "";
 	
+	// TODO: HTAL graph display
+	// TODO: HTAL paper doll display
+	
+	var armor = playerTarget.armor;
+	var internals = playerTarget.internals;
+	var line1 = "         "+"HD:"+armor[HEAD]+"("+internals[HEAD]+")";
+	var line2 = "LA:"+armor[LEFT_ARM]+"("+internals[LEFT_ARM]+")" +"          "+ "RA:"+armor[RIGHT_ARM]+"("+internals[RIGHT_ARM]+")";
+	var line3 = "LT:"+armor[LEFT_TORSO]+"("+internals[LEFT_TORSO]+")" +" "+ "CT:"+armor[CENTER_TORSO]+"("+internals[CENTER_TORSO]+")" +" "+ "RT:"+armor[RIGHT_TORSO]+"("+internals[RIGHT_TORSO]+")";
+	var line4 = "LTR:"+armor[LEFT_REAR] +"    "+ "CTR:"+armor[CENTER_REAR] +"    "+ "RTR:"+armor[RIGHT_REAR];
+	var line5 = "LL:"+armor[LEFT_LEG]+"("+internals[LEFT_LEG]+")" +"          "+ "RL:"+armor[RIGHT_LEG]+"("+internals[RIGHT_LEG]+")";
+	testingStr += 
+			"<p><pre>"+line1+"</pre></p>" +
+			"<p><pre>"+line2+"</pre></p>" +
+			"<p><pre>"+line3+"</pre></p>" +
+			"<p><pre>"+line4+"</pre></p>" +
+			"<p><pre>"+line5+"</pre></p>" + "<br/>";
+	
 	var i = 1;
-	$.each(target.weapons, function(key, w) {
+	$.each(playerTarget.weapons, function(key, w) {
 		var locationStr = getLocationText(w.location);
 		testingStr += locationStr+"-"+w.shortName + "<br/>";
 	});
 	
 	targetContainer.alpha = 0;
-	targetContainer.x = target.x + hexWidth/3;
-	targetContainer.y = target.y - hexHeight/2;
+	targetContainer.x = playerTarget.x + hexWidth/3;
+	targetContainer.y = playerTarget.y - hexHeight/2;
 	targetDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(targetContainer);
 	

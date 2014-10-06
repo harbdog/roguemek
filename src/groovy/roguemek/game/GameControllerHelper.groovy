@@ -1,11 +1,13 @@
 package roguemek.game
 
+import org.springframework.transaction.annotation.Transactional
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 
 /**
  * Class used to route to specific actions from the GameController and return the response.
  */
+@Transactional
 class GameControllerHelper {
 	private static Log log = LogFactory.getLog(this)
 	
@@ -108,7 +110,7 @@ class GameControllerHelper {
 		if(this.unit == null) return
 		
 		boolean rotation = (params.rotation != null) ? Boolean.valueOf(params.rotation) : true
-		boolean jumping = (params.jumping != null) ? params.jumping : false
+		boolean jumping = (params.jumping != null) ? Boolean.valueOf(params.jumping) : false
 		
 		if(rotation) {
 			return new GameHelper(this.game).rotateHeadingCW(this.unit, jumping)
@@ -116,6 +118,26 @@ class GameControllerHelper {
 		else {
 			return new GameHelper(this.game).rotateHeadingCCW(this.unit, jumping)
 		}
+	}
+	
+	/**
+	 * Request from the client to fire a weapons at the target
+	 * @return
+	 */
+	private def fire_weapon() {
+		if(this.unit == null) return
+		
+		String weaponId = params.weapon_id;
+		String targetId = params.target_id;
+		
+		BattleWeapon weapon = BattleWeapon.get(weaponId)
+		BattleUnit target = BattleUnit.get(targetId)
+		
+		if(weapon == null || target == null) {
+			return
+		}
+		
+		return new GameHelper(this.game).fireWeaponAtUnit(this.unit, weapon, target);
 	}
 	
 	/**

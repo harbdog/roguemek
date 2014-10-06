@@ -68,7 +68,7 @@ function handleComplete(event) {
 	setArmorDisplay(playerUnit.armor, playerUnit.internals);
 	
 	// TESTING weapons display
-	setWeaponsDisplay(playerUnit.weapons);
+	updateWeaponsDisplay();
 	
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");
@@ -131,7 +131,8 @@ function handleUnitClick(event) {
 	console.log("clicked "+x+","+y+": "+unit); 
 	
 	if(playerUnit != unit) {
-		setTargetDisplay(unit);
+		playerTarget = unit;
+		updateTargetDisplay();
 	}
 }
 
@@ -207,12 +208,31 @@ function addEventHandlers() {
 
 function handleKeyPress(key) {
 	if(!playerActionReady){
-		// TODO: alternate actions if pressed when not player turns or between being ready for next action
+		// TODO: alternate actions if pressed when player turns but between being ready for another action
 		console.log("Waiting...")
 		return;
 	}
 	
-	if(key == "." || key == "space" || key == "enter"){
+	// TODO: alternate actions if pressed when not player turn so the server isn't bugged by it
+	
+	var weaponFired = -1;
+	
+	// pressing 1-0 fires that weapon
+	for(var i=1; i<=10; i++){
+		var strVal = i.toString();
+		if(i == 10) strVal = "0";
+		
+		if(key == strVal){
+			weaponFired = (i-1);
+			break;
+		}
+	}
+	
+	if(weaponFired >= 0){
+		// fire the indicated weapon only
+		fire_weapon(weaponFired);
+	}
+	else if(key == "." || key == "space" || key == "enter"){
 		// Skip the remainder of the turn
 		skip();
 	}
