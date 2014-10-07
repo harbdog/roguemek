@@ -11,35 +11,43 @@ class BattleWeapon extends BattleEquipment {
 		cooldown nullable:false, min: 0
     }
 	
+	public String getName() {
+		return this.equipment.name
+	}
+	
+	public String getShortName() {
+		return this.equipment.shortName
+	}
+	
 	public int getDamage() {
-		return this.equipment.damage;
+		return this.equipment.damage
 	}
 	
 	public int getHeat() {
-		return this.equipment.heat;
+		return this.equipment.heat
 	}
 	
 	public int getCycle() {
-		return this.equipment.cycle;
+		return this.equipment.cycle
 	}
 	
 	public int getProjectiles() {
-		return this.equipment.projectiles;
+		return this.equipment.projectiles
 	}
 	
 	public int getMinRange() {
-		return this.equipment.minRange;
+		return this.equipment.minRange
 	}
 	
 	public int getShortRange() {
-		return this.equipment.shortRange;
+		return this.equipment.shortRange
 	}
 	
 	public int getMediumRange() {
-		return this.equipment.mediumRange;
+		return this.equipment.mediumRange
 	}
 	
 	public int getLongRange() {
-		return this.equipment.longRange;
+		return this.equipment.longRange
 	}
 }

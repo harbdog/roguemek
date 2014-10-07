@@ -18,6 +18,8 @@ function tick(event) {
  */
 function resize_canvas(){
 	if(stage != null){
+		// TODO: add method to also center on the player unit on resize
+		
 		stage.canvas.width = window.innerWidth - 5;
 		stage.canvas.height = window.innerHeight - 5;
 		

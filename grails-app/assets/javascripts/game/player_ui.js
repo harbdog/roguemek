@@ -2,29 +2,38 @@
  * player_ui.js - Methods that handle the non-canvas player UI
  */
 
-var mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay;
+var playerContainer, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay;
 
-// X direction offset for the Board due to the player display bar
-var xBoardOffset = 200;
+// X width of the player display bar
+var playerContainerWidth = 200;
 
 // Y direction offset for the Weapon display
-var yWeaponsOffset = -100;
+var weaponsContainerOffsetY = -100;
 
 var apDisplaying, jpDisplaying;
 
 function initPlayerUI() {
+	playerContainer = new createjs.Container();
+	// create an alpha background for the player display
+	var playerBackground = new createjs.Shape();
+	playerBackground.graphics.beginFill("#000000").drawRect(0, 0, playerContainerWidth, stage.canvas.height);
+	playerBackground.alpha = 0.5;
+	// Get the div container for the player displays
+	playerDisplay = new createjs.DOMElement(document.getElementById("playerDiv"));
 	mapDisplay = document.getElementById("mapDiv");
 	mapDisplay.innerHTML = "map";	// TODO: a map
-	
 	playerInfoDisplay = document.getElementById("infoDiv");
 	unitStatsDisplay = document.getElementById("statsDiv");
 	unitArmorDisplay = document.getElementById("htalDiv");
 	unitHeatDisplay = document.getElementById("heatDiv");
+	playerContainer.addChild(playerBackground);
+	playerContainer.addChild(playerDisplay);
+	stage.addChild(playerContainer);
 	
 	weaponsContainer = new createjs.Container();
 	// Create an alpha background for the weapons display
 	var weaponsBackground = new createjs.Shape();
-	weaponsBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width, 100);
+	weaponsBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width, -weaponsContainerOffsetY);
 	weaponsBackground.alpha = 0.5;
 	// Get the div container for the weapons display
 	weaponsDisplay = new createjs.DOMElement(document.getElementById("weaponsDiv"));
@@ -131,8 +140,8 @@ function updateWeaponsDisplay() {
 	});
 	
 	weaponsContainer.alpha = 0;
-	weaponsContainer.x = -stage.x + xBoardOffset;
-    weaponsContainer.y = -stage.y + stage.canvas.height + yWeaponsOffset;
+	weaponsContainer.x = -stage.x;
+    weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
 	weaponsDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(weaponsContainer);
 }

@@ -432,46 +432,63 @@ class GameHelper {
 		// TODO: determine toHit using unit, weapon, and target combat variables
 		boolean weaponHit = true
 		
-		String message = "Unit "+unit+" fired "+weapon+" at "+target;
+		String message
 		def data = [
 			unit: unit.id,
+			target: target.id,
 			actionPoints: unit.actionPoints,
 			weaponHit: weaponHit
 		]
 		
 		if(weaponHit) {
+			data.armorHit = []
+			
 			// TODO: determine hit location based on relative position of the attack on the target
 			int hitLocation = Mech.FRONT_HIT_LOCATIONS[new Random().nextInt(12)]
 			
 			if(target instanceof BattleMech) {
 				BattleMech t = BattleMech.get(target.id)
-				def armorRemains = t.armor[hitLocation] - weapon.getDamage()
+				
+				int armorRemains = t.armor[hitLocation]
+				armorRemains -= weapon.getDamage()
 				
 				if(armorRemains < 0) {
 					// internals take leftover damage
+					data.internalsHit = []
+					
 					// TODO: handle internal damage transfer from REAR hit locations
-					def internalRemains = t.internals[hitLocation] + armorRemains
+					int internalRemains = t.internals[hitLocation]
+					internalRemains += armorRemains
 					
-					
+					armorRemains = 0
 					if(internalRemains < 0) {
 						// TODO: implement damage transfer from hit locations that are already destroyed internally
 						internalRemains = 0
-						t.internals[hitLocation] = internalRemains
 					}
 					
-					armorRemains = 0
+					t.internals[hitLocation] = internalRemains
+					
+					// add the response location and remaining points of the hit internal section
+					data.internalsHit[hitLocation] = internalRemains
 				}
 				
 				t.armor[hitLocation] = armorRemains
 				
+				// add the response location and remaining points of the hit armor section
+				data.armorHit[hitLocation] = armorRemains
+				
 				t.save flush:true
+				
+				// set the message of the result
+				message = ""+unit+" hit "+target+" with "+weapon.getShortName()+" for "+weapon.getDamage();
 			}
-			
-			// TODO: if applicable, consume ammo
 		}
 		else {
-			
+			// set the message of the result
+			message = ""+unit+" missed "+target+" with "+weapon.getShortName()
 		}
+		
+		// TODO: if applicable, consume ammo
 		
 		Date update = GameMessage.addMessageUpdate(this.game, message, data)
 		
@@ -479,6 +496,8 @@ class GameHelper {
 			// automatically end the unit's turn if it has run out of AP
 			this.initializeNextTurn()
 		}
+		
+		return data
 	}
 	
 }

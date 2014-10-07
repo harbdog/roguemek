@@ -92,43 +92,69 @@ function skip() {
 }
 
 function fire_weapon(weaponIndex) {
-	// make sure the player can't make another request until this one is complete
-	playerActionReady = false;
-	
 	var weapon_id = playerWeapons[weaponIndex].id;
 	var target_id = playerTarget.id;
 	
 	console.log("Firing "+weapon_id+ " @ "+target_id);
 	
-	$.getJSON("game/action", {
+	handleActionJSON({
 		perform: "fire_weapon",
 		weapon_id: weapon_id,
 		target_id: target_id
-	  })
-	  .fail(function(jqxhr, textStatus, error) {
-		  var err = textStatus + ", " + error;
-		  console.log( "Request Failed: " + err );
-	  })
-	  .done(function( data ) {
-		  // update the unit based on new data
-		  console.log("fired "+data.unit);
-		  if(data.unit == null){
-			  return;
-		  }
-		  
-		  var thisUnit = units[data.unit];
-		  if(data.x != null && data.y != null){
-			  thisUnit.setHexLocation(data.x, data.y);
-		  }
-		  if(data.heading != null){
-			  thisUnit.heading = data.heading;
-		  }
-		  
-		  thisUnit.updateXYRot();
-	  })
-	  .always(function() {
-		  playerActionReady = true;
-	  });
+	}, function( data ) {
+		// update the units based on new data
+		if(data.unit == null){
+			return;
+		}
+		
+		// TODO: consolidate to a single method than handles various update dynamically for all actions and polling data
+		
+		if(data.weaponHit){
+			var t = units[data.target];
+			
+			console.log("    t="+t.name);
+			
+			if(data.armorHit != null) {
+				var numArmorHits = data.armorHit.length;
+				for(var i=0; i<numArmorHits; i++) {
+					var armorRemains = data.armorHit[i];
+					if(armorRemains != null) {
+						t.armor[i] = armorRemains;
+					}
+				}
+			}
+			
+			if(data.internalsHit != null) {
+				var numInternalsHits = data.internalsHit.length;
+				for(var i=0; i<numInternalsHits; i++) {
+					var internalsRemains = data.internalsHit[i];
+					if(internalsRemains != null) {
+						t.internals[i] = internalsRemains;
+					}
+				}
+			}
+	
+			// update UI displays of target armor if showing
+			updateTargetDisplay();
+		}
+	});
+}
+
+function handleActionJSON(inputMap, outputFunction) {
+	// make sure the player can't make another request until this one is complete
+	if(playerActionReady) {
+		playerActionReady = false;
+	
+		$.getJSON("game/action", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(outputFunction)
+		.always(function() {
+			playerActionReady = true;
+		});
+	}
 }
 
 function pollUpdate(updates) {

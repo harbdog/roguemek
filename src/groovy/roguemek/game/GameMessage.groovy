@@ -26,6 +26,7 @@ class GameMessage implements Comparable{
 	}
 	
 	public static void startMessageCleanupThread() {
+		// TODO: implement a way to do this dynamically when a call is made to get messages rather than using another thread?
 		Runnable r = new Runnable() {
 			public void run() {
 				boolean flag = true;
