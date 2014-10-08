@@ -149,6 +149,7 @@ class GameHelper {
 				callsign: u.pilot?.ownerUser?.callsign,
 				name: u.mech?.name,
 				chassisVariant: chassisVariant,
+				mass: u.mech?.mass,
 				x: u.x,
 				y: u.y,
 				heading: u.heading,

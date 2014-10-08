@@ -199,6 +199,7 @@ function loadGameElements() {
 				  unitDisplay.callsign = thisUnit.callsign;
 				  unitDisplay.name = thisUnit.name;
 				  unitDisplay.chassisVariant = thisUnit.chassisVariant;
+				  unitDisplay.mass = thisUnit.mass;
 				  unitDisplay.armor = thisUnit.armor;
 				  unitDisplay.internals = thisUnit.internals;
 				  
@@ -222,6 +223,10 @@ function loadGameElements() {
 				  }
 			  }
 		  });
+		  
+		  
+		  // load any additional client side images
+		  manifest.push({id:"target", src:"assets/ui/target.png"});
 		  
 		  queue.loadManifest(manifest);
 	  });
@@ -360,6 +365,7 @@ function initUnitsDisplay() {
 		thisDisplayUnit.regY = image.height/2;
 		
 		// make the unit just a bit smaller since it currently is same size as the hex
+		// TODO: scale differently based on mech tonnage/weight class also?
 		thisDisplayUnit.scaleX = 0.8;
 		thisDisplayUnit.scaleY = 0.8;
 		
@@ -377,7 +383,6 @@ function initUnitsDisplay() {
 	    ];
 		unitAlphaImg.cache(0, 0, image.width, image.height);
 		thisDisplayUnit.addChild(unitAlphaImg);
-		
 		
 		stage.addChild(thisDisplayUnit);
 	});

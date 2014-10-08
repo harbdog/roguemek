@@ -2,7 +2,7 @@
  * player_ui.js - Methods that handle the non-canvas player UI
  */
 
-var playerContainer, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay;
+var playerContainer, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay, targetBracket;
 
 // X width of the player display bar
 var playerContainerWidth = 200;
@@ -60,6 +60,12 @@ function initPlayerUI() {
 	targetContainer.addChild(targetBackground);
 	targetContainer.addChild(targetClose);
 	targetContainer.addChild(targetDisplay);
+	
+	// Create target bracket
+	var targetImg = queue.getResult("target");
+	targetBracket = new createjs.Bitmap(targetImg);
+	targetBracket.regX = targetImg.width/2;
+	targetBracket.regY = targetImg.height/2;
 }
 
 function setPlayerInfo(unitName, playerName) {
@@ -183,6 +189,20 @@ function updateTargetDisplay() {
 	targetDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(targetContainer);
 	
+	//create the target bracket over the target image
+	targetBracket.alpha = 0;
+	targetBracket.x = playerTarget.x;
+	targetBracket.y = playerTarget.y;
+	stage.addChild(targetBracket);
+	
 	createjs.Tween.get(weaponsContainer).to({alpha: 1}, 500);
 	createjs.Tween.get(targetContainer).to({alpha: 1}, 500);
+	createjs.Tween.get(targetBracket).to({alpha: 1}, 500);
+	
+	/*// Just played around with Timeline a bita
+	var bracketTween = new createjs.Tween(targetBracket);
+	var timeline = new createjs.Timeline(null, null, {loop: true});
+	timeline.addTween(bracketTween.to({alpha: 1}, 500));
+	timeline.addTween(bracketTween.to({alpha: 0}, 1000));
+	*/
 }

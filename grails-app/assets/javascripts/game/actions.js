@@ -3,92 +3,59 @@
  */
 
 function move(forward) {
-	// make sure the player can't make another request until this one is complete
-	playerActionReady = false;
-	
-	$.getJSON("game/action", {
+	handleActionJSON({
 		perform: "move",
 		forward: forward,
 		jumping: false
-	  })
-	  .fail(function(jqxhr, textStatus, error) {
-		  var err = textStatus + ", " + error;
-		    console.log( "Request Failed: " + err );
-	  })
-	  .done(function( data ) {
-		  // update the unit based on new data
-		  console.log("move "+data.unit+":"+data.x+","+data.y+">"+data.heading);
-		  if(data.unit == null){
-			  return;
-		  }
+	}, function( data ) {
+		// update the unit based on new data
+		console.log("move "+data.unit+":"+data.x+","+data.y+">"+data.heading);
+		if(data.unit == null){
+			return;
+		}
 		  
-		  var thisUnit = units[data.unit];
-		  if(data.x != null && data.y != null){
-			  thisUnit.setHexLocation(data.x, data.y);
-		  }
-		  if(data.heading != null){
-			  thisUnit.heading = data.heading;
-		  }
+		var thisUnit = units[data.unit];
+		if(data.x != null && data.y != null){
+			thisUnit.setHexLocation(data.x, data.y);
+		}
+		if(data.heading != null){
+			thisUnit.heading = data.heading;
+		}
 		  
-		  thisUnit.updateXYRot();
-	  })
-	  .always(function() {
-		  playerActionReady = true;
-	  });
+		thisUnit.updateXYRot();
+	});
 }
 
 function rotate(rotation) {
-	// make sure the player can't make another request until this one is complete
-	playerActionReady = false;
-	
-	$.getJSON("game/action", {
+	handleActionJSON({
 		perform: "rotate",
 		rotation: rotation,
 		jumping: false
-	  })
-	  .fail(function(jqxhr, textStatus, error) {
-		  var err = textStatus + ", " + error;
-		  console.log( "Request Failed: " + err );
-	  })
-	  .done(function( data ) {
-		  // update the unit based on new data
-		  console.log("rotate "+data.unit+":"+data.x+","+data.y+">"+data.heading);
-		  if(data.unit == null){
-			  return;
-		  }
+	}, function( data ) {
+		// update the unit based on new data
+		console.log("rotate "+data.unit+":"+data.x+","+data.y+">"+data.heading);
+		if(data.unit == null){
+			return;
+		}
 		  
-		  var thisUnit = units[data.unit];
-		  if(data.x != null && data.y != null){
-			  thisUnit.setHexLocation(data.x, data.y);
-		  }
-		  if(data.heading != null){
-			  thisUnit.heading = data.heading;
-		  }
+		var thisUnit = units[data.unit];
+		if(data.x != null && data.y != null){
+			thisUnit.setHexLocation(data.x, data.y);
+		}
+		if(data.heading != null){
+			thisUnit.heading = data.heading;
+		}
 		  
-		  thisUnit.updateXYRot();
-	  })
-	  .always(function() {
-		  playerActionReady = true;
-	  });
+		thisUnit.updateXYRot();
+	});
 }
 
 function skip() {
-	// make sure the player can't make another request until this one is complete
-	playerActionReady = false;
-	
-	$.getJSON("game/action", {
+	handleActionJSON({
 		perform: "skip"
-	  })
-	  .fail(function(jqxhr, textStatus, error) {
-		  var err = textStatus + ", " + error;
-		  console.log( "Request Failed: " + err );
-	  })
-	  .done(function( data ) {
-		  console.log("skipped turn");
-	  })
-	  .always(function() {
-		  playerActionReady = true;
-	  });
+	}, function( data ) {
+		console.log("skipped turn");
+	});
 }
 
 function fire_weapon(weaponIndex) {
@@ -111,8 +78,6 @@ function fire_weapon(weaponIndex) {
 		
 		if(data.weaponHit){
 			var t = units[data.target];
-			
-			console.log("    t="+t.name);
 			
 			if(data.armorHit != null) {
 				var numArmorHits = data.armorHit.length;
@@ -155,6 +120,10 @@ function handleActionJSON(inputMap, outputFunction) {
 			playerActionReady = true;
 		});
 	}
+	else {
+		// TODO: indicate on UI they are waiting
+		console.log("waiting...");
+	}
 }
 
 function pollUpdate(updates) {
@@ -194,6 +163,7 @@ function pollUpdate(updates) {
 				// TODO: indicate non-player unit turn starting
 				
 				if(playerUnit.id == turnUnit.id){
+					// update UI for the new player turn
 					setActionPoints(turnUnit.actionPoints);
 					setJumpPoints(turnUnit.jumpPoints);
 					setHeatDisplay(turnUnit.heat);
