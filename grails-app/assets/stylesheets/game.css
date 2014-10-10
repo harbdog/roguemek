@@ -20,6 +20,11 @@ body {
           font-family: monospace;
 }
 
+::selection {
+    background-color: #999999;
+    color: #FFFFFF;
+}
+
 #playerDiv {
 	position: absolute;
 	left: 0px;
@@ -28,6 +33,7 @@ body {
 	height: 100%;
 	margin: 0px;
 	border-style: none;
+	border-right: 1px solid #000000;
 }
 
 #playerDiv div{
@@ -56,8 +62,10 @@ body {
 	cursor: default;
 	top: 0px;
 	left: 0px;
+	padding: 0px 0px 0px 10px;
 	color: #FFFFFF;
 	font-size: 125%;
+	border-top: 1px solid #FFFFFF;
 }
 
 #targetDiv {
@@ -65,6 +73,7 @@ body {
 	top: 10px;
 	left: 0px;
 	color: #FFFFFF;
+	border-style: none;
 }
 
 #mapDiv {
@@ -102,4 +111,19 @@ body {
 	border-style: dotted;
 	/* Border is just for testing spacing */
 	font-size: 150%;
+}
+
+#messagingArea {
+	cursor: default;
+	top: 0px;
+	left: 0px;
+	height: 100px;
+	padding: 0px 0px 0px 10px;
+	resize: none;
+	background-color: transparent;
+	color: #FFFFFF;
+	outline: none;
+	border: none;
+	border-bottom: 1px solid #FFFFFF;
+	font-family: monospace;
 }

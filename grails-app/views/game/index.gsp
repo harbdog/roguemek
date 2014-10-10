@@ -26,6 +26,8 @@
 				<div id="htalDiv"></div>
 				<div id="heatDiv"></div>
 			</div>
+			
+			<textarea id="messagingArea" readonly>You have joined the battle.</textarea>
 	    </div>
 	    
 	</body>

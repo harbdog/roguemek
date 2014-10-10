@@ -64,7 +64,7 @@ class GameHelper {
 			actionPoints: turnUnit.actionPoints,
 		]
 		
-		Date update = GameMessage.addMessageUpdate(this.game, "New turn for Unit "+turnUnit+".", data)
+		Date update = GameMessage.addMessageUpdate(this.game, "New turn for Unit "+turnUnit, data)
 		
 		return data
 	}

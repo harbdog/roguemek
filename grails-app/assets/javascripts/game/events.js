@@ -37,6 +37,10 @@ function resize_canvas(){
 		    	stage.x = (3 * hexWidth / 4);
 		    }
 		}
+		
+		// resize certain UI elements to fit the window size
+		$("#messagingArea").css({width: stage.canvas.width - playerContainerWidth - 10, height: messagingContainerHeight});
+		$("#weaponsDiv").css({width: stage.canvas.width - playerContainerWidth});
 	}
 }
 
@@ -75,8 +79,8 @@ function handleComplete(event) {
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");
 	fpsDisplay = new createjs.DOMElement(fpsDiv);
-	fpsDisplay.x = -10;
-	fpsDisplay.y = 10;
+	fpsDisplay.x = -stage.x - 10;
+    fpsDisplay.y = -stage.y + stage.canvas.height - 20;
     stage.addChild(fpsDisplay);
 }
 

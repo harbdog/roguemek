@@ -2,13 +2,15 @@
  * player_ui.js - Methods that handle the non-canvas player UI
  */
 
-var playerContainer, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay, targetBracket;
+var playerContainer, messagingContainer, messagingArea, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay, targetBracket;
 
 // X width of the player display bar
 var playerContainerWidth = 200;
 
 // Y direction offset for the Weapon display
 var weaponsContainerOffsetY = -100;
+
+var messagingContainerHeight = 75;
 
 var apDisplaying, jpDisplaying;
 
@@ -33,8 +35,8 @@ function initPlayerUI() {
 	weaponsContainer = new createjs.Container();
 	// Create an alpha background for the weapons display
 	var weaponsBackground = new createjs.Shape();
-	weaponsBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width, -weaponsContainerOffsetY);
-	weaponsBackground.alpha = 0.5;
+	weaponsBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width-playerContainerWidth, -weaponsContainerOffsetY);
+	weaponsBackground.alpha = 0.25;
 	// Get the div container for the weapons display
 	weaponsDisplay = new createjs.DOMElement(document.getElementById("weaponsDiv"));
 	weaponsContainer.addChild(weaponsBackground);
@@ -60,6 +62,27 @@ function initPlayerUI() {
 	targetContainer.addChild(targetBackground);
 	targetContainer.addChild(targetClose);
 	targetContainer.addChild(targetDisplay);
+
+	// TODO: move to events.js and fix it so it drags the correct location of the container from the press location
+	targetContainer.on("pressmove", function(evt) {
+		allowStageDragMove = false;
+		targetContainer.x = evt.stageX - playerContainerWidth;
+		targetContainer.y = evt.stageY - 25;
+	});
+	targetContainer.on("pressup", function(evt) { allowStageDragMove = true; });
+	
+	messagingContainer = new createjs.Container();
+	// create an alpha background for the messaging display
+	var messagingBackground = new createjs.Shape();
+	messagingBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width-playerContainerWidth, messagingContainerHeight);
+	messagingBackground.alpha = 0.25;
+	// Get the textarea for the messaging display
+	messagingArea = new createjs.DOMElement(document.getElementById("messagingArea"));
+	messagingContainer.addChild(messagingBackground);
+	messagingContainer.addChild(messagingArea);
+	messagingContainer.x = -stage.x + playerContainerWidth;
+    messagingContainer.y = -stage.y;
+	stage.addChild(messagingContainer);
 	
 	// Create target bracket
 	var targetImg = queue.getResult("target");
@@ -146,7 +169,7 @@ function updateWeaponsDisplay() {
 	});
 	
 	weaponsContainer.alpha = 0;
-	weaponsContainer.x = -stage.x;
+	weaponsContainer.x = -stage.x + playerContainerWidth;
     weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
 	weaponsDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(weaponsContainer);
@@ -205,4 +228,13 @@ function updateTargetDisplay() {
 	timeline.addTween(bracketTween.to({alpha: 1}, 500));
 	timeline.addTween(bracketTween.to({alpha: 0}, 1000));
 	*/
+}
+
+/**
+ * Adds the given message to the end of the message display and scrolls to the bottom for it
+ * @param message
+ */
+function addMessageUpdate(message) {
+	messagingArea.htmlElement.innerHTML += "&#13;&#10;"+message;
+	messagingArea.htmlElement.scrollTop = messagingArea.htmlElement.scrollHeight;
 }

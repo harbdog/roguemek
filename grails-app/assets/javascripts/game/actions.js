@@ -130,7 +130,10 @@ function pollUpdate(updates) {
 	if(updates == null) return;
 	
 	$.each(updates, function(i, thisUpdate) {
-		console.log("["+thisUpdate.time+"] "+thisUpdate.message);
+		
+		// Add the message from the update to the message display area
+		var t = new Date(thisUpdate.time);
+		addMessageUpdate("["+t.toLocaleTimeString()+"] "+thisUpdate.message);
 		
 		$.each(thisUpdate, function(j, data) {
 			if(data.unit != null){

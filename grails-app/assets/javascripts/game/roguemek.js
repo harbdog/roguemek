@@ -253,6 +253,9 @@ function initUnitWeapons(unit) {
 	return weapons;
 }
 
+// TODO: move this along with the stage pressmove event
+var allowStageDragMove = true;
+
 /**
  * Initializes the display of the board hex map on the stage
  */
@@ -260,6 +263,9 @@ function initHexMapDisplay() {
 	if(hexMap == null){return;}
 	
 	stage.on("pressmove", function(evt) {
+		// TODO: move this to a function in events.js
+		if(allowStageDragMove === false) return;
+
 		// Add click and drag to pan the map
 		if(stageInitDragMoveX == null){
 			stageInitDragMoveX = evt.stageX - stage.x;
@@ -288,19 +294,22 @@ function initHexMapDisplay() {
 	    if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height + weaponsContainerOffsetY){
 	    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height + weaponsContainerOffsetY;
 	    }
-	    if(stage.y > 0) {
-	    	stage.y = 0;
+	    if(stage.y > messagingContainerHeight) {
+	    	stage.y = messagingContainerHeight;
 	    }
 	    
 	    // handle stage overlay movement
 	    fpsDisplay.x = -stage.x - 10;
-	    fpsDisplay.y = -stage.y + 10;
+	    fpsDisplay.y = -stage.y + stage.canvas.height - 20;
 	    
 	    weaponsContainer.x = -stage.x + playerContainerWidth;
 	    weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
 	    
 	    playerContainer.x = -stage.x;
 	    playerContainer.y = -stage.y;
+	    
+	    messagingContainer.x = -stage.x + playerContainerWidth;
+	    messagingContainer.y = -stage.y;
 	});
 	stage.on("pressup", function(evt) { 
 		// reset click and drag map panning
