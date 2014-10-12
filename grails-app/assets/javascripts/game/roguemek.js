@@ -316,6 +316,9 @@ function initUnitsDisplay() {
 	if(units == null){return;}
 	
 	$.each(units, function(index, thisUnit) {
+		// TODO: scale differently based on mech tonnage/weight class also?
+		var scale = 0.8;
+		
 		var thisDisplayUnit = thisUnit.displayUnit;
 		var imgStr = thisDisplayUnit.getImageString();
 		var image = queue.getResult(imgStr);
@@ -325,16 +328,13 @@ function initUnitsDisplay() {
 		thisDisplayUnit.regX = image.width/2;
 		thisDisplayUnit.regY = image.height/2;
 		
-		// make the unit just a bit smaller since it currently is same size as the hex
-		// TODO: scale differently based on mech tonnage/weight class also?
-		var scale = 0.8;
-		thisDisplayUnit.scaleX = scale;
-		thisDisplayUnit.scaleY = scale;
-		
-		thisUnit.updateDisplay();
-		
 		// load the unit image as a Bitmap
 		var unitImg = new createjs.Bitmap(image);
+		// make the unit image just a bit smaller since it currently is same size as the hex
+		unitImg.scaleX = scale;
+		unitImg.scaleY = scale;
+		unitImg.regX = (scale * thisDisplayUnit.regX) - thisDisplayUnit.regX;
+		unitImg.regY = (scale * thisDisplayUnit.regY) - thisDisplayUnit.regY;
 		thisDisplayUnit.addChild(unitImg);
 		
 		// load the unit image again and apply alpha color filter
@@ -343,8 +343,15 @@ function initUnitsDisplay() {
 	        new createjs.ColorFilter(0,0,0,0.5, 
 	        						 rgb[0],rgb[1],rgb[2],0)
 	    ];
+		unitAlphaImg.scaleX = scale;
+		unitAlphaImg.scaleY = scale;
+		unitAlphaImg.regX = (scale * thisDisplayUnit.regX) - thisDisplayUnit.regX;
+		unitAlphaImg.regY = (scale * thisDisplayUnit.regY) - thisDisplayUnit.regY;
 		unitAlphaImg.cache(0, 0, image.width, image.height);
 		thisDisplayUnit.addChild(unitAlphaImg);
+		
+		
+		thisUnit.updateDisplay();
 		
 		stage.addChild(thisDisplayUnit);
 	});
