@@ -132,7 +132,10 @@ function handleHexClick(event) {
 function handleUnitClick(event) {
 	var x = event.stageX;
 	var y = event.stageY;
-	var unit = event.target;
+	var unitDisplay = event.target;
+	if(unitDisplay != null){
+		var unit = units[unitDisplay.id];
+	}
 	
 	console.log("clicked "+x+","+y+": "+unit); 
 	
@@ -259,4 +262,72 @@ function handleKeyPress(key) {
 		// move backward
 		move(false);
 	}
+}
+
+// Goes along with the stage pressmove event
+var allowStageDragMove = true;
+function handleStageDrag(evt) {
+	if(allowStageDragMove === false) return;
+	else if(evt.type == "pressup"){
+		// reset click and drag map panning
+		stageInitDragMoveX = null;
+		stageInitDragMoveY = null;
+		return;
+	}
+
+	// Add click and drag to pan the map
+	if(stageInitDragMoveX == null){
+		stageInitDragMoveX = evt.stageX - stage.x;
+		stageInitDragMoveY = evt.stageY - stage.y;
+	}
+	
+	var newX = evt.stageX - stageInitDragMoveX;
+	var newY = evt.stageY - stageInitDragMoveY;
+	
+	if(Math.abs(stage.x - newX) < 10 && Math.abs(stage.y - newY) < 10){
+		// do not start moving the stage until there is a clear intent to drag a reasonable small distance
+		return;
+	}
+	
+    stage.x = newX;
+    stage.y = newY;
+    
+    // Keep the board from going off the window too much
+    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
+    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
+    }
+    if(stage.x > playerContainerWidth) {
+    	stage.x = playerContainerWidth;
+    }
+    
+    if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height + weaponsContainerOffsetY){
+    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height + weaponsContainerOffsetY;
+    }
+    if(stage.y > messagingContainerHeight) {
+    	stage.y = messagingContainerHeight;
+    }
+    
+    // handle stage overlay movement
+    fpsDisplay.x = -stage.x - 10;
+    fpsDisplay.y = -stage.y + stage.canvas.height - 20;
+    
+    weaponsContainer.x = -stage.x + playerContainerWidth;
+    weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
+    
+    playerContainer.x = -stage.x;
+    playerContainer.y = -stage.y;
+    
+    messagingContainer.x = -stage.x + playerContainerWidth;
+    messagingContainer.y = -stage.y;
+}
+
+function handleTargetDrag(evt) {
+	if(evt.type == "pressup"){
+		allowStageDragMove = true;
+		return;
+	}
+	
+	allowStageDragMove = false;
+	targetContainer.x = evt.stageX - playerContainerWidth;
+	targetContainer.y = evt.stageY - hexHeight / 2;
 }

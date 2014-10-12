@@ -22,7 +22,7 @@ function move(forward) {
 			thisUnit.heading = data.heading;
 		}
 		  
-		thisUnit.updateXYRot();
+		thisUnit.updateDisplay();
 	});
 }
 
@@ -46,7 +46,7 @@ function rotate(rotation) {
 			thisUnit.heading = data.heading;
 		}
 		  
-		thisUnit.updateXYRot();
+		thisUnit.updateDisplay();
 	});
 }
 
@@ -148,7 +148,7 @@ function pollUpdate(updates) {
 					thisUnit.actionPoints = data.actionPoints;
 				}
 				  
-				thisUnit.updateXYRot();
+				thisUnit.updateDisplay();
 				
 				if(playerUnit.id == thisUnit.id) {
 					setActionPoints(thisUnit.actionPoints);

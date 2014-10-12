@@ -2,7 +2,9 @@
  * display_objects.js - Definitions for game model related object classes and their methods
  */
 
-// Class used to store Hex (not stage) X,Y coordinates
+/**
+ * Class used to store Hex (not stage) X,Y coordinates
+ */
 function Coords(x, y) {
 	this.initialize(x, y);
 }
@@ -37,7 +39,84 @@ Coords.prototype.toString = function() {
 	return "["+this.x+","+this.y+"]";
 }
 
-// Class used to store Weapon information that may be used for display purposes at times
+/**
+ * Class used to store Hex information and its display object
+ */
+function Hex(hexX, hexY, hexDisplay) {
+	this.initialize(hexX, hexY, hexDisplay);
+}
+Hex.prototype.initialize = function(hexX, hexY, hexDisplay) {
+	this.coords = new Coords(hexX, hexY);
+	this.hexDisplay = hexDisplay;
+}
+Hex.prototype.isXOdd = function() {
+	return isXOdd(this.xCoords());
+}
+Hex.prototype.getHexLocation = function() {
+	return this.coords;
+}
+Hex.prototype.xCoords = function() {
+	return this.coords.x;
+}
+Hex.prototype.yCoords = function() {
+	return this.coords.y;
+}
+Hex.prototype.toString = function() {
+	return "[Hex@"+this.xCoords()+","+this.yCoords()+"]";
+}
+
+
+/**
+ * Class used to store Unit information and its display object
+ */ 
+function Unit(id, hexX, hexY, heading, displayUnit) {
+	this.initialize(id, hexX, hexY, heading, displayUnit);
+}
+Unit.prototype.initialize = function(id, hexX, hexY, heading, displayUnit) {
+	this.id = id;
+	this.setHexLocation(hexX, hexY);
+	this.heading = heading;
+	this.displayUnit = displayUnit;
+}
+Unit.prototype.setHexLocation = function(hexX, hexY) {
+	if(this.coords == null){
+		this.coords = new Coords(hexX, hexY);
+	}
+	else{
+		this.coords.setLocation(hexX, hexY);
+	}
+}
+Unit.prototype.getHexLocation = function() {
+	return this.coords;
+}
+Unit.prototype.xCoords = function() {
+	return this.coords.x;
+}
+Unit.prototype.yCoords = function() {
+	return this.coords.y;
+}
+Unit.prototype.updateDisplay = function() {
+	if(this.displayUnit != null) {
+		this.displayUnit.x = this.xCoords() * (3 * hexWidth / 4) + this.displayUnit.regX;
+		
+		if(this.coords.isXOdd()){
+			this.displayUnit.y = (hexHeight / 2) + (this.yCoords() * hexHeight) + this.displayUnit.regY;
+		}
+		else{
+			this.displayUnit.y = this.yCoords() * hexHeight + this.displayUnit.regY;
+		}
+		
+		this.displayUnit.rotation = HEADING_ANGLE[this.heading];
+	}
+}
+Unit.prototype.toString = function() {
+	return "[Unit@"+this.xCoords()+","+this.yCoords()+">"+this.heading+"]";
+}
+
+
+/**
+ * Class used to store Weapon information that may be used for display purposes at times
+ */
 function Weapon(id, name, shortName, damage, heat, minRange, range) {
 	this.initialize(id, name, shortName, damage, heat, minRange, range);
 }

@@ -166,18 +166,19 @@ function loadGameElements() {
 		  $.each(data.board.hexMap, function(key, thisHex) {
 			  if(thisHex != null){
 				  var hexDisplay = new HexDisplay(thisHex.x, thisHex.y, thisHex.images);
+				  var hexInstance = new Hex(thisHex.x, thisHex.y, hexDisplay);
 				  
 				  // add mouse listener
 				  hexDisplay.on("click", handleHexClick);
 				  hexDisplay.mouseChildren = false;
 				  
 				  // Place the hex in the map
-				  var hexRow = hexMap[thisHex.y];
+				  var hexRow = hexMap[hexInstance.yCoords()];
 				  if(hexRow == null){
 					  hexRow = [];
-					  hexMap[thisHex.y] = hexRow;
+					  hexMap[hexInstance.yCoords()] = hexRow;
 				  }
-				  hexRow[thisHex.x] = hexDisplay;
+				  hexRow[hexInstance.xCoords()] = hexInstance;
 				  
 				  // Make sure each image gets loaded to the manifest if not already present
 				  $.each(thisHex.images, function(i, img) {
@@ -192,22 +193,23 @@ function loadGameElements() {
 		  // create each unit display
 		  $.each(data.units, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, thisUnit.image, thisUnit.rgb);
-				  unitDisplay.actionPoints = thisUnit.actionPoints;
-				  unitDisplay.jumpPoints = thisUnit.jumpPoints;
-				  unitDisplay.heat = thisUnit.heat;
-				  unitDisplay.callsign = thisUnit.callsign;
-				  unitDisplay.name = thisUnit.name;
-				  unitDisplay.chassisVariant = thisUnit.chassisVariant;
-				  unitDisplay.mass = thisUnit.mass;
-				  unitDisplay.armor = thisUnit.armor;
-				  unitDisplay.internals = thisUnit.internals;
+				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.image, thisUnit.rgb);
+				  var unitInstance = new Unit(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, unitDisplay);
+				  unitInstance.actionPoints = thisUnit.actionPoints;
+				  unitInstance.jumpPoints = thisUnit.jumpPoints;
+				  unitInstance.heat = thisUnit.heat;
+				  unitInstance.callsign = thisUnit.callsign;
+				  unitInstance.name = thisUnit.name;
+				  unitInstance.chassisVariant = thisUnit.chassisVariant;
+				  unitInstance.mass = thisUnit.mass;
+				  unitInstance.armor = thisUnit.armor;
+				  unitInstance.internals = thisUnit.internals;
 				  
-				  unitDisplay.crits = thisUnit.crits;
-				  unitDisplay.weapons = initUnitWeapons(thisUnit);
+				  unitInstance.crits = thisUnit.crits;
+				  unitInstance.weapons = initUnitWeapons(thisUnit);
 
 				  if(data.playerUnit == thisUnit.unit){
-					  playerUnit = unitDisplay;
+					  playerUnit = unitInstance;
 				  }
 				  
 				  // add mouse listener
@@ -215,7 +217,7 @@ function loadGameElements() {
 				  unitDisplay.mouseChildren = false;
 				  
 				  // add to unit list
-				  units[thisUnit.unit] = unitDisplay;
+				  units[thisUnit.unit] = unitInstance;
 				  
 				  if(alreadyManifested[thisUnit.image] == null){
 					  manifest.push({id:thisUnit.image, src:"assets/"+thisUnit.image});
@@ -253,8 +255,6 @@ function initUnitWeapons(unit) {
 	return weapons;
 }
 
-// TODO: move this along with the stage pressmove event
-var allowStageDragMove = true;
 
 /**
  * Initializes the display of the board hex map on the stage
@@ -262,73 +262,24 @@ var allowStageDragMove = true;
 function initHexMapDisplay() {
 	if(hexMap == null){return;}
 	
-	stage.on("pressmove", function(evt) {
-		// TODO: move this to a function in events.js
-		if(allowStageDragMove === false) return;
-
-		// Add click and drag to pan the map
-		if(stageInitDragMoveX == null){
-			stageInitDragMoveX = evt.stageX - stage.x;
-			stageInitDragMoveY = evt.stageY - stage.y;
-		}
-		
-		var newX = evt.stageX - stageInitDragMoveX;
-		var newY = evt.stageY - stageInitDragMoveY;
-		
-		if(Math.abs(stage.x - newX) < 10 && Math.abs(stage.y - newY) < 10){
-			// do not start moving the stage until there is a clear intent to drag a reasonable small distance
-			return;
-		}
-		
-	    stage.x = newX;
-	    stage.y = newY;
-	    
-	    // Keep the board from going off the window too much
-	    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
-	    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
-	    }
-	    if(stage.x > playerContainerWidth) {
-	    	stage.x = playerContainerWidth;
-	    }
-	    
-	    if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height + weaponsContainerOffsetY){
-	    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height + weaponsContainerOffsetY;
-	    }
-	    if(stage.y > messagingContainerHeight) {
-	    	stage.y = messagingContainerHeight;
-	    }
-	    
-	    // handle stage overlay movement
-	    fpsDisplay.x = -stage.x - 10;
-	    fpsDisplay.y = -stage.y + stage.canvas.height - 20;
-	    
-	    weaponsContainer.x = -stage.x + playerContainerWidth;
-	    weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
-	    
-	    playerContainer.x = -stage.x;
-	    playerContainer.y = -stage.y;
-	    
-	    messagingContainer.x = -stage.x + playerContainerWidth;
-	    messagingContainer.y = -stage.y;
-	});
-	stage.on("pressup", function(evt) { 
-		// reset click and drag map panning
-		stageInitDragMoveX = null;
-		stageInitDragMoveY = null;
-	})
+	stage.on("pressmove", handleStageDrag);
+	stage.on("pressup", handleStageDrag);
 		
 	for(var y=0; y<numRows; y++){
 		
-		var thisDisplayRow = hexMap[y];
-		
-		if(thisDisplayRow == null){
+		var thisHexRow = hexMap[y];
+		if(thisHexRow == null){
 			continue;
 		}
 		
 		for(var x=0; x<numCols; x++){
 			
-			var thisDisplayHex = thisDisplayRow[x];
+			var thisHex = thisHexRow[x];
+			if(thisHex == null){
+				continue;
+			}
 			
+			var thisDisplayHex = thisHex.hexDisplay;
 			if(thisDisplayHex == null){
 				continue;
 			}
@@ -364,7 +315,8 @@ function initHexMapDisplay() {
 function initUnitsDisplay() {
 	if(units == null){return;}
 	
-	$.each(units, function(index, thisDisplayUnit) {
+	$.each(units, function(index, thisUnit) {
+		var thisDisplayUnit = thisUnit.displayUnit;
 		var imgStr = thisDisplayUnit.getImageString();
 		var image = queue.getResult(imgStr);
 		var rgb = thisDisplayUnit.rgb;
@@ -375,10 +327,11 @@ function initUnitsDisplay() {
 		
 		// make the unit just a bit smaller since it currently is same size as the hex
 		// TODO: scale differently based on mech tonnage/weight class also?
-		thisDisplayUnit.scaleX = 0.8;
-		thisDisplayUnit.scaleY = 0.8;
+		var scale = 0.8;
+		thisDisplayUnit.scaleX = scale;
+		thisDisplayUnit.scaleY = scale;
 		
-		thisDisplayUnit.updateXYRot();
+		thisUnit.updateDisplay();
 		
 		// load the unit image as a Bitmap
 		var unitImg = new createjs.Bitmap(image);

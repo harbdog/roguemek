@@ -22,62 +22,31 @@ HexDisplay.prototype.getImages = function() {
 HexDisplay.prototype.getHexLocation = function() {
 	return this.coords;
 }
-HexDisplay.prototype.hexX = function() {
+HexDisplay.prototype.xCoords = function() {
 	return this.coords.x;
 }
-HexDisplay.prototype.hexY = function() {
+HexDisplay.prototype.yCoords = function() {
 	return this.coords.y;
 }
 HexDisplay.prototype.toString = function() {
-	return "[Hex@"+this.hexX()+","+this.hexY()+"]";
+	return "[HexDisplay@"+this.x+","+this.y+":"+this.images+"]";
 }
 
 //Class for displaying each Unit
-function UnitDisplay(id, hexX, hexY, heading, imageStr, rgb) {
-	this.initialize(id, hexX, hexY, heading, imageStr, rgb);
+function UnitDisplay(id, imageStr, rgb) {
+	this.initialize(id, imageStr, rgb);
 }
 UnitDisplay.prototype = new createjs.Container();
 UnitDisplay.prototype.Container_initialize = UnitDisplay.prototype.initialize;
-UnitDisplay.prototype.initialize = function(id, hexX, hexY, heading, imageStr, rgb) {
+UnitDisplay.prototype.initialize = function(id, imageStr, rgb) {
 	this.Container_initialize();
 	this.id = id;
-	this.setHexLocation(hexX, hexY);
-	this.heading = heading;
 	this.imageStr = imageStr;
 	this.rgb = rgb
 }
 UnitDisplay.prototype.getImageString = function() {
 	return this.imageStr;
 }
-UnitDisplay.prototype.setHexLocation = function(hexX, hexY) {
-	if(this.coords == null){
-		this.coords = new Coords(hexX, hexY);
-	}
-	else{
-		this.coords.setLocation(hexX, hexY);
-	}
-}
-UnitDisplay.prototype.getHexLocation = function() {
-	return this.coords;
-}
-UnitDisplay.prototype.hexX = function() {
-	return this.coords.x;
-}
-UnitDisplay.prototype.hexY = function() {
-	return this.coords.y;
-}
-UnitDisplay.prototype.updateXYRot = function() {
-	this.x = this.hexX() * (3 * hexWidth / 4) + this.regX;
-	
-	if(this.coords.isXOdd()){
-		this.y = (hexHeight / 2) + (this.hexY() * hexHeight) + this.regY;
-	}
-	else{
-		this.y = this.hexY() * hexHeight + this.regY;
-	}
-	
-	this.rotation = HEADING_ANGLE[this.heading];
-}
 UnitDisplay.prototype.toString = function() {
-	return "[Unit@"+this.hexX()+","+this.hexY()+">"+this.heading+"]";
+	return "[UnitDisplay@"+this.x+","+this.y+":"+this.imageStr+"]";
 }
