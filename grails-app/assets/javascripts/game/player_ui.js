@@ -60,8 +60,8 @@ function initPlayerUI() {
 	// Get the div container for the target display
 	targetDisplay = new createjs.DOMElement(document.getElementById("targetDiv"));
 	targetContainer.addChild(targetBackground);
-	targetContainer.addChild(targetClose);
 	targetContainer.addChild(targetDisplay);
+	targetContainer.addChild(targetClose);
 
 	// TODO: move to events.js and fix it so it drags the correct location of the container from the press location
 	targetContainer.on("pressmove", handleTargetDrag);
