@@ -3,6 +3,8 @@
  */
 
 function move(forward) {
+	//playerUnit.displayUnit.setControlsVisible(false);
+	
 	handleActionJSON({
 		perform: "move",
 		forward: forward,
@@ -22,11 +24,14 @@ function move(forward) {
 			thisUnit.heading = data.heading;
 		}
 		  
-		thisUnit.updateDisplay();
+		playerUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
+		//playerUnit.displayUnit.setControlsVisible(true);
 	});
 }
 
 function rotate(rotation) {
+	//playerUnit.displayUnit.setControlsVisible(false);
+	
 	handleActionJSON({
 		perform: "rotate",
 		rotation: rotation,
@@ -46,11 +51,14 @@ function rotate(rotation) {
 			thisUnit.heading = data.heading;
 		}
 		  
-		thisUnit.updateDisplay();
+		playerUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
+		//playerUnit.displayUnit.setControlsVisible(true);
 	});
 }
 
 function skip() {
+	playerUnit.displayUnit.setControlsVisible(false);
+	
 	handleActionJSON({
 		perform: "skip"
 	}, function( data ) {
@@ -171,10 +179,7 @@ function pollUpdate(updates) {
 					setActionPoints(turnUnit.actionPoints);
 					setJumpPoints(turnUnit.jumpPoints);
 					setHeatDisplay(turnUnit.heat);
-					turnUnit.displayUnit.showRotateControlCW(true);
-					turnUnit.displayUnit.showRotateControlCCW(true);
-					turnUnit.displayUnit.showForwardControl(true);
-					turnUnit.displayUnit.showBackwardControl(true);
+					playerUnit.displayUnit.setControlsVisible(true);
 				}
 			}
 		});

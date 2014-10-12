@@ -84,6 +84,30 @@ function handleComplete(event) {
     stage.addChild(fpsDisplay);
 }
 
+/**
+ * Handles control input from the user
+ * @param event
+ * @param action
+ */
+function handleControls(action) {
+	if(ACTION_ROTATE_CW == action) {
+		// rotate Heading CW
+		rotate(true);
+	}
+	else if(ACTION_ROTATE_CCW == action) {
+		// rotate Heading CCW
+		rotate(false);
+	}
+	else if(ACTION_FORWARD == action) {
+		// move forward
+		move(true);
+	}
+	else if(ACTION_BACKWARD == action) {
+		// move backward
+		move(false);
+	}
+}
+
 function handleHexClick(event) {
 	var x = event.stageX;
 	var y = event.stageY;

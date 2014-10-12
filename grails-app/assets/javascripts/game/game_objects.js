@@ -89,6 +89,9 @@ Unit.prototype.setHexLocation = function(hexX, hexY) {
 Unit.prototype.getHexLocation = function() {
 	return this.coords;
 }
+Unit.prototype.getHeading = function() {
+	return this.heading;
+}
 Unit.prototype.xCoords = function() {
 	return this.coords.x;
 }
@@ -97,16 +100,9 @@ Unit.prototype.yCoords = function() {
 }
 Unit.prototype.updateDisplay = function() {
 	if(this.displayUnit != null) {
-		this.displayUnit.x = this.xCoords() * (3 * hexWidth / 4) + this.displayUnit.regX;
-		
-		if(this.coords.isXOdd()){
-			this.displayUnit.y = (hexHeight / 2) + (this.yCoords() * hexHeight) + this.displayUnit.regY;
-		}
-		else{
-			this.displayUnit.y = this.yCoords() * hexHeight + this.displayUnit.regY;
-		}
-		
-		this.displayUnit.rotation = HEADING_ANGLE[this.heading];
+		this.displayUnit.x = this.displayUnit.getUpdatedDisplayX(this.coords);
+		this.displayUnit.y = this.displayUnit.getUpdatedDisplayY(this.coords);
+		this.displayUnit.rotation = this.displayUnit.getUpdatedDisplayRotation(this.heading);
 	}
 }
 Unit.prototype.toString = function() {

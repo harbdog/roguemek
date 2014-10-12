@@ -85,6 +85,12 @@ var TYPE_AMMO = "Ammo";
 var TYPE_JUMP_JET = "JumpJet";
 var TYPE_HEAT_SINK = "HeatSink";
 
+// STATIC action strings
+var ACTION_ROTATE_CW = "rotatecw";
+var ACTION_ROTATE_CCW = "rotateccw";
+var ACTION_FORWARD = "forward";
+var ACTION_BACKWARD = "backward";
+
 // Global variables used throughout the game
 var stage, queue, progress, fpsDisplay, hexMap, units;
 
@@ -234,10 +240,10 @@ function loadGameElements() {
 		  
 		  // load any additional client side images
 		  manifest.push({id:"target", src:"assets/ui/target.png"});
-		  manifest.push({id:"rotatecw", src:"assets/ui/rotatecw.png"});
-		  manifest.push({id:"rotateccw", src:"assets/ui/rotateccw.png"});
-		  manifest.push({id:"forward", src:"assets/ui/forward.png"});
-		  manifest.push({id:"backward", src:"assets/ui/backward.png"});
+		  manifest.push({id:ACTION_ROTATE_CW, src:"assets/ui/rotatecw.png"});
+		  manifest.push({id:ACTION_ROTATE_CCW, src:"assets/ui/rotateccw.png"});
+		  manifest.push({id:ACTION_FORWARD, src:"assets/ui/forward.png"});
+		  manifest.push({id:ACTION_BACKWARD, src:"assets/ui/backward.png"});
 		  
 		  queue.loadManifest(manifest);
 	  });
