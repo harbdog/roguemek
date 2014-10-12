@@ -50,11 +50,24 @@ UnitDisplay.prototype.getImageString = function() {
 UnitDisplay.prototype.showRotateControlCW = function(visible) {
 	if(visible) {
 		if(this.rotateControlCW == null) {
+			this.rotateControlCW = new createjs.Container();
+			
 			var rotateImg = queue.getResult("rotatecw");
-			this.rotateControlCW = new createjs.Bitmap(rotateImg);
+			var rotateControlImg = new createjs.Bitmap(rotateImg);
 			this.rotateControlCW.x = hexWidth - rotateImg.width + 5;
 			this.rotateControlCW.y = rotateImg.height/2;
 			this.rotateControlCW.alpha = 0;
+			
+			// create hit box for the control
+			var controlHit = new createjs.Shape();
+			controlHit.graphics.beginFill("#000000").drawRect(0, 0, 20, 20);
+			this.rotateControlCW.hitArea = controlHit;
+			this.rotateControlCW.on("click", function(evt){
+				// rotate Heading CW
+				rotate(true);
+			});
+			
+			this.rotateControlCW.addChild(rotateControlImg);
 		}
 		
 		this.addChild(this.rotateControlCW);
@@ -68,11 +81,24 @@ UnitDisplay.prototype.showRotateControlCW = function(visible) {
 UnitDisplay.prototype.showRotateControlCCW = function(visible) {
 	if(visible) {
 		if(this.rotateControlCCW == null) {
+			this.rotateControlCCW = new createjs.Container();
+			
 			var rotateImg = queue.getResult("rotateccw");
-			this.rotateControlCCW = new createjs.Bitmap(rotateImg);
+			var rotateControlImg = new createjs.Bitmap(rotateImg);
 			this.rotateControlCCW.x = -5;
 			this.rotateControlCCW.y = rotateImg.height/2;
 			this.rotateControlCCW.alpha = 0;
+			
+			// create hit box for the control
+			var controlHit = new createjs.Shape();
+			controlHit.graphics.beginFill("#000000").drawRect(0, 0, 20, 20);
+			this.rotateControlCCW.hitArea = controlHit;
+			this.rotateControlCCW.on("click", function(evt){
+				// rotate Heading CCW
+				rotate(false);
+			});
+			
+			this.rotateControlCCW.addChild(rotateControlImg);
 		}
 		
 		this.addChild(this.rotateControlCCW);
@@ -86,11 +112,24 @@ UnitDisplay.prototype.showRotateControlCCW = function(visible) {
 UnitDisplay.prototype.showForwardControl = function(visible) {
 	if(visible) {
 		if(this.forwardControl == null) {
+			this.forwardControl = new createjs.Container();
+			
 			var forwardImg = queue.getResult("forward");
-			this.forwardControl = new createjs.Bitmap(forwardImg);
+			var forwardControlImg = new createjs.Bitmap(forwardImg);
 			this.forwardControl.x = (hexWidth/2) - (forwardImg.width/2);
 			this.forwardControl.y = -(forwardImg.height/2);
 			this.forwardControl.alpha = 0;
+			
+			// create hit box for the control
+			var controlHit = new createjs.Shape();
+			controlHit.graphics.beginFill("#000000").drawRect(0, 0, 20, 20);
+			this.forwardControl.hitArea = controlHit;
+			this.forwardControl.on("click", function(evt){
+				// move forward
+				move(true);
+			});
+			
+			this.forwardControl.addChild(forwardControlImg);
 		}
 		
 		this.addChild(this.forwardControl);
@@ -104,11 +143,24 @@ UnitDisplay.prototype.showForwardControl = function(visible) {
 UnitDisplay.prototype.showBackwardControl = function(visible) {
 	if(visible) {
 		if(this.backwardControl == null) {
+			this.backwardControl = new createjs.Container();
+			
 			var backwardImg = queue.getResult("backward");
-			this.backwardControl = new createjs.Bitmap(backwardImg);
+			var backwardControlImg = new createjs.Bitmap(backwardImg);
 			this.backwardControl.x =(hexWidth/2) - (backwardImg.width/2);
 			this.backwardControl.y = hexHeight - (backwardImg.height/2);
 			this.backwardControl.alpha = 0;
+			
+			// create hit box for the control
+			var controlHit = new createjs.Shape();
+			controlHit.graphics.beginFill("#000000").drawRect(0, 0, 20, 20);
+			this.backwardControl.hitArea = controlHit;
+			this.backwardControl.on("click", function(evt){
+				// move backward
+				move(false);
+			});
+			
+			this.backwardControl.addChild(backwardControlImg);
 		}
 		
 		this.addChild(this.backwardControl);

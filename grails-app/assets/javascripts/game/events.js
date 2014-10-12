@@ -91,7 +91,7 @@ function handleHexClick(event) {
 	
 	console.log("clicked "+x+","+y+": "+hex);
 	
-	// TESTING the clicking based movement on adjacent hexes
+	/*//TESTING the clicking based movement on adjacent hexes
 	if(!playerUnit.coords.equals(hex.coords)){
 		var adjacents = playerUnit.coords.getAdjacentCoords();
 		
@@ -126,7 +126,7 @@ function handleHexClick(event) {
 				break;
 			}
 		}
-	}
+	}*/
 }
 
 function handleUnitClick(event) {

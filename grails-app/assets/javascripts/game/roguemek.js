@@ -211,14 +211,15 @@ function loadGameElements() {
 				  if(data.playerUnit == thisUnit.unit){
 					  playerUnit = unitInstance;
 				  }
+				  else{
+					  // only add mouse event listener for non-player unit
+					  unitDisplay.on("click", handleUnitClick);
+					  unitDisplay.mouseChildren = false;
+				  }
 				  
 				  if(data.turnUnit == thisUnit.unit){
 					  turnUnit = unitInstance;
 				  }
-				  
-				  // add mouse listener
-				  unitDisplay.on("click", handleUnitClick);
-				  unitDisplay.mouseChildren = false;
 				  
 				  // add to unit list
 				  units[thisUnit.unit] = unitInstance;
@@ -357,7 +358,6 @@ function initUnitsDisplay() {
 		unitAlphaImg.regY = (scale * thisDisplayUnit.regY) - thisDisplayUnit.regY;
 		unitAlphaImg.cache(0, 0, image.width, image.height);
 		thisDisplayUnit.addChild(unitAlphaImg);
-		
 		
 		thisUnit.updateDisplay();
 		
