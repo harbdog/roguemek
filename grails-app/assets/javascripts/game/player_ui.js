@@ -64,12 +64,8 @@ function initPlayerUI() {
 	targetContainer.addChild(targetDisplay);
 
 	// TODO: move to events.js and fix it so it drags the correct location of the container from the press location
-	targetContainer.on("pressmove", function(evt) {
-		allowStageDragMove = false;
-		targetContainer.x = evt.stageX - playerContainerWidth;
-		targetContainer.y = evt.stageY - 25;
-	});
-	targetContainer.on("pressup", function(evt) { allowStageDragMove = true; });
+	targetContainer.on("pressmove", handleTargetDrag);
+	targetContainer.on("pressup", handleTargetDrag);
 	
 	messagingContainer = new createjs.Container();
 	// create an alpha background for the messaging display
@@ -178,8 +174,10 @@ function updateWeaponsDisplay() {
 function updateTargetDisplay() {
 	if(playerTarget == null) return;
 	
+	var targetDisplayUnit = playerTarget.displayUnit;
+	
 	// TESTING
-	console.log(playerTarget.toString());
+	console.log(targetDisplayUnit.toString());
 	
 	var testingStr = "";
 	
@@ -207,15 +205,15 @@ function updateTargetDisplay() {
 	});
 	
 	targetContainer.alpha = 0;
-	targetContainer.x = playerTarget.x + hexWidth/3;
-	targetContainer.y = playerTarget.y - hexHeight/2;
+	targetContainer.x = targetDisplayUnit.x + hexWidth/3;
+	targetContainer.y = targetDisplayUnit.y - hexHeight/2;
 	targetDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(targetContainer);
 	
 	//create the target bracket over the target image
 	targetBracket.alpha = 0;
-	targetBracket.x = playerTarget.x;
-	targetBracket.y = playerTarget.y;
+	targetBracket.x = targetDisplayUnit.x;
+	targetBracket.y = targetDisplayUnit.y;
 	stage.addChild(targetBracket);
 	
 	createjs.Tween.get(weaponsContainer).to({alpha: 1}, 500);
