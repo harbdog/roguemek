@@ -94,7 +94,7 @@ var playerWeapons;
 var playerTarget;
 
 // Keep track of which unit's turn it currently is
-var playerTurnIndex = 0;
+var turnUnit;
 
 // Keep track of when actions are ready to be performed during the player turn
 var playerActionReady = true;
@@ -212,6 +212,10 @@ function loadGameElements() {
 					  playerUnit = unitInstance;
 				  }
 				  
+				  if(data.turnUnit == thisUnit.unit){
+					  turnUnit = unitInstance;
+				  }
+				  
 				  // add mouse listener
 				  unitDisplay.on("click", handleUnitClick);
 				  unitDisplay.mouseChildren = false;
@@ -229,6 +233,10 @@ function loadGameElements() {
 		  
 		  // load any additional client side images
 		  manifest.push({id:"target", src:"assets/ui/target.png"});
+		  manifest.push({id:"rotatecw", src:"assets/ui/rotatecw.png"});
+		  manifest.push({id:"rotateccw", src:"assets/ui/rotateccw.png"});
+		  manifest.push({id:"forward", src:"assets/ui/forward.png"});
+		  manifest.push({id:"backward", src:"assets/ui/backward.png"});
 		  
 		  queue.loadManifest(manifest);
 	  });
@@ -352,6 +360,14 @@ function initUnitsDisplay() {
 		
 		
 		thisUnit.updateDisplay();
+		
+		if(playerUnit.id == thisUnit.id && playerUnit.id == turnUnit.id) {
+			// TODO: move these out to a method that can also be used at init
+			thisDisplayUnit.showRotateControlCW(true);
+			thisDisplayUnit.showRotateControlCCW(true);
+			thisDisplayUnit.showForwardControl(true);
+			thisDisplayUnit.showBackwardControl(true);
+		}
 		
 		stage.addChild(thisDisplayUnit);
 	});

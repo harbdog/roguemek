@@ -68,11 +68,13 @@ class GameController {
 		
 		GameHelper h = new GameHelper(g)
 		BattleUnit u = BattleUnit.read(session.unit)
+		BattleUnit turnUnit = g.units.get(g.unitTurn)
 		
 		def elements = [
 			board: h.getHexMapRender(),
 			units: h.getUnitsRender(),
-			playerUnit: u.id
+			playerUnit: u.id,
+			turnUnit: turnUnit.id
 		]
 		
 		render elements as JSON

@@ -157,7 +157,7 @@ function pollUpdate(updates) {
 				}
 			}
 			else if(data.turnUnit != null) {
-				var turnUnit = units[data.turnUnit];
+				turnUnit = units[data.turnUnit];
 				
 				if(data.actionPoints != null){
 					turnUnit.actionPoints = data.actionPoints;
@@ -167,9 +167,14 @@ function pollUpdate(updates) {
 				
 				if(playerUnit.id == turnUnit.id){
 					// update UI for the new player turn
+					// TODO: move these out to a method that can also be used at init
 					setActionPoints(turnUnit.actionPoints);
 					setJumpPoints(turnUnit.jumpPoints);
 					setHeatDisplay(turnUnit.heat);
+					turnUnit.displayUnit.showRotateControlCW(true);
+					turnUnit.displayUnit.showRotateControlCCW(true);
+					turnUnit.displayUnit.showForwardControl(true);
+					turnUnit.displayUnit.showBackwardControl(true);
 				}
 			}
 		});
