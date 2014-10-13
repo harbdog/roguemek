@@ -240,6 +240,7 @@ function loadGameElements() {
 		  
 		  // load any additional client side images
 		  manifest.push({id:"target", src:"assets/ui/target.png"});
+		  manifest.push({id:"other_turn", src:"assets/ui/other_turn.png"});
 		  manifest.push({id:ACTION_ROTATE_CW, src:"assets/ui/rotatecw.png"});
 		  manifest.push({id:ACTION_ROTATE_CCW, src:"assets/ui/rotateccw.png"});
 		  manifest.push({id:ACTION_FORWARD, src:"assets/ui/forward.png"});
@@ -369,10 +370,10 @@ function initUnitsDisplay() {
 		
 		if(playerUnit.id == thisUnit.id && playerUnit.id == turnUnit.id) {
 			// TODO: move these out to a method that can also be used at init
-			thisDisplayUnit.showRotateControlCW(true);
-			thisDisplayUnit.showRotateControlCCW(true);
-			thisDisplayUnit.showForwardControl(true);
-			thisDisplayUnit.showBackwardControl(true);
+			thisDisplayUnit.setControlsVisible(true);
+		}
+		else if(thisUnit.id == turnUnit.id) {
+			thisDisplayUnit.setOtherTurnVisible(true);
 		}
 		
 		stage.addChild(thisDisplayUnit);

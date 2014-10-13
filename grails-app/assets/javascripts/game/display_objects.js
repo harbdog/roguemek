@@ -61,6 +61,29 @@ UnitDisplay.prototype.getUpdatedDisplayY = function(coords) {
 UnitDisplay.prototype.getUpdatedDisplayRotation = function(heading) {
 	return HEADING_ANGLE[heading];
 }
+UnitDisplay.prototype.setOtherTurnVisible = function(visible) {
+	if(visible) {
+		if(this.forwardControl == null) {
+			this.otherTurn = new createjs.Container();
+			
+			var otherImg = queue.getResult("other_turn");
+			var otherTurnImg = new createjs.Bitmap(otherImg);
+			this.otherTurn.x = (hexWidth/2) - (otherImg.width/2);
+			this.otherTurn.y = -(otherImg.height/2);
+			this.otherTurn.alpha = 0;
+			
+			this.otherTurn.addChild(otherTurnImg);
+		}
+		
+		this.addChild(this.otherTurn);
+		
+		createjs.Tween.get(this.otherTurn).to({alpha: 0.75}, 250);
+	}
+	else if(this.otherTurn != null) {
+		createjs.Tween.get(this.otherTurn).to({alpha: 0}, 250);
+		this.removeChild(this.otherTurn);
+	}
+}
 UnitDisplay.prototype.setControlsVisible = function(visible) {
 	this.showRotateControlCW(visible);
 	this.showRotateControlCCW(visible);

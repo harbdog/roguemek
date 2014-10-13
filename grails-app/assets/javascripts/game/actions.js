@@ -58,7 +58,7 @@ function rotate(rotation) {
 
 function skip() {
 	playerUnit.displayUnit.setControlsVisible(false);
-	
+	turnUnit.displayUnit.setOtherTurnVisible(false);
 	handleActionJSON({
 		perform: "skip"
 	}, function( data ) {
@@ -171,8 +171,6 @@ function pollUpdate(updates) {
 					turnUnit.actionPoints = data.actionPoints;
 				}
 				
-				// TODO: indicate non-player unit turn starting
-				
 				if(playerUnit.id == turnUnit.id){
 					// update UI for the new player turn
 					// TODO: move these out to a method that can also be used at init
@@ -180,6 +178,10 @@ function pollUpdate(updates) {
 					setJumpPoints(turnUnit.jumpPoints);
 					setHeatDisplay(turnUnit.heat);
 					playerUnit.displayUnit.setControlsVisible(true);
+				}
+				else{
+					// indicate non-player unit turn starting
+					turnUnit.displayUnit.setOtherTurnVisible(true);
 				}
 			}
 		});
