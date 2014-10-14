@@ -241,10 +241,15 @@ function loadGameElements() {
 		  // load any additional client side images
 		  manifest.push({id:"target", src:"assets/ui/target.png"});
 		  manifest.push({id:"other_turn", src:"assets/ui/other_turn.png"});
+		  
 		  manifest.push({id:ACTION_ROTATE_CW, src:"assets/ui/rotatecw.png"});
 		  manifest.push({id:ACTION_ROTATE_CCW, src:"assets/ui/rotateccw.png"});
 		  manifest.push({id:ACTION_FORWARD, src:"assets/ui/forward.png"});
 		  manifest.push({id:ACTION_BACKWARD, src:"assets/ui/backward.png"});
+		  
+		  manifest.push({id:"laser", src:"assets/ui/laser.png"});
+		  manifest.push({id:"ballistics", src:"assets/ui/ballistics.png"});
+		  manifest.push({id:"missiles", src:"assets/ui/missiles.png"});
 		  
 		  queue.loadManifest(manifest);
 	  });

@@ -19,7 +19,7 @@ function initPlayerUI() {
 	// create an alpha background for the player display
 	var playerBackground = new createjs.Shape();
 	playerBackground.graphics.beginFill("#000000").drawRect(0, 0, playerContainerWidth, stage.canvas.height);
-	playerBackground.alpha = 0.5;
+	playerBackground.alpha = 0.75;
 	// Get the div container for the player displays
 	playerDisplay = new createjs.DOMElement(document.getElementById("playerDiv"));
 	mapDisplay = document.getElementById("mapDiv");
@@ -36,7 +36,7 @@ function initPlayerUI() {
 	// Create an alpha background for the weapons display
 	var weaponsBackground = new createjs.Shape();
 	weaponsBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width-playerContainerWidth, -weaponsContainerOffsetY);
-	weaponsBackground.alpha = 0.25;
+	weaponsBackground.alpha = 0.5;
 	// Get the div container for the weapons display
 	weaponsDisplay = new createjs.DOMElement(document.getElementById("weaponsDiv"));
 	weaponsContainer.addChild(weaponsBackground);
@@ -161,7 +161,19 @@ function updateWeaponsDisplay() {
 		playerWeapons[i-1] = w;
 		
 		var locationStr = getLocationText(w.location);
-		testingStr += (i++)+"."+locationStr+"-"+w.shortName + " ";
+		// TODO: show actual calculated TO-HIT
+		var toHitAsPercent = "100%";
+		
+		var weaponStr = "<div class='weapon' id='"+w.id+"'>" +
+							"<div class='weaponNumber'>"+i+"</div>" +
+							"<div class='weaponLocation'>"+locationStr+"</div>" +
+							"<div class='weaponIcon'>"+"</div>" +
+							"<div class='weaponInfo'>"+w.shortName+"</div>" +
+							"<div class='weaponHit'>"+toHitAsPercent+"</div>" +
+						"</div>";
+		
+		testingStr += weaponStr;
+		i++;
 	});
 	
 	weaponsContainer.alpha = 0;

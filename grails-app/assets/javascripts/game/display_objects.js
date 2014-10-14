@@ -2,7 +2,9 @@
  * display_objects.js - Definitions for displayable object classes and their methods
  */
 
-// Class for displaying each Hex
+/**
+ * Class for displaying each Hex
+ */
 function HexDisplay(hexX, hexY, images) {
 	this.initialize(hexX, hexY, images);
 }
@@ -32,7 +34,9 @@ HexDisplay.prototype.toString = function() {
 	return "[HexDisplay@"+this.x+","+this.y+":"+this.images+"]";
 }
 
-//Class for displaying each Unit
+/**
+ * Class for displaying each Unit
+ */
 function UnitDisplay(id, imageStr, rgb) {
 	this.initialize(id, imageStr, rgb);
 }
