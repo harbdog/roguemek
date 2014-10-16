@@ -17,7 +17,10 @@
 		    
 		    <div id="targetDiv"></div>
 		    
-		    <div id="weaponsDiv"></div>
+		    <div id="controlDiv">
+		    	<div id="weaponsDiv"></div>
+		    	<div id="actionDiv">Fire</div>
+	    	</div>
 		    
 		    <div id="playerDiv">
 				<div id="infoDiv"></div>

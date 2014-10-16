@@ -59,16 +59,40 @@ body {
 	color: #FFFFFF;
 }
 
-#weaponsDiv {
-	overflow: auto;
+#controlDiv {
 	cursor: default;
 	top: 0px;
 	left: 0px;
-	height: 100px;
-	padding: 0px 0px 0px 10px;
+	padding: 0px 0px 0px 0px;
 	color: #FFFFFF;
 	font-size: 125%;
 	border-top: 1px solid #FFFFFF;
+}
+
+#actionDiv {
+	float: right;
+	top: 0px;
+	height: 100px;
+	width: 75px;
+	border-left: 1px solid #FFFFFF;
+}
+
+#actionDiv .action_fire {
+	width: 100%;
+	height: 75%;
+	background-color: #990000;
+	text-align: center;
+}
+#actionDiv .action_fire:hover {
+	background-color: #FF0000;
+}
+
+#weaponsDiv {
+	float: left;
+	overflow: auto;
+	top: 0px;
+	left: 0px;
+	height: 100px;
 }
 
 #weaponsDiv .weapon {
@@ -82,11 +106,20 @@ body {
 #weaponsDiv .weapon:hover {
 	background-color: #000000;
 }
+#weaponsDiv .weapon:active {
+	background-color: #FF0000;
+}
+#weaponsDiv .weapon.selected {
+	background-color: #990000;
+}
+#weaponsDiv .weapon.selected:hover {
+	background-color: #FF0000;
+}
+
 #weaponsDiv .weaponNumber {
 	float: left;
 	margin: 0px 5px 0px 0px;
 	padding: 0px 5px 0px 5px;
-	height: 20px;
 	background-color: #FFFFFF;
 	color: #000000;
 	font-size: 125%;
@@ -97,9 +130,17 @@ body {
 }
 #weaponsDiv .weaponIcon {
 	float: left;
-	background: url(../images/ui/laser.png) no-repeat transparent;
-	height: 20px;
 	width: 20px;
+	height: 15px;
+}
+#weaponsDiv .weaponIcon#Energy {
+	background: url(../images/ui/laser.png) no-repeat transparent;
+}
+#weaponsDiv .weaponIcon#Ballistic {
+	background: url(../images/ui/ballistics.png) no-repeat transparent;
+}
+#weaponsDiv .weaponIcon#Missile {
+	background: url(../images/ui/missiles.png) no-repeat transparent;
 }
 #weaponsDiv .weaponInfo {
 	float: left;

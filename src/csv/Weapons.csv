@@ -1,19 +1,19 @@
-name,shortName,aliases, description,mass,crits,heat,damage,cycle,projectiles,minRange,shortRange,mediumRange,longRange,ammoTypes,tech,year,cbills,battleValue
-Small Laser,SLAS,ISSmallLaser,,0.5,1,1,3,2,1,0,1,2,3,,I,0,0,0
-Medium Laser,MLAS,"Medium Laser,ISMediumLaser",,1,1,3,5,2,1,0,2,4,6,,I,0,0,0
-Large Laser,LLAS,ISLargeLaser,,5,2,5,8,3,1,0,3,6,9,,I,0,0,0
-Particle Projection Cannon,PPC,"PPC,ISPPC",,7,3,7,10,4,1,3,4,8,12,,I,0,0,0
-Flamer,FLAMR,ISFlamer,,1,1,3,2,2,1,0,1,2,3,,I,0,0,0
-Auto Cannon 20,AC/20,"ISAC20,ISAC20 (Split),Autocannon/20",,14,10,7,20,3,1,0,3,6,9,AC20AMMO,I,0,0,0
-Auto Cannon 10,AC/10,"ISAC10,Autocannon/10",,12,7,3,10,2,1,0,5,10,15,AC10AMMO,I,0,0,0
-Auto Cannon 5,AC/5,"ISAC5,Autocannon/5",,8,4,1,5,2,1,3,6,12,18,AC5AMMO,I,0,0,0
-Auto Cannon 2,AC/2,"ISAC2,Autocannon/2",,6,1,1,2,1,1,4,8,16,24,AC2AMMO,I,0,0,0
-Machine Gun,MGUN,ISMachine Gun,,0.5,1,0,2,1,1,0,1,2,3,MGAMMO,I,0,0,0
-Long Range Missile 20,LRM20,"ISLRM20,LRM 20",,10,5,6,1,3,20,6,7,14,21,LRM20AMMO,I,0,0,0
-Long Range Missile 15,LRM15,"ISLRM15,LRM 15",,7,3,5,1,3,15,6,7,14,21,LRM15AMMO,I,0,0,0
-Long Range Missile 10,LRM10,"ISLRM10,LRM 10",,4,2,4,1,3,10,6,7,14,21,LRM10AMMO,I,0,0,0
-Long Range Missile 5,LRM5,"ISLRM5,LRM 5",,2,1,2,1,3,5,6,7,14,21,LRM5AMMO,I,0,0,0
-Short Range Missile 6,SRM6,"ISSRM6,SRM 6",,3,2,4,2,2,6,0,3,6,9,SRM6AMMO,I,0,0,0
-Short Range Missile 4,SRM4,"ISSRM4,SRM 4",,2,1,3,2,2,4,0,3,6,9,SRM4AMMO,I,0,0,0
-Short Range Missile 2,SRM2,"ISSRM2,SRM 2",,1,1,2,2,2,2,0,3,6,9,SRM2AMMO,I,0,0,0
-Hatchet,HTCHT,ISHatchet,,0,1,0,0,4,1,0,1,1,1,,I,0,0,0
+name,shortName,aliases, description,weaponType,mass,crits,heat,damage,cycle,projectiles,minRange,shortRange,mediumRange,longRange,ammoTypes,tech,year,cbills,battleValue
+Small Laser,SLAS,ISSmallLaser,,Energy,0.5,1,1,3,2,1,0,1,2,3,,I,0,0,0
+Medium Laser,MLAS,"Medium Laser,ISMediumLaser",,Energy,1,1,3,5,2,1,0,2,4,6,,I,0,0,0
+Large Laser,LLAS,ISLargeLaser,,Energy,5,2,5,8,3,1,0,3,6,9,,I,0,0,0
+Particle Projection Cannon,PPC,"PPC,ISPPC",,Energy,7,3,7,10,4,1,3,4,8,12,,I,0,0,0
+Flamer,FLAMR,ISFlamer,,Energy,1,1,3,2,2,1,0,1,2,3,,I,0,0,0
+Auto Cannon 20,AC/20,"ISAC20,ISAC20 (Split),Autocannon/20",,Ballistic,14,10,7,20,3,1,0,3,6,9,AC20AMMO,I,0,0,0
+Auto Cannon 10,AC/10,"ISAC10,Autocannon/10",,Ballistic,12,7,3,10,2,1,0,5,10,15,AC10AMMO,I,0,0,0
+Auto Cannon 5,AC/5,"ISAC5,Autocannon/5",,Ballistic,8,4,1,5,2,1,3,6,12,18,AC5AMMO,I,0,0,0
+Auto Cannon 2,AC/2,"ISAC2,Autocannon/2",,Ballistic,6,1,1,2,1,1,4,8,16,24,AC2AMMO,I,0,0,0
+Machine Gun,MGUN,ISMachine Gun,,Ballistic,0.5,1,0,2,1,1,0,1,2,3,MGAMMO,I,0,0,0
+Long Range Missile 20,LRM20,"ISLRM20,LRM 20",,Missile,10,5,6,1,3,20,6,7,14,21,LRM20AMMO,I,0,0,0
+Long Range Missile 15,LRM15,"ISLRM15,LRM 15",,Missile,7,3,5,1,3,15,6,7,14,21,LRM15AMMO,I,0,0,0
+Long Range Missile 10,LRM10,"ISLRM10,LRM 10",,Missile,4,2,4,1,3,10,6,7,14,21,LRM10AMMO,I,0,0,0
+Long Range Missile 5,LRM5,"ISLRM5,LRM 5",,Missile,2,1,2,1,3,5,6,7,14,21,LRM5AMMO,I,0,0,0
+Short Range Missile 6,SRM6,"ISSRM6,SRM 6",,Missile,3,2,4,2,2,6,0,3,6,9,SRM6AMMO,I,0,0,0
+Short Range Missile 4,SRM4,"ISSRM4,SRM 4",,Missile,2,1,3,2,2,4,0,3,6,9,SRM4AMMO,I,0,0,0
+Short Range Missile 2,SRM2,"ISSRM2,SRM 2",,Missile,1,1,2,2,2,2,0,3,6,9,SRM2AMMO,I,0,0,0
+Hatchet,HTCHT,ISHatchet,,Physical,0,1,0,0,4,1,0,1,1,1,,I,0,0,0

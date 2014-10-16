@@ -99,7 +99,7 @@ UnitDisplay.prototype.animateUpdateDisplay = function(coords, heading) {
 	var newY = this.getUpdatedDisplayY(coords);
 	var newRot = this.getUpdatedDisplayRotation(heading);
 	
-	createjs.Tween.get(this).to({x: newX, y: newY, rotation: newRot}, 500)
+	createjs.Tween.get(this).to({x: newX, y: newY, rotation: newRot}, 250)
 }
 UnitDisplay.prototype.showRotateControlCW = function(visible) {
 	if(visible) {

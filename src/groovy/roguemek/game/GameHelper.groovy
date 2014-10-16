@@ -223,6 +223,7 @@ class GameHelper {
 		
 		if(e instanceof Weapon) {
 			equipRender.type = "Weapon"
+			equipRender.weaponType = e.weaponType;
 			equipRender.damage = e.damage
 			equipRender.heat = e.heat
 			equipRender.cycle = e.cycle

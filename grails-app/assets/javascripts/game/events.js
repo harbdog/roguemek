@@ -40,7 +40,7 @@ function resize_canvas(){
 		
 		// resize certain UI elements to fit the window size
 		$("#messagingArea").css({width: stage.canvas.width - playerContainerWidth - 10, height: messagingContainerHeight});
-		$("#weaponsDiv").css({width: stage.canvas.width - playerContainerWidth});
+		$("#controlDiv").css({width: stage.canvas.width - playerContainerWidth});
 	}
 }
 

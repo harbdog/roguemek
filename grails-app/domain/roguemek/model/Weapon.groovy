@@ -3,7 +3,8 @@ package roguemek.model
 import org.grails.plugins.csv.CSVMapReader
 
 class Weapon extends Equipment {
-		
+	String weaponType
+	
 	Integer damage
 	Integer heat
 	Integer cycle
@@ -16,7 +17,14 @@ class Weapon extends Equipment {
 	Integer mediumRange
 	Integer longRange
 
+	public static final String TYPE_ENERGY = "Energy"
+	public static final String TYPE_BALLISTIC = "Ballistic"
+	public static final String TYPE_MISSILE = "Missile"
+	public static final String TYPE_PHYSICAL = "Physical"
+	
     static constraints = {
+		weaponType inList: [TYPE_ENERGY, TYPE_BALLISTIC, TYPE_MISSILE, TYPE_PHYSICAL]
+		
 		damage min: 0
 		heat min: 0
 		cycle min: 1

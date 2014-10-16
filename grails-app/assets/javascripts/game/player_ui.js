@@ -2,7 +2,8 @@
  * player_ui.js - Methods that handle the non-canvas player UI
  */
 
-var playerContainer, messagingContainer, messagingArea, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay, targetBracket;
+var playerContainer, messagingContainer, messagingArea, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay,
+	controlDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay, targetBracket;
 
 // X width of the player display bar
 var playerContainerWidth = 200;
@@ -38,9 +39,9 @@ function initPlayerUI() {
 	weaponsBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width-playerContainerWidth, -weaponsContainerOffsetY);
 	weaponsBackground.alpha = 0.5;
 	// Get the div container for the weapons display
-	weaponsDisplay = new createjs.DOMElement(document.getElementById("weaponsDiv"));
+	controlDisplay = new createjs.DOMElement(document.getElementById("controlDiv"));
 	weaponsContainer.addChild(weaponsBackground);
-	weaponsContainer.addChild(weaponsDisplay);
+	weaponsContainer.addChild(controlDisplay);
     
     targetContainer = new createjs.Container();
     // Create and alpha background for the target display
@@ -167,7 +168,7 @@ function updateWeaponsDisplay() {
 		var weaponStr = "<div class='weapon' id='"+w.id+"'>" +
 							"<div class='weaponNumber'>"+i+"</div>" +
 							"<div class='weaponLocation'>"+locationStr+"</div>" +
-							"<div class='weaponIcon'>"+"</div>" +
+							"<div class='weaponIcon' id='"+w.weaponType+"'>"+"</div>" +
 							"<div class='weaponInfo'>"+w.shortName+"</div>" +
 							"<div class='weaponHit'>"+toHitAsPercent+"</div>" +
 						"</div>";
@@ -176,10 +177,22 @@ function updateWeaponsDisplay() {
 		i++;
 	});
 	
+	weaponsDisplay = document.getElementById("weaponsDiv");
+	weaponsDisplay.innerHTML = testingStr;
+	
+	$(".weapon").click(function() {
+		$(this).toggleClass("selected");
+	});
+	
+	// TESTING (button will eventually need to switch between 'action_fire' and 'action_end' based on whether weapons are selected to fire)
+	var actionStr = "<div class='action_fire'>Fire</div>";
+	actionDisplay = document.getElementById("actionDiv");
+	actionDisplay.innerHTML = actionStr;
+	
+	
 	weaponsContainer.alpha = 0;
 	weaponsContainer.x = -stage.x + playerContainerWidth;
     weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
-	weaponsDisplay.htmlElement.innerHTML = testingStr;
 	stage.addChild(weaponsContainer);
 }
 
@@ -232,7 +245,7 @@ function updateTargetDisplay() {
 	createjs.Tween.get(targetContainer).to({alpha: 1}, 500);
 	createjs.Tween.get(targetBracket).to({alpha: 1}, 500);
 	
-	/*// Just played around with Timeline a bita
+	/*// Just played around with Timeline a bit
 	var bracketTween = new createjs.Tween(targetBracket);
 	var timeline = new createjs.Timeline(null, null, {loop: true});
 	timeline.addTween(bracketTween.to({alpha: 1}, 500));
