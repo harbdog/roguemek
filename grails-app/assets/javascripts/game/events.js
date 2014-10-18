@@ -263,11 +263,19 @@ function handleKeyPress(key) {
 	}
 	
 	if(weaponFired >= 0){
-		// fire the indicated weapon only
-		fire_weapon(weaponFired);
+		// TESTING: fire the indicated weapon only
+		//fire_weapon(weaponFired);
+		
+		// Toggle the weapon UI for firing
+		if(playerWeapons[weaponFired] != null) {
+			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
+			var thisWeapon = playerWeapons[weaponFired];
+			$('#'+thisWeapon.id).toggleClass("selected");
+		}
 	}
 	else if(key == "." || key == "space" || key == "enter"){
 		// Skip the remainder of the turn
+		// TODO: OR fire any selected weapons
 		skip();
 	}
 	else if(key == "a" || key == "left"){

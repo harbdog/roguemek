@@ -64,6 +64,7 @@ body {
 	top: 0px;
 	left: 0px;
 	padding: 0px 0px 0px 0px;
+	width: 75px;
 	color: #FFFFFF;
 	font-size: 125%;
 	border-top: 1px solid #FFFFFF;
@@ -78,13 +79,21 @@ body {
 }
 
 #actionDiv .action_fire {
+	position: relative;
+	right: 2px;
 	width: 100%;
 	height: 75%;
 	background-color: #990000;
 	text-align: center;
+	border-style: outset;
+	border-width: 2px;
 }
 #actionDiv .action_fire:hover {
 	background-color: #FF0000;
+}
+#actionDiv .action_fire:active {
+	border-style: inset;
+	text-shadow: 5px 5px 5px #000000;
 }
 
 #weaponsDiv {
@@ -93,13 +102,14 @@ body {
 	top: 0px;
 	left: 0px;
 	height: 100px;
+	width: 500px;
 }
 
 #weaponsDiv .weapon {
 	float: left;
 	margin: 0px 0px 0px 0px;
-	width: 150px;
-	border: 1px solid #FFFFFF;
+	width: 175px;
+	border: 1px outset #FFFFFF;
 	overflow: hidden;
 	font-size: 75%;
 }
@@ -110,6 +120,7 @@ body {
 	background-color: #FF0000;
 }
 #weaponsDiv .weapon.selected {
+	border: 1px inset #FFFFFF;
 	background-color: #990000;
 }
 #weaponsDiv .weapon.selected:hover {

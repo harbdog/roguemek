@@ -161,15 +161,30 @@ function updateWeaponsDisplay() {
 	$.each(weapons, function(key, w) {
 		playerWeapons[i-1] = w;
 		
+		var weaponNum = i;
+		if(weaponNum == 10){
+			weaponNum = 0
+		}
+		else if(weaponNum > 10){
+			// TODO: support > 10 weapons?
+			return;
+		}
+		
 		var locationStr = getLocationText(w.location);
 		// TODO: show actual calculated TO-HIT
 		var toHitAsPercent = "100%";
 		
+		var weaponInfo = w.shortName;
+		if(w.weaponType == WEAPON_BALLISTIC || w.weaponType == WEAPON_MISSILE) {
+			// TODO: determine actual remaining ammo
+			weaponInfo += "[1000]";
+		}
+		
 		var weaponStr = "<div class='weapon' id='"+w.id+"'>" +
-							"<div class='weaponNumber'>"+i+"</div>" +
+							"<div class='weaponNumber'>"+weaponNum+"</div>" +
 							"<div class='weaponLocation'>"+locationStr+"</div>" +
 							"<div class='weaponIcon' id='"+w.weaponType+"'>"+"</div>" +
-							"<div class='weaponInfo'>"+w.shortName+"</div>" +
+							"<div class='weaponInfo'>"+weaponInfo+"</div>" +
 							"<div class='weaponHit'>"+toHitAsPercent+"</div>" +
 						"</div>";
 		

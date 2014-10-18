@@ -85,6 +85,11 @@ var TYPE_AMMO = "Ammo";
 var TYPE_JUMP_JET = "JumpJet";
 var TYPE_HEAT_SINK = "HeatSink";
 
+var WEAPON_ENERGY = "Energy";
+var WEAPON_BALLISTIC = "Ballistic";
+var WEAPON_MISSILE = "Missile";
+var WEAPON_PHYSICAL = "Physical";
+
 // STATIC action strings
 var ACTION_ROTATE_CW = "rotatecw";
 var ACTION_ROTATE_CCW = "rotateccw";
