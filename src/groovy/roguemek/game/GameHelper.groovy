@@ -255,6 +255,8 @@ class GameHelper {
 	public def move(BattleUnit unit, boolean forward, boolean jumping) {
 		if(unit.actionPoints == 0) return
 		
+		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
+		
 		// TODO: make sure the terrain can be entered and use proper amount of actionPoints 
 		unit.actionPoints -= 1
 				
@@ -291,6 +293,8 @@ class GameHelper {
 	 */
 	public def rotateHeading(BattleUnit unit, int newHeading, boolean jumping){
 		if(unit.actionPoints == 0) return
+		
+		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
 		
 		// use an actionPoint
 		unit.actionPoints -= 1
@@ -425,80 +429,85 @@ class GameHelper {
 	 * @param target
 	 * @return
 	 */
-	public def fireWeaponAtUnit(BattleUnit unit, BattleWeapon weapon, BattleUnit target) {
+	public def fireWeaponsAtUnit(BattleUnit unit, ArrayList weapons, BattleUnit target) {
 		if(unit.actionPoints == 0) return
 		
-		// use an actionPoint (allow chain fired weapons to not end turn?)
+		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
+		
+		// use an actionPoint
 		unit.actionPoints -= 1
 		
-		// TODO: determine toHit using unit, weapon, and target combat variables
-		boolean weaponHit = true
+		def data
 		
-		String message
-		def data = [
-			unit: unit.id,
-			target: target.id,
-			actionPoints: unit.actionPoints,
-			weaponHit: weaponHit
-		]
-		
-		if(weaponHit) {
-			data.armorHit = []
+		for(BattleWeapon weapon in weapons) {
+			// TODO: determine toHit using unit, weapon, and target combat variables
+			boolean weaponHit = true
 			
-			// TODO: determine hit location based on relative position of the attack on the target
-			int hitLocation = Mech.FRONT_HIT_LOCATIONS[new Random().nextInt(12)]
+			String message
+			data = [
+				unit: unit.id,
+				target: target.id,
+				actionPoints: unit.actionPoints,
+				weaponHit: weaponHit
+			]
 			
-			if(target instanceof BattleMech) {
-				BattleMech t = BattleMech.get(target.id)
+			if(weaponHit) {
+				data.armorHit = []
 				
-				int armorRemains = t.armor[hitLocation]
-				armorRemains -= weapon.getDamage()
+				// TODO: determine hit location based on relative position of the attack on the target
+				int hitLocation = Mech.FRONT_HIT_LOCATIONS[new Random().nextInt(12)]
 				
-				if(armorRemains < 0) {
-					// internals take leftover damage
-					data.internalsHit = []
+				if(target instanceof BattleMech) {
+					BattleMech t = BattleMech.get(target.id)
 					
-					// TODO: handle internal damage transfer from REAR hit locations
-					int internalRemains = t.internals[hitLocation]
-					internalRemains += armorRemains
+					int armorRemains = t.armor[hitLocation]
+					armorRemains -= weapon.getDamage()
 					
-					armorRemains = 0
-					if(internalRemains < 0) {
-						// TODO: implement damage transfer from hit locations that are already destroyed internally
-						internalRemains = 0
+					if(armorRemains < 0) {
+						// internals take leftover damage
+						data.internalsHit = []
+						
+						// TODO: handle internal damage transfer from REAR hit locations
+						int internalRemains = t.internals[hitLocation]
+						internalRemains += armorRemains
+						
+						armorRemains = 0
+						if(internalRemains < 0) {
+							// TODO: implement damage transfer from hit locations that are already destroyed internally
+							internalRemains = 0
+						}
+						
+						t.internals[hitLocation] = internalRemains
+						
+						// add the response location and remaining points of the hit internal section
+						data.internalsHit[hitLocation] = internalRemains
 					}
 					
-					t.internals[hitLocation] = internalRemains
+					t.armor[hitLocation] = armorRemains
 					
-					// add the response location and remaining points of the hit internal section
-					data.internalsHit[hitLocation] = internalRemains
+					// add the response location and remaining points of the hit armor section
+					data.armorHit[hitLocation] = armorRemains
+					
+					t.save flush:true
+					
+					// set the message of the result
+					message = ""+unit+" hit "+target+" with "+weapon.getShortName()+" for "+weapon.getDamage();
 				}
-				
-				t.armor[hitLocation] = armorRemains
-				
-				// add the response location and remaining points of the hit armor section
-				data.armorHit[hitLocation] = armorRemains
-				
-				t.save flush:true
-				
-				// set the message of the result
-				message = ""+unit+" hit "+target+" with "+weapon.getShortName()+" for "+weapon.getDamage();
 			}
-		}
-		else {
-			// set the message of the result
-			message = ""+unit+" missed "+target+" with "+weapon.getShortName()
-		}
-		
-		// TODO: if applicable, consume ammo
-		
-		Date update = GameMessage.addMessageUpdate(this.game, message, data)
-		
-		if(unit.actionPoints == 0) {
-			// automatically end the unit's turn if it has run out of AP
-			this.initializeNextTurn()
+			else {
+				// set the message of the result
+				message = ""+unit+" missed "+target+" with "+weapon.getShortName()
+			}
+			
+			// TODO: if applicable, consume ammo
+			
+			Date update = GameMessage.addMessageUpdate(this.game, message, data)
 		}
 		
+		// automatically end the unit's turn after firing
+		this.initializeNextTurn()
+		
+		// TODO: handle returning all of the individual data arrays instead of just the last
 		return data
 	}
 	

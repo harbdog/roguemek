@@ -13,6 +13,66 @@ function tick(event) {
 	stage.update(event);
 }
 
+function handleKeyPress(key) {
+	if(!playerActionReady){
+		// TODO: alternate actions if pressed when player turns but between being ready for another action
+		console.log("Waiting...")
+		return;
+	}
+	
+	// TODO: alternate actions if pressed when not player turn so the server isn't bugged by it
+	
+	var weaponFired = -1;
+	
+	// pressing 1-0 fires that weapon
+	for(var i=1; i<=10; i++){
+		var strVal = i.toString();
+		if(i == 10) strVal = "0";
+		
+		if(key == strVal){
+			weaponFired = (i-1);
+			break;
+		}
+	}
+	
+	if(weaponFired >= 0){
+		// Toggle the weapon UI for firing
+		if(playerWeapons[weaponFired] != null) {
+			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
+			var thisWeapon = playerWeapons[weaponFired];
+			$('#'+thisWeapon.id).toggleClass("selected");
+		}
+	}
+	else if(key == "." || key == "space" || key == "enter"){
+		// Skip the remainder of the turn
+		// TODO: OR fire any selected weapons
+		var selectedWeapons = getSelectedWeapons();
+		
+		if(selectedWeapons.length == 0){
+			skip();
+		}
+		else{
+			fire_weapons(selectedWeapons);
+		}
+	}
+	else if(key == "a" || key == "left"){
+		// turn left/CCW
+		rotate(false);
+	}
+	else if(key == "d" || key == "right"){
+		// turn right/CW
+		rotate(true);
+	}
+	else if(key == "w" || key == "up"){
+		// move forward
+		move(true);
+	}
+	else if(key == "s" || key == "down"){
+		// move backward
+		move(false);
+	}
+}
+
 /**
  * Resizes the canvas based on the current browser window size
  */
@@ -238,62 +298,6 @@ function addEventHandlers() {
 			handleKeyPress(key);
 		}
 	}, false);
-}
-
-function handleKeyPress(key) {
-	if(!playerActionReady){
-		// TODO: alternate actions if pressed when player turns but between being ready for another action
-		console.log("Waiting...")
-		return;
-	}
-	
-	// TODO: alternate actions if pressed when not player turn so the server isn't bugged by it
-	
-	var weaponFired = -1;
-	
-	// pressing 1-0 fires that weapon
-	for(var i=1; i<=10; i++){
-		var strVal = i.toString();
-		if(i == 10) strVal = "0";
-		
-		if(key == strVal){
-			weaponFired = (i-1);
-			break;
-		}
-	}
-	
-	if(weaponFired >= 0){
-		// TESTING: fire the indicated weapon only
-		//fire_weapon(weaponFired);
-		
-		// Toggle the weapon UI for firing
-		if(playerWeapons[weaponFired] != null) {
-			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
-			var thisWeapon = playerWeapons[weaponFired];
-			$('#'+thisWeapon.id).toggleClass("selected");
-		}
-	}
-	else if(key == "." || key == "space" || key == "enter"){
-		// Skip the remainder of the turn
-		// TODO: OR fire any selected weapons
-		skip();
-	}
-	else if(key == "a" || key == "left"){
-		// turn left/CCW
-		rotate(false);
-	}
-	else if(key == "d" || key == "right"){
-		// turn right/CW
-		rotate(true);
-	}
-	else if(key == "w" || key == "up"){
-		// move forward
-		move(true);
-	}
-	else if(key == "s" || key == "down"){
-		// move backward
-		move(false);
-	}
 }
 
 // Goes along with the stage pressmove event

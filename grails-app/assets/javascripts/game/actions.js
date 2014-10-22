@@ -66,15 +66,19 @@ function skip() {
 	});
 }
 
-function fire_weapon(weaponIndex) {
-	var weapon_id = playerWeapons[weaponIndex].id;
+function fire_weapons(weapons) {
 	var target_id = playerTarget.id;
+	var weapon_ids = []
+	$.each(weapons, function(key, w) {
+		weapon_ids.push(w.id);
+	});
 	
-	console.log("Firing "+weapon_id+ " @ "+target_id);
+	console.log("Firing @ "+target_id+": ");
+	console.log(weapons);
 	
 	handleActionJSON({
-		perform: "fire_weapon",
-		weapon_id: weapon_id,
+		perform: "fire_weapons",
+		weapon_ids: weapon_ids,
 		target_id: target_id
 	}, function( data ) {
 		// update the units based on new data

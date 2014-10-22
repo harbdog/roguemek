@@ -204,11 +204,37 @@ function updateWeaponsDisplay() {
 	actionDisplay = document.getElementById("actionDiv");
 	actionDisplay.innerHTML = actionStr;
 	
+	$(".action_fire").click(function() {
+		// TODO: combine to a single method that is also called by the key press equivalent
+		var selectedWeapons = getSelectedWeapons();
+		
+		if(selectedWeapons.length == 0){
+			skip();
+		}
+		else{
+			fire_weapons(selectedWeapons);
+		}
+	});
 	
 	weaponsContainer.alpha = 0;
 	weaponsContainer.x = -stage.x + playerContainerWidth;
     weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
 	stage.addChild(weaponsContainer);
+}
+
+/**
+ * Gets an array of the player weapons that have been selected on the UI to fire
+ * @returns {Array}
+ */
+function getSelectedWeapons() {
+	var selectedWeapons = [];
+	$.each(playerWeapons, function(key, w) {
+		if($("#"+w.id).hasClass("selected")) {
+			selectedWeapons.push(w);
+		}
+	});
+	
+	return selectedWeapons;
 }
 
 function updateTargetDisplay() {
