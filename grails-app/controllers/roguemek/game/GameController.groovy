@@ -14,6 +14,9 @@ class GameController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
+	GameService gameService
+	GameControllerService gameControllerService
+	
 	def index() {
 		def doRedirect = false;
 		
@@ -30,8 +33,7 @@ class GameController {
 						// TODO: give ownerPilot a button to start the game instead of auto starting
 						log.info("Game("+g.id+") ownerPilot "+p.toString()+" is starting the game")
 						
-						GameHelper h = new GameHelper(g)
-						h.initializeGame()
+						gameService.initializeGame(g)
 					}
 					else {
 						// TODO: give participant pilots a screen showing they are waiting for the owner to start
@@ -66,13 +68,12 @@ class GameController {
 			return
 		}
 		
-		GameHelper h = new GameHelper(g)
 		BattleUnit u = BattleUnit.read(session.unit)
 		BattleUnit turnUnit = g.units.get(g.unitTurn)
 		
 		def elements = [
-			board: h.getHexMapRender(),
-			units: h.getUnitsRender(),
+			board: gameService.getHexMapRender(g),
+			units: gameService.getUnitsRender(g),
 			playerUnit: u.id,
 			turnUnit: turnUnit.id
 		]
@@ -86,12 +87,11 @@ class GameController {
 	 * @render JSON object containing messages to relay back to the client
 	 */
 	def action() {
-		Game g = Game.get(session.game)
-		Pilot p = Pilot.get(session.pilot)
-		BattleUnit u = BattleUnit.get(session.unit)
-		GameControllerHelper helper = new GameControllerHelper(g, p, u, params)
+		Game game = Game.get(session.game)
+		Pilot pilot = Pilot.get(session.pilot)
+		BattleUnit unit = BattleUnit.get(session.unit)
 		
-		render helper.performAction() as JSON
+		render gameControllerService.performAction(game, pilot, unit, params) as JSON
 	}
 	
 	/**
@@ -99,15 +99,13 @@ class GameController {
 	 * @render JSON object containing updates to relay back to the client
 	 */
 	def poll() {
-		Game g = Game.get(session.game)
-		Pilot p = Pilot.get(session.pilot)
-		BattleUnit u = BattleUnit.get(session.unit)
-		GameControllerHelper helper = new GameControllerHelper(g, p, u, params)
+		Game game = Game.get(session.game)
+		Pilot pilot = Pilot.get(session.pilot)
 		
 		// Give a slight delay before polling to give a small amount of time for an update to actually occur
 		Thread.sleep(250)
-		
-		render helper.performPoll() as JSON
+
+		render gameControllerService.performPoll(game, pilot) as JSON
 	}
 
 	@Secured(['ROLE_ADMIN'])

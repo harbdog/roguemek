@@ -1,70 +1,58 @@
 package roguemek.game
 
-import org.springframework.transaction.annotation.Transactional
-import org.apache.commons.logging.LogFactory
-import org.apache.commons.logging.Log
+import java.util.ArrayList;
+
+import grails.transaction.Transactional
 import roguemek.model.*
 
-/**
- * Class used to act on specific actions from the GameControllerHelper and return the response.
- */
 @Transactional
-class GameHelper {
-	private static Log log = LogFactory.getLog(this)
-	
-	Game game
-	HexMap board
-	
-	public GameHelper(Game g) {
-		this.game = g
-		this.board = g.board
-	}
+class GameService {
 	
 	/**
 	 * Starts the game so it is ready to play the first turn
 	 */
-	public def initializeGame() {
-		if(this.game.gameState != Game.GAME_INIT) return
+	public def initializeGame(Game game) {
+		if(game.gameState != Game.GAME_INIT) return
 		
-		this.game.gameState = Game.GAME_ACTIVE
-		this.game.gameTurn = 0
+		game.gameState = Game.GAME_ACTIVE
+		game.gameTurn = 0
 		
 		// TODO: perform initiative roll on first and every 4 turns after to change up the order of the units turn
-		// this.game.units...
-		this.game.unitTurn = 0
+		// game.units...
+		game.unitTurn = 0
 		
 		// get the first unit ready for its turn
-		initializeTurnUnit()
+		initializeTurnUnit(game)
 		
-		this.game.save flush: true
+		game.save flush: true
 	}
 	
 	/**
 	 * Starts the next unit's turn
 	 * @return
 	 */
-	public def initializeNextTurn() {
-		this.game.unitTurn ++
+	public def initializeNextTurn(Game game) {
+		game.unitTurn ++
 		// TODO: account for destroyed units
 		
-		if(this.game.unitTurn >= this.game.units.size()) {
-			this.game.gameTurn ++
-			this.game.unitTurn = 0
+		if(game.unitTurn >= game.units.size()) {
+			game.gameTurn ++
+			game.unitTurn = 0
 		}
 		
 		// update the next unit for its new turn
-		initializeTurnUnit()
+		initializeTurnUnit(game)
 		
-		this.game.save flush: true
+		game.save flush: true
 		
 		// TODO: return and add game message about the next unit's turn
-		BattleUnit turnUnit = this.game.units.get(this.game.unitTurn)
+		BattleUnit turnUnit = game.units.get(game.unitTurn)
 		def data = [
 			turnUnit: turnUnit.id,
 			actionPoints: turnUnit.actionPoints,
 		]
 		
-		Date update = GameMessage.addMessageUpdate(this.game, "New turn for Unit "+turnUnit, data)
+		Date update = GameMessage.addMessageUpdate(game, "New turn for Unit "+turnUnit, data)
 		
 		return data
 	}
@@ -73,13 +61,13 @@ class GameHelper {
 	 * Initializes the unit for its next turn (updates AP, heat, etc.)
 	 * @return
 	 */
-	private def initializeTurnUnit() {
-		BattleUnit unit = this.game.units.get(this.game.unitTurn)
+	private def initializeTurnUnit(Game game) {
+		BattleUnit unit = game.units.get(game.unitTurn)
 		// TODO: generate actual amount of AP/JP per turn
 		unit.actionPoints = 3
 		unit.jumpPoints = 0
 		
-		// TODO: update unit.heat value based on heat sinks and current heat amount 
+		// TODO: update unit.heat value based on heat sinks and current heat amount
 		// unit.heat = ...
 		
 		unit.damageTakenThisTurn = 0
@@ -91,7 +79,9 @@ class GameHelper {
 	 * Gets all applicable data for the board HexMap object that can be turned into JSON for initializing the client
 	 * @return
 	 */
-	public def getHexMapRender() {
+	public def getHexMapRender(Game game) {
+		HexMap board = game?.board
+		
 		def hexList = []
 		board.hexMap?.each { hexId ->
 			Hex h = Hex.get(hexId)
@@ -111,7 +101,7 @@ class GameHelper {
 	 * Gets all applicable data for all units that can be turned into JSON for initializing the client
 	 * @return
 	 */
-	public def getUnitsRender() {
+	public def getUnitsRender(Game game) {
 		def unitsRender = []
 		
 		game.units?.each { BattleUnit u ->
@@ -252,18 +242,18 @@ class GameHelper {
 	 * @param jumping
 	 * @return
 	 */
-	public def move(BattleUnit unit, boolean forward, boolean jumping) {
+	public def move(Game game, BattleUnit unit, boolean forward, boolean jumping) {
 		if(unit.actionPoints == 0) return
 		
 		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
 		
-		// TODO: make sure the terrain can be entered and use proper amount of actionPoints 
+		// TODO: make sure the terrain can be entered and use proper amount of actionPoints
 		unit.actionPoints -= 1
 				
 		def moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
 		
 		// When ready to move, set the new location of the unit
-		BattleUnit.setLocation(unit, this.getForwardCoords(unit.getLocation(), moveHeading))
+		BattleUnit.setLocation(unit, GameService.getForwardCoords(game, unit.getLocation(), moveHeading))
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
@@ -274,11 +264,11 @@ class GameHelper {
 			actionPoints: unit.actionPoints
 		]
 		
-		Date update = GameMessage.addMessageUpdate(this.game, "Unit "+unit+" moved to "+unit.x+","+unit.y, data)
+		Date update = GameMessage.addMessageUpdate(game, "Unit "+unit+" moved to "+unit.x+","+unit.y, data)
 		
 		if(unit.actionPoints == 0) {
 			// automatically end the unit's turn if it has run out of AP
-			this.initializeNextTurn()
+			this.initializeNextTurn(game)
 		}
 		
 		return data
@@ -291,7 +281,7 @@ class GameHelper {
 	 * @param jumping
 	 * @return
 	 */
-	public def rotateHeading(BattleUnit unit, int newHeading, boolean jumping){
+	public def rotateHeading(Game game, BattleUnit unit, int newHeading, boolean jumping){
 		if(unit.actionPoints == 0) return
 		
 		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
@@ -310,24 +300,24 @@ class GameHelper {
 			actionPoints: unit.actionPoints
 		]
 		
-		Date update = GameMessage.addMessageUpdate(this.game, "Unit "+unit+" rotated to heading "+unit.heading, data)
+		Date update = GameMessage.addMessageUpdate(game, "Unit "+unit+" rotated to heading "+unit.heading, data)
 		
 		if(unit.actionPoints == 0) {
 			// automatically end the unit's turn if it has run out of AP
-			this.initializeNextTurn()
+			this.initializeNextTurn(game)
 		}
 		
 		return data
 	}
 	
-	/** 
+	/**
 	 * Rotates the given unit's heading Clockwise
 	 * @param unit
 	 * @param jumping
 	 * @return
 	 */
-	public def rotateHeadingCW(BattleUnit unit, boolean jumping){
-		return this.rotateHeading(unit, GameHelper.getRotateHeadingCW(unit.heading), jumping);
+	public def rotateHeadingCW(Game game, BattleUnit unit, boolean jumping){
+		return this.rotateHeading(game, unit, GameService.getRotateHeadingCW(unit.heading), jumping);
 	}
 	
 	/**
@@ -339,14 +329,14 @@ class GameHelper {
 		return (heading + 1) % 6;
 	}
 	
-	/** 
+	/**
 	 * Rotates the given unit's heading Counter Clockwise
 	 * @param unit
 	 * @param jumping
 	 * @return
 	 */
-	public def rotateHeadingCCW(BattleUnit unit, boolean jumping){
-		return this.rotateHeading(unit, GameHelper.getRotateHeadingCCW(unit.heading), jumping);
+	public def rotateHeadingCCW(Game game, BattleUnit unit, boolean jumping){
+		return this.rotateHeading(game, unit, GameService.getRotateHeadingCCW(unit.heading), jumping);
 	}
 	
 	/**
@@ -364,7 +354,10 @@ class GameHelper {
 	 * @param heading
 	 * @return
 	 */
-	public Coords getForwardCoords(Coords fromCoords, int heading) {
+	public static Coords getForwardCoords(Game game, Coords fromCoords, int heading) {
+		HexMap board = game?.board;
+		if(board == null) return null
+		
 		def x = fromCoords.x;
 		def y = fromCoords.y;
 		
@@ -429,7 +422,7 @@ class GameHelper {
 	 * @param target
 	 * @return
 	 */
-	public def fireWeaponsAtUnit(BattleUnit unit, ArrayList weapons, BattleUnit target) {
+	public def fireWeaponsAtUnit(Game game, BattleUnit unit, ArrayList weapons, BattleUnit target) {
 		if(unit.actionPoints == 0) return
 		
 		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
@@ -501,14 +494,13 @@ class GameHelper {
 			
 			// TODO: if applicable, consume ammo
 			
-			Date update = GameMessage.addMessageUpdate(this.game, message, data)
+			Date update = GameMessage.addMessageUpdate(game, message, data)
 		}
 		
 		// automatically end the unit's turn after firing
-		this.initializeNextTurn()
+		this.initializeNextTurn(game)
 		
 		// TODO: handle returning all of the individual data arrays instead of just the last
 		return data
 	}
-	
 }
