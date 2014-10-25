@@ -1,12 +1,13 @@
 package roguemek.game
 
-import java.util.ArrayList;
-
 import grails.transaction.Transactional
+import org.springframework.context.i18n.LocaleContextHolder
 import roguemek.model.*
 
 @Transactional
 class GameService {
+	
+	def messageSource
 	
 	/**
 	 * Starts the game so it is ready to play the first turn
@@ -52,7 +53,8 @@ class GameService {
 			actionPoints: turnUnit.actionPoints,
 		]
 		
-		Date update = GameMessage.addMessageUpdate(game, "New turn for Unit "+turnUnit, data)
+		Object[] args = [turnUnit.toString()]
+		Date update = GameMessage.addMessageUpdate(game, this.message("game.unit.new.turn", args), data)
 		
 		return data
 	}
@@ -264,7 +266,8 @@ class GameService {
 			actionPoints: unit.actionPoints
 		]
 		
-		Date update = GameMessage.addMessageUpdate(game, "Unit "+unit+" moved to "+unit.x+","+unit.y, data)
+		Object[] args = [unit.toString(), unit.x, unit.y]
+		Date update = GameMessage.addMessageUpdate(game, this.message("game.unit.moved", args), data)
 		
 		if(unit.actionPoints == 0) {
 			// automatically end the unit's turn if it has run out of AP
@@ -300,7 +303,8 @@ class GameService {
 			actionPoints: unit.actionPoints
 		]
 		
-		Date update = GameMessage.addMessageUpdate(game, "Unit "+unit+" rotated to heading "+unit.heading, data)
+		Object[] args = [unit.toString(), unit.heading]
+		Date update = GameMessage.addMessageUpdate(game, this.message("game.unit.rotated", args), data)
 		
 		if(unit.actionPoints == 0) {
 			// automatically end the unit's turn if it has run out of AP
@@ -484,12 +488,14 @@ class GameService {
 					t.save flush:true
 					
 					// set the message of the result
-					message = ""+unit+" hit "+target+" with "+weapon.getShortName()+" for "+weapon.getDamage();
+					Object[] args = [unit.toString(), target.toString(), weapon.getShortName(), weapon.getDamage()]
+					message = this.message("game.weapon.hit", args)
 				}
 			}
 			else {
 				// set the message of the result
-				message = ""+unit+" missed "+target+" with "+weapon.getShortName()
+				Object[] args = [unit.toString(), target.toString(), weapon.getShortName()]
+				message = this.message("game.weapon.missed", args)
 			}
 			
 			// TODO: if applicable, consume ammo
@@ -502,5 +508,15 @@ class GameService {
 		
 		// TODO: handle returning all of the individual data arrays instead of just the last
 		return data
+	}
+	
+	/**
+	 * Convenience method to get translated messages resolved
+	 * @param code
+	 * @param args
+	 * @return
+	 */
+	public String message(String code, Object[] args) {
+		return messageSource.getMessage(code, args, LocaleContextHolder.locale)
 	}
 }

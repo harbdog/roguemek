@@ -12,7 +12,7 @@
 		<div id="canvasDiv">
 			<div id="fpsDiv"></div>
 			<canvas id="canvas">
-		        Your browser doesn't support HTML5, upgrade to a recent browser version!
+		        <g:message code="page.browser.not.supported" />
 		    </canvas>
 		    
 		    <div id="targetDiv"></div>
@@ -30,7 +30,7 @@
 				<div id="heatDiv"></div>
 			</div>
 			
-			<textarea id="messagingArea" readonly>You have joined the battle.</textarea>
+			<textarea id="messagingArea" readonly><g:message code="game.you.joined" /></textarea>
 	    </div>
 	    
 	</body>
