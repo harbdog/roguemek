@@ -69,7 +69,7 @@ class GameController {
 		}
 		
 		BattleUnit u = BattleUnit.read(session.unit)
-		BattleUnit turnUnit = g.units.get(g.unitTurn)
+		BattleUnit turnUnit = g.getTurnUnit()
 		
 		def elements = [
 			board: gameService.getHexMapRender(g),

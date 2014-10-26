@@ -41,6 +41,8 @@ function handleKeyPress(key) {
 			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
 			var thisWeapon = playerWeapons[weaponFired];
 			$('#'+thisWeapon.id).toggleClass("selected");
+			
+			updateSelectedWeapons();
 		}
 	}
 	else if(key == "." || key == "space" || key == "enter"){

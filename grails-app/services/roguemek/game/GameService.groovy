@@ -44,7 +44,7 @@ class GameService {
 		game.save flush: true
 		
 		// TODO: return and add game message about the next unit's turn
-		BattleUnit turnUnit = game.units.get(game.unitTurn)
+		BattleUnit turnUnit = game.getTurnUnit()
 		def data = [
 			turnUnit: turnUnit.id,
 			actionPoints: turnUnit.actionPoints,
@@ -61,7 +61,7 @@ class GameService {
 	 * @return
 	 */
 	private def initializeTurnUnit(Game game) {
-		BattleUnit unit = game.units.get(game.unitTurn)
+		BattleUnit unit = game.getTurnUnit()
 		// TODO: generate actual amount of AP/JP per turn
 		unit.actionPoints = 3
 		unit.jumpPoints = 0
@@ -235,6 +235,18 @@ class GameService {
 	}
 	
 	/**
+	 * Skips the remainder of the current unit's turn
+	 * @param game
+	 * @param unit
+	 * @return
+	 */
+	public def skipTurn(Game game, BattleUnit unit) {
+		if(unit != game.getTurnUnit()) return
+		
+		return initializeNextTurn(game)
+	}
+	
+	/**
 	 * Moves the unit in a forward/backward direction
 	 * @param unit
 	 * @param forward
@@ -243,8 +255,7 @@ class GameService {
 	 */
 	public def move(Game game, BattleUnit unit, boolean forward, boolean jumping) {
 		if(unit.actionPoints == 0) return
-		
-		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
+		else if(unit != game.getTurnUnit()) return
 		
 		// TODO: make sure the terrain can be entered and use proper amount of actionPoints
 		unit.actionPoints -= 1
@@ -283,6 +294,7 @@ class GameService {
 	 */
 	public def rotateHeading(Game game, BattleUnit unit, int newHeading, boolean jumping){
 		if(unit.actionPoints == 0) return
+		else if(unit != game.getTurnUnit()) return
 		
 		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
 		
@@ -425,6 +437,7 @@ class GameService {
 	 */
 	public def fireWeaponsAtUnit(Game game, BattleUnit unit, ArrayList weapons, BattleUnit target) {
 		if(unit.actionPoints == 0) return
+		else if(unit != game.getTurnUnit()) return
 		
 		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
 		

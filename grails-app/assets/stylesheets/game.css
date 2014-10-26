@@ -25,6 +25,10 @@ body {
     color: #FFFFFF;
 }
 
+div.hidden {
+	display: none;
+}
+
 #playerDiv {
 	position: absolute;
 	left: 0px;
@@ -96,6 +100,35 @@ body {
 #actionDiv .action_fire:active {
 	border-style: inset;
 	text-shadow: 5px 5px 5px #000000;
+}
+
+#actionDiv .action_end{
+	position: relative;
+	right: 2px;
+	width: 100%;
+	height: 75%;
+	background-color: #000099;
+	text-align: center;
+	border-style: outset;
+	border-width: 2px;
+}
+#actionDiv .action_end:hover {
+	background-color: #0000FF;
+}
+#actionDiv .action_end:active {
+	border-style: inset;
+	text-shadow: 5px 5px 5px #000000;
+}
+
+#actionDiv .action_wait {
+	position: relative;
+	right: 2px;
+	width: 100%;
+	height: 75%;
+	background-color: #666666;
+	text-align: center;
+	border-style: outset;
+	border-width: 2px;
 }
 
 #weaponsDiv {

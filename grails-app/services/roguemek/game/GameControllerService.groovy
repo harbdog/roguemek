@@ -130,6 +130,6 @@ class GameControllerService {
 	private def skip(Game game, Pilot pilot, BattleUnit unit, Map params) {
 		if(unit == null) return
 		
-		return gameService.initializeNextTurn(game)
+		return gameService.skipTurn(game, unit)
 	}
 }

@@ -49,4 +49,8 @@ class Game {
 	public BattleUnit getUnit(int index) {
 		return units[index]
 	}
+	
+	public BattleUnit getTurnUnit() {
+		return units[unitTurn]
+	}
 }

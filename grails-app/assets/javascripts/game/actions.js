@@ -114,6 +114,9 @@ function fire_weapons(weapons) {
 			// update UI displays of target armor if showing
 			updateTargetDisplay();
 		}
+		
+		// Toggle off all selected weapons
+		deselectWeapons();
 	});
 }
 
@@ -182,10 +185,17 @@ function pollUpdate(updates) {
 					setJumpPoints(turnUnit.jumpPoints);
 					setHeatDisplay(turnUnit.heat);
 					playerUnit.displayUnit.setControlsVisible(true);
+				
+					$('.action_end').removeClass("hidden");
+					$('.action_wait').addClass("hidden");
 				}
 				else{
 					// indicate non-player unit turn starting
 					turnUnit.displayUnit.setOtherTurnVisible(true);
+					
+					$('.action_fire').addClass("hidden");
+					$('.action_end').addClass("hidden");
+					$('.action_wait').removeClass("hidden");
 				}
 			}
 		});

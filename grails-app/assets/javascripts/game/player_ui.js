@@ -197,29 +197,59 @@ function updateWeaponsDisplay() {
 	
 	$(".weapon").click(function() {
 		$(this).toggleClass("selected");
+		
+		updateSelectedWeapons();
 	});
 	
-	// TESTING (button will eventually need to switch between 'action_fire' and 'action_end' based on whether weapons are selected to fire)
-	var actionStr = "<div class='action_fire'>Fire</div>";
+	var actionStr;
+	if(playerUnit.id == turnUnit.id) {
+		// TESTING (button will eventually need to switch between 'action_fire' and 'action_end' based on whether weapons are selected to fire)
+		actionStr = "<div class='action_fire hidden'>Fire</div>"+
+					"<div class='action_end'>End<br/>Turn</div>"+
+					"<div class='action_wait hidden'>Wait</div>";
+	}
+	else {
+		actionStr = "<div class='action_fire hidden'>Fire</div>"+
+					"<div class='action_end hidden'>End<br/>Turn</div>"+
+					"<div class='action_wait'>Wait</div>";
+	}
 	actionDisplay = document.getElementById("actionDiv");
 	actionDisplay.innerHTML = actionStr;
 	
 	$(".action_fire").click(function() {
 		// TODO: combine to a single method that is also called by the key press equivalent
 		var selectedWeapons = getSelectedWeapons();
-		
-		if(selectedWeapons.length == 0){
-			skip();
-		}
-		else{
-			fire_weapons(selectedWeapons);
-		}
+		fire_weapons(selectedWeapons);
+	});
+	
+	$(".action_end").click(function() {
+		skip();
 	});
 	
 	weaponsContainer.alpha = 0;
 	weaponsContainer.x = -stage.x + playerContainerWidth;
     weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
 	stage.addChild(weaponsContainer);
+}
+
+function updateSelectedWeapons() {
+	// TODO: use this method to store selected weapons in an array then update the UI to reflect
+	// instead of directly using the "selected" class to store that info
+	var hasSelected = false;
+	$.each(playerWeapons, function(key, w) {
+		if($("#"+w.id).hasClass("selected")) {
+			hasSelected = true;
+		}
+	});
+	
+	if(hasSelected) {
+		$('.action_fire').removeClass("hidden");
+		$('.action_end').addClass("hidden");
+	}
+	else{
+		$('.action_fire').addClass("hidden");
+		$('.action_end').removeClass("hidden");
+	}
 }
 
 /**
@@ -235,6 +265,24 @@ function getSelectedWeapons() {
 	});
 	
 	return selectedWeapons;
+}
+
+/**
+ * Deselects any currently selected players weapons on the UI
+ */
+function deselectWeapons() {
+	var hasSelected = false;
+	$.each(playerWeapons, function(key, w) {
+		if($("#"+w.id).hasClass("selected")) {
+			hasSelected = true;
+			$('#'+w.id).toggleClass("selected");
+		}
+	});
+	
+	if(hasSelected) {
+		$('.action_fire').addClass("hidden");
+		$('.action_end').removeClass("hidden");
+	}
 }
 
 function updateTargetDisplay() {
