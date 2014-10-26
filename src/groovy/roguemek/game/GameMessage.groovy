@@ -11,17 +11,19 @@ class GameMessage implements Comparable{
 	private static Log log = LogFactory.getLog(this)
 	
 	long time = 0
-	String message = ""
-	def data = []
+	String messageCode
+	Object[] messageArgs
+	def data
 	
 	// Map used to store date[gameId]=[messages,...] for polling responses
 	private static concurrentUpdates = new ConcurrentHashMap(16, 0.75, 16)
 	private static int timeToKeepMessages = 5000	// in milliseconds
 	private static Thread messageCleanupThread
 	
-	public GameMessage(String message, Map data) {
+	public GameMessage(String messageCode, Object[] messageArgs, Map data) {
 		this.time = new Date().getTime()
-		this.message = message
+		this.messageCode = messageCode
+		this.messageArgs = messageArgs
 		this.data = data
 	}
 	
@@ -51,7 +53,7 @@ class GameMessage implements Comparable{
 		messageCleanupThread.start()	// start thread in the background
 	}
 	
-	public static Date addMessageUpdate(Game game, String message, Map data) {
+	public static Date addMessageUpdate(Game game, String messageCode, Object[] messageArgs, Map data) {
 		if(messageCleanupThread == null || !messageCleanupThread.isAlive()) {
 			log.error("Restarted GameMessage cleanup thread!")
 			GameMessage.startMessageCleanupThread()
@@ -70,7 +72,7 @@ class GameMessage implements Comparable{
 		}
 		
 		// create and add the game message with the info
-		GameMessage gm = new GameMessage(message, data)
+		GameMessage gm = new GameMessage(messageCode, messageArgs, data)
 		timeUpdates.add(gm)
 		
 		return new Date(gm.time)
@@ -82,7 +84,7 @@ class GameMessage implements Comparable{
 	 * @param game
 	 * @return
 	 */
-	public static List getMessageUpdates(Date sinceDate, Game game) {
+	public static List getMessageUpdates(Game game, Date sinceDate) {
 		ArrayList updates = new ArrayList()
 		
 		// The date to use for key comparison needs to be slightly earlier than the sinceDate to 
@@ -104,7 +106,7 @@ class GameMessage implements Comparable{
 				continue
 			}
 			
-			GameMessage compareGM = new GameMessage(null, null)
+			GameMessage compareGM = new GameMessage(null, null, null)
 			compareGM.time = sinceTime
 			updates.addAll(timeUpdates.tailSet(compareGM, false))
 		}
@@ -134,6 +136,6 @@ class GameMessage implements Comparable{
 	
 	@Override
 	public String toString() {
-		return "["+this.time+"] "+this.message+" {"+this.data+"}"
+		return "["+this.time+"] "+this.messageCode+" {"+this.data+"}"
 	}
 }

@@ -105,7 +105,24 @@ class GameController {
 		// Give a slight delay before polling to give a small amount of time for an update to actually occur
 		Thread.sleep(250)
 
-		render gameControllerService.performPoll(game, pilot) as JSON
+		def pollResponse = gameControllerService.performPoll(game, pilot)
+		def gameResponse = [date: pollResponse.date]
+		if(pollResponse.messageUpdates != null) {
+			gameResponse.updates = []
+			
+			int index = 0
+			for(GameMessage gm in pollResponse.messageUpdates) {
+				def thisUpdate = [
+					time: gm.time,
+					message: message(code: gm.messageCode, args: gm.messageArgs),
+					data: gm.data
+				]
+				
+				gameResponse.updates[index++] = thisUpdate
+			}
+		}
+		
+		render gameResponse as JSON
 	}
 
 	@Secured(['ROLE_ADMIN'])

@@ -22,7 +22,7 @@ class GameControllerService {
 				break
 			}
 			
-			ArrayList updates = GameMessage.getMessageUpdates(lastUpdate, game)
+			ArrayList updates = GameMessage.getMessageUpdates(game, lastUpdate)
 			
 			// set the pilot last update time to the last message's time
 			if(updates != null && !updates.isEmpty()) {
@@ -32,7 +32,7 @@ class GameControllerService {
 				pilot.lastUpdate = lastUpdate
 				pilot.save flush: true
 				
-				return [date: lastUpdate, updates: updates]
+				return [date: lastUpdate, messageUpdates: updates]
 			}
 			
 			tries ++
