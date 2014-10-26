@@ -1,10 +1,13 @@
 package roguemek.game
 
 import grails.transaction.Transactional
+import roguemek.*
 import roguemek.model.*
 
 @Transactional
 class GameService {
+	
+	transient springSecurityService
 	
 	/**
 	 * Starts the game so it is ready to play the first turn
@@ -241,7 +244,14 @@ class GameService {
 	 * @return
 	 */
 	public def skipTurn(Game game, BattleUnit unit) {
-		if(unit != game.getTurnUnit()) return
+		if(unit != game.getTurnUnit()) {
+			if(isRootUser()) {
+				// allow root user to skip another unit's turns for testing purposes
+			}
+			else {
+				return
+			}
+		}
 		
 		return initializeNextTurn(game)
 	}
@@ -520,5 +530,21 @@ class GameService {
 		
 		// TODO: handle returning all of the individual data arrays instead of just the last
 		return data
+	}
+	
+	/**
+	 * Returns true if the current user's roles contains the ROOT role
+	 * @return
+	 */
+	private boolean isRootUser() {
+		def roles = springSecurityService.getPrincipal().getAuthorities()
+		
+		for(def role in roles) {
+			if(role.getAuthority() == Role.ROLE_ROOT) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

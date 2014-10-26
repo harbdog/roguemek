@@ -13,9 +13,9 @@ class BootStrap {
 		HexTileset.init()
 		
 		
-		def rootRole = new Role(authority: 'ROLE_ROOT').save(flush: true)
-		def adminRole = new Role(authority: 'ROLE_ADMIN').save(flush: true)
-		def userRole = new Role(authority: 'ROLE_USER').save(flush: true)
+		def rootRole = new Role(authority: Role.ROLE_ROOT).save(flush: true)
+		def adminRole = new Role(authority: Role.ROLE_ADMIN).save(flush: true)
+		def userRole = new Role(authority: Role.ROLE_USER).save(flush: true)
 		
 		def adminEmail = 'harbdog@gmail.com'
 		def adminCallsign = 'CapperDeluxe'
