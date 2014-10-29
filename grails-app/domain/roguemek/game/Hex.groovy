@@ -59,6 +59,93 @@ class Hex {
 	}
 	
 	/**
+	 * Gets the total piloting modifiers for entry to this Hex
+	 * @return
+	 */
+	public int getPilotingModifier() {
+		int mods = 0
+		for(Terrain t in terrains) {
+			mods += t.getPilotingModifier()
+		}
+		
+		return mods
+	}
+	
+	/**
+	 * Gets the total movement cost for entry to this Hex
+	 * @return
+	 */
+	public int getMovementCost() {
+		int cost = 0
+		for(Terrain t in terrains) {
+			cost += t.getMovementCost()
+		}
+		
+		return cost
+	}
+	
+	/**
+	 * Sourced from MegaMek Hex.java
+	 * @param type
+	 * @return
+	 */
+	public int getTerrainLevel(int type) {
+		for(Terrain t in terrains) {
+			if(t.type == type) {
+				return t.level
+			}
+		}
+		
+		return Terrain.LEVEL_NONE
+	}
+	
+	/**
+	 * Sourced from MegaMek Hex.java
+	 * @param type
+	 * @return
+	 */
+	public boolean containsTerrain(int type) {
+		for(Terrain t in terrains) {
+			if(t.type == type) {
+				return true
+			}
+		}
+		
+		return false
+	}
+	
+	/**
+	 * Sourced from MegaMek Hex.java
+	 * @param type
+	 * @param level
+	 * @return
+	 */
+	public boolean containsTerrain(int type, int level) {
+		for(Terrain t in terrains) {
+			if(t.type == type && t.level == level) {
+				return true
+			}
+		}
+		
+		return false
+	}
+	
+	/**
+	 * Sourced from MegaMek Hex.java
+	 * @param type
+	 * @return
+	 */
+	public Terrain getTerrain(int type) {
+		for(Terrain t in terrains) {
+			if(t.type == type) {
+				return t
+			}
+		}
+		
+		return null
+	}
+	
+	/**
 	 * Gets all applicable data for the object that can be turned into JSON for the client
 	 * @return
 	 */

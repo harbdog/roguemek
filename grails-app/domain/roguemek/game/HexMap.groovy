@@ -18,6 +18,11 @@ class HexMap {
 		numCols min: 0
     }
 	
+	/**
+	 * Loads a board file into the hexMap array
+	 * @param boardFile
+	 * @return
+	 */
 	public static HexMap loadBoardFile(File boardFile) {
 		def numCols = 0
 		def numRows = 0
@@ -130,15 +135,36 @@ class HexMap {
 		return null
 	}
 	
-	private static int indexFor(String hexNum, int width, int row) {
-		int substringDiff = 2;
-		if (row > 99) {
-			substringDiff = Integer.toString(width).length();
+	/**
+	 * Gets the Hex object at the given x, y board coordinates
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Hex getHexAt(int x, int y) {
+		int index = (y * numCols) + x
+		String hexId = hexMap[index]
+		if(hexId == null ) {
+			return null
 		}
-		int x = Integer.parseInt(hexNum.substring(0, hexNum.length()
-				- substringDiff)) - 1;
-		int y = Integer.parseInt(hexNum.substring(hexNum.length()
-				- substringDiff)) - 1;
-		return (y * width) + x;
+		
+		return Hex.get(hexId)
+	}
+	
+	/**
+	 * Used to generate the single dimension array index for a two dimensional board
+	 * @param hexNum
+	 * @param width
+	 * @param row
+	 * @return
+	 */
+	private static int indexFor(String hexNum, int width, int row) {
+		int substringDiff = 2
+		if (row > 99) {
+			substringDiff = Integer.toString(width).length()
+		}
+		int x = Integer.parseInt(hexNum.substring(0, hexNum.length() - substringDiff)) - 1
+		int y = Integer.parseInt(hexNum.substring(hexNum.length() - substringDiff)) - 1
+		return (y * width) + x
 	}
 }

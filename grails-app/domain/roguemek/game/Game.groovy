@@ -46,11 +46,38 @@ class Game {
 		updateDate = new Date()
 	}
 	
+	/**
+	 * Gets the unit at the given index of the unit list
+	 * @param index
+	 * @return
+	 */
 	public BattleUnit getUnit(int index) {
 		return units[index]
 	}
 	
+	/**
+	 * Gets the unit at the unitTurn index of the unit list
+	 * @return
+	 */
 	public BattleUnit getTurnUnit() {
 		return units[unitTurn]
+	}
+	
+	/**
+	 * Gets all units found at the given x,y location
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public BattleUnit[] getUnitsAt(int x, int y) {
+		BattleUnit[] foundUnits = []
+		int i = 0
+		for(BattleUnit thisUnit in units) {
+			if(thisUnit.x == x && thisUnit.y == y) {
+				foundUnits[i++] = thisUnit
+			}
+		}
+		
+		return foundUnits
 	}
 }

@@ -267,13 +267,41 @@ class GameService {
 		if(unit.actionPoints == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
-		// TODO: make sure the terrain can be entered and use proper amount of actionPoints
-		unit.actionPoints -= 1
-				
-		def moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
+		int moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
+		Coords unitCoords = unit.getLocation()
 		
-		// When ready to move, set the new location of the unit
-		BattleUnit.setLocation(unit, GameService.getForwardCoords(game, unit.getLocation(), moveHeading))
+		// check to see if the new hex can be moved into
+		Coords moveCoords = GameService.getForwardCoords(game, unitCoords, moveHeading)
+		
+		def notMoving = (moveCoords.equals(unitCoords))
+		if(notMoving) {
+			return new GameMessage("game.you.cannot.move.edge", null, null)
+		}
+		
+		// check to see if there is another unit already in the coords
+		def unitObstacles = game.getUnitsAt(moveCoords.x, moveCoords.y)
+		if(unitObstacles.length > 0) {
+			// TODO: Charging/DFA if a unit is present at the new coords
+			return new GameMessage("game.you.cannot.move.unit", null, null)
+		}
+		
+		// calculate the amount of AP required to move
+		int apRequired = getHexRequiredAP(game, unitCoords, moveCoords)
+		
+		// make sure the terrain can be entered using AP
+		if(unit.actionPoints < apRequired) {
+			Object[] messageArgs = [apRequired]
+			return new GameMessage("game.you.cannot.move.ap", messageArgs, null)
+		}
+		else if (apRequired < 0) {
+			return new GameMessage("game.you.cannot.move.direction", null, null)
+		}
+		
+		// When ready to move, set the new location of the unit and consume AP
+		unit.actionPoints -= apRequired
+		unit.x = moveCoords.x
+		unit.y = moveCoords.y
+		
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
@@ -306,13 +334,12 @@ class GameService {
 		if(unit.actionPoints == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
-		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
-		
 		// use an actionPoint
 		unit.actionPoints -= 1
 		
 		// When ready to rotate, set the new location of the unit
 		unit.setHeading(newHeading);
+		
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
@@ -449,8 +476,6 @@ class GameService {
 		if(unit.actionPoints == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
-		// TODO: make sure it is the unit's turn first, otherwise issue return a message with no action
-		
 		// use an actionPoint
 		unit.actionPoints -= 1
 		
@@ -530,6 +555,56 @@ class GameService {
 		
 		// TODO: handle returning all of the individual data arrays instead of just the last
 		return data
+	}
+	
+	private int getHexRequiredAP(Game game, Coords currentCoords, Coords newCoords) {
+		int apRequired = 1
+		
+		Hex currentHex = game.board?.getHexAt(currentCoords.x, currentCoords.y)
+		Hex newHex = game.board?.getHexAt(newCoords.x, newCoords.y)
+		
+		if(currentHex == null || newHex == null) {
+			return -1
+		}
+		
+		int currentElevation = currentHex.elevation
+		int newElevation = newHex.elevation
+		
+		int elevDiff = Math.abs(newElevation - currentElevation)
+		if(elevDiff > 2){
+			// no more than 2 elevation changes can occur
+			return -1
+		}
+		
+		// add the cost of elevation differences
+		apRequired += elevDiff
+		
+		// add the cost of terrain movement
+		int terrainAP = newHex.getMovementCost()
+		apRequired += terrainAP
+		
+		int newWaterLevel = newHex.getTerrainLevel(Terrain.WATER)
+		int currentWaterLevel = currentHex.getTerrainLevel(Terrain.WATER)
+		if(newWaterLevel >= 1 && currentWaterLevel >= 1) {
+			// add the cost of moving through water
+			int depthDiff = Math.abs(newWaterLevel - currentWaterLevel)
+			apRequired += depthDiff
+		}
+		else if(newWaterLevel >= 1) {
+			// add the cost of moving into water when not already in water
+			if(newWaterLevel == 1) {
+				apRequired += 1
+			}
+			else if(newWaterLevel > 1) {
+				apRequired += 3
+			}
+		}
+		else if(currentWaterLevel >= 1){
+			// add the cost of moving out of water when currently in it
+			apRequired += currentWaterLevel
+		}
+		
+		return apRequired
 	}
 	
 	/**

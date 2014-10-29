@@ -11,10 +11,17 @@ function move(forward) {
 		jumping: false
 	}, function( data ) {
 		// update the unit based on new data
-		console.log("move "+data.unit+":"+data.x+","+data.y+">"+data.heading);
+		if(data.message != null) {
+			// display the message to the player
+			var t = new Date(data.time);
+			addMessageUpdate("["+t.toLocaleTimeString()+"] "+data.message);
+		}
+		
 		if(data.unit == null){
 			return;
 		}
+		
+		console.log("move "+data.unit+":"+data.x+","+data.y+">"+data.heading);
 		  
 		var thisUnit = units[data.unit];
 		if(data.x != null && data.y != null){
@@ -38,10 +45,11 @@ function rotate(rotation) {
 		jumping: false
 	}, function( data ) {
 		// update the unit based on new data
-		console.log("rotate "+data.unit+":"+data.x+","+data.y+">"+data.heading);
 		if(data.unit == null){
 			return;
 		}
+		
+		console.log("rotate "+data.unit+":"+data.x+","+data.y+">"+data.heading);
 		  
 		var thisUnit = units[data.unit];
 		if(data.x != null && data.y != null){

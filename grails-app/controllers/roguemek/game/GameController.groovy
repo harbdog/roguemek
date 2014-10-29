@@ -91,7 +91,17 @@ class GameController {
 		Pilot pilot = Pilot.get(session.pilot)
 		BattleUnit unit = BattleUnit.get(session.unit)
 		
-		render gameControllerService.performAction(game, pilot, unit, params) as JSON
+		def result = gameControllerService.performAction(game, pilot, unit, params)
+		if(result instanceof GameMessage) {
+			// if the result is just a message, format it for returning as JSON
+			result = [
+				time: result.time,
+				message: message(code: result.messageCode, args: result.messageArgs),
+				data: result.data
+			]
+		}
+		
+		render result as JSON
 	}
 	
 	/**

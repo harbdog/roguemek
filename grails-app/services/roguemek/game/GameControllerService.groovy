@@ -26,8 +26,6 @@ class GameControllerService {
 			
 			// set the pilot last update time to the last message's time
 			if(updates != null && !updates.isEmpty()) {
-				log.info("UPDATES: "+updates)
-				
 				lastUpdate = new Date(updates.last().getTime())
 				pilot.lastUpdate = lastUpdate
 				pilot.save flush: true

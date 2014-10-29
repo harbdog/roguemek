@@ -69,11 +69,6 @@ class BattleUnit {
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED]
     }
 	
-	public static void setLocation(BattleUnit unit, Coords location) {
-		unit.x = location?.x
-		unit.y = location?.y
-	}
-	
 	public Coords getLocation() {
 		if(this.x == null || this.y == null) {
 			return null

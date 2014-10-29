@@ -136,7 +136,7 @@ class BootStrap {
 		}
 		
 		// and another BattleMech
-		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Annihilator"), x: 6, y: 5, heading: 0)
+		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Annihilator"), x: 6, y: 5, heading: 5)
 		if(!battleMech2.validate()) {
 			log.error("Errors with battle mech "+battleMech2.mech?.name+":\n")
 			battleMech2.errors.allErrors.each {

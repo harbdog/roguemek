@@ -445,6 +445,185 @@ class Terrain {
 	}
 	
 	/**
+	 * Sourced from MegaMek Terrain.java
+	 * @return
+	 */
+	public int getPilotingModifier() {
+		//public int pilotingModifier(EntityMovementMode moveMode) {
+		switch (type) {
+			case Terrain.JUNGLE:
+				return level
+				
+			case Terrain.MAGMA:
+				return (level == 2) ? 4 : 1
+				
+			case Terrain.TUNDRA:
+			case Terrain.SAND:
+				return 1
+				
+			case Terrain.SNOW:
+				return (level == 2) ? 1 : 0
+				
+			case Terrain.SWAMP:
+				//if ((moveMode == EntityMovementMode.HOVER)
+				//		|| (moveMode == EntityMovementMode.WIGE)) {
+				//	return 0;
+				//} else if ((moveMode == EntityMovementMode.BIPED)
+				//		|| (moveMode == EntityMovementMode.QUAD)) {
+					return 1
+				//} else {
+				//	return 2;
+				//}
+					
+			case Terrain.MUD:
+				//if ((moveMode == EntityMovementMode.BIPED)
+				//		|| (moveMode == EntityMovementMode.QUAD)
+				//		|| (moveMode == EntityMovementMode.HOVER)
+				//		|| (moveMode == EntityMovementMode.WIGE)) {
+					return 0
+				//}
+				//return 1
+				
+			case Terrain.GEYSER:
+			case Terrain.RUBBLE:
+				if (level == 2) {
+					return 1
+				}
+				return 0
+				
+			case Terrain.RAPIDS:
+				if (level == 2) {
+					return 3
+				}
+				return 2
+				
+			case Terrain.ICE:
+				//if ((moveMode == EntityMovementMode.HOVER)
+				//		|| (moveMode == EntityMovementMode.WIGE)) {
+				//	return 0;
+				//}
+				return 4
+				
+			case Terrain.INDUSTRIAL:
+				return 1
+				
+			default:
+				return 0
+		}
+	}
+
+	/**
+	 * Sourced from MegaMek Terrain.java
+	 */
+	public int getMovementCost() {
+		//public int movementCost(Entity e) {
+		//EntityMovementMode moveMode = e.getMovementMode();
+		switch (type) {
+			case Terrain.MAGMA:
+				return level - 1
+				
+			case Terrain.GEYSER:
+				if (level == 2) {
+					return 1
+				}
+				return 0
+				
+			case Terrain.RUBBLE:
+				//if ((e instanceof Mech) && ((Mech)e).isSuperHeavy()) {
+				//	return 0;
+				//}
+				return 1
+				
+			case Terrain.WOODS:
+				//if ((e instanceof Mech) && ((Mech)e).isSuperHeavy()) {
+				//	return level - 1;
+				//}
+				return level
+				
+			case Terrain.JUNGLE:
+				//if ((e instanceof Mech) && ((Mech)e).isSuperHeavy()) {
+				//	return level;
+				//}
+				return level + 1
+				
+			case Terrain.SNOW:
+				if (level == 2) {
+					//if ((moveMode == EntityMovementMode.HOVER)
+					//		|| (moveMode == EntityMovementMode.WIGE)) {
+					//	return 0;
+					//}
+					return 1
+				}
+				//if ((moveMode == EntityMovementMode.WHEELED)
+				//		|| (moveMode == EntityMovementMode.INF_JUMP)
+				//		|| (moveMode == EntityMovementMode.INF_LEG)
+				//		|| (moveMode == EntityMovementMode.INF_MOTORIZED)) {
+				//	return 1;
+				//}
+				return 0
+				
+			case Terrain.MUD:
+				//if ((moveMode == EntityMovementMode.BIPED)
+				//		|| (moveMode == EntityMovementMode.QUAD)
+				//		|| (moveMode == EntityMovementMode.HOVER)
+				//		|| (moveMode == EntityMovementMode.WIGE)) {
+					return 0
+				//}
+				//return 1;
+					
+			case Terrain.SWAMP:
+				//if ((moveMode == EntityMovementMode.HOVER)
+				//		|| (moveMode == EntityMovementMode.WIGE)) {
+				//	return 0;
+				//} else if ((moveMode == EntityMovementMode.BIPED)
+				//		|| (moveMode == EntityMovementMode.QUAD)) {
+					return 1
+				//} else {
+				//	return 2;
+				//}
+					
+			case Terrain.ICE:
+				//if ((moveMode == EntityMovementMode.HOVER)
+				//		|| (moveMode == EntityMovementMode.WIGE)) {
+				//	return 0;
+				//}
+				return 1
+				
+			case Terrain.RAPIDS:
+			case Terrain.ROUGH:
+				if (level == 2) {
+					//if ((e instanceof Mech) && ((Mech)e).isSuperHeavy()) {
+					//	return 1;
+					//}
+					return 2
+				}
+				//if ((e instanceof Mech) && ((Mech)e).isSuperHeavy()) {
+				//	return 0;
+				//}
+				return 1
+				
+			case Terrain.SAND:
+				//if (((moveMode == EntityMovementMode.WHEELED) && !e.hasWorkingMisc(MiscType.F_DUNE_BUGGY))
+				//		|| (moveMode == EntityMovementMode.INF_JUMP)
+				//		|| (moveMode == EntityMovementMode.INF_LEG)
+				//		|| (moveMode == EntityMovementMode.INF_MOTORIZED)) {
+				//	return 1;
+				//}
+				return 0
+				
+			case Terrain.INDUSTRIAL:
+				//if ((moveMode == EntityMovementMode.BIPED)
+				//		|| (moveMode == EntityMovementMode.QUAD)) {
+					return 1
+				//}
+				//return 0
+				
+			default:
+				return 0
+		}
+	}
+	
+	/**
 	 * Gets all applicable data for the object that can be turned into JSON for the client
 	 * @return
 	 */
