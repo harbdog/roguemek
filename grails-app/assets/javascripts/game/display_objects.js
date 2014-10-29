@@ -97,9 +97,24 @@ UnitDisplay.prototype.setControlsVisible = function(visible) {
 UnitDisplay.prototype.animateUpdateDisplay = function(coords, heading) {
 	var newX = this.getUpdatedDisplayX(coords);
 	var newY = this.getUpdatedDisplayY(coords);
-	var newRot = this.getUpdatedDisplayRotation(heading);
+	var actualRot = this.getUpdatedDisplayRotation(heading);
 	
-	createjs.Tween.get(this).to({x: newX, y: newY, rotation: newRot}, 250)
+	var newRot = actualRot;
+	if(this.rotation == HEADING_ANGLE[HEADING_N] && newRot == HEADING_ANGLE[HEADING_NW]) {
+		// fixes the issue where it tries to rotate the long way to go from N to NW (0->300)
+		newRot = -60;
+	}
+	else if(this.rotation == HEADING_ANGLE[HEADING_NW] && newRot == HEADING_ANGLE[HEADING_N]) {
+		// fixes the issue where it tries to rotate the long way to go from NW to N (300->0)
+		newRot = 360;
+	}
+	
+	createjs.Tween.get(this)
+		.to({x: newX, y: newY, rotation: newRot}, 250)
+		.call(function() {
+			// put the actual angle in after animated so it doesn't rotate the long way at a different angle
+			this.rotation = actualRot;
+		});
 }
 UnitDisplay.prototype.showRotateControlCW = function(visible) {
 	if(visible) {
