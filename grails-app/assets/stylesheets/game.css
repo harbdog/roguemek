@@ -179,6 +179,9 @@ div.hidden {
 	font-size: 125%;
 	font-weight: 900;
 }
+#weaponsDiv .weaponNumber.disabled {
+	background-color: #666666;
+}
 #weaponsDiv .weaponLocation {
 	float: left;
 }

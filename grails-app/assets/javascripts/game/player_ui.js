@@ -301,9 +301,13 @@ function updateWeaponsCooldown() {
 			console.log("Weapon "+w+" cooldown: "+cooldownAsPercent);
 			
 			$("#"+w.id).addClass("cooldown").css({"background-size":cooldownAsPercent});
+			$("#"+w.id+" .weaponNumber").addClass("disabled");
 		}
 		else{
 			$("#"+w.id).removeClass("cooldown");
+			
+			// TODO: if a weapon is destroyed or out of ammo, do not remove its disabled state
+			$("#"+w.id+" .weaponNumber").removeClass("disabled");
 		}
 	});
 }

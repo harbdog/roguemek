@@ -38,11 +38,15 @@ function handleKeyPress(key) {
 	if(weaponFired >= 0){
 		// Toggle the weapon UI for firing
 		if(playerWeapons[weaponFired] != null) {
-			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
 			var thisWeapon = playerWeapons[weaponFired];
-			$('#'+thisWeapon.id).toggleClass("selected");
 			
-			updateSelectedWeapons();
+			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
+			if(!$('#'+thisWeapon.id).hasClass("cooldown")){
+				// only allow weapons to be selected that aren't on cooldown
+				$('#'+thisWeapon.id).toggleClass("selected");
+				
+				updateSelectedWeapons();
+			}
 		}
 	}
 	else if(key == "." || key == "space" || key == "enter"){
