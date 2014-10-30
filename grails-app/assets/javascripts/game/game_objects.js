@@ -113,20 +113,23 @@ Unit.prototype.toString = function() {
 /**
  * Class used to store Weapon information that may be used for display purposes at times
  */
-function Weapon(id, name, shortName, weaponType, damage, heat, minRange, range) {
-	this.initialize(id, name, shortName, weaponType, damage, heat, minRange, range);
+function Weapon(id, name, shortName, weaponType, location, damage, projectiles, heat, cycle, cooldown, minRange, range) {
+	this.initialize(id, name, shortName, weaponType, location, damage, projectiles, heat, cycle, cooldown, minRange, range);
 }
-Weapon.prototype.initialize = function(id, name, shortName, weaponType, location, damage, heat, minRange, range) {
+Weapon.prototype.initialize = function(id, name, shortName, weaponType, location, damage, projectiles, heat, cycle, cooldown, minRange, range) {
 	this.id = id;
 	this.name = name;
 	this.shortName = shortName;
 	this.weaponType = weaponType;
 	this.location = location;
 	this.damage = damage;
+	this.projectiles = projectiles;
 	this.heat = heat;
 	this.minRange = minRange;
 	
 	this.range = range || [0, 0, 0];
+	this.cycle = cycle;
+	this.cooldown = cooldown;
 }
 Weapon.prototype.toString = function() {
 	return this.name;

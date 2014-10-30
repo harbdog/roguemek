@@ -271,9 +271,9 @@ function initUnitWeapons(unit) {
 	
 	$.each(unit.crits, function(index, c) {
 		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
-			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, c.damage, c.heat, 
+			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, 
+								c.damage, c.projectiles, c.heat, c.cycle, c.cooldown, 
 								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
-			
 			weapons[c.id] = w;
 		}
 	});
@@ -470,6 +470,22 @@ function getLocationName(index){
 			break;
 	}
 	return locText;
+}
+
+/**
+ * Gets the player weapon with the given ID
+ * @param id
+ * @returns
+ */
+function getWeaponById(id) {
+	for(var i=0; i<playerWeapons.length; i++) {
+		var chkWeapon = playerWeapons[i];
+		if(chkWeapon.id == id){
+			return chkWeapon;
+		}
+	}
+	
+	return null;
 }
 
 /**

@@ -81,9 +81,6 @@ function fire_weapons(weapons) {
 		weapon_ids.push(w.id);
 	});
 	
-	console.log("Firing @ "+target_id+": ");
-	console.log(weapons);
-	
 	handleActionJSON({
 		perform: "fire_weapons",
 		weapon_ids: weapon_ids,
@@ -96,10 +93,39 @@ function fire_weapons(weapons) {
 		
 		// TODO: consolidate to a single method than handles various update dynamically for all actions and polling data
 		
-		if(data.weaponHit){
+		if(data.weaponData){
 			var t = units[data.target];
 			
-			if(data.armorHit != null) {
+			// update the cooldown status of the weapons fired
+			$.each(data.weaponData, function(key, wData) {
+				var id = wData.weaponId;
+				var hit = wData.weaponHit;
+				var hitLocations = wData.weaponHitLocations;
+				var cooldown = wData.weaponCooldown;
+				
+				var weapon = getWeaponById(id);
+				if(weapon != null){
+					if(hit) {
+						console.log("Weapon "+weapon+" hit the target in the following locations, cooldown for "+cooldown+" turns");
+						weapon.cooldown = cooldown;
+						
+						$.each(hitLocations, function(loc, locDamage) {
+							if(locDamage == null) return;
+							
+							console.log("    "+getLocationText(loc)+": "+locDamage)
+						});
+					}
+					else{
+						console.log("Weapon "+weapon+" missed the target!");
+					}
+				}
+				else{
+					console.log("Weapon null? Weapon ID:"+id);
+				}
+			});
+			
+			// update armor values of the target
+			if(data.armorHit) {
 				var numArmorHits = data.armorHit.length;
 				for(var i=0; i<numArmorHits; i++) {
 					var armorRemains = data.armorHit[i];
@@ -109,7 +135,8 @@ function fire_weapons(weapons) {
 				}
 			}
 			
-			if(data.internalsHit != null) {
+			// update internal values of the target
+			if(data.internalsHit) {
 				var numInternalsHits = data.internalsHit.length;
 				for(var i=0; i<numInternalsHits; i++) {
 					var internalsRemains = data.internalsHit[i];
@@ -121,6 +148,9 @@ function fire_weapons(weapons) {
 	
 			// update UI displays of target armor if showing
 			updateTargetDisplay();
+			
+			// update the weapons cooldown for the player weapons
+			updateWeaponsCooldown();
 		}
 		
 		// Toggle off all selected weapons
@@ -185,14 +215,33 @@ function pollUpdate(updates) {
 				if(data.actionPoints != null){
 					turnUnit.actionPoints = data.actionPoints;
 				}
+				if(data.jumpPoints != null){
+					turnUnit.jumpPoints = data.jumpPoints;
+				}
 				
 				if(playerUnit.id == turnUnit.id){
+					if(data.weaponData != null) {
+						$.each(data.weaponData, function(k, wData) {
+							var id = wData.weaponId;
+							var cooldown = wData.weaponCooldown;
+							
+							var weapon = getWeaponById(id);
+							if(weapon != null) {
+								weapon.cooldown = cooldown;
+								console.log("Weapon "+weapon+" cooldown now at "+cooldown);
+							}
+						});
+					}
+					
 					// update UI for the new player turn
 					// TODO: move these out to a method that can also be used at init
 					setActionPoints(turnUnit.actionPoints);
 					setJumpPoints(turnUnit.jumpPoints);
 					setHeatDisplay(turnUnit.heat);
 					playerUnit.displayUnit.setControlsVisible(true);
+					
+					// update the weapons cooldown for the player weapons
+					updateWeaponsCooldown();
 				
 					$('.action_end').removeClass("hidden");
 					$('.action_wait').addClass("hidden");

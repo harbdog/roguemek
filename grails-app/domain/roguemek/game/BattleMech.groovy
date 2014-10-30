@@ -99,16 +99,6 @@ class BattleMech extends BattleUnit {
 		}
 	}
 	
-	public void testDamage(int damage){
-		log.info "before damage: "+armor[Mech.CENTER_TORSO]
-		
-		armor[Mech.CENTER_TORSO] = armor[Mech.CENTER_TORSO] - damage
-		
-		log.info "after damage: "+armor[Mech.CENTER_TORSO]
-		
-		save flush:true
-	}
-	
 	private static String imagesBasePath = "units/mechs/"
 	private static String imagesTestPath = "grails-app/assets/images/units/mechs/"
 	private static String imagesExtension = ".gif"

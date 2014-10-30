@@ -150,28 +150,6 @@ class GameController {
 	def test(Game gameInstance) {
 		respond gameInstance
 	}
-	
-	@Secured(['ROLE_ROOT'])
-	def testWeapon() {
-		Weapon weapon
-		BattleMech unit
-		
-		if(params.weapon.id != "null"){
-			weapon = Weapon.get(params.weapon.id)
-		}
-		if(params.testUnit != "null"){
-			unit = BattleMech.get(params.testUnit)
-		}
-		
-		if(weapon != null && unit != null){
-			unit.testDamage(weapon.damage)
-			
-			render ""+new Date()+"<br/>"+params+"<br/>"+"Fired "+weapon?.name+" at "+unit
-		}
-		else{
-			render ""+new Date()+"<br/>"+params+"<br/>"+"No Weapon ("+weapon?.name+") or Unit ("+unit+") selected."
-		}
-	}
 
 	@Secured(['ROLE_ROOT'])
     def create() {

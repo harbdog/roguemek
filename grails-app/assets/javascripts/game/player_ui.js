@@ -195,10 +195,16 @@ function updateWeaponsDisplay() {
 	weaponsDisplay = document.getElementById("weaponsDiv");
 	weaponsDisplay.innerHTML = testingStr;
 	
+	// update the initial cooldown display for each weapon
+	updateWeaponsCooldown();
+	
 	$(".weapon").click(function() {
-		$(this).toggleClass("selected");
-		
-		updateSelectedWeapons();
+		// TODO: move to events.js
+		if(!$(this).hasClass("cooldown")){
+			// only allow weapons to be selected that aren't on cooldown
+			$(this).toggleClass("selected");
+			updateSelectedWeapons();
+		}
 	});
 	
 	var actionStr;
@@ -283,6 +289,23 @@ function deselectWeapons() {
 		$('.action_fire').addClass("hidden");
 		$('.action_end').removeClass("hidden");
 	}
+}
+
+/**
+ * Updates the player weapons' cooldown display as needed
+ */
+function updateWeaponsCooldown() {
+	$.each(playerWeapons, function(key, w) {
+		if(w.cooldown > 0) {
+			var cooldownAsPercent = ""+100 * w.cooldown/w.cycle+"% 100%";
+			console.log("Weapon "+w+" cooldown: "+cooldownAsPercent);
+			
+			$("#"+w.id).addClass("cooldown").css({"background-size":cooldownAsPercent});
+		}
+		else{
+			$("#"+w.id).removeClass("cooldown");
+		}
+	});
 }
 
 function updateTargetDisplay() {

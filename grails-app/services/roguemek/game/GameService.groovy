@@ -42,16 +42,12 @@ class GameService {
 		}
 		
 		// update the next unit for its new turn
-		initializeTurnUnit(game)
+		def data = initializeTurnUnit(game)
 		
 		game.save flush: true
 		
-		// TODO: return and add game message about the next unit's turn
+		// return and add game message about the next unit's turn
 		BattleUnit turnUnit = game.getTurnUnit()
-		def data = [
-			turnUnit: turnUnit.id,
-			actionPoints: turnUnit.actionPoints,
-		]
 		
 		Object[] messageArgs = [turnUnit.toString()]
 		Date update = GameMessage.addMessageUpdate(game, "game.unit.new.turn", messageArgs, data)
@@ -67,14 +63,55 @@ class GameService {
 		BattleUnit unit = game.getTurnUnit()
 		// TODO: generate actual amount of AP/JP per turn
 		unit.actionPoints = 3
-		unit.jumpPoints = 0
+		unit.jumpPoints = 1
 		
-		// TODO: update unit.heat value based on heat sinks and current heat amount
-		// unit.heat = ...
+		def data = [
+			turnUnit: unit.id,
+			actionPoints: unit.actionPoints,
+			jumpPoints: unit.jumpPoints
+		]
 		
+		if(unit instanceof BattleMech) {
+			
+			def weaponsToCooldown = [:]
+			
+			for(String equipId in unit.crits) {
+				BattleEquipment equip = BattleEquipment.get(equipId)
+				
+				// update all weapons' cooldown value if on cooldown
+				if(equip instanceof BattleWeapon && equip.cooldown > 0) {
+					// since each weapon can be reference multiple times, need to store by id to only reduce once
+					weaponsToCooldown[equipId] = equip
+				}
+			}
+			
+			if(weaponsToCooldown.size() > 0) {
+				data.weaponData = []
+				
+				for(BattleWeapon weapon in weaponsToCooldown.values()) {
+					weapon.cooldown --
+					
+					// TODO: only return cooldown data to player unit
+					def thisWeaponData = [
+						weaponId: weapon.id,
+						weaponCooldown: weapon.cooldown
+					]
+					data.weaponData.add(thisWeaponData)
+					
+					weapon.save flush: true
+				}
+			}
+			
+			// TODO: update unit.heat value based on heat sinks and current heat amount
+			// unit.heat = ...
+		}
+		
+		// reset damage taken for the new turn
 		unit.damageTakenThisTurn = 0
 		
 		unit.save flush: true
+		
+		return data
 	}
 	
 	/**
@@ -476,24 +513,29 @@ class GameService {
 		if(unit.actionPoints == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
-		// use an actionPoint
-		unit.actionPoints -= 1
-		
-		def data
+		def weaponData = []
+		def data = [
+			unit: unit.id,
+			target: target.id,
+			actionPoints: unit.actionPoints,
+			weaponData: weaponData
+		]
 		
 		for(BattleWeapon weapon in weapons) {
+			if(weapon.cooldown > 0) continue
+			
 			// TODO: determine toHit using unit, weapon, and target combat variables
 			boolean weaponHit = true
 			
 			String messageCode
 			Object[] messageArgs
 			
-			data = [
-				unit: unit.id,
-				target: target.id,
-				actionPoints: unit.actionPoints,
+			// store data about this weapon fire results
+			def thisWeaponData = [
+				weaponId: weapon.id,
 				weaponHit: weaponHit
 			]
+			weaponData.add(thisWeaponData)
 			
 			if(weaponHit) {
 				data.armorHit = []
@@ -501,11 +543,21 @@ class GameService {
 				// TODO: determine hit location based on relative position of the attack on the target
 				int hitLocation = Mech.FRONT_HIT_LOCATIONS[new Random().nextInt(12)]
 				
+				thisWeaponData.weaponHitLocations = []
+				
 				if(target instanceof BattleMech) {
 					BattleMech t = BattleMech.get(target.id)
 					
+					// TODO: handle cluster damage weapons (LRM, SRM, etc)
+					int damage = weapon.getDamage()
+					t.damageTakenThisTurn += damage
+					
+					// update damage data by location to be returned
+					int totalDamage = thisWeaponData.weaponHitLocations[hitLocation] ?: 0
+					thisWeaponData.weaponHitLocations[hitLocation] = totalDamage + damage
+					
 					int armorRemains = t.armor[hitLocation]
-					armorRemains -= weapon.getDamage()
+					armorRemains -= damage
 					
 					if(armorRemains < 0) {
 						// internals take leftover damage
@@ -545,10 +597,20 @@ class GameService {
 				messageArgs = [unit.toString(), target.toString(), weapon.getShortName()]
 			}
 			
+			// set the weapon on cooldown
+			weapon.cooldown = weapon.getCycle()
+			thisWeaponData.weaponCooldown = weapon.cooldown
+			
+			weapon.save flush:true
+			
 			// TODO: if applicable, consume ammo
 			
 			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, data)
 		}
+		
+		// use an actionPoint
+		unit.actionPoints -= 1
+		unit.save flush:true
 		
 		// automatically end the unit's turn after firing
 		this.initializeNextTurn(game)

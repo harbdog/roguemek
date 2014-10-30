@@ -162,6 +162,13 @@ div.hidden {
 #weaponsDiv .weapon.selected:hover {
 	background-color: #FF0000;
 }
+#weaponsDiv .weapon.cooldown {
+	background: url(../images/ui/cooldown.png) no-repeat transparent;
+	background-size: 100%;
+}
+#weaponsDiv .weapon.cooldown:hover {
+	background-color: #000099;
+}
 
 #weaponsDiv .weaponNumber {
 	float: left;
