@@ -80,7 +80,7 @@ class GameService {
 				
 				// update all weapons' cooldown value if on cooldown
 				if(equip instanceof BattleWeapon && equip.cooldown > 0) {
-					// since each weapon can be reference multiple times, need to store by id to only reduce once
+					// since each weapon can be referenced multiple times, need to store by id to only reduce once
 					weaponsToCooldown[equipId] = equip
 				}
 			}
@@ -102,8 +102,14 @@ class GameService {
 				}
 			}
 			
-			// TODO: update unit.heat value based on heat sinks and current heat amount
-			// unit.heat = ...
+			// update unit.heat value based on heat sinks and current heat amount
+			double heatDiss = getHeatDissipation(game, unit)
+			unit.heat -= heatDiss
+			if(unit.heat < 0) {
+				unit.heat = 0
+			}
+			
+			data.heat = unit.heat
 		}
 		
 		// reset damage taken for the new turn
@@ -334,6 +340,8 @@ class GameService {
 			return new GameMessage("game.you.cannot.move.direction", null, null)
 		}
 		
+		// TODO: add heat from movement
+		
 		// When ready to move, set the new location of the unit and consume AP
 		unit.actionPoints -= apRequired
 		unit.x = moveCoords.x
@@ -517,9 +525,10 @@ class GameService {
 		def data = [
 			unit: unit.id,
 			target: target.id,
-			actionPoints: unit.actionPoints,
 			weaponData: weaponData
 		]
+		
+		int totalHeat = 0
 		
 		for(BattleWeapon weapon in weapons) {
 			if(weapon.cooldown > 0) continue
@@ -597,6 +606,9 @@ class GameService {
 				messageArgs = [unit.toString(), target.toString(), weapon.getShortName()]
 			}
 			
+			// add the weapon heat
+			totalHeat += weapon.getHeat()
+			
 			// set the weapon on cooldown
 			weapon.cooldown = weapon.getCycle()
 			thisWeaponData.weaponCooldown = weapon.cooldown
@@ -608,8 +620,14 @@ class GameService {
 			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, data)
 		}
 		
+		// apply the total weapon heat
+		unit.heat += totalHeat
+		data.heat = unit.heat
+		
 		// use an actionPoint
 		unit.actionPoints -= 1
+		data.actionPoints = unit.actionPoints
+		
 		unit.save flush:true
 		
 		// automatically end the unit's turn after firing
@@ -667,6 +685,50 @@ class GameService {
 		}
 		
 		return apRequired
+	}
+	
+	/**
+	 * Calculates the heat dissipation for the given unit based on game and configuration conditions
+	 * @param game
+	 * @param unit
+	 * @return
+	 */
+	private double getHeatDissipation(Game game, BattleUnit unit) {
+		int externalHeatDissipation = 0
+		
+		int heatSinkTypeMultiplier = 1
+		
+		if(unit instanceof BattleMech) {
+			if(unit.mech?.heatSinkType == Unit.HS_DOUBLE) {
+				heatSinkTypeMultiplier = 2
+			}
+			
+			// each mech starts with 10 heat sinks included in the engine
+			int engineHeatSinks = 10
+			
+			// TODO: if the mech is in Water, increase heat dissipation by double for each heat sink in the water (max of 6)
+			int waterHeatSinks = 0
+			Hex unitHex = game.board?.getHexAt(unit.x, unit.y)
+			int unitWaterLevel = unitHex.getTerrainLevel(Terrain.WATER)
+			
+			// find how many functional heat sinks are in the unit
+			def equipHeatSinks = [:]
+			for(String equipId in unit.crits) {
+				BattleEquipment equip = BattleEquipment.get(equipId)
+				
+				// update all weapons' cooldown value if on cooldown
+				if(equip.equipment instanceof HeatSink 
+						&& equip.status == BattleEquipment.STATUS_ACTIVE) {
+					// since each heat sink can be referenced multiple times, need to store by id to only count once
+					equipHeatSinks[equipId] = equip
+				}
+			}
+			int critHeatSinks = equipHeatSinks.size()
+			
+			externalHeatDissipation += engineHeatSinks + critHeatSinks + waterHeatSinks
+		}
+		
+		return ((externalHeatDissipation * heatSinkTypeMultiplier) / game.turnsPerRound)
 	}
 	
 	/**

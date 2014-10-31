@@ -18,6 +18,7 @@ class Unit {
 	Integer year
 	
 	Float mass
+	Character heatSinkType = HS_SINGLE
 	
 	Long cbills
 	Integer battleValue
@@ -25,6 +26,9 @@ class Unit {
 	// STATIC value mappings
 	public static final Character TECH_IS = 'I'
 	public static final Character TECH_CLAN = 'C'
+	
+	public static final Character HS_SINGLE = 'S'
+	public static final Character HS_DOUBLE = 'D'
 	
 	static mapping = {
 		// All extending classes will get their own tables
@@ -40,6 +44,7 @@ class Unit {
 		year range: 0..3132
 		
 		mass min: 0F
+		heatSinkType inList: [HS_SINGLE, HS_DOUBLE]
 		
 		cbills min: 0L
 		battleValue min: 0

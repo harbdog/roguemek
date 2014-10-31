@@ -26,7 +26,7 @@ class BattleUnit {
 	Integer heading = 0
 	Integer actionPoints = 0
 	Integer jumpPoints = 0
-	Integer heat = 0
+	Double heat = 0
 	
 	Integer damageTakenThisTurn = 0
 	Boolean shutdown = false
@@ -42,12 +42,12 @@ class BattleUnit {
 	public static final Character STATUS_DESTROYED = 'D'
 	
 	// STATIC variables
-	public static final Integer HEADING_N = 0;
-	public static final Integer HEADING_NE = 1;
-	public static final Integer HEADING_SE = 2;
-	public static final Integer HEADING_S = 3;
-	public static final Integer HEADING_SW = 4;
-	public static final Integer HEADING_NW = 5;
+	public static final Integer HEADING_N = 0
+	public static final Integer HEADING_NE = 1
+	public static final Integer HEADING_SE = 2
+	public static final Integer HEADING_S = 3
+	public static final Integer HEADING_SW = 4
+	public static final Integer HEADING_NW = 5
 	
     static constraints = {
 		pilot nullable: true
@@ -57,7 +57,7 @@ class BattleUnit {
 		heading nullable: true
 		actionPoints min: 0
 		jumpPoints min: 0
-		heat min: 0
+		heat min: 0.0D
 		
 		damageTakenThisTurn min: 0
 		shutdown nullable: false

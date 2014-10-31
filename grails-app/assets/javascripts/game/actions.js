@@ -94,6 +94,7 @@ function fire_weapons(weapons) {
 		// TODO: consolidate to a single method than handles various update dynamically for all actions and polling data
 		
 		if(data.weaponData){
+			var u = units[data.unit];
 			var t = units[data.target];
 			
 			// update the cooldown status of the weapons fired
@@ -145,6 +146,11 @@ function fire_weapons(weapons) {
 					}
 				}
 			}
+			
+			u.heat = data.heat;
+			
+			// update heat display
+			setHeatDisplay(u.heat);
 	
 			// update UI displays of target armor if showing
 			updateTargetDisplay();
@@ -232,6 +238,8 @@ function pollUpdate(updates) {
 							}
 						});
 					}
+					
+					turnUnit.heat = data.heat;
 					
 					// update UI for the new player turn
 					// TODO: move these out to a method that can also be used at init

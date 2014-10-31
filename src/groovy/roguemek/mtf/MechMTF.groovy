@@ -87,7 +87,15 @@ class MechMTF {
 		}
 		
 		if(mtf[MapMTF.MTF_HEATSINKS] instanceof List) {
-			//TODO: setHeatsinksFromMTF(map, line)
+			// only using the heat sink type specified since 
+			// the quantity will be generated dynamically from crits
+			String line = mtf[MapMTF.MTF_HEATSINKS].get(0)
+			if(line.toLowerCase().contains("double")) {
+				map.heatSinkType = Unit.HS_DOUBLE
+			}
+			else {
+				map.heatSinkType = Unit.HS_SINGLE
+			}
 		}
 		
 		if(mtf[MapMTF.MTF_WALKMP] instanceof List) {
@@ -152,7 +160,7 @@ class MechMTF {
 		}
 		
 		if(mtf[MapMTF.MTF_WEAPONS] instanceof List) {
-			//TODO: addWeaponFromMTF(map, line)
+			// Weapons are generated dynamically from their crits
 		}
 		
 		

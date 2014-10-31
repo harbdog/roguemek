@@ -298,7 +298,6 @@ function updateWeaponsCooldown() {
 	$.each(playerWeapons, function(key, w) {
 		if(w.cooldown > 0) {
 			var cooldownAsPercent = ""+100 * w.cooldown/w.cycle+"% 100%";
-			console.log("Weapon "+w+" cooldown: "+cooldownAsPercent);
 			
 			$("#"+w.id).addClass("cooldown").css({"background-size":cooldownAsPercent});
 			$("#"+w.id+" .weaponNumber").addClass("disabled");
