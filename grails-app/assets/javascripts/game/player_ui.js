@@ -146,8 +146,12 @@ function setArmorDisplay(armor, internals) {
 }
 
 
-function setHeatDisplay(heat) {
+function setHeatDisplay(heat, dissipation) {
 	unitHeatDisplay.innerHTML = "<p>Heat "+heat+"</p>";
+	
+	if(dissipation) {
+		unitHeatDisplay.innerHTML += "<p>Diss "+dissipation+"</p>";
+	}
 }
 
 function updateWeaponsDisplay() {

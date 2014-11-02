@@ -23,6 +23,7 @@ class Mech extends Unit {
 	Integer walkMP
 	Integer jumpMP
 	
+	public static int NUM_CRITS = 78
 	static constraints = {
 		chassis blank: false
 		variant blank: false
@@ -36,7 +37,7 @@ class Mech extends Unit {
 		armor size: 11..11
 		internals size: 8..8
 		
-		crits size: 78..78
+		crits size: NUM_CRITS..NUM_CRITS
 		
 		walkMP min: 1
 		jumpMP min: 0
@@ -200,23 +201,23 @@ class Mech extends Unit {
 	
 	/**
 	 * Gets the crit section location index of the given critical slot index
+	 * @param critIndex
 	 * @return
 	 */
 	public static int getCritSectionIndexOf(int critIndex) {
-		if(critIndex < 0) return -1
+		if(critIndex < 0 || critIndex >= NUM_CRITS) return -1
 		
-		int critSectionIndex = -1
-		
-		ALL_LOCATIONS.each { sectionIndex ->
-			int critSectionStart = Mech.getCritSectionStart(sectionIndex)
-			int critSectionEnd = Mech.getCritSectionEnd(sectionIndex)
+		for(int critSectionIndex in Mech.CRIT_LOCATIONS) {
+			int critSectionStart = Mech.getCritSectionStart(critSectionIndex)
+			int critSectionEnd = Mech.getCritSectionEnd(critSectionIndex)
 			
-			if(critIndex >= critSectionStart && critIndex <= critSectionEnd) {
-				critSectionIndex = sectionIndex
+			if(critIndex >= critSectionStart 
+					&& critIndex <= critSectionEnd) {
+				return critSectionIndex
 			}
 		}
 		
-		return critSectionIndex
+		return -1
 	}
 	
 	/**

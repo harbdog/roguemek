@@ -16,13 +16,14 @@ class BattleMech extends BattleUnit {
 	List crits
 	static hasMany = [crits: String]
 	
+	
     static constraints = {
 		mech nullable: false
 		
 		armor size: 11..11
 		internals size: 8..8
 		
-		crits size: 78..78
+		crits size: Mech.NUM_CRITS..Mech.NUM_CRITS
     }
 	
 	def beforeValidate() {
@@ -127,17 +128,41 @@ class BattleMech extends BattleUnit {
 		return imagesBasePath + mechImage
 	}
 	
+	/**
+	 * Gets the start index of the crits array for the given section
+	 * @param critSectionIndex
+	 * @return
+	 */
 	public static int getCritSectionStart(int critSectionIndex) {
 		return Mech.getCritSectionStart(critSectionIndex)
 	}
 	
+	/**
+	 * Gets the end index of the crits array for the given section
+	 * @param critSectionIndex
+	 * @return
+	 */
 	public static int getCritSectionEnd(int critSectionIndex) {
 		return Mech.getCritSectionEnd(critSectionIndex)
 	}
 	
+	/**
+	 * Gets the BattleEquipment item at the given equipment index
+	 * @param critIndex
+	 * @return
+	 */
 	public BattleEquipment getEquipmentAt(int critIndex) {
 		def thisCritId = this.crits.getAt(critIndex)
 		return (thisCritId != null) ? BattleEquipment.read(thisCritId) : null
+	}
+	
+	/**
+	 * Gets the Critical section index of the given equipment index
+	 * @param critIndex
+	 * @return
+	 */
+	public static int getCritSectionIndexOf(int critIndex) {
+		return Mech.getCritSectionIndexOf(critIndex)
 	}
 	
 	/**
@@ -150,14 +175,25 @@ class BattleMech extends BattleUnit {
 		int critSectionEnd = BattleMech.getCritSectionEnd(critSectionIndex)
 		
 		def critSection = []
-		
-		if(critSectionStart >= 0 && critSectionEnd < 78) {
-			for(int i=critSectionStart; i<=critSectionEnd; i++) {
-				critSection.add(this.getEquipmentAt(i))
-			}
+		for(int i=critSectionStart; i<=critSectionEnd; i++) {
+			critSection.add(this.getEquipmentAt(i))
 		}
 		
 		return critSection
+	}
+	
+	/**
+	 * Gets all BattleEquipment arrays keyed by the section index
+	 * @return
+	 */
+	public def getAllCritSections() {
+		def allCritSections = []
+		
+		for(int critSectionIndex in Mech.CRIT_LOCATIONS) {
+			allCritSections[critSectionIndex] = this.getCritSection(critSectionIndex)
+		}
+		
+		return allCritSections
 	}
 	
 	@Override

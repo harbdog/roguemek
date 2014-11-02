@@ -110,6 +110,7 @@ class GameService {
 			}
 			
 			data.heat = unit.heat
+			data.heatDiss = heatDiss
 		}
 		
 		// reset damage taken for the new turn
@@ -706,26 +707,42 @@ class GameService {
 			// each mech starts with 10 heat sinks included in the engine
 			int engineHeatSinks = 10
 			
-			// TODO: if the mech is in Water, increase heat dissipation by double for each heat sink in the water (max of 6)
-			int waterHeatSinks = 0
+			// if the mech is in Water, increase heat dissipation by double for each heat sink in the water (max of 6)
 			Hex unitHex = game.board?.getHexAt(unit.x, unit.y)
 			int unitWaterLevel = unitHex.getTerrainLevel(Terrain.WATER)
 			
-			// find how many functional heat sinks are in the unit
+			// find how many unique functional heat sinks are in the unit
 			def equipHeatSinks = [:]
-			for(String equipId in unit.crits) {
-				BattleEquipment equip = BattleEquipment.get(equipId)
+			def waterHeatSinks = [:]
+			
+			def allCritSections = unit.getAllCritSections()
+			for(int critSectionIndex = 0; critSectionIndex < allCritSections.size(); critSectionIndex++) {
+				BattleEquipment[] critSection = allCritSections[critSectionIndex]
 				
-				// update all weapons' cooldown value if on cooldown
-				if(equip.equipment instanceof HeatSink 
-						&& equip.status == BattleEquipment.STATUS_ACTIVE) {
-					// since each heat sink can be referenced multiple times, need to store by id to only count once
-					equipHeatSinks[equipId] = equip
+				for(BattleEquipment equip in critSection) {
+					if(equip.equipment instanceof HeatSink
+							&& equip.status == BattleEquipment.STATUS_ACTIVE) {
+							
+						// since each heat sink can be referenced multiple times, need to store by id to only count once
+						equipHeatSinks[equip.id] = equip
+						
+						if(unitWaterLevel > 1 
+								|| (unitWaterLevel == 1 && Mech.LEGS.contains(critSectionIndex))) {
+							// At level 1 water only count heatsinks in the legs, if deeper count all
+							waterHeatSinks[equip.id] = equip 
+						}
+					}
 				}
 			}
-			int critHeatSinks = equipHeatSinks.size()
 			
-			externalHeatDissipation += engineHeatSinks + critHeatSinks + waterHeatSinks
+			int numEquipHeatSinks = equipHeatSinks.size()
+			int numWaterHeatSinks = waterHeatSinks.size()
+			if(numWaterHeatSinks > 6) {
+				// max of 6 heat sinks can be double efficient in water
+				numWaterHeatSinks = 6
+			}
+			
+			externalHeatDissipation += engineHeatSinks + numEquipHeatSinks + numWaterHeatSinks
 		}
 		
 		return ((externalHeatDissipation * heatSinkTypeMultiplier) / game.turnsPerRound)

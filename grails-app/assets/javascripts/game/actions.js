@@ -240,12 +240,13 @@ function pollUpdate(updates) {
 					}
 					
 					turnUnit.heat = data.heat;
+					turnUnit.heatDiss = data.heatDiss;
 					
 					// update UI for the new player turn
 					// TODO: move these out to a method that can also be used at init
 					setActionPoints(turnUnit.actionPoints);
 					setJumpPoints(turnUnit.jumpPoints);
-					setHeatDisplay(turnUnit.heat);
+					setHeatDisplay(turnUnit.heat, turnUnit.heatDiss);
 					playerUnit.displayUnit.setControlsVisible(true);
 					
 					// update the weapons cooldown for the player weapons
