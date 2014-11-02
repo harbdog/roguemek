@@ -113,8 +113,12 @@ class GameService {
 			data.heatDiss = heatDiss
 		}
 		
+		// reset ap/hexes moved for the new turn
+		unit.apMoved = 0
+		unit.hexesMoved = 0
+		
 		// reset damage taken for the new turn
-		unit.damageTakenThisTurn = 0
+		unit.damageTaken = 0
 		
 		unit.save flush: true
 		
@@ -345,6 +349,8 @@ class GameService {
 		
 		// When ready to move, set the new location of the unit and consume AP
 		unit.actionPoints -= apRequired
+		unit.apMoved ++
+		unit.hexesMoved ++
 		unit.x = moveCoords.x
 		unit.y = moveCoords.y
 		
@@ -380,8 +386,9 @@ class GameService {
 		if(unit.actionPoints == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
-		// use an actionPoint
+		// use an actionPoint and register one apMoved
 		unit.actionPoints -= 1
+		unit.apMoved ++
 		
 		// When ready to rotate, set the new location of the unit
 		unit.setHeading(newHeading);
@@ -560,7 +567,7 @@ class GameService {
 					
 					// TODO: handle cluster damage weapons (LRM, SRM, etc)
 					int damage = weapon.getDamage()
-					t.damageTakenThisTurn += damage
+					t.damageTaken += damage
 					
 					// update damage data by location to be returned
 					int totalDamage = thisWeaponData.weaponHitLocations[hitLocation] ?: 0
@@ -696,6 +703,13 @@ class GameService {
 	 */
 	private double getHeatDissipation(Game game, BattleUnit unit) {
 		int externalHeatDissipation = 0
+		
+		if(unit.apMoved == 0) {
+			// Give bonus heat dissipation if the unit did not move (0.5/1.0, Single/Double HS):
+			// This is instead of penalizing movement with 0.25/0.5 heat in BT (walking/running),
+			// since the penalty is still in the TOHIT against for not moving.
+			externalHeatDissipation = 2
+		}
 		
 		int heatSinkTypeMultiplier = 1
 		

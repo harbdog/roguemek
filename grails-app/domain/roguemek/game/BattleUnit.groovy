@@ -28,7 +28,9 @@ class BattleUnit {
 	Integer jumpPoints = 0
 	Double heat = 0
 	
-	Integer damageTakenThisTurn = 0
+	Integer apMoved = 0
+	Integer hexesMoved = 0
+	Integer damageTaken = 0
 	Boolean shutdown = false
 	Boolean prone = false
 	
@@ -59,7 +61,9 @@ class BattleUnit {
 		jumpPoints min: 0
 		heat min: 0.0D
 		
-		damageTakenThisTurn min: 0
+		apMoved min: 0
+		hexesMoved min: 0
+		damageTaken min: 0
 		shutdown nullable: false
 		prone nullable: false
 		
