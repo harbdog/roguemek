@@ -150,7 +150,7 @@ function fire_weapons(weapons) {
 			u.heat = data.heat;
 			
 			// update heat display
-			setHeatDisplay(u.heat);
+			setHeatDisplay(u.heat, false, false);
 	
 			// update UI displays of target armor if showing
 			updateTargetDisplay();
@@ -212,7 +212,7 @@ function pollUpdate(updates) {
 				if(playerUnit.id == thisUnit.id) {
 					setActionPoints(thisUnit.actionPoints);
 					setJumpPoints(thisUnit.jumpPoints);
-					setHeatDisplay(thisUnit.heat);
+					setHeatDisplay(thisUnit.heat, false, false);
 				}
 			}
 			else if(data.turnUnit != null) {
@@ -246,7 +246,7 @@ function pollUpdate(updates) {
 					// TODO: move these out to a method that can also be used at init
 					setActionPoints(turnUnit.actionPoints);
 					setJumpPoints(turnUnit.jumpPoints);
-					setHeatDisplay(turnUnit.heat, turnUnit.heatDiss);
+					setHeatDisplay(turnUnit.heat, false, turnUnit.heatDiss);
 					playerUnit.displayUnit.setControlsVisible(true);
 					
 					// update the weapons cooldown for the player weapons

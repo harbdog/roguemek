@@ -146,11 +146,16 @@ function setArmorDisplay(armor, internals) {
 }
 
 
-function setHeatDisplay(heat, dissipation) {
+function setHeatDisplay(heat, heatGen, heatDiss) {
+	// TODO: Heat meter with indicators of heat that weapons will generate and where the heat penalties are
 	unitHeatDisplay.innerHTML = "<p>Heat "+heat+"</p>";
 	
-	if(dissipation) {
-		unitHeatDisplay.innerHTML += "<p>Diss "+dissipation+"</p>";
+	if(heatGen) {
+		unitHeatDisplay.innerHTML += "<pre>    +"+heatGen+"</pre>";
+	}
+	
+	if(heatDiss) {
+		unitHeatDisplay.innerHTML += "<pre>    -"+heatDiss+"</pre>";
 	}
 }
 
@@ -246,19 +251,28 @@ function updateSelectedWeapons() {
 	// TODO: use this method to store selected weapons in an array then update the UI to reflect
 	// instead of directly using the "selected" class to store that info
 	var hasSelected = false;
+	
+	var weaponHeatTotal = 0
+	
 	$.each(playerWeapons, function(key, w) {
 		if($("#"+w.id).hasClass("selected")) {
 			hasSelected = true;
+			
+			weaponHeatTotal += w.heat;
 		}
 	});
 	
 	if(hasSelected) {
 		$('.action_fire').removeClass("hidden");
 		$('.action_end').addClass("hidden");
+		
+		setHeatDisplay(playerUnit.heat, weaponHeatTotal, false);
 	}
 	else{
 		$('.action_fire').addClass("hidden");
 		$('.action_end').removeClass("hidden");
+		
+		setHeatDisplay(playerUnit.heat, false, false);
 	}
 }
 
