@@ -61,14 +61,10 @@ class GameService {
 	 */
 	private def initializeTurnUnit(Game game) {
 		BattleUnit unit = game.getTurnUnit()
-		// TODO: generate actual amount of AP/JP per turn
-		unit.actionPoints = 3
-		unit.jumpPoints = 1
+		
 		
 		def data = [
-			turnUnit: unit.id,
-			actionPoints: unit.actionPoints,
-			jumpPoints: unit.jumpPoints
+			turnUnit: unit.id
 		]
 		
 		if(unit instanceof BattleMech) {
@@ -111,6 +107,40 @@ class GameService {
 			
 			data.heat = unit.heat
 			data.heatDiss = heatDiss
+			
+			// Evaluate if any overheat effects need to apply at this time (shutdown, ammo explosion)
+			def heatEffects = HeatEffect.getHeatEffectsAt(unit.heat)
+			if(heatEffects.containsKey(HeatEffect.EFFECT_AMMO_EXP_RISK)) {
+				// TODO: ammo explosion
+				int explosionRisk = heatEffects.getAt(HeatEffect.EFFECT_AMMO_EXP_RISK)
+			}
+			
+			if(heatEffects.containsKey(HeatEffect.EFFECT_SHUTDOWN_RISK)) {
+				// Roll to see if an automatic shutdown is going to occur
+				int shutdownPercent = heatEffects.getAt(HeatEffect.EFFECT_SHUTDOWN_RISK)
+				
+				// TODO: implement a proper Roll method
+				int shutdownRoll = new Random().nextInt(100)
+				
+				if(shutdownRoll < shutdownPercent) {
+					// TODO: Shutdown the unit
+					log.info("Shutting down "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+				}
+				else {
+					// Power up the unit if previously shutdown
+					log.info("Shutdown avoided "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+				}
+			}
+			else {
+				// Power up the unit if previously shutdown
+			}
+			
+			// generate the amount of AP/JP per turn based on MP, Jets and Heat effects
+			unit.actionPoints = getUnitAP(game, unit)
+			data.actionPoints = unit.actionPoints
+			
+			unit.jumpPoints = getUnitJP(game, unit)
+			data.jumpPoints = unit.jumpPoints
 		}
 		
 		// reset ap/hexes moved for the new turn
@@ -123,6 +153,77 @@ class GameService {
 		unit.save flush: true
 		
 		return data
+	}
+	
+	/**
+	 * Calculates the amount of ActionPoints a unit gets for a new turn.
+	 * 1 AP is given per 2 walk MP.
+	 * @param game
+	 * @param unit
+	 * @return
+	 */
+	private int getUnitAP(Game game, BattleUnit unit) {
+		
+		int ap = 0
+		
+		if(unit instanceof BattleMech) {
+			/*if(mech.isLegged())
+				 // a legged mech automatically only gets 1 MP
+				 return 1;
+			 
+			 var walkMPReduce = getReduceWalkMP(mech);
+			 var walkMPThisTurn = mech.walkMP - walkMPReduce;
+			 
+			 // TODO: when WalkMP is 0, make AP only usable for weapons fire
+			 if(walkMPThisTurn <= 0){
+				 return 0;
+			 }
+			 
+			 var ap = Math.floor(walkMPThisTurn / 2) + (walkMPThisTurn % 2);*/
+			
+			// TODO: calculate reductions based on heat/crit status
+			int walkMPReduce = 0
+			int walkMPThisTurn = unit.mech.walkMP - walkMPReduce
+			
+			if(walkMPThisTurn <= 0) {
+				return 0
+			}
+			
+			ap = Math.floor(walkMPThisTurn / 2) + (walkMPThisTurn % 2)
+		}
+		
+		return ap
+	}
+	
+	/**
+	 * Calculates the amount of JumpPoints a unit gets for a new turn
+	 * based on its jump MP and 1 JP recharged per round.
+	 * @param game
+	 * @param unit
+	 * @return
+	 */
+	private int getUnitJP(Game game, BattleUnit unit) {
+		
+		/*if(mech.jumpMP == 0)
+			return 0;
+		
+		var jumpMPReduce = getReduceJumpMP(mech);
+		var jumpMPThisTurn = mech.jumpMP - jumpMPReduce;
+		
+		if(jumpMPThisTurn <= 0){
+			return 0;
+		}
+		
+		var maxJP = Math.floor(jumpMPThisTurn / 2) + (jumpMPThisTurn % 2);
+		
+		var jp = mech.jumpPoints + 1;
+		if(jp > maxJP){
+			jp = maxJP;
+		}*/
+		
+		// TODO: generate actual jumpPoints based on functioning jump jets
+		int jp = 0
+		return jp
 	}
 	
 	/**
@@ -558,7 +659,8 @@ class GameService {
 				data.armorHit = []
 				
 				// TODO: determine hit location based on relative position of the attack on the target
-				int hitLocation = Mech.FRONT_HIT_LOCATIONS[new Random().nextInt(12)]
+				// TODO: implement a proper Roll method
+				int hitLocation = Mech.FRONT_HIT_LOCATIONS[new Random().nextInt(Mech.FRONT_HIT_LOCATIONS.size() - 1)]
 				
 				thisWeaponData.weaponHitLocations = []
 				

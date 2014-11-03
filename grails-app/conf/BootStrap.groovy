@@ -115,6 +115,9 @@ class BootStrap {
 		// Initialize stock mechs
 		Mech.init()
 		
+		// Initialize heat effects
+		HeatEffect.initializeHeatEffects()
+		
 		
 		// Initialize a sample HexMap board
 		File boardFile = new File("src/boards/battletech.board")
