@@ -30,6 +30,12 @@ function move(forward) {
 		if(data.heading != null){
 			thisUnit.heading = data.heading;
 		}
+		if(data.heat != null) {
+			thisUnit.heat = data.heat;
+		}
+		
+		// update heat display
+		setHeatDisplay(thisUnit.heat, false, false);
 		  
 		playerUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
 		//playerUnit.displayUnit.setControlsVisible(true);
@@ -58,6 +64,12 @@ function rotate(rotation) {
 		if(data.heading != null){
 			thisUnit.heading = data.heading;
 		}
+		if(data.heat != null) {
+			thisUnit.heat = data.heat;
+		}
+		
+		// update heat display
+		setHeatDisplay(thisUnit.heat, false, false);
 		  
 		playerUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
 		//playerUnit.displayUnit.setControlsVisible(true);

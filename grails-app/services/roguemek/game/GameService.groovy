@@ -9,6 +9,20 @@ class GameService {
 	
 	transient springSecurityService
 	
+	public enum CombatStatus {
+		UNIT_STANDING("Standing"),
+		UNIT_WALKING("Walking"),
+		UNIT_RUNNING("Running"),
+		UNIT_JUMPING("Jumping"),
+		UNIT_IMMOBILE("Immobile"),
+		UNIT_PRONE("Prone"),
+		UNIT_DESTROYED("Destroyed")
+		
+		CombatStatus(str) { this.str = str }
+		private final String str
+		public String toString() { return str }
+	}
+	
 	/**
 	 * Starts the game so it is ready to play the first turn
 	 */
@@ -446,7 +460,8 @@ class GameService {
 			return new GameMessage("game.you.cannot.move.direction", null, null)
 		}
 		
-		// TODO: add heat from movement
+		// TODO: TESTING: Instead, store combat status directly on the unit as a new field
+		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
 		
 		// When ready to move, set the new location of the unit and consume AP
 		unit.actionPoints -= apRequired
@@ -455,6 +470,30 @@ class GameService {
 		unit.x = moveCoords.x
 		unit.y = moveCoords.y
 		
+		// If changing movement status to WALKING or RUNNING, add the appropriate heat
+		CombatStatus unitStatus = getUnitCombatStatus(game, unit)
+		double heatGen = 0
+		if(unitStatus == CombatStatus.UNIT_WALKING 
+				&& prevUnitStatus != CombatStatus.UNIT_WALKING) {
+			// Add 1 heat per round for starting to walk
+			heatGen = (1 / game.turnsPerRound)
+		}
+		else if(unitStatus == CombatStatus.UNIT_RUNNING 
+				&& prevUnitStatus == CombatStatus.UNIT_WALKING) {
+			// Add 1 heat per round for going from walk to run
+			heatGen = (1 / game.turnsPerRound)
+		}
+		else if(unitStatus == CombatStatus.UNIT_RUNNING 
+				&& prevUnitStatus != CombatStatus.UNIT_WALKING 
+				&& prevUnitStatus != CombatStatus.UNIT_RUNNING) {
+			// Add 2 heat per round for going straight to run
+			heatGen = (2 / game.turnsPerRound)
+		}
+		else {
+			// TODO: add heat for JUMPING
+		}
+		unit.heat += heatGen
+		
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
@@ -462,7 +501,8 @@ class GameService {
 			unit: unit.id,
 			x: unit.x,
 			y: unit.y,
-			actionPoints: unit.actionPoints
+			actionPoints: unit.actionPoints,
+			heat: unit.heat
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.x, unit.y]
@@ -487,9 +527,33 @@ class GameService {
 		if(unit.actionPoints == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
+		// TODO: TESTING: Instead, store combat status directly on the unit as a new field
+		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
+		
 		// use an actionPoint and register one apMoved
 		unit.actionPoints -= 1
 		unit.apMoved ++
+		
+		// If changing movement status to WALKING or RUNNING, add the appropriate heat
+		CombatStatus unitStatus = getUnitCombatStatus(game, unit)
+		double heatGen = 0
+		if(unitStatus == CombatStatus.UNIT_WALKING
+				&& prevUnitStatus != CombatStatus.UNIT_WALKING) {
+			// Add 1 heat per round for starting to walk
+			heatGen = (1 / game.turnsPerRound)
+		}
+		else if(unitStatus == CombatStatus.UNIT_RUNNING
+				&& prevUnitStatus == CombatStatus.UNIT_WALKING) {
+			// Add 1 heat per round for going from walk to run
+			heatGen = (1 / game.turnsPerRound)
+		}
+		else if(unitStatus == CombatStatus.UNIT_RUNNING
+				&& prevUnitStatus != CombatStatus.UNIT_WALKING
+				&& prevUnitStatus != CombatStatus.UNIT_RUNNING) {
+			// Add 2 heat per round for going straight to run
+			heatGen = (2 / game.turnsPerRound)
+		}
+		unit.heat += heatGen
 		
 		// When ready to rotate, set the new location of the unit
 		unit.setHeading(newHeading);
@@ -500,7 +564,8 @@ class GameService {
 		def data = [
 			unit: unit.id,
 			heading: unit.heading,
-			actionPoints: unit.actionPoints
+			actionPoints: unit.actionPoints,
+			heat: unit.heat
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.heading]
@@ -855,6 +920,41 @@ class GameService {
 		}
 		
 		return ((externalHeatDissipation * heatSinkTypeMultiplier) / game.turnsPerRound)
+	}
+	
+	/**
+	 * Determines and returns the combat status of the unit
+	 * @param unit
+	 * @return
+	 */
+	public CombatStatus getUnitCombatStatus(Game game, BattleUnit unit){
+		if(unit.status == BattleUnit.STATUS_DESTROYED){
+			return CombatStatus.UNIT_DESTROYED
+		}
+		else if(unit.shutdown){
+			return CombatStatus.UNIT_IMMOBILE
+		}
+		else if(unit.prone){
+			return CombatStatus.UNIT_PRONE
+		}
+	
+		// TODO: instead of generating this each time, may just want to store AP at start of turn and separately track used AP?
+		int unitAP = getUnitAP(game, unit)
+		
+		if(unit.actionPoints == unitAP){
+			return CombatStatus.UNIT_STANDING
+		}
+		//else if(isJumping){
+		//	return MECH_JUMPING;
+		//}
+		else if(unit.actionPoints < (unitAP * 1/3)){
+			// Running is defined as when your mech is moving at greater than or 
+			// equal to 66% of your AP for the turn (33% remaining AP)
+			return CombatStatus.UNIT_RUNNING
+		}
+		else{
+			return CombatStatus.UNIT_WALKING
+		}
 	}
 	
 	/**
