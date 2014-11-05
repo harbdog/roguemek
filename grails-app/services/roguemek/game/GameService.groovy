@@ -806,13 +806,6 @@ class GameService {
 	private double getHeatDissipation(Game game, BattleUnit unit) {
 		int externalHeatDissipation = 0
 		
-		if(unit.apMoved == 0) {
-			// Give bonus heat dissipation if the unit did not move (0.5/1.0, Single/Double HS):
-			// This is instead of penalizing movement with 0.25/0.5 heat in BT (walking/running),
-			// since the penalty is still in the TOHIT against for not moving.
-			externalHeatDissipation = 2
-		}
-		
 		int heatSinkTypeMultiplier = 1
 		
 		if(unit instanceof BattleMech) {
