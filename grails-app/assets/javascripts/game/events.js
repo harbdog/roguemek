@@ -134,8 +134,8 @@ function handleComplete(event) {
 	setPlayerInfo(playerUnit.name+" "+playerUnit.chassisVariant, playerUnit.callsign);
 	
 	// Initialize player AP display
-	setActionPoints(playerUnit.actionPoints);
-	setJumpPoints(playerUnit.jumpPoints);
+	setActionPoints(playerUnit.apRemaining);
+	setJumpPoints(playerUnit.jpRemaining);
 	setHeatDisplay(playerUnit.heat);
 	setArmorDisplay(playerUnit.armor, playerUnit.internals);
 	

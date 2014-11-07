@@ -215,26 +215,26 @@ function pollUpdate(updates) {
 				if(data.heading != null) {
 					thisUnit.heading = data.heading;
 				}
-				if(data.actionPoints != null) {
-					thisUnit.actionPoints = data.actionPoints;
+				if(data.apRemaining != null) {
+					thisUnit.apRemaining = data.apRemaining;
 				}
 				  
 				thisUnit.updateDisplay();
 				
 				if(playerUnit.id == thisUnit.id) {
-					setActionPoints(thisUnit.actionPoints);
-					setJumpPoints(thisUnit.jumpPoints);
+					setActionPoints(thisUnit.apRemaining);
+					setJumpPoints(thisUnit.jpRemaining);
 					setHeatDisplay(thisUnit.heat, false, false);
 				}
 			}
 			else if(data.turnUnit != null) {
 				turnUnit = units[data.turnUnit];
 				
-				if(data.actionPoints != null){
-					turnUnit.actionPoints = data.actionPoints;
+				if(data.apRemaining != null){
+					turnUnit.apRemaining = data.apRemaining;
 				}
-				if(data.jumpPoints != null){
-					turnUnit.jumpPoints = data.jumpPoints;
+				if(data.jpRemaining != null){
+					turnUnit.jpRemaining = data.jpRemaining;
 				}
 				
 				if(playerUnit.id == turnUnit.id){
@@ -256,8 +256,8 @@ function pollUpdate(updates) {
 					
 					// update UI for the new player turn
 					// TODO: move these out to a method that can also be used at init
-					setActionPoints(turnUnit.actionPoints);
-					setJumpPoints(turnUnit.jumpPoints);
+					setActionPoints(turnUnit.apRemaining);
+					setJumpPoints(turnUnit.jpRemaining);
 					setHeatDisplay(turnUnit.heat, false, turnUnit.heatDiss);
 					playerUnit.displayUnit.setControlsVisible(true);
 					

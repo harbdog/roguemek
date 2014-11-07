@@ -219,8 +219,8 @@ function loadGameElements() {
 			  if(thisUnit != null){
 				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.image, thisUnit.rgb);
 				  var unitInstance = new Unit(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, unitDisplay);
-				  unitInstance.actionPoints = thisUnit.actionPoints;
-				  unitInstance.jumpPoints = thisUnit.jumpPoints;
+				  unitInstance.apRemaining = thisUnit.apRemaining;
+				  unitInstance.jpRemaining = thisUnit.jpRemaining;
 				  unitInstance.heat = thisUnit.heat;
 				  unitInstance.callsign = thisUnit.callsign;
 				  unitInstance.name = thisUnit.name;

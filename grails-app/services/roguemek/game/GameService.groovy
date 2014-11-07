@@ -151,10 +151,12 @@ class GameService {
 			
 			// generate the amount of AP/JP per turn based on MP, Jets and Heat effects
 			unit.actionPoints = getUnitAP(game, unit)
-			data.actionPoints = unit.actionPoints
+			unit.apRemaining = unit.actionPoints
+			data.apRemaining = unit.apRemaining
 			
 			unit.jumpPoints = getUnitJP(game, unit)
-			data.jumpPoints = unit.jumpPoints
+			unit.jpRemaining = unit.jumpPoints
+			data.jpRemaining = unit.jpRemaining
 		}
 		
 		// reset ap/hexes moved for the new turn
@@ -309,8 +311,8 @@ class GameService {
 				y: u.y,
 				heading: u.heading,
 				status: String.valueOf(u.status),
-				actionPoints: u.actionPoints,
-				jumpPoints: u.jumpPoints,
+				apRemaining: u.apRemaining,
+				jpRemaining: u.jpRemaining,
 				heat: u.heat,
 				armor: armor,
 				internals: internals,
@@ -427,7 +429,7 @@ class GameService {
 	 * @return
 	 */
 	public def move(Game game, BattleUnit unit, boolean forward, boolean jumping) {
-		if(unit.actionPoints == 0) return
+		if(unit.apRemaining == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
 		int moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
@@ -451,8 +453,16 @@ class GameService {
 		// calculate the amount of AP required to move
 		int apRequired = getHexRequiredAP(game, unitCoords, moveCoords)
 		
+		if(apRequired > unit.apRemaining && apRequired > unit.actionPoints 
+				&& unit.apMoved == 0
+				&& apRequired == unit.actionPoints + 1) {
+			// if a mech wants to move to a location that requires more than its max AP
+			// lets allow it, but make it require the full amount of AP for the turn and only up to one additional AP
+			apRequired = unit.actionPoints
+		}
+			
 		// make sure the terrain can be entered using AP
-		if(unit.actionPoints < apRequired) {
+		if(unit.apRemaining < apRequired) {
 			Object[] messageArgs = [apRequired]
 			return new GameMessage("game.you.cannot.move.ap", messageArgs, null)
 		}
@@ -464,7 +474,7 @@ class GameService {
 		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
 		
 		// When ready to move, set the new location of the unit and consume AP
-		unit.actionPoints -= apRequired
+		unit.apRemaining -= apRequired
 		unit.apMoved ++
 		unit.hexesMoved ++
 		unit.x = moveCoords.x
@@ -501,14 +511,14 @@ class GameService {
 			unit: unit.id,
 			x: unit.x,
 			y: unit.y,
-			actionPoints: unit.actionPoints,
+			apRemaining: unit.apRemaining,
 			heat: unit.heat
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.x, unit.y]
 		Date update = GameMessage.addMessageUpdate(game, "game.unit.moved", messageArgs, data)
 		
-		if(unit.actionPoints == 0) {
+		if(unit.apRemaining == 0) {
 			// automatically end the unit's turn if it has run out of AP
 			this.initializeNextTurn(game)
 		}
@@ -524,14 +534,14 @@ class GameService {
 	 * @return
 	 */
 	public def rotateHeading(Game game, BattleUnit unit, int newHeading, boolean jumping){
-		if(unit.actionPoints == 0) return
+		if(unit.apRemaining == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
 		// TODO: TESTING: Instead, store combat status directly on the unit as a new field
 		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
 		
 		// use an actionPoint and register one apMoved
-		unit.actionPoints -= 1
+		unit.apRemaining -= 1
 		unit.apMoved ++
 		
 		// If changing movement status to WALKING or RUNNING, add the appropriate heat
@@ -564,14 +574,14 @@ class GameService {
 		def data = [
 			unit: unit.id,
 			heading: unit.heading,
-			actionPoints: unit.actionPoints,
+			apRemaining: unit.apRemaining,
 			heat: unit.heat
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.heading]
 		Date update = GameMessage.addMessageUpdate(game, "game.unit.rotated", messageArgs, data)
 		
-		if(unit.actionPoints == 0) {
+		if(unit.apRemaining == 0) {
 			// automatically end the unit's turn if it has run out of AP
 			this.initializeNextTurn(game)
 		}
@@ -692,7 +702,7 @@ class GameService {
 	 * @return
 	 */
 	public def fireWeaponsAtUnit(Game game, BattleUnit unit, ArrayList weapons, BattleUnit target) {
-		if(unit.actionPoints == 0) return
+		if(unit.apRemaining == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
 		def weaponData = []
@@ -800,8 +810,8 @@ class GameService {
 		data.heat = unit.heat
 		
 		// use an actionPoint
-		unit.actionPoints -= 1
-		data.actionPoints = unit.actionPoints
+		unit.apRemaining -= 1
+		data.apRemaining = unit.apRemaining
 		
 		unit.save flush:true
 		
@@ -937,17 +947,14 @@ class GameService {
 		else if(unit.prone){
 			return CombatStatus.UNIT_PRONE
 		}
-	
-		// TODO: instead of generating this each time, may just want to store AP at start of turn and separately track used AP?
-		int unitAP = getUnitAP(game, unit)
 		
-		if(unit.actionPoints == unitAP){
+		if(unit.apMoved == 0){
 			return CombatStatus.UNIT_STANDING
 		}
 		//else if(isJumping){
 		//	return MECH_JUMPING;
 		//}
-		else if(unit.actionPoints < (unitAP * 1/3)){
+		else if(unit.apRemaining < (unit.apMoved * 1/3)){
 			// Running is defined as when your mech is moving at greater than or 
 			// equal to 66% of your AP for the turn (33% remaining AP)
 			return CombatStatus.UNIT_RUNNING

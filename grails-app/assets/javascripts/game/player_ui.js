@@ -94,20 +94,20 @@ function setPlayerInfo(unitName, playerName) {
 			"<p>"+playerName+"</p>";
 }
 
-function setActionPoints(actionPoints) {
-	apDisplaying = actionPoints;
+function setActionPoints(apRemaining) {
+	apDisplaying = apRemaining;
 	
-	if(actionPoints == 0){
+	if(apRemaining == 0){
 		// TODO: hide the END button when out of AP
 	}
 
 	updateUnitStatsDisplay();
 }
 
-function setJumpPoints(jumpPoints) {
-	jpDisplaying = jumpPoints;
+function setJumpPoints(jpRemaining) {
+	jpDisplaying = jpRemaining;
 	
-	if(jumpPoints == null) {
+	if(jpRemaining == null) {
 		// TODO: null means no jump jets, hide the JP display and JUMP Button
 	}
 	

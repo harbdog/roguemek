@@ -25,7 +25,9 @@ class BattleUnit {
 	Integer y = 0
 	Integer heading = 0
 	Integer actionPoints = 0
+	Integer apRemaining = 0
 	Integer jumpPoints = 0
+	Integer jpRemaining = 0
 	Double heat = 0
 	
 	Integer apMoved = 0
@@ -58,7 +60,9 @@ class BattleUnit {
 		y nullable: true
 		heading nullable: true
 		actionPoints min: 0
+		apRemaining min: 0
 		jumpPoints min: 0
+		jpRemaining min: 0
 		heat min: 0.0D
 		
 		apMoved min: 0
