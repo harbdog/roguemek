@@ -50,4 +50,8 @@ class BattleWeapon extends BattleEquipment {
 	public int getLongRange() {
 		return this.equipment.longRange
 	}
+	
+	public int[] getRanges() {
+		return [this.getShortRange(), this.getMediumRange(), this.getLongRange()]
+	}
 }

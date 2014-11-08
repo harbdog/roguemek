@@ -10,6 +10,7 @@ class GameService {
 	
 	transient springSecurityService
 	
+	// TODO: move CombatStatus enum out to a separate class
 	public enum CombatStatus {
 		UNIT_STANDING("Standing"),
 		UNIT_WALKING("Walking"),
@@ -125,14 +126,14 @@ class GameService {
 			
 			// Evaluate if any overheat effects need to apply at this time (shutdown, ammo explosion)
 			def heatEffects = HeatEffect.getHeatEffectsAt(unit.heat)
-			if(heatEffects.containsKey(HeatEffect.EFFECT_AMMO_EXP_RISK)) {
+			if(heatEffects.containsKey(HeatEffect.Effect.AMMO_EXP_RISK)) {
 				// TODO: ammo explosion
-				int explosionRisk = heatEffects.getAt(HeatEffect.EFFECT_AMMO_EXP_RISK)
+				int explosionRisk = heatEffects.getAt(HeatEffect.Effect.AMMO_EXP_RISK)
 			}
 			
-			if(heatEffects.containsKey(HeatEffect.EFFECT_SHUTDOWN_RISK)) {
+			if(heatEffects.containsKey(HeatEffect.Effect.SHUTDOWN_RISK)) {
 				// Roll to see if an automatic shutdown is going to occur
-				int shutdownPercent = heatEffects.getAt(HeatEffect.EFFECT_SHUTDOWN_RISK)
+				int shutdownPercent = heatEffects.getAt(HeatEffect.Effect.SHUTDOWN_RISK)
 				
 				// TODO: implement a proper Roll method
 				int shutdownRoll = new Random().nextInt(100)
@@ -256,7 +257,7 @@ class GameService {
 			}
 			
 			if(unit.heat >= HeatEffect.MIN_HEAT_EFFECT) {
-				HeatEffect thisEffect = HeatEffect.getHeatEffectForTypeAt(HeatEffect.EFFECT_MP_REDUCE, unit.heat)
+				HeatEffect thisEffect = HeatEffect.getHeatEffectForTypeAt(HeatEffect.Effect.MP_REDUCE, unit.heat)
 				if(thisEffect != null) {
 					reduce += thisEffect.value
 				}
@@ -777,6 +778,7 @@ class GameService {
 			if(weapon.cooldown > 0) continue
 			
 			// TODO: determine toHit using unit, weapon, and target combat variables
+			def modifiers = WeaponModifier.getToHitModifiers(game, unit, weapon, target)
 			boolean weaponHit = true
 			
 			String messageCode
@@ -996,7 +998,7 @@ class GameService {
 	 * @param unit
 	 * @return
 	 */
-	public CombatStatus getUnitCombatStatus(Game game, BattleUnit unit){
+	public static CombatStatus getUnitCombatStatus(Game game, BattleUnit unit){
 		if(unit.status == BattleUnit.STATUS_DESTROYED){
 			return CombatStatus.UNIT_DESTROYED
 		}
@@ -1021,6 +1023,37 @@ class GameService {
 		else{
 			return CombatStatus.UNIT_WALKING
 		}
+	}
+	
+	/**
+	 * Gets the hex range from the source Coords to the target Coords
+	 * @param sourceC
+	 * @param targetC
+	 * @return
+	 */
+	public static int getRange(Coords sourceC, Coords targetC){
+		// based off of 
+		// http://www.rossmack.com/ab/RPG/traveller/AstroHexDistance.asp 
+		// it is no longer present, now only at web.archive.org
+		
+		if(sourceC == null || targetC == null)	return -1;
+		
+		def xd, ym, ymin, ymax, yo;
+		xd = Math.abs(sourceC.x - targetC.x);
+		yo = Math.floor(xd / 2) + (!sourceC.isXOdd() && targetC.isXOdd() ? 1 : 0);
+		ymin = sourceC.y - yo;
+		ymax = ymin + xd;
+		ym = 0;
+		if (targetC.y < ymin) {
+			ym = ymin - targetC.y;
+		}
+		if (targetC.y > ymax) {
+			ym = targetC.y - ymax;
+		}
+		
+		def range = xd + ym;
+		
+		return range;
 	}
 	
 	/**

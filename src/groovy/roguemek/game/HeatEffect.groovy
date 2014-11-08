@@ -6,19 +6,26 @@ package roguemek.game
  */
 class HeatEffect {
 	
-	String effect
+	Effect effect
 	Integer value
 	
 	private static def heatEffects
 	private static final int MIN_HEAT_EFFECT = 15
 	
-	public static final String EFFECT_MP_REDUCE = "mp_reduce"			// speed mp reduction (affects total AP)
-	public static final String EFFECT_TOHIT_INCREASE = "aim_reduce"		// adds modifiers to hit
-	public static final String EFFECT_AMMO_EXP_RISK = "ammo_exp"		// chance of ammo explosion
-	public static final String EFFECT_SHUTDOWN_RISK = "shutdown"		// chance of shutdown
-	public static final String EFFECT_HEAT_INCREASE = "heat_increase"	// heat built up every turn automatically (e.g. from engine damage)
+	public enum Effect {
+		// modifier types that will be found in the Modifier objects
+		MP_REDUCE("mp_reduce"),			// speed mp reduction (affects total AP)
+		TOHIT_INCREASE("aim_reduce"),	// adds modifiers to hit
+		AMMO_EXP_RISK("ammo_exp"),		// chance of ammo explosion
+		SHUTDOWN_RISK("shutdown"),		// chance of shutdown
+		HEAT_INCREASE("heat_increase"),	// heat built up every turn automatically (e.g. from engine damage)
+		
+		Effect(str) { this.str = str }
+		private final String str
+		public String toString() { return str }
+	}
 	
-	public HeatEffect(String effect, Integer value) {
+	public HeatEffect(Effect effect, Integer value) {
 		this.effect = effect
 		this.value = value
 	}
@@ -51,12 +58,12 @@ class HeatEffect {
 	 * @param heat
 	 * @return
 	 */
-	public static def getHeatEffectForTypeAt(def effectType, def heat) {
+	public static def getHeatEffectForTypeAt(Effect effectType, def heat) {
 		if(heat < MIN_HEAT_EFFECT) return null
 		
 		for(int i = Math.floor(heat); i >= MIN_HEAT_EFFECT; i--) {
 			HeatEffect thisEffect = heatEffects[i]
-			if(thisEffect != null && thisEffect.effect.equals(effectType)) {
+			if(thisEffect != null && thisEffect.effect == effectType) {
 				return thisEffect
 			}
 		}
@@ -76,55 +83,55 @@ class HeatEffect {
 			HeatEffect effect = null;
 			switch(i){
 				case 40:
-						effect = new HeatEffect(EFFECT_SHUTDOWN_RISK, 100);//SD100%
+						effect = new HeatEffect(Effect.SHUTDOWN_RISK, 100);//SD100%
 						break;
 				case 38:
-						effect = new HeatEffect(EFFECT_AMMO_EXP_RISK, 58);//AE58%, die roll 7 or higher to avoid
+						effect = new HeatEffect(Effect.AMMO_EXP_RISK, 58);//AE58%, die roll 7 or higher to avoid
 						break;
 				case 36:
-						effect = new HeatEffect(EFFECT_SHUTDOWN_RISK, 83);//SD83%, die roll 9 or higher to avoid
+						effect = new HeatEffect(Effect.SHUTDOWN_RISK, 83);//SD83%, die roll 9 or higher to avoid
 						break;
 				case 35:
-						effect = new HeatEffect(EFFECT_MP_REDUCE, 5);// -5MP
+						effect = new HeatEffect(Effect.MP_REDUCE, 5);// -5MP
 						break;
 				case 34:
-						effect = new HeatEffect(EFFECT_TOHIT_INCREASE, 4);//+4HIT
+						effect = new HeatEffect(Effect.TOHIT_INCREASE, 4);//+4HIT
 						break;
 				case 33:
-						effect = new HeatEffect(EFFECT_AMMO_EXP_RISK, 28);//AE28%, die roll 5 or higher to avoid
+						effect = new HeatEffect(Effect.AMMO_EXP_RISK, 28);//AE28%, die roll 5 or higher to avoid
 						break;
 				case 32:
-						effect = new HeatEffect(EFFECT_SHUTDOWN_RISK, 58);//SD58%, die roll 7 or higher to avoid
+						effect = new HeatEffect(Effect.SHUTDOWN_RISK, 58);//SD58%, die roll 7 or higher to avoid
 						break;
 				case 30:
-						effect = new HeatEffect(EFFECT_MP_REDUCE, 4);// -4MP
+						effect = new HeatEffect(Effect.MP_REDUCE, 4);// -4MP
 						break;
 				case 29:
-						effect = new HeatEffect(EFFECT_AMMO_EXP_RISK, 8);// AE8%, die roll 3 or higher to avoid
+						effect = new HeatEffect(Effect.AMMO_EXP_RISK, 8);// AE8%, die roll 3 or higher to avoid
 						break;
 				case 28:
-						effect = new HeatEffect(EFFECT_SHUTDOWN_RISK, 28);//SD28%, die roll 5 or higher to avoid
+						effect = new HeatEffect(Effect.SHUTDOWN_RISK, 28);//SD28%, die roll 5 or higher to avoid
 						break;
 				case 27:
-						effect = new HeatEffect(EFFECT_TOHIT_INCREASE, 3);//+3HIT
+						effect = new HeatEffect(Effect.TOHIT_INCREASE, 3);//+3HIT
 						break;
 				case 25:
-						effect = new HeatEffect(EFFECT_MP_REDUCE, 3);// -3MP
+						effect = new HeatEffect(Effect.MP_REDUCE, 3);// -3MP
 						break;
 				case 24:
-						effect = new HeatEffect(EFFECT_SHUTDOWN_RISK, 8);// SD8%, die roll 3 or higher to avoid
+						effect = new HeatEffect(Effect.SHUTDOWN_RISK, 8);// SD8%, die roll 3 or higher to avoid
 						break;
 				case 23:
-						effect = new HeatEffect(EFFECT_TOHIT_INCREASE, 2);//+2HIT
+						effect = new HeatEffect(Effect.TOHIT_INCREASE, 2);//+2HIT
 						break;
 				case 20:
-						effect = new HeatEffect(EFFECT_MP_REDUCE, 2);//-2MP
+						effect = new HeatEffect(Effect.MP_REDUCE, 2);//-2MP
 						break;
 				case 18:
-						effect = new HeatEffect(EFFECT_TOHIT_INCREASE, 1);//+1HIT
+						effect = new HeatEffect(Effect.TOHIT_INCREASE, 1);//+1HIT
 						break;
 				case 15:
-						effect = new HeatEffect(EFFECT_MP_REDUCE, 1);//-1MP
+						effect = new HeatEffect(Effect.MP_REDUCE, 1);//-1MP
 						break;
 				default:
 						break;
