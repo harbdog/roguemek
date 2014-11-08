@@ -196,6 +196,20 @@ class BattleMech extends BattleUnit {
 		return allCritSections
 	}
 	
+	/**
+	 * Returns true if all internal armor on one of the legs is gone
+	 * @return
+	 */
+	public boolean isLegged() {
+		for(int legIndex in Mech.LEGS) {
+			if(internals[legIndex] == 0) {
+				return true
+			}
+		}
+		
+		return false
+	}
+	
 	@Override
 	public String toString() {
 		return mech?.name +" "+ mech?.chassis+"-"+mech?.variant

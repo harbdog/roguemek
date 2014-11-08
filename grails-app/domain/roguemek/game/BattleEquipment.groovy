@@ -35,6 +35,22 @@ class BattleEquipment {
 	
 	@Override
 	public String toString() {
+		return getName()
+	}
+	
+	public String getName() {
 		return equipment?.name
+	}
+	
+	public boolean isActive() {
+		return status == STATUS_ACTIVE
+	}
+	
+	public boolean isDamaged() {
+		return status == STATUS_DAMAGED
+	}
+	
+	public boolean isDestroyed() {
+		return status == STATUS_DESTROYED
 	}
 }

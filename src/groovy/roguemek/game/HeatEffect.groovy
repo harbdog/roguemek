@@ -10,13 +10,13 @@ class HeatEffect {
 	Integer value
 	
 	private static def heatEffects
-	private static int MIN_HEAT_EFFECT = 15
+	private static final int MIN_HEAT_EFFECT = 15
 	
-	public static String EFFECT_MP_REDUCE = "mp_reduce"			// speed mp reduction (affects total AP)
-	public static String EFFECT_TOHIT_INCREASE = "aim_reduce"	// adds modifiers to hit
-	public static String EFFECT_AMMO_EXP_RISK = "ammo_exp"		// chance of ammo explosion
-	public static String EFFECT_SHUTDOWN_RISK = "shutdown"		// chance of shutdown
-	public static String EFFECT_HEAT_INCREASE = "heat_increase"	// heat built up every turn automatically (e.g. from engine damage)
+	public static final String EFFECT_MP_REDUCE = "mp_reduce"			// speed mp reduction (affects total AP)
+	public static final String EFFECT_TOHIT_INCREASE = "aim_reduce"		// adds modifiers to hit
+	public static final String EFFECT_AMMO_EXP_RISK = "ammo_exp"		// chance of ammo explosion
+	public static final String EFFECT_SHUTDOWN_RISK = "shutdown"		// chance of shutdown
+	public static final String EFFECT_HEAT_INCREASE = "heat_increase"	// heat built up every turn automatically (e.g. from engine damage)
 	
 	public HeatEffect(String effect, Integer value) {
 		this.effect = effect
@@ -43,6 +43,25 @@ class HeatEffect {
 		}
 		
 		return effects
+	}
+	
+	/**
+	 * Gets the specific heat effect type at the given heat level on a Mech
+	 * @param effectType
+	 * @param heat
+	 * @return
+	 */
+	public static def getHeatEffectForTypeAt(def effectType, def heat) {
+		if(heat < MIN_HEAT_EFFECT) return null
+		
+		for(int i = Math.floor(heat); i >= MIN_HEAT_EFFECT; i--) {
+			HeatEffect thisEffect = heatEffects[i]
+			if(thisEffect != null && thisEffect.effect.equals(effectType)) {
+				return thisEffect
+			}
+		}
+		
+		return null
 	}
 	
 	/**

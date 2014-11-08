@@ -8,6 +8,25 @@ import roguemek.model.*;
 class MechMTF {
 	private static Log log = LogFactory.getLog(this)
 	
+	public static final String MTF_CRIT_EMPTY = "-Empty-"
+	public static final String MTF_CRIT_HEATSINK = "Heat Sink"
+	public static final String MTF_CRIT_JUMPJET = "Jump Jet"
+	public static final String MTF_CRIT_SHOULDER = "Shoulder"
+	public static final String MTF_CRIT_UP_ARM_ACT = "Upper Arm Actuator"
+	public static final String MTF_CRIT_LOW_ARM_ACT = "Lower Arm Actuator"
+	public static final String MTF_CRIT_HAND_ACT = "Hand Actuator"
+	public static final String MTF_CRIT_HIP = "Hip"
+	public static final String MTF_CRIT_UP_LEG_ACT = "Upper Leg Actuator"
+	public static final String MTF_CRIT_LOW_LEG_ACT = "Lower Leg Actuator"
+	public static final String MTF_CRIT_FOOT_ACT = "Foot Actuator"
+	public static final String MTF_CRIT_ENGINE = "Engine"
+	public static final String MTF_CRIT_FUSION_ENGINE = "Fusion Engine"
+	public static final String MTF_CRIT_GYRO = "Gyro"
+	public static final String MTF_CRIT_LIFE_SUPPORT = "Life Support"
+	public static final String MTF_CRIT_SENSORS = "Sensors"
+	public static final String MTF_CRIT_COCKPIT = "Cockpit"
+	public static final String MTF_CRIT_AMMO = "Ammo"
+	
 	/**
 	 * Generates a Mech instance from an MTF format file
 	 * @param mtfFile

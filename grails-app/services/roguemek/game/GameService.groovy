@@ -3,6 +3,7 @@ package roguemek.game
 import grails.transaction.Transactional
 import roguemek.*
 import roguemek.model.*
+import roguemek.mtf.*
 
 @Transactional
 class GameService {
@@ -183,25 +184,12 @@ class GameService {
 		int ap = 0
 		
 		if(unit instanceof BattleMech) {
-			/*if(mech.isLegged())
-				 // a legged mech automatically only gets 1 MP
-				 return 1;
-			 
-			 var walkMPReduce = getReduceWalkMP(mech);
-			 var walkMPThisTurn = mech.walkMP - walkMPReduce;
-			 
-			 // TODO: when WalkMP is 0, make AP only usable for weapons fire
-			 if(walkMPThisTurn <= 0){
-				 return 0;
-			 }
-			 
-			 var ap = Math.floor(walkMPThisTurn / 2) + (walkMPThisTurn % 2);*/
-			
-			// TODO: calculate reductions based on heat/crit status
-			int walkMPReduce = 0
+			// calculate reductions based on heat/crit status
+			int walkMPReduce = getReduceWalkMP(unit);
 			int walkMPThisTurn = unit.mech.walkMP - walkMPReduce
 			
 			if(walkMPThisTurn <= 0) {
+				// TODO: when WalkMP is 0, make AP only usable for weapons fire
 				return 0
 			}
 			
@@ -209,6 +197,77 @@ class GameService {
 		}
 		
 		return ap
+	}
+	
+	/**
+	 * Returns the amount of movement points to reduce from the mech's speed due to heat effects, leg damage, etc
+	 * @param unit
+	 * @return
+	 */
+	private int getReduceWalkMP(BattleUnit unit){
+		int reduce = 0;
+		
+		if(unit instanceof BattleMech) {
+			Mech mech = unit.mech
+			
+			if(unit.isLegged()) {
+				// a legged mech automatically only gets 1 MP
+				reduce = mech.walkMP - 1
+			}
+			else {
+				// reductions for leg damage, engine damage, etc
+				int hipHits = 0;
+				int upLegHits = 0;
+				int lowLegHits = 0;
+				int footHits = 0;
+				for(int legIndex in Mech.LEGS){
+					BattleEquipment[] sectionCrits = unit.getCritSection(legIndex)
+					// Check legs for hip/actuator hits
+					for(BattleEquipment thisCrit in sectionCrits) {
+						if(!thisCrit.isActive()) {
+							if(MechMTF.MTF_CRIT_HIP == thisCrit.getName()){
+								hipHits ++
+							}
+							else if(MechMTF.MTF_CRIT_UP_LEG_ACT == thisCrit.getName()){
+								upLegHits ++
+							}
+							else if(MechMTF.MTF_CRIT_LOW_LEG_ACT == thisCrit.getName()){
+								lowLegHits ++
+							}
+							else if(MechMTF.MTF_CRIT_FOOT_ACT == thisCrit.getName()){
+								footHits ++
+							}
+						}
+					}
+				}
+				
+				if(hipHits == 2){
+					// 0 WalkMP for 2 hips hits (supercedes any actuator hits, unless legged)
+					reduce = mech.walkMP
+				}
+				else if(hipHits == 1){
+					// 1/2 WalkMP  for 1 hip hit (supercedes any actuator hits)
+					reduce = Math.floor(mech.walkMP / 2)
+				}
+				else{
+					// -1 WalkMP for each actuator hit
+					reduce = upLegHits + lowLegHits + footHits
+				}
+			}
+			
+			if(unit.heat >= HeatEffect.MIN_HEAT_EFFECT) {
+				HeatEffect thisEffect = HeatEffect.getHeatEffectForTypeAt(HeatEffect.EFFECT_MP_REDUCE, unit.heat)
+				if(thisEffect != null) {
+					reduce += thisEffect.value
+				}
+			}
+			
+			if(reduce > mech.walkMP) {
+				reduce = mech.walkMP
+			}
+		}
+		
+		return reduce;
 	}
 	
 	/**
