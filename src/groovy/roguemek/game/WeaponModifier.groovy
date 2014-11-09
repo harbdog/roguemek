@@ -15,6 +15,9 @@ class WeaponModifier {
 	
 	public static final int AUTO_MISS = 1000
 	
+	// Instead of 2d6 odds, each modifier will be standardized (100/12=8.3333)
+	public static final int STANDARD_MODIFIER = 7.5
+	
 	public enum Modifier {
 		// modifier types that will be found in the Modifier objects
 		IMPOSSIBLE("IMPOSSIBLE"),
@@ -65,7 +68,7 @@ class WeaponModifier {
 			int thisWpnRange = weaponRanges[i]
 			
 			if(range <= thisWpnRange){
-				rangeModifier = (i * 2)
+				rangeModifier = (i * 2 * STANDARD_MODIFIER)
 				
 				Modifier rangeType = null
 				if(i==0){
@@ -109,7 +112,7 @@ class WeaponModifier {
 		int minRange = weapon.getMinRange()
 		if(minRange != null && minRange > 0 && range <= minRange){
 			// add in minimum range modifier
-			int minRangeModifier = (minRange - range) + 1
+			int minRangeModifier = STANDARD_MODIFIER * ((minRange - range) + 1)
 			
 			toHitMods.push(new WeaponModifier(Modifier.MIN_RANGE, minRangeModifier))
 		}
@@ -127,17 +130,17 @@ class WeaponModifier {
 			// no source modifier for standing
 		}
 		else if(srcMoveStatus == GameService.CombatStatus.UNIT_WALKING){
-			int srcMoveModifier = 1
+			int srcMoveModifier = STANDARD_MODIFIER
 			
 			toHitMods.push(new WeaponModifier(Modifier.WALKING, srcMoveModifier))
 		}
 		else if(srcMoveStatus == GameService.CombatStatus.UNIT_RUNNING){
-			int srcMoveModifier = 2
+			int srcMoveModifier = 2 * STANDARD_MODIFIER
 			
 			toHitMods.push(new WeaponModifier(Modifier.RUNNING, srcMoveModifier))
 		}
 		else if(srcMoveStatus == GameService.CombatStatus.UNIT_JUMPING){
-			int srcMoveModifier = 3
+			int srcMoveModifier = 3 * STANDARD_MODIFIER
 			
 			toHitMods.push(new WeaponModifier(Modifier.JUMPING, srcMoveModifier))
 		}
@@ -176,26 +179,26 @@ class WeaponModifier {
 		}
 		else if(tgtMoveStatus == GameService.CombatStatus.UNIT_IMMOBILE){
 			// immobile mech decreases to hit roll by 4
-			toHitMods.push(new WeaponModifier(Modifier.TARGET_IMMOBILE, -4))
+			toHitMods.push(new WeaponModifier(Modifier.TARGET_IMMOBILE, -4 * STANDARD_MODIFIER))
 		}
 		else if(tgtMoveStatus == GameService.CombatStatus.UNIT_PRONE){
 			// prone mech decreases to hit roll by 2 from adjacent hex (distance of 1), but increases by 1 from all others
 			def range = GameService.getRange(srcLocation, tgtUnit.getLocation())
 			if(range <= 1){
-				toHitMods.push(new WeaponModifier(Modifier.TARGET_PRONE, -2))
+				toHitMods.push(new WeaponModifier(Modifier.TARGET_PRONE, -2 * STANDARD_MODIFIER))
 			}
 			else{
-				toHitMods.push(new WeaponModifier(Modifier.TARGET_PRONE, 1))
+				toHitMods.push(new WeaponModifier(Modifier.TARGET_PRONE, STANDARD_MODIFIER))
 			}
 		}
 		else if(tgtMoveStatus == GameService.CombatStatus.UNIT_JUMPING){
 			// jumping is normally from # of hexes moved + 1 additional
 			// but since AP movement is based on running, speed from jumping will be halved then +1 additional will be counted
-			toHitMods.push(new WeaponModifier(Modifier.TARGET_JUMPING, Math.floor(tgtSpeed/2) + 1))
+			toHitMods.push(new WeaponModifier(Modifier.TARGET_JUMPING, Math.floor(tgtSpeed/2) + 1) * STANDARD_MODIFIER)
 		}
 		else{
 			// +1 will be added for each hex moved since AP movement is less per turn than standard BT
-			toHitMods.push(new WeaponModifier(Modifier.TARGET_MOVING, tgtSpeed))
+			toHitMods.push(new WeaponModifier(Modifier.TARGET_MOVING, tgtSpeed * STANDARD_MODIFIER))
 		}
 		
 		

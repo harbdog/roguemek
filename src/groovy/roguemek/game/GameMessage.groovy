@@ -55,7 +55,7 @@ class GameMessage implements Comparable{
 	
 	public static Date addMessageUpdate(Game game, String messageCode, Object[] messageArgs, Map data) {
 		if(messageCleanupThread == null || !messageCleanupThread.isAlive()) {
-			log.error("Restarted GameMessage cleanup thread!")
+			if(messageCleanupThread != null) log.error("Restarted GameMessage cleanup thread!")
 			GameMessage.startMessageCleanupThread()
 		}
 		

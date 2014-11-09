@@ -118,9 +118,10 @@ function fire_weapons(weapons) {
 				
 				var weapon = getWeaponById(id);
 				if(weapon != null){
+					weapon.cooldown = cooldown;
+					
 					if(hit) {
 						console.log("Weapon "+weapon+" hit the target in the following locations, cooldown for "+cooldown+" turns");
-						weapon.cooldown = cooldown;
 						
 						$.each(hitLocations, function(loc, locDamage) {
 							if(locDamage == null) return;

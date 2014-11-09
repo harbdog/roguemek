@@ -135,16 +135,21 @@ class GameService {
 				// Roll to see if an automatic shutdown is going to occur
 				int shutdownPercent = heatEffects.getAt(HeatEffect.Effect.SHUTDOWN_RISK)
 				
-				// TODO: implement a proper Roll method
-				int shutdownRoll = new Random().nextInt(100)
-				
-				if(shutdownRoll < shutdownPercent) {
+				if(shutdownPercent >= 100) {
 					// TODO: Shutdown the unit
-					log.info("Shutting down "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+					log.info("Auto shutting down "+unit)
 				}
 				else {
-					// Power up the unit if previously shutdown
-					log.info("Shutdown avoided "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+					int shutdownRoll = Roll.randomInt(100, 1)
+					
+					if(shutdownRoll < shutdownPercent) {
+						// TODO: Shutdown the unit
+						log.info("Shutting down "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+					}
+					else {
+						// Power up the unit if previously shutdown
+						log.info("Shutdown avoided "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+					}
 				}
 			}
 			else {
@@ -777,9 +782,28 @@ class GameService {
 		for(BattleWeapon weapon in weapons) {
 			if(weapon.cooldown > 0) continue
 			
-			// TODO: determine toHit using unit, weapon, and target combat variables
+			// TODO: determine base toHit% based on Pilot skills
+			double toHit = 90.0
 			def modifiers = WeaponModifier.getToHitModifiers(game, unit, weapon, target)
-			boolean weaponHit = true
+			for(WeaponModifier mod in modifiers) {
+				toHit -= mod.getValue()
+			}
+			
+			boolean weaponHit = false
+			if(toHit >= 100) {
+				log.info("Weapon "+weapon+" AUTO HIT ("+toHit+")!")
+				weaponHit = true
+			}
+			else if(toHit > 0){
+				int result = Roll.randomInt(100, 1)
+				if(result <= toHit) {
+					log.info("Weapon "+weapon+" HIT! Rolled: "+result+"/"+toHit)
+					weaponHit = true
+				}
+				else {
+					log.info("Weapon "+weapon+" MISSED! Rolled: "+result+"/"+toHit)
+				}
+			}
 			
 			String messageCode
 			Object[] messageArgs
@@ -795,8 +819,8 @@ class GameService {
 				data.armorHit = []
 				
 				// TODO: determine hit location based on relative position of the attack on the target
-				// TODO: implement a proper Roll method
-				int hitLocation = Mech.FRONT_HIT_LOCATIONS[new Random().nextInt(Mech.FRONT_HIT_LOCATIONS.size() - 1)]
+				int hitRoll = Roll.rollD6(2)
+				int hitLocation = Mech.FRONT_HIT_LOCATIONS[hitRoll - 2]
 				
 				thisWeaponData.weaponHitLocations = []
 				

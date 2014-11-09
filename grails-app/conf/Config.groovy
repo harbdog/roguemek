@@ -140,9 +140,12 @@ log4j.main = {
 	
 	// Set for a specific controller in the default package
 	//debug "grails.app.controllers.YourController"
-   
+	
 	// Set for a specific domain class
 	//debug "grails.app.domain.org.example.Book"
+	
+	// Set for a regular class
+	//debug "roguemek.game.Roll"
    
 	// Set for all taglibs
 	//info "grails.app.taglib"
