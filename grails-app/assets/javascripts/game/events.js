@@ -232,6 +232,8 @@ function handleUnitClick(event) {
 	if(playerUnit != unit) {
 		playerTarget = unit;
 		updateTargetDisplay();
+		
+		target();
 	}
 }
 

@@ -2,6 +2,8 @@ package roguemek.game
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import roguemek.model.*
+import roguemek.mtf.MechMTF
 
 /**
  * Class used to define the modifiers on a weapon to hit a target
@@ -11,12 +13,12 @@ class WeaponModifier {
 	private static Log log = LogFactory.getLog(this)
 	
 	Modifier type
-	int value
+	double value
 	
 	public static final int AUTO_MISS = 1000
 	
 	// Instead of 2d6 odds, each modifier will be standardized (100/12=8.3333)
-	public static final int STANDARD_MODIFIER = 7.5
+	public static final double STANDARD_MODIFIER = 8
 	
 	public enum Modifier {
 		// modifier types that will be found in the Modifier objects
@@ -48,7 +50,7 @@ class WeaponModifier {
 		public String toString() { return str }
 	}
 	
-	public WeaponModifier(Modifier type, int value) {
+	public WeaponModifier(Modifier type, double value) {
 		this.type = type
 		this.value = value
 	}
@@ -117,11 +119,9 @@ class WeaponModifier {
 			toHitMods.push(new WeaponModifier(Modifier.MIN_RANGE, minRangeModifier))
 		}
 		
-		
-		// TODO: add in heat and other crit effect modifiers
-		/*var penaltyModifiers = getToHitEffectPenalties(srcUnit, weapon);
-		toHitMods = toHitMods.concat(penaltyModifiers);*/
-		
+		// add in heat and other crit effect modifiers
+		def penaltyModifiers = getToHitEffectPenalties(game, srcUnit, weapon);
+		toHitMods = (toHitMods << penaltyModifiers).flatten()
 		
 		// add movement modifiers from source
 		GameService.CombatStatus srcMoveStatus = GameService.getUnitCombatStatus(game, srcUnit)
@@ -216,5 +216,47 @@ class WeaponModifier {
 		//toHitMods = toHitMods.concat(targetMods)
 		
 		return toHitMods;
+	}
+	
+	/**
+	 * returns the toHit penalties incurred by the mech due to heat effects, arm/sensor damage, etc
+	 * @param mech
+	 * @param weapon
+	 * @return
+	 */
+	public static def getToHitEffectPenalties(Game game, BattleUnit unit, BattleWeapon weapon){
+		def penaltyMods = [];
+		if(unit.heat >= HeatEffect.MIN_HEAT_EFFECT) {
+			HeatEffect thisEffect = HeatEffect.getHeatEffectForTypeAt(HeatEffect.Effect.TOHIT_INCREASE, unit.heat)
+			if(thisEffect != null) {
+				penaltyMods.add(new WeaponModifier(Modifier.HEAT, thisEffect.value * STANDARD_MODIFIER));
+			}
+		}
+		
+		//reductions for arm damage, sensor damage, etc
+		//if(isMeleeWeapon()){
+			// TODO: any penalties for all melee attacks go here
+		//}
+		// else
+		if(unit instanceof BattleMech) {
+			// any penalties for all weapon attacks go here
+			
+			def headCrits = unit.getCritSection(Mech.HEAD);
+			for(BattleEquipment thisCrit in headCrits){
+				if(thisCrit != null 
+						&& MechMTF.MTF_CRIT_SENSORS == thisCrit.getName() 
+						&& !thisCrit.isActive()) {
+					// +2 HIT for weapons when Sensors are destroyed
+					penaltyMods.add(new WeaponModifier(Modifier.CRIT, 2 * STANDARD_MODIFIER));
+				}
+			}
+		}
+		
+		// TODO: reductions for the specific weapon based on location (e.g. arm actuator hits)
+		/*if(weapon.getModifier() > 0){
+			penaltyMods.push(new Modifier(Modifier.CRIT, weapon.getModifier()));
+		}*/
+		
+		return penaltyMods;
 	}
 }

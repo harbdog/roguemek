@@ -760,6 +760,45 @@ class GameService {
 	}
 	
 	/**
+	 * Targets a unit, providing toHit for each weapon on the Unit against
+	 * @param game
+	 * @param unit
+	 * @param target
+	 * @return
+	 */
+	public def targetUnitInfo(Game game, BattleUnit unit, BattleUnit target) {
+		if(unit != game.getTurnUnit()) return
+		
+		def weaponData = []
+		def data = [
+			target: target.id,
+			weaponData: weaponData
+		]
+		
+		if(unit instanceof BattleMech) {
+			BattleWeapon[] weapons = unit.getWeapons()
+			for(BattleWeapon w in weapons) {
+				if(!w.isActive() || w.cooldown > 0) continue
+				
+				// TODO: determine base toHit% based on Pilot skills
+				double toHit = 90.0
+				def modifiers = WeaponModifier.getToHitModifiers(game, unit, w, target)
+				for(WeaponModifier mod in modifiers) {
+					toHit -= mod.getValue()
+				}
+				
+				def thisWeaponToHit = [
+					weaponId: w.id,
+					toHit: toHit
+				]
+				weaponData.add(thisWeaponToHit)
+			}
+		}
+		
+		return data
+	}
+	
+	/**
 	 * Fires a weapon at the target
 	 * @param unit
 	 * @param weapon

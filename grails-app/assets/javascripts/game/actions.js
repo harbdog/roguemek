@@ -2,6 +2,39 @@
  * actions.js - Handles all JSON actions for the game
  */
 
+function target() {
+	var target_id = playerTarget.id;
+	
+	handleActionJSON({
+		perform: "target",
+		target_id: target_id
+	}, function( data ) {
+		
+		if(data.target == null){
+			return;
+		}
+		
+		console.log("targeting "+data.target);
+		
+		if(data.weaponData){
+			var t = units[data.target];
+			
+			// update the cooldown status of the weapons fired
+			$.each(data.weaponData, function(key, wData) {
+				var id = wData.weaponId;
+				var toHit = wData.toHit;
+				
+				var weapon = getWeaponById(id);
+				if(weapon != null){
+					weapon.toHit = toHit;
+				}
+			});
+			
+			updateWeaponsDisplay();
+		}
+	});
+}
+
 function move(forward) {
 	//playerUnit.displayUnit.setControlsVisible(false);
 	

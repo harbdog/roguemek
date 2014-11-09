@@ -180,8 +180,12 @@ function updateWeaponsDisplay() {
 		}
 		
 		var locationStr = getLocationText(w.location);
-		// TODO: show actual calculated TO-HIT
-		var toHitAsPercent = "100%";
+		
+		// show actual calculated TO-HIT
+		var toHitAsPercent = "  --";
+		if(w.toHit != null) {
+			toHitAsPercent = w.toHit+"%";
+		}
 		
 		var weaponInfo = w.shortName;
 		if(w.weaponType == WEAPON_BALLISTIC || w.weaponType == WEAPON_MISSILE) {

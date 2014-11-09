@@ -46,7 +46,7 @@ class GameControllerService {
 	 */
 	public def performAction(Game game, Pilot pilot, BattleUnit unit, Map params) {
 		String action = params.perform
-		if(action == null) return
+		if(action == null || pilot == null || unit == null) return
 		
 		// TODO: only allow certain actions during another player's turn (do not allow move, rotate, skip when not their turn)
 		return this."$action"(game, pilot, unit, params)
@@ -69,8 +69,6 @@ class GameControllerService {
 	 * @return
 	 */
 	private def move(Game game, Pilot pilot, BattleUnit unit, Map params) {
-		if(unit == null) return
-		
 		boolean forward = params.boolean('forward')
 		boolean jumping = params.boolean('jumping')
 		
@@ -82,8 +80,6 @@ class GameControllerService {
 	 * @return
 	 */
 	private def rotate(Game game, Pilot pilot, BattleUnit unit, Map params) {
-		if(unit == null) return
-		
 		boolean rotation = params.boolean('rotation')
 		boolean jumping = params.boolean('jumping')
 		
@@ -100,8 +96,6 @@ class GameControllerService {
 	 * @return
 	 */
 	private def fire_weapons(Game game, Pilot pilot, BattleUnit unit, Map params) {
-		if(unit == null) return
-		
 		String targetId = params.target_id
 		BattleUnit target = BattleUnit.get(targetId)
 		
@@ -118,7 +112,7 @@ class GameControllerService {
 			return
 		}
 		
-		return gameService.fireWeaponsAtUnit(game, unit, weapons, target);
+		return gameService.fireWeaponsAtUnit(game, unit, weapons, target)
 	}
 	
 	/**
@@ -126,8 +120,25 @@ class GameControllerService {
 	 * @return
 	 */
 	private def skip(Game game, Pilot pilot, BattleUnit unit, Map params) {
-		if(unit == null) return
-		
 		return gameService.skipTurn(game, unit)
+	}
+	
+	/**
+	 * Request from the client to acquire the target
+	 * @param game
+	 * @param pilot
+	 * @param unit
+	 * @param params
+	 * @return
+	 */
+	private def target(Game game, Pilot pilot, BattleUnit unit, Map params) {
+		String targetId = params.target_id
+		BattleUnit target = BattleUnit.read(targetId)
+		
+		if(target == null) {
+			return
+		}
+		
+		return gameService.targetUnitInfo(game, unit, target)
 	}
 }

@@ -210,6 +210,23 @@ class BattleMech extends BattleUnit {
 		return false
 	}
 	
+	/**
+	 * Gets all weapons currently equipped
+	 * @return
+	 */
+	public BattleWeapon[] getWeapons() {
+		def weapons = []
+		for(String equipId in crits) {
+			if(equipId == null) continue
+			BattleEquipment e = BattleEquipment.read(equipId)
+			if(e instanceof BattleWeapon && !weapons.contains(e)) {
+				weapons.add(e)
+			}
+		}
+		
+		return weapons
+	}
+	
 	@Override
 	public String toString() {
 		return mech?.name +" "+ mech?.chassis+"-"+mech?.variant
