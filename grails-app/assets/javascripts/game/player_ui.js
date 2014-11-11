@@ -395,6 +395,10 @@ function updateTargetDisplay() {
  * @param message
  */
 function addMessageUpdate(message) {
+	if(messagingArea == null) {
+		messagingArea = new createjs.DOMElement(document.getElementById("messagingArea"));
+	}
+	
 	messagingArea.htmlElement.innerHTML += "&#13;&#10;"+message;
 	messagingArea.htmlElement.scrollTop = messagingArea.htmlElement.scrollHeight;
 }

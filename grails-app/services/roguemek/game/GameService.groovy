@@ -787,6 +787,10 @@ class GameService {
 					toHit -= mod.getValue()
 				}
 				
+				if(toHit < 0) {
+					toHit = 0.0
+				}
+				
 				def thisWeaponToHit = [
 					weaponId: w.id,
 					toHit: toHit

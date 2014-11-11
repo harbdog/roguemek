@@ -196,24 +196,24 @@ class WeaponModifier {
 			// but since AP movement is based on running, speed from jumping will be halved then +1 additional will be counted
 			toHitMods.push(new WeaponModifier(Modifier.TARGET_JUMPING, Math.floor(tgtSpeed/2) + 1) * STANDARD_MODIFIER)
 		}
-		else{
+		else if(tgtSpeed > 0){
 			// +1 will be added for each hex moved since AP movement is less per turn than standard BT
 			toHitMods.push(new WeaponModifier(Modifier.TARGET_MOVING, tgtSpeed * STANDARD_MODIFIER))
 		}
 		
 		
-		// TODO: add LOS obstacle modifiers
-		//def los = calculateLos(srcLocation, tgtUnit.location)
-		//def losMods = losModifiers(los)
-		//toHitMods = toHitMods.concat(losMods)
+		// add LOS obstacle modifiers
+		def los = Compute.calculateLos(game, srcLocation, tgtUnit.location)
+		def losMods = Compute.losModifiers(los)
+		toHitMods = (toHitMods << losMods).flatten()
 		
-		// TODO: add attacker terrain modifier
-		//def attackerMods = getAttackerTerrainModifier(srcLocation)
-		//toHitMods = toHitMods.concat(attackerMods)
+		// add attacker terrain modifier
+		def attackerMods = Compute.getAttackerTerrainModifier(game, srcLocation)
+		toHitMods = (toHitMods << attackerMods).flatten()
 		
-		// TODO: add target terrain modifier
-		//def targetMods = getTargetTerrainModifier(tgtUnit.location)
-		//toHitMods = toHitMods.concat(targetMods)
+		// add target terrain modifier
+		def targetMods = Compute.getTargetTerrainModifier(game, tgtUnit.location)
+		toHitMods = (toHitMods << targetMods).flatten()
 		
 		return toHitMods;
 	}

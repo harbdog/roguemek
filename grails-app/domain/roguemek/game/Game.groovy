@@ -82,4 +82,14 @@ class Game {
 		
 		return foundUnits
 	}
+	
+	/**
+	 * Gets the Hex at the given x,y location
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Hex getHexAt(Coords c) {
+		return board.getHexAt(c.x, c.y)
+	}
 }
