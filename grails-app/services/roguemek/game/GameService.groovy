@@ -288,16 +288,16 @@ class GameService {
 		/*if(mech.jumpMP == 0)
 			return 0;
 		
-		var jumpMPReduce = getReduceJumpMP(mech);
-		var jumpMPThisTurn = mech.jumpMP - jumpMPReduce;
+		def jumpMPReduce = getReduceJumpMP(mech);
+		def jumpMPThisTurn = mech.jumpMP - jumpMPReduce;
 		
 		if(jumpMPThisTurn <= 0){
 			return 0;
 		}
 		
-		var maxJP = Math.floor(jumpMPThisTurn / 2) + (jumpMPThisTurn % 2);
+		def maxJP = Math.floor(jumpMPThisTurn / 2) + (jumpMPThisTurn % 2);
 		
-		var jp = mech.jumpPoints + 1;
+		def jp = mech.jumpPoints + 1;
 		if(jp > maxJP){
 			jp = maxJP;
 		}*/
@@ -861,62 +861,33 @@ class GameService {
 			if(weaponHit) {
 				data.armorHit = []
 				
-				// TODO: determine hit location based on relative position of the attack on the target
-				int hitRoll = Roll.rollD6(2)
-				int hitLocation = Mech.FRONT_HIT_LOCATIONS[hitRoll - 2]
+				// determine hit location based on relative position of the attack on the target
+				int hitLocation = getHitLocation(game, unit, weapon, target)
 				
-				thisWeaponData.weaponHitLocations = []
-				
-				if(target instanceof BattleMech) {
-					BattleMech t = BattleMech.get(target.id)
+				if(hitLocation < 0) {
+					// a hit can still be a miss if legs are rolled with partial cover
+					weaponHit = false
+					thisWeaponData.weaponHit = false
+				}
+				else {
+					thisWeaponData.weaponHitLocations = []
 					
-					// TODO: handle cluster damage weapons (LRM, SRM, etc)
-					int damage = weapon.getDamage()
-					t.damageTaken += damage
-					
-					// update damage data by location to be returned
-					int totalDamage = thisWeaponData.weaponHitLocations[hitLocation] ?: 0
-					thisWeaponData.weaponHitLocations[hitLocation] = totalDamage + damage
-					
-					int armorRemains = t.armor[hitLocation]
-					armorRemains -= damage
-					
-					if(armorRemains < 0) {
-						// internals take leftover damage
-						data.internalsHit = []
+					if(target instanceof BattleMech) {
+						// TODO: handle cluster damage weapons (LRM, SRM, etc)
+						int damage = weapon.getDamage()
+						applyDamage(damage, target, hitLocation)
 						
-						// TODO: handle internal damage transfer from REAR hit locations
-						int internalRemains = t.internals[hitLocation]
-						internalRemains += armorRemains
-						
-						armorRemains = 0
-						if(internalRemains < 0) {
-							// TODO: implement damage transfer from hit locations that are already destroyed internally
-							internalRemains = 0
-						}
-						
-						t.internals[hitLocation] = internalRemains
-						
-						// add the response location and remaining points of the hit internal section
-						data.internalsHit[hitLocation] = internalRemains
+						// set the message of the hit result
+						messageCode = "game.weapon.hit"
+						messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName(), damage, Mech.getLocationText(hitLocation)]
 					}
-					
-					t.armor[hitLocation] = armorRemains
-					
-					// add the response location and remaining points of the hit armor section
-					data.armorHit[hitLocation] = armorRemains
-					
-					t.save flush:true
-					
-					// set the message of the result
-					messageCode = "game.weapon.hit"
-					messageArgs = [unit.toString(), target.toString(), weapon.getShortName(), weapon.getDamage()]
 				}
 			}
-			else {
-				// set the message of the result
+			
+			if(!weaponHit) {
+				// set the message of the missed result
 				messageCode = "game.weapon.missed"
-				messageArgs = [unit.toString(), target.toString(), weapon.getShortName()]
+				messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName()]
 			}
 			
 			// add the weapon heat
@@ -933,6 +904,11 @@ class GameService {
 			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, data)
 		}
 		
+		// update return data with target armor/internals
+		// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
+		data.armorHit = target.armor
+		data.internalsHit = target.internals
+		
 		// apply the total weapon heat
 		unit.heat += totalHeat
 		data.heat = unit.heat
@@ -942,6 +918,7 @@ class GameService {
 		data.apRemaining = unit.apRemaining
 		
 		unit.save flush:true
+		target.save flush:true
 		
 		// automatically end the unit's turn after firing
 		this.initializeNextTurn(game)
@@ -950,6 +927,261 @@ class GameService {
 		return data
 	}
 	
+
+	/**
+	 * performs the roll to determine the hit location taking into account the orientation of the target
+	 * @param game
+	 * @param srcUnit
+	 * @param weapon
+	 * @param tgtUnit
+	 * @return
+	 */
+	public int getHitLocation(Game game, BattleUnit srcUnit, BattleWeapon weapon, BattleUnit tgtUnit){
+	
+		// account for the orientation of the target
+		// if(tgtUnit instanceof BattleMech)...
+		def unitLocations = Mech.FRONT_HIT_LOCATIONS
+		
+		// TODO: Melee weapon hit locations
+		/*def isHatchet = (weapon instanceof WeaponHatchet);
+		def isPunch = (weapon instanceof WeaponPunch);
+		def isKick = (weapon instanceof WeaponKick);*/
+		
+		Coords srcLocation = srcUnit.getLocation()
+		Coords tgtLocation = tgtUnit.getLocation()
+		
+		// account for punch/kick/hatchet hit location when target is different elevation
+		def srcHex = game.getHexAt(srcLocation)
+		def tgtHex = game.getHexAt(tgtLocation);
+		def elevationDiff = srcHex.elevation - tgtHex.elevation
+		
+		// use punch locations for punching at same elevation, or when above target by one elevation level for kick/hatchet
+		boolean usePunchLocations = false
+		/*def usePunchLocations = ((isPunch && elevationDiff == 0)
+				|| (isKick && elevationDiff == 1)
+				|| (isHatchet && elevationDiff == 1));*/
+		
+		
+		// use kick locations for kicking at same elevation, or when below target by one elevation level for punch/hatchet
+		boolean useKickLocations = false
+		/*def useKickLocations = ((isKick && elevationDiff == 0)
+				|| (isPunch && elevationDiff == -1)
+				|| (isHatchet && elevationDiff == -1));*/
+		
+		
+		// find out if the target has partial cover as it could effect the resulting hit location
+		def targetHasCover = false;
+		def fromLocationMods = WeaponModifier.getToHitModifiersFromLocation(game, srcLocation, tgtUnit)
+		for(int i=0; i<fromLocationMods.size(); i++) {
+			def modifier = fromLocationMods[i]
+			if(modifier != null
+					&& modifier.getType() == WeaponModifier.Modifier.PARTIAL_COVER
+					&& modifier.getValue() > 0) {
+				
+				targetHasCover = true
+			}
+		}
+		
+		def fromDirection = tgtLocation.direction(srcLocation)
+		def targetDirection = tgtUnit.heading
+		
+		def diff = Math.abs(fromDirection - targetDirection)
+		
+		if(diff == 3) {
+			// target is facing directly away from the source
+			//debug.log(srcUnit.variant+" on rear side of "+tgtUnit.variant);
+			if(usePunchLocations){
+				unitLocations = Mech.REAR_PUNCH_LOCATIONS
+			}
+			else if(useKickLocations){
+				unitLocations = Mech.REAR_KICK_LOCATIONS
+			}
+			else{
+				unitLocations = Mech.REAR_HIT_LOCATIONS
+			}
+		}
+		else if((diff == 2 && fromDirection > targetDirection)
+					|| (diff == 4 && fromDirection < targetDirection)) {
+			// target is on the right flank
+			//debug.log(srcUnit.variant+" on right flank of "+tgtUnit.variant);
+			if(usePunchLocations){
+				unitLocations = Mech.RIGHT_PUNCH_LOCATIONS
+			}
+			else if(useKickLocations){
+				unitLocations = Mech.RIGHT_KICK_LOCATIONS
+			}
+			else{
+				unitLocations = Mech.RIGHT_HIT_LOCATIONS
+			}
+		}
+		else if((diff == 2 && fromDirection < targetDirection)
+					|| (diff == 4 && fromDirection > targetDirection)) {
+			// target is on the left flank
+			//debug.log(srcUnit.variant+" on left flank of "+tgtUnit.variant);
+			if(usePunchLocations){
+				unitLocations = Mech.LEFT_PUNCH_LOCATIONS
+			}
+			else if(useKickLocations){
+				unitLocations = Mech.LEFT_KICK_LOCATIONS
+			}
+			else{
+				unitLocations = Mech.LEFT_HIT_LOCATIONS
+			}
+		}
+		else {
+			//debug.log(srcUnit.variant+" on front side of "+tgtUnit.variant);
+			if(usePunchLocations) {
+				unitLocations = Mech.FRONT_PUNCH_LOCATIONS
+			}
+			else if(useKickLocations) {
+				unitLocations = Mech.FRONT_KICK_LOCATIONS
+			}
+			else {
+				unitLocations = Mech.FRONT_HIT_LOCATIONS
+			}
+		}
+		
+		if(unitLocations.size() == 6) {
+			// punch and kick locations are 1d6 rolls
+			def dieResult = Roll.rollD6(1)
+			def resultLocation = dieResult - 1
+			
+			// normal locations array starts at where the 1 is rolled
+			return unitLocations[resultLocation]
+		}
+		else {
+			def dieResult = Roll.rollD6(2)
+			def resultLocation = dieResult - 2
+			//debug.log("dieResult: "+dieResult);
+			
+			if(targetHasCover &&
+					(resultLocation == Mech.LEFT_LEG
+					|| resultLocation == Mech.RIGHT_LEG)) {
+				// account for partial cover when roll to hit legs it does not hit the mech, rather the ground in front of it
+				return -1
+			}
+			
+			// normal locations array starts at where the 2 is rolled
+			return unitLocations[resultLocation]
+		}
+	}
+	
+	// apply damage to hit location starting with armor, then internal, then use damage redirect from there if needed
+	public def applyDamage(int damage, BattleUnit unit, int hitLocation) {
+		if(unit.isDestroyed()) {
+			return
+		}
+		
+		log.info("Applying "+damage+" damage to "+unit+" @ "+Mech.getLocationText(hitLocation))
+		
+		// if(unit instanceof BattleMech)...
+		while(damage > 0 && unit.armor[hitLocation] > 0) {
+			unit.armor[hitLocation] --
+			damage --
+			
+			unit.damageTaken ++
+		}
+		
+		if(damage == 0) {
+			// no damage remaining after hitting external armor, no need to go further
+			return
+		}
+		
+		// rear hit locations hit internals at a different location index corresponding to their front counterpart
+		def critLocation = hitLocation
+		if(hitLocation == Mech.LEFT_REAR) {
+			critLocation = Mech.LEFT_TORSO
+		}
+		else if(hitLocation == Mech.RIGHT_REAR) {
+			critLocation = Mech.RIGHT_TORSO
+		}
+		else if(hitLocation == Mech.CENTER_REAR) {
+			critLocation = Mech.CENTER_TORSO
+		}
+	
+		boolean critChance = false
+		while(damage > 0 && unit.internals[critLocation] > 0) {
+			unit.internals[critLocation] --
+			damage --
+			
+			critChance = true
+			
+			unit.damageTaken ++
+		}
+		
+		if(critChance) {
+			// TODO: send off to see what criticals might get hit
+			//applyCriticalHit(unit, critLocation);
+		}
+		
+		if(unit.internals[Mech.HEAD] == 0 || unit.internals[Mech.CENTER_TORSO] == 0) {
+			// if head or center internal are gone, the unit is dead
+			//debug.log("Head or CT internal destroyed!");
+			unit.status = BattleUnit.STATUS_DESTROYED
+			
+			// create destroyed message info
+			/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
+			messages.push(gm);*/
+			
+			return
+		}
+		else if(unit.internals[Mech.LEFT_LEG] == 0 && unit.internals[Mech.RIGHT_LEG] == 0) {
+			// if both of the legs internal are gone, the unit is dead
+			//debug.log("Both legs destroyed!");
+			unit.status = BattleUnit.STATUS_DESTROYED
+			
+			// create destroyed message info
+			/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
+			messages.push(gm);*/
+			
+			return
+		}
+		
+		if(unit.internals[Mech.LEFT_TORSO] == 0) {
+			// the LEFT_ARM and REAR needs to be gone if the torso is gone
+			unit.armor[Mech.LEFT_TORSO] = 0
+			unit.armor[Mech.LEFT_REAR] = 0
+			unit.armor[Mech.LEFT_ARM] = 0
+			unit.internals[Mech.LEFT_ARM] = 0
+		}
+		
+		if(unit.internals[Mech.RIGHT_TORSO] == 0) {
+			// the RIGHT_ARM and REAR needs to be gone if the torso is gone
+			unit.armor[Mech.RIGHT_TORSO] = 0
+			unit.armor[Mech.RIGHT_REAR] = 0
+			unit.armor[Mech.RIGHT_ARM] = 0
+			unit.internals[Mech.RIGHT_ARM] = 0
+		}
+		
+		// TODO: update any destroyed weapons in locations with no remaining internal armor
+		//updateDestroyedWeapons(unit);
+		
+		// any damage remaining after internals needs spread to other parts unless it was the Head or Center Torso (in which case the unit was already pronounced dead)
+		if(damage == 0 || unit.isDestroyed()) {
+			return
+		}
+		else if(hitLocation == Mech.LEFT_ARM || hitLocation == Mech.LEFT_LEG || hitLocation == Mech.LEFT_REAR) {
+			return applyDamage(damage, unit, Mech.LEFT_TORSO)
+		}
+		else if(hitLocation == Mech.RIGHT_ARM || hitLocation == Mech.RIGHT_LEG || hitLocation == Mech.RIGHT_REAR) {
+			return applyDamage(damage, unit, Mech.RIGHT_TORSO)
+		}
+		else if(hitLocation == Mech.LEFT_TORSO || hitLocation == Mech.RIGHT_TORSO) {
+			return applyDamage(damage, unit, Mech.CENTER_TORSO)
+		}
+		else {
+			log.error("Who the hell did I hit?  Extra "+damage+" damage from location: "+hitLocation)
+		}
+	}
+	
+	/**
+	 * checks to see if the location being moved to can be done with respect to elevation and impedence
+	 * also the currentXY needs to be adjacent, otherwise it will not mean much
+	 * @param game
+	 * @param currentCoords
+	 * @param newCoords
+	 * @return the AP required (-1 if not possible)
+	 */
 	private int getHexRequiredAP(Game game, Coords currentCoords, Coords newCoords) {
 		int apRequired = 1
 		

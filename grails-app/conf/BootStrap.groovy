@@ -22,7 +22,7 @@ class BootStrap {
 		def adminPassword = 'Pass99'
 		
 		def testEmail = 'roguemek@gmail.com'
-		def testCallsign = 'RogueMek'
+		def testCallsign = 'RogueMekWarrior'
 		def testPassword = 'Pass99'
 		
 		// Create Admin user with all Roles

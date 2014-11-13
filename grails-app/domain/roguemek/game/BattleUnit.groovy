@@ -77,11 +77,35 @@ class BattleUnit {
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED]
     }
 	
+	/**
+	 * Returns true if the status of the unit is destroyed
+	 * @return
+	 */
+	public boolean isDestroyed() {
+		return status == STATUS_DESTROYED
+	}
+	
+	/**
+	 * Gets the x,y hex location of this unit as Coords
+	 * @return
+	 */
 	public Coords getLocation() {
 		if(this.x == null || this.y == null) {
 			return null
 		}
 		return new Coords(this.x, this.y)
+	}
+	
+	/**
+	 * Returns just the Callsign of the pilot's user
+	 * @return
+	 */
+	public String getPilotCallsign() {
+		if(pilot == null || pilot.ownerUser == null) {
+			return "RogueMekWarrior"
+		}
+		
+		return pilot.ownerUser.callsign
 	}
 	
 	@Override

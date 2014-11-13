@@ -82,7 +82,7 @@ class Compute {
 	 * based off of the same method from MegaMek (Compute.java)
 	 */
 	public static def losStraight(Game game, Coords sourceC, Coords targetC) {
-		log.info("losStraight: "+sourceC+"->"+targetC)
+		log.debug("losStraight: "+sourceC+"->"+targetC)
 		
 		def interveningCoords = intervening(game, sourceC, targetC)
 		
@@ -124,7 +124,7 @@ class Compute {
 	 * based off of the same method from MegaMek (Compute.java)
 	 */
 	public static def losDivided(Game game, Coords sourceC, Coords targetC) {
-		log.info("losDivided: "+sourceC+"->"+targetC)
+		log.debug("losDivided: "+sourceC+"->"+targetC)
 		
 		def interveningCoords = intervening(game, sourceC, targetC)
 		
@@ -255,11 +255,11 @@ class Compute {
 		Hex thisHex = game.getHexAt(thisCoord)
 		
 		if(thisHex == null){
-			log.info("   HEX NULL")
+			log.debug("   HEX NULL")
 			return los
 		}
 		
-		log.info("   HEX: "+thisHex)
+		log.debug("   HEX: "+thisHex)
 		
 		// set up elevations
 		def srcEl = sourceHex.elevation + 1		//TODO: the +1 for source represents it is standing, prone would be +0

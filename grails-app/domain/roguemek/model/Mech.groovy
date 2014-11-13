@@ -124,6 +124,51 @@ class Mech extends Unit {
 	}
 	
 	/**
+	 * returns shortened text of the hit location index
+	 * @param index
+	 * @return
+	 */
+	public static String getLocationText(index){
+		String locText = "";
+		switch(index){
+			case HEAD:
+				locText = "HD";
+				break;
+			case LEFT_ARM:
+				locText = "LA";
+				break;
+			case LEFT_TORSO:
+				locText = "LT";
+				break;
+			case CENTER_TORSO:
+				locText = "CT";
+				break;
+			case RIGHT_TORSO:
+				locText = "RT";
+				break;
+			case RIGHT_ARM:
+				locText = "RA";
+				break;
+			case LEFT_LEG:
+				locText = "LL";
+				break;
+			case RIGHT_LEG:
+				locText = "RL";
+				break;
+			case LEFT_REAR:
+				locText = "LTR";
+				break;
+			case CENTER_REAR:
+				locText = "CTR";
+				break;
+			case RIGHT_REAR:
+				locText = "RTR";
+				break;
+		}
+		return locText;
+	}
+	
+	/**
 	 * Gets the start index of the crits array for the given section
 	 * @param critSectionIndex
 	 * @return
