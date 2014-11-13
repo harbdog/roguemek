@@ -19,6 +19,11 @@ function target() {
 		if(data.weaponData){
 			var t = units[data.target];
 			
+			// TODO: move clearing previous toHit for each weapon to its own method
+			$.each(playerUnit.weapons, function(key, w) {
+				w.toHit = null;
+			});
+			
 			// update the cooldown status of the weapons fired
 			$.each(data.weaponData, function(key, wData) {
 				var id = wData.weaponId;

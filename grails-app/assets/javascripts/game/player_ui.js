@@ -215,6 +215,7 @@ function updateWeaponsDisplay() {
 		// TODO: move to events.js
 		if(!$(this).hasClass("cooldown")){
 			// only allow weapons to be selected that aren't on cooldown
+			// TODO: only allow weapons to be selected that have >0% chance to hit
 			$(this).toggleClass("selected");
 			updateSelectedWeapons();
 		}

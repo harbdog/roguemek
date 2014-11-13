@@ -25,6 +25,18 @@ class GameService {
 		public String toString() { return str }
 	}
 	
+	// TODO: move RelativeDirection enum out to a separate class?
+	public enum RelativeDirection {
+		FRONT("Front"),
+		LEFT("Left"),
+		RIGHT("Right"),
+		REAR("Rear"),
+		
+		RelativeDirection(str) { this.str = str }
+		private final String str
+		public String toString() { return str }
+	}
+	
 	/**
 	 * Starts the game so it is ready to play the first turn
 	 */
@@ -787,15 +799,13 @@ class GameService {
 					toHit -= mod.getValue()
 				}
 				
-				if(toHit < 0) {
-					toHit = 0.0
+				if(toHit > 0) {
+					def thisWeaponToHit = [
+						weaponId: w.id,
+						toHit: toHit
+					]
+					weaponData.add(thisWeaponToHit)
 				}
-				
-				def thisWeaponToHit = [
-					weaponId: w.id,
-					toHit: toHit
-				]
-				weaponData.add(thisWeaponToHit)
 			}
 		}
 		
@@ -1335,24 +1345,142 @@ class GameService {
 		// http://www.rossmack.com/ab/RPG/traveller/AstroHexDistance.asp 
 		// it is no longer present, now only at web.archive.org
 		
-		if(sourceC == null || targetC == null)	return -1;
+		if(sourceC == null || targetC == null)	return -1
 		
-		def xd, ym, ymin, ymax, yo;
-		xd = Math.abs(sourceC.x - targetC.x);
-		yo = Math.floor(xd / 2) + (!sourceC.isXOdd() && targetC.isXOdd() ? 1 : 0);
-		ymin = sourceC.y - yo;
-		ymax = ymin + xd;
-		ym = 0;
+		def xd, ym, ymin, ymax, yo
+		xd = Math.abs(sourceC.x - targetC.x)
+		yo = Math.floor(xd / 2) + (!sourceC.isXOdd() && targetC.isXOdd() ? 1 : 0)
+		ymin = sourceC.y - yo
+		ymax = ymin + xd
+		ym = 0
 		if (targetC.y < ymin) {
-			ym = ymin - targetC.y;
+			ym = ymin - targetC.y
 		}
 		if (targetC.y > ymax) {
-			ym = targetC.y - ymax;
+			ym = targetC.y - ymax
 		}
 		
-		def range = xd + ym;
+		def range = xd + ym
 		
-		return range;
+		return range
+	}
+	
+	/**
+	 * returns the direction of the target relative to the heading of the source using Mech objects as input
+	 * @param srcUnit
+	 * @param tgtUnit
+	 * @return
+	 */
+	public static RelativeDirection getRelativeDirection(BattleUnit srcUnit, BattleUnit tgtUnit) {
+		return getRelativeDirectionFrom(srcUnit.getLocation(), srcUnit.heading, tgtUnit.getLocation())
+	}
+	
+
+	/**
+	 * returns the direction of the target relative to the heading of the source
+	 * @param srcLocation
+	 * @param srcHeading
+	 * @param tgtLocation
+	 * @return
+	 */
+	public static RelativeDirection getRelativeDirectionFrom(Coords srcLocation, int srcHeading, Coords tgtLocation) {
+		if(srcLocation == null || srcHeading == null || tgtLocation == null) {
+			return null;
+		}
+		
+		int toDegree = srcLocation.degree(tgtLocation)
+		int srcDegree = getHeadingDegrees(srcHeading)
+		
+		int diffDegree = toDegree - srcDegree
+		if(diffDegree < 0){
+			diffDegree = 360 + diffDegree
+		}
+		
+		RelativeDirection relDirection = RelativeDirection.FRONT
+		if(diffDegree >= 270 || diffDegree <= 90) {
+			relDirection = RelativeDirection.FRONT
+		}
+		else if(diffDegree > 90 && diffDegree < 150) {
+			relDirection = RelativeDirection.RIGHT
+		}
+		else if(diffDegree >= 150 && diffDegree <= 210) {
+			relDirection = RelativeDirection.REAR
+		}
+		else if(diffDegree > 210 && diffDegree < 270) {
+			relDirection = RelativeDirection.LEFT
+		}
+		
+		return relDirection
+	}
+	
+	/**
+	 * gets the degree direction of the heading given
+	 * @param heading
+	 * @return
+	 */
+	public static int getHeadingDegrees(int heading) {
+		int degrees = 0
+		
+		switch(heading) {
+			case 0: //"N"
+				degrees = 0
+				break
+				
+			case 1: //"NE"
+				degrees = 60
+				break
+				
+			case 2: //"SE"
+				degrees = 120
+				break
+				
+			case 3: //"S"
+				degrees = 180
+				break
+				
+			case 4: //"SW"
+				degrees = 240
+				break
+				
+			case 5: //"NW"
+				degrees = 300
+				break
+				
+			default: //"WTF"
+				break
+		}
+		
+		return degrees
+	}
+	
+	/**
+	 * returns the compass direction of the degrees given
+	 * @param degrees
+	 * @return
+	 */
+	public static int getDegreesHeading(int degrees) {
+		int heading = 0
+		
+		if(degrees >= 330 || degrees <= 30) {
+			heading = 0
+		}
+		else if(degrees > 30 && degrees <= 90) {
+			heading = 1
+		}
+		else if(degrees > 90 && degrees < 150) {
+			heading = 2
+		}
+		else if(degrees >= 150 && degrees <= 210) {
+			heading = 3
+		}
+		else if(degrees > 210 && degrees < 270) {
+			heading = 4
+		}
+		else{
+			heading = 5
+		}
+		
+		return heading
 	}
 	
 	/**
@@ -1364,10 +1492,10 @@ class GameService {
 		
 		for(def role in roles) {
 			if(role.getAuthority() == Role.ROLE_ROOT) {
-				return true;
+				return true
 			}
 		}
 		
-		return false;
+		return false
 	}
 }

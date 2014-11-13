@@ -2,6 +2,7 @@ package roguemek.game
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+
 import roguemek.model.*
 import roguemek.mtf.MechMTF
 
@@ -58,11 +59,66 @@ class WeaponModifier {
 	/**
 	 * Returns objects describing each modifier to hit the target from the source with the given weapon
 	 */
-	public static def getToHitModifiers(Game game, BattleUnit srcUnit, BattleWeapon weapon, BattleUnit tgtUnit){
+	public static def getToHitModifiers(Game game, BattleUnit srcUnit, BattleWeapon weapon, BattleUnit tgtUnit) {
+		def toHitMods = []
+		
+		// make sure target is in the firing arc for the weapon's location
+		GameService.RelativeDirection relDirection = GameService.getRelativeDirection(srcUnit, tgtUnit)
+		if(relDirection == GameService.RelativeDirection.REAR){
+			// only rear firing weapons are allowed to hit
+			
+			boolean canFlipArms = true
+			boolean isArmWeapon = Mech.ARMS.contains(weapon.location)
+			if(isArmWeapon){
+				// check if the mech has no Lower Arm or Hand actuators in BOTH arms, as it can reverse/flip the arms to fire in rear arc
+				def armCrits = getCritSection(weapon.location)
+				
+				for(thisCrit in armCrits) {
+					if(MechMTF.MTF_CRIT_LOW_ARM_ACT == thisCrit.getName()
+							|| MechMTF.MTF_CRIT_HAND_ACT == thisCrit.getName()){
+						// actuator found, flipping arms not possible
+						canFlipArms = false;
+						break;
+					}
+				}
+			}
+			
+			if(isArmWeapon && canFlipArms) {
+				// allow flippable arms to fire in rear arc
+			}
+			else if(weapon.location != Mech.RIGHT_REAR
+					&& weapon.location != Mech.CENTER_REAR
+					&& weapon.location != Mech.LEFT_REAR) {
+				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				return toHitMods
+			}
+		}
+		else if(relDirection == GameService.RelativeDirection.LEFT) {
+			// only left arm weapons are allowed to hit (maybe also allow left torso?)
+			if(weapon.location != Mech.LEFT_ARM) {
+				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				return toHitMods
+			}
+		}
+		else if(relDirection == GameService.RelativeDirection.RIGHT) {
+			// only right arm weapons are allowed to hit
+			if(weapon.location != Mech.RIGHT_ARM) {
+				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				return toHitMods
+			}
+		}
+		else {
+			// any weapon can hit not located in a rear torso
+			if(weapon.location == Mech.RIGHT_REAR
+					|| weapon.location == Mech.CENTER_REAR
+					|| weapon.location == Mech.LEFT_REAR) {
+				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				return toHitMods
+			}
+		}
+		
 		int range = GameService.getRange(srcUnit.getLocation(), tgtUnit.getLocation())
 		
-		def toHitMods = []
-	
 		int rangeModifier = -1
 		def weaponRanges = weapon.getRanges()
 		

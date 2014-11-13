@@ -132,7 +132,7 @@ function initGame(){
 		// If we haven't been passed the event get the window.event
 	    e = e || window.event;
 
-	    var message = 'Reloading the page will cause some temporary content to be cleared, such as messaging.';
+	    var message = 'Embrace Cowardice?';
 	    // For IE6-8 and Firefox prior to version 4
 	    if(e) {
 	        e.returnValue = message;
