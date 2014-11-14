@@ -502,6 +502,39 @@ function getWeaponById(id) {
 }
 
 /**
+ * just a roll of the dice
+ */
+function rollDice(numDie, numSides){
+	//defaults to 2 dice with 6 sides
+	if (!numDie) numDie = 2;
+	if (!numSides) numSides = 6;
+	
+	//results of the dice rolls
+	var results = [];
+	
+	for(var i=0; i<numDie; i++){
+		//generate a random number between 1 and the number of sides
+		results[i] = Math.floor( (Math.random()*numSides) +1 );
+	}
+
+	return results;
+}
+
+/**
+ * adds the resulting number of die together
+ */
+function getDieRollTotal(numDie, numSides){
+	var results = rollDice(numDie, numSides);
+	
+	var total = 0;
+	for(var i=0; i<results.length; i++){
+		total += results[i];
+	}
+	
+	return total;
+}
+
+/**
  * Long polling to retrieve updates from the game asynchronously
  */
 function poll() {

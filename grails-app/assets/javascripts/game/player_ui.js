@@ -5,6 +5,9 @@
 var playerContainer, messagingContainer, messagingArea, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay,
 	controlDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay, targetBracket;
 
+// Close enough...
+var PI = 3.14;
+
 // X width of the player display bar
 var playerContainerWidth = 200;
 
@@ -86,6 +89,13 @@ function initPlayerUI() {
 	targetBracket = new createjs.Bitmap(targetImg);
 	targetBracket.regX = targetImg.width/2;
 	targetBracket.regY = targetImg.height/2;
+}
+
+/**
+ * Intended to be called back from Tweens when the object is ready to remove itself from teh stage
+ */
+function removeThisFromStage() {
+	stage.removeChild(this);
 }
 
 function setPlayerInfo(unitName, playerName) {
@@ -334,6 +344,9 @@ function updateWeaponsCooldown() {
 	});
 }
 
+/**
+ * Updates the target info display
+ */
 function updateTargetDisplay() {
 	if(playerTarget == null) return;
 	
@@ -402,4 +415,79 @@ function addMessageUpdate(message) {
 	
 	messagingArea.htmlElement.innerHTML += "&#13;&#10;"+message;
 	messagingArea.htmlElement.scrollTop = messagingArea.htmlElement.scrollHeight;
+}
+
+/**
+ * Gets the display X,Y coordinates of an object moving a number of pixels at the given angle
+ * @returns Point
+ */
+function getMovementDestination(sourceX, sourceY, distance, angle){
+	var oppSide = Math.sin(angle * PI/180) * distance;
+	var adjSide = Math.cos(angle * PI/180) * distance;
+	
+	var p = new Point();
+	p.x = sourceX + oppSide;
+	p.y = sourceY - adjSide;
+	
+	return p;
+}
+
+/**
+ * Calculates the distance between two x,y points in space
+ */
+function getDistanceToTarget(sourceX, sourceY, targetX, targetY){
+	// C^2 = A^2 + B^2
+	return Math.sqrt(Math.pow(Math.abs(sourceX - targetX), 2) + Math.pow(Math.abs(sourceY - targetY), 2));
+}
+
+/**
+ * Gets the angle to the target
+ */
+function getAngleToTarget(sourceX, sourceY, targetX, targetY){
+	var quadrant = 0;
+	var addedAngle = 0;
+	if(targetX >= sourceX && targetY < sourceY){
+		quadrant = 1;
+		addedAngle = 0;
+	}
+	else if(targetX >= sourceX && targetY >= sourceY){
+		quadrant = 2;
+		addedAngle = 90;
+	}
+	else if(targetX < sourceX && targetY >= sourceY){
+		quadrant = 3;
+		addedAngle = 180;
+	}
+	else{
+		quadrant = 4;
+		addedAngle = 270;
+	}
+	
+	var oppSide = 0;
+	var adjSide = 0;
+	switch(quadrant){
+		case 1:
+			oppSide = targetX - sourceX;
+			adjSide = sourceY - targetY;
+			break;
+			
+		case 2:
+			oppSide = targetY - sourceY;
+			adjSide = targetX - sourceX;
+			break;
+			
+		case 3:
+			oppSide = sourceX - targetX;
+			adjSide = targetY - sourceY;
+			break;
+			
+		case 4:
+			oppSide = sourceY - targetY;
+			adjSide = sourceX - targetX;
+			break;
+	}
+	
+	// calculate new angle based on pointer position, each angle is calculated from X axis where Urbie is origin point
+	var angle = addedAngle + Math.atan((oppSide) / (adjSide)) * (180 / PI);
+	return angle;
 }

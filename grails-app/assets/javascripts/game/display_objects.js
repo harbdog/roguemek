@@ -3,6 +3,17 @@
  */
 
 /**
+ * Class for string an x, y point on the display
+ */
+function Point(x, y) {
+	this.initialize(x, y);
+}
+Point.prototype.initialize = function(x, y) {
+	this.x = x;
+	this.y = y;
+}
+
+/**
  * Class for displaying each Hex
  */
 function HexDisplay(hexX, hexY, images) {
