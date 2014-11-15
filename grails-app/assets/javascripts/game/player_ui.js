@@ -491,3 +491,81 @@ function getAngleToTarget(sourceX, sourceY, targetX, targetY){
 	var angle = addedAngle + Math.atan((oppSide) / (adjSide)) * (180 / PI);
 	return angle;
 }
+
+/** 
+ * Using the Point object of center reference, mech heading, and a mech limb location will return the Point on screen from where it should be.
+ * e.g. to display the weapon fire coming from the left arm, it should be 90 degrees counter clockwise from the heading
+ */ 
+function getPositionFromLocationAngle(p, heading, location){
+	// TODO: determine radius based on size of mech image
+	var radius = 15;
+	var headingAngle = 0;
+	var locationAngle = 0;
+	
+	switch(heading){
+		case 0: //"N"
+			headingAngle = 270;
+			break;
+			
+		case 1: //"NE"
+			headingAngle = 330;
+			break;
+			
+		case 2: //"SE"
+			headingAngle = 30;
+			break;
+			
+		case 3: //"S"
+			headingAngle = 90;
+			break;
+			
+		case 4: //"SW"
+			headingAngle = 150;
+			break;
+			
+		case 5: //"NW"
+			headingAngle = 210;
+			break;
+	}
+	
+	switch(location){
+		case LEFT_ARM:
+			locationAngle = -90;
+			break;
+			
+		case LEFT_TORSO:
+		case LEFT_LEG:
+			locationAngle = -60;
+			break;
+		
+		case RIGHT_ARM:
+			locationAngle = 90;
+			break;
+			
+		case RIGHT_TORSO:
+		case RIGHT_LEG:
+			locationAngle = 60;
+			break;
+			
+		case LEFT_REAR:
+			locationAngle = 210;
+			break;
+			
+		case RIGHT_REAR:
+			locationAngle = 150;
+			break;
+			
+		case CENTER_REAR:
+			locationAngle = 180;
+			break;
+			
+		default: break;
+	}
+	
+	var angleInRadians = (headingAngle + locationAngle) * Math.PI / 180;
+	
+	var x = p.x + Math.cos(angleInRadians) * radius;
+	var y = p.y + Math.sin(angleInRadians) * radius;
+	
+	return new Point(x, y);
+}

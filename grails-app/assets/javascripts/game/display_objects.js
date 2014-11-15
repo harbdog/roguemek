@@ -12,6 +12,9 @@ Point.prototype.initialize = function(x, y) {
 	this.x = x;
 	this.y = y;
 }
+Point.prototype.toString = function() {
+	return "Point@["+this.x+","+this.y+"]";
+}
 
 /**
  * Class for displaying each Hex
@@ -253,4 +256,18 @@ UnitDisplay.prototype.showBackwardControl = function(visible) {
 }
 UnitDisplay.prototype.toString = function() {
 	return "[UnitDisplay@"+this.x+","+this.y+":"+this.imageStr+"]";
+}
+
+/**
+ * Class for displaying each Projectile
+ */
+function Projectile(x, y) {
+	this.initialize(x, y);
+}
+Projectile.prototype = new createjs.Shape();
+Projectile.prototype.Shape_initialize = Projectile.prototype.initialize;
+Projectile.prototype.initialize = function(x, y) {
+	this.Shape_initialize();
+	this.x = x;
+	this.y = y;
 }

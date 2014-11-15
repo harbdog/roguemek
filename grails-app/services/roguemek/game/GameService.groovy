@@ -881,11 +881,17 @@ class GameService {
 				}
 				else {
 					thisWeaponData.weaponHitLocations = []
+					if(thisWeaponData.weaponHitLocations[hitLocation] == null) {
+						thisWeaponData.weaponHitLocations[hitLocation] = 0
+					}
 					
 					if(target instanceof BattleMech) {
 						// TODO: handle cluster damage weapons (LRM, SRM, etc)
 						int damage = weapon.getDamage()
 						applyDamage(damage, target, hitLocation)
+						
+						
+						thisWeaponData.weaponHitLocations[hitLocation] += damage
 						
 						// set the message of the hit result
 						messageCode = "game.weapon.hit"

@@ -2,6 +2,34 @@
  * display_objects.js - Definitions for game model related object classes and their methods
  */
 
+// Weapon classifications
+var WEAPON_MELEE = "Melee";
+var WEAPON_ENERGY = "Energy";
+var WEAPON_BALLISTIC = "Ballistic";
+var WEAPON_MISSILE = "Missile";
+
+// Specific weapons
+var WeaponAC20 = "AC/20";
+var WeaponAC10 = "AC/10";
+var WeaponAC5 = "AC/5";
+var WeaponAC2 = "AC/2";
+var WeaponMGUN = "MGUN";
+
+var WeaponSLAS = "SLAS";
+var WeaponMLAS = "MLAS";
+var WeaponLLAS = "LLAS";
+var WeaponPPC = "PPC";
+var WeaponFlamer = "FLAMR";
+
+var WeaponSRM2 = "SRM2";
+var WeaponSRM4 = "SRM4";
+var WeaponSRM6 = "SRM6";
+
+var WeaponLRM5 = "LRM5";
+var WeaponLRM10 = "LRM10";
+var WeaponLRM15 = "LRM15";
+var WeaponLRM20 = "LRM20";
+
 /**
  * Class used to store Hex (not stage) X,Y coordinates
  */
@@ -36,7 +64,7 @@ Coords.prototype.getAdjacentCoords = function() {
 	return adjacents;
 }
 Coords.prototype.toString = function() {
-	return "["+this.x+","+this.y+"]";
+	return "Coords@["+this.x+","+this.y+"]";
 }
 
 /**
@@ -130,6 +158,35 @@ Weapon.prototype.initialize = function(id, name, shortName, weaponType, location
 	this.range = range || [0, 0, 0];
 	this.cycle = cycle;
 	this.cooldown = cooldown;
+}
+Weapon.prototype.getProjectiles = function() {
+	return this.projectiles;
+}
+Weapon.prototype.isClusterWeapon = function() {
+	return (this.projectiles > 1);
+}
+Weapon.prototype.isMeleeWeapon = function() {
+	return (this.weaponType == WEAPON_MELEE);
+}
+Weapon.prototype.isEnergyWeapon = function() {
+	return (this.weaponType == WEAPON_ENERGY);
+}
+Weapon.prototype.isBallisticWeapon = function() {
+	return (this.weaponType == WEAPON_BALLISTIC);
+}
+Weapon.prototype.isMissileWeapon = function() {
+	return (this.weaponType == WEAPON_MISSILE);
+}
+Weapon.prototype.isLRM = function() {
+	return (this.shortName == WeaponLRM5
+			|| this.shortName == WeaponLRM10
+			|| this.shortName == WeaponLRM15
+			|| this.shortName == WeaponLRM20);
+}
+Weapon.prototype.isSRM = function() {
+	return (this.shortName == WeaponSRM2
+			|| this.shortName == WeaponSRM4
+			|| this.shortName == WeaponSRM6);
 }
 Weapon.prototype.toString = function() {
 	return this.name;

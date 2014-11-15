@@ -130,7 +130,7 @@ function fire_weapons(weapons) {
 	$.each(weapons, function(key, w) {
 		weapon_ids.push(w.id);
 	});
-	
+		
 	handleActionJSON({
 		perform: "fire_weapons",
 		weapon_ids: weapon_ids,
@@ -158,8 +158,6 @@ function fire_weapons(weapons) {
 				if(weapon != null){
 					weapon.cooldown = cooldown;
 					
-					// TODO: show floating miss/hit numbers
-					
 					if(hit) {
 						console.log("Weapon "+weapon+" hit the target in the following locations, cooldown for "+cooldown+" turns");
 						
@@ -173,115 +171,9 @@ function fire_weapons(weapons) {
 						console.log("Weapon "+weapon+" missed the target!");
 					}
 					
-					// TODO: reuse getPositionFromLocationAngle
+					// TODO: show floating miss/hit numbers
+					animateWeaponFire(u, weapon, t, hitLocations);
 					
-					// testing creating a laser beam
-					/*var laser = new createjs.Shape();
-					laser.alpha = 0;
-					laser.x = 0;
-					laser.y = 0;
-					laser.graphics.setStrokeStyle(3).beginStroke("#FF0000").moveTo(u.displayUnit.x, u.displayUnit.y).lineTo(t.displayUnit.x, t.displayUnit.y).endStroke();
-					stage.addChild(laser);
-					
-					createjs.Tween.get(laser).to({alpha:1}, 250).to({alpha:0}, 250).call(removeThisFromStage, null, laser);*/
-					
-					
-					// testing creating a stream of projectiles
-					/*for(var i=0; i<3; i++) {
-						var waitTime = i * 100;
-						
-						var angle = getAngleToTarget(u.displayUnit.x, u.displayUnit.y, t.displayUnit.x, t.displayUnit.y);
-						var point = getMovementDestination(0, 0, 20, angle);
-						var projectile = new createjs.Shape();
-						projectile.visible = false;
-						projectile.x = u.displayUnit.x;
-						projectile.y = u.displayUnit.y;
-						projectile.graphics.setStrokeStyle(3).beginStroke("#FFD700").moveTo(0, 0).lineTo(point.x, point.y).endStroke();
-						stage.addChild(projectile);
-						
-						createjs.Tween.get(projectile).wait(waitTime).to({visible:true}).to({x:t.displayUnit.x, y:t.displayUnit.y}, 500).call(removeThisFromStage, null, projectile);
-					}*/
-					
-					
-					// testing creating a volley of missiles (straight flight path)
-					/*var isCluster = true;
-					for(var i=0; i<6; i++) {
-						var weaponX = u.displayUnit.x;
-						var weaponY = u.displayUnit.y;
-						var targetX = t.displayUnit.x;
-						var targetY = t.displayUnit.y;
-						if(isCluster){
-							// give cluster projectiles a tiny variation in the source and target pixel position for effect
-							var randomPosNegX = (getDieRollTotal(1, 2) == 1) ? 1 : -1;
-							var randomPosNegY = (getDieRollTotal(1, 2) == 1) ? 1 : -1;
-	
-							var randomOffsetX = getDieRollTotal(1, 4) * randomPosNegX;
-							var randomOffsetY = getDieRollTotal(1, 4) * randomPosNegY;
-							
-							weaponX += randomOffsetX;
-							weaponY += randomOffsetY;
-						
-							// now for the target variation
-							randomPosNegX = (getDieRollTotal(1, 2) == 1) ? 1 : -1;
-							randomPosNegY = (getDieRollTotal(1, 2) == 1) ? 1 : -1;
-	
-							randomOffsetX = getDieRollTotal(1, 16) * randomPosNegX;
-							randomOffsetY = getDieRollTotal(1, 16) * randomPosNegY;
-							
-							targetX += randomOffsetX;
-							targetY += randomOffsetY;
-						}
-						
-						var missile = new createjs.Shape();
-						missile.x = weaponX;
-						missile.y = weaponY;
-						missile.graphics.beginStroke("#FFFFFF").beginFill("#FFFFFF").drawCircle(0, 0, 1.5).endStroke();
-						stage.addChild(missile);
-						
-						createjs.Tween.get(missile).to({x:targetX, y:targetY}, 500).call(removeThisFromStage, null, missile);
-					}*/
-					
-					
-					// testing creating a volley of missiles (curved flight path)
-					//createjs.MotionGuidePlugin.install();// Don't use this plugin, just use same curve logic used in the legacy game
-					/*var isCluster = true;
-					for(var i=0; i<20; i++) {
-						var delayTime = i * 25;
-						
-						var weaponX = u.displayUnit.x;
-						var weaponY = u.displayUnit.y;
-						var targetX = t.displayUnit.x;
-						var targetY = t.displayUnit.y;
-						if(isCluster){
-							// give cluster projectiles a tiny variation in the source and target pixel position for effect
-							var randomPosNegX = (getDieRollTotal(1, 2) == 1) ? 1 : -1;
-							var randomPosNegY = (getDieRollTotal(1, 2) == 1) ? 1 : -1;
-	
-							var randomOffsetX = getDieRollTotal(1, 4) * randomPosNegX;
-							var randomOffsetY = getDieRollTotal(1, 4) * randomPosNegY;
-							
-							weaponX += randomOffsetX;
-							weaponY += randomOffsetY;
-						
-							// now for the target variation
-							randomPosNegX = (getDieRollTotal(1, 2) == 1) ? 1 : -1;
-							randomPosNegY = (getDieRollTotal(1, 2) == 1) ? 1 : -1;
-	
-							randomOffsetX = getDieRollTotal(1, 16) * randomPosNegX;
-							randomOffsetY = getDieRollTotal(1, 16) * randomPosNegY;
-							
-							targetX += randomOffsetX;
-							targetY += randomOffsetY;
-						}
-						
-						var missile = new createjs.Shape();
-						missile.visible = false;
-						missile.x = weaponX;
-						missile.y = weaponY;
-						missile.graphics.beginStroke("#FFFFFF").beginFill("#FFFFFF").drawCircle(0, 0, 1).endStroke();
-						stage.addChild(missile);
-						createjs.Tween.get(missile).wait(delayTime).to({visible:true}).to({guide:{ path:[weaponX,weaponY, 200, 200, 200, 200, 0,targetY,targetX,targetY]}}, 1000).call(removeThisFromStage, null, missile);
-					}*/
 				}
 				else{
 					console.log("Weapon null? Weapon ID:"+id);
