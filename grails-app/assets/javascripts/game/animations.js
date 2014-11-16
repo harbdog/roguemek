@@ -115,7 +115,12 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 	
 	// determine the end point of the projectile based on whether it hit or missed
 	var weaponEndPoint;
+	var distance;
+	var angle;
 	if(hit) {
+		distance = getDistanceToTarget(weaponPoint.x, weaponPoint.y, targetPoint.x, targetPoint.y);
+		angle = getAngleToTarget(weaponPoint.x, weaponPoint.y, targetPoint.x, targetPoint.y);
+		
 		weaponEndPoint = getPositionFromLocationAngle(targetPoint, tgtUnit.heading, hitLocation);
 	}
 	else{
@@ -125,8 +130,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		var randomAngleOffset = getDieRollTotal(1, 12) * randomPosNegAngle;
 		var randomDistanceOffset = getDieRollTotal(4, 20);
 		
-		var distance = getDistanceToTarget(weaponPoint.x, weaponPoint.y, targetPoint.x, targetPoint.y) + randomDistanceOffset;
-		var angle = getAngleToTarget(weaponPoint.x, weaponPoint.y, targetPoint.x, targetPoint.y) + randomAngleOffset;
+		distance = getDistanceToTarget(weaponPoint.x, weaponPoint.y, targetPoint.x, targetPoint.y) + randomDistanceOffset;
+		angle = getAngleToTarget(weaponPoint.x, weaponPoint.y, targetPoint.x, targetPoint.y) + randomAngleOffset;
 		
 		weaponEndPoint = getMovementDestination(weaponPoint.x, weaponPoint.y, distance, angle);
 	}
@@ -154,10 +159,10 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		}
 		else if(wName == WeaponFlamer) {
 			// create a Flamer projectile
-			var flames = new Flames(weaponPoint.x, weaponPoint.y);
+			var flames = new Flames(weaponPoint.x, weaponPoint.y, angle);
 			stage.addChild(flames);
 			
-			createjs.Tween.get(flames).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, 500).to({alpha:0}, 100).call(removeThisFromStage, null, flames);
+			createjs.Tween.get(flames).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, 400).to({alpha:0}, 100).call(removeThisFromStage, null, flames);
 		}
 	}
 	else if(weapon.isBallisticWeapon()) {
@@ -192,7 +197,6 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 				projectileLength = 5;
 			}
 			
-			var angle = getAngleToTarget(weaponPoint.x, weaponPoint.y, weaponEndPoint.x, weaponEndPoint.y);
 			var point = getMovementDestination(0, 0, projectileLength, angle);
 			var projectile = new Projectile(weaponPoint.x, weaponPoint.y);
 			projectile.visible = false;

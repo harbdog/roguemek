@@ -2,22 +2,23 @@
  * Flame code originally sourced from 
  * http://thecodeplayer.com/walkthrough/html5-canvas-experiment-a-cool-flame-fire-effect-using-particles
  */
-function Flames(x, y) {
+function Flames(x, y, angle) {
 	this.particles = [];
-	this.initialize(x, y);
+	this.initialize(x, y, angle);
 }
 Flames.prototype = new createjs.Shape();
 Flames.prototype.Shape_initialize = Flames.prototype.initialize;
-Flames.prototype.initialize = function(x, y) {
+Flames.prototype.initialize = function(x, y, angle) {
 	this.Shape_initialize();
 	this.x = x;
 	this.y = y;
+	this.angle = angle;
 	
 	//Lets create some particles now
-	var particle_count = 50;
+	var particle_count = 25;
 	for(var i = 0; i < particle_count; i++)
 	{
-		this.particles.push(new Particle(0, 0));
+		this.particles.push(new Particle(0, 0, angle));
 	}
 	
 	this.g = this.graphics;
@@ -56,20 +57,23 @@ Flames.prototype.update = function() {
 		if(p.remaining_life < 0 || p.radius < 0)
 		{
 			//a brand new particle replacing the dead one
-			this.particles[i] = new Particle(0, 0);
+			this.particles[i] = new Particle(0, 0, this.angle);
 		}
 	}
 }
 
-function Particle(x, y) {
-	this.initialize(x, y);
+function Particle(x, y, angle) {
+	this.initialize(x, y, angle);
 }
-Particle.prototype.initialize = function(x, y) {
+Particle.prototype.initialize = function(x, y, angle) {
 	//speed, life, location, life, colors
 	//speed.x range = -2.5 to 2.5 
 	//speed.y range = -15 to -5 to make it move upwards
 	//lets change the Y speed to make it look like a flame
-	this.speed = {x: -Math.random()*2.5, y: -Math.random()*2.5};
+	var length = -Math.random()*10;
+	var destination = getMovementDestination(0, 0, length, angle);
+	
+	this.speed = {x: destination.x, y: destination.y};
 	//location = given coordinates
 	//Now the flame follows the given coordinates
 	this.location = {x: x, y: y};
