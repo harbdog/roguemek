@@ -15,7 +15,7 @@ Flames.prototype.initialize = function(x, y, angle) {
 	this.angle = angle;
 	
 	//Lets create some particles now
-	var particle_count = 25;
+	var particle_count = 5;
 	for(var i = 0; i < particle_count; i++)
 	{
 		this.particles.push(new Particle(0, 0, angle));
@@ -67,23 +67,21 @@ function Particle(x, y, angle) {
 }
 Particle.prototype.initialize = function(x, y, angle) {
 	//speed, life, location, life, colors
-	//speed.x range = -2.5 to 2.5 
-	//speed.y range = -15 to -5 to make it move upwards
-	//lets change the Y speed to make it look like a flame
+	//lets change the X,Y speed to make it look like a flame in the angle of the direction being fired
 	var length = -Math.random()*10;
 	var destination = getMovementDestination(0, 0, length, angle);
 	
-	this.speed = {x: destination.x, y: destination.y};
+	this.speed = {x: destination.x - 2 + Math.random() * 4, y: destination.y - 2 + Math.random() * 4};
 	//location = given coordinates
 	//Now the flame follows the given coordinates
 	this.location = {x: x, y: y};
 	//radius range = 10-30
-	this.radius = 5+Math.random()*5;
+	this.radius = 3+Math.random()*3;
 	//life range = 20-30
 	this.life = 20+Math.random()*100;
 	this.remaining_life = this.life;
 	//colors
-	this.r = Math.round(Math.random()*55 + 200);
+	this.r = Math.round(Math.random()*100 + 155);
 	this.g = Math.round(Math.random()*100);
 	this.b = Math.round(0);
 }
