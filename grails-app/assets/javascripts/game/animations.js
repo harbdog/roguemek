@@ -79,9 +79,33 @@ function animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations){
  */
 function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 	var burstProjectiles = 3;
+	
+	var wName = weapon.shortName;
+	switch(wName) {
+		case WeaponMGUN: 
+			burstProjectiles = 10;
+			break;
+			
+		case WeaponAC5:
+		case WeaponAC2:
+			burstProjectiles = 5;
+			break;
+			
+		case WeaponAC10:
+			burstProjectiles = 4;
+			break;
+			
+		case WeaponAC20:
+		default:
+			burstProjectiles = 3;
+			break;	
+	}
 
 	for(var i=0; i<burstProjectiles; i++){
 		var initialDelay = i * 100;
+		if(wName == WeaponMGUN) {
+			initialDelay = i * 50;
+		}
 		
 		var projectileTime = animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay);
 	}
@@ -170,6 +194,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 						glowColor: "#FF0000"
 					};
 					break;
+					
 				case WeaponMLAS:
 					laserConf = {
 						laserWidth: 2,
@@ -178,6 +203,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 						glowColor: "#009900"
 					};
 					break;
+					
 				case WeaponLLAS:
 					laserConf = {
 						laserWidth: 3,
@@ -186,6 +212,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 						glowColor: "#000099"
 					};
 					break;
+					
 				default:
 					laserConf = {};
 					break;
@@ -242,10 +269,10 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			}
 			else if(wName == WeaponAC5){
 				projectileWidth = 2;
-				projectileLength = 10;
+				projectileLength = 15;
 			}
 			else if(wName == WeaponAC2){
-				projectileWidth = 1;
+				projectileWidth = 2;
 				projectileLength = 10;
 			}
 			else if(wName == WeaponMGUN){
@@ -254,6 +281,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 				projectileWidth = 1;
 				projectileLength = 5;
 			}
+			
+			// TODO: add muzzle flash to each projectile when fired
 			
 			var point = getMovementDestination(0, 0, projectileLength, angle);
 			var projectile = new Projectile(weaponPoint.x, weaponPoint.y);
