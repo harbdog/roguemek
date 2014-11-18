@@ -2,6 +2,22 @@
  * animations.js - Animation related methods for the UI
  */
 
+// Projectile speeds in pixels per 1000 ms
+var PROJECTILE_SPEED_LRM = 1000;
+var PROJECTILE_SPEED_SRM = 600;
+var PROJECTILE_SPEED_AC = 750;
+var PROJECTILE_SPEED_MG = 400;
+var PROJECTILE_SPEED_FLAMER = 400;
+
+/**
+ * Returns the time (ms) it will take to travel the given distance (px) at the given speed (px/ms)
+ * @param distance
+ * @param speed
+ */
+function getProjectileTime(distance, speed) {
+	return distance * (1000/speed);
+}
+
 /**
  * handles the display of animated projectiles and related animated messages from weapon fire
  * @param hit set true if the weapon hit
@@ -54,7 +70,7 @@ function animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations){
 			initialDelay = i * 50;
 		}
 		
-		lastAnimationIndex = animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation, initialDelay);
+		var projectileTime = animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation, initialDelay);
 	}
 }
 
@@ -66,7 +82,8 @@ function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 
 	for(var i=0; i<burstProjectiles; i++){
 		var initialDelay = i * 100;
-		lastAnimationIndex = animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay);
+		
+		var projectileTime = animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay);
 	}
 }
 
@@ -76,6 +93,7 @@ function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
  * @param weapon
  * @param tgtUnit
  * @param hitLocation
+ * @return double projectileTime representing the time (ms) it will take for the projectile to arrive at target 
  */
 function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) {
 	var hit = (hitLocation != null);
@@ -84,6 +102,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		initialDelay = 0;
 	}
 	
+	var projectileTime = 0;
 	var wName = weapon.shortName;
 	
 	var srcPoint = new Point(srcUnit.displayUnit.x, srcUnit.displayUnit.y);
@@ -147,7 +166,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			laser.graphics.setStrokeStyle(1).beginStroke("#990000").moveTo(0, 0).lineTo(weaponEndPoint.x-laser.x, weaponEndPoint.y-laser.y).endStroke();
 			stage.addChild(laser);
 			
-			createjs.Tween.get(laser).wait(initialDelay).to({visible:true}).wait(400).to({alpha:0}, 200).call(removeThisFromStage, null, laser);
+			createjs.Tween.get(laser).wait(initialDelay).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, laser);
 		}
 		else if(wName == WeaponPPC) {
 			// create a PPC projectile as lightning
@@ -159,13 +178,17 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		}
 		else if(wName == WeaponFlamer) {
 			// create a Flamer projectile
+			projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_FLAMER);
+			
 			var flames = new Flames(weaponPoint.x, weaponPoint.y, angle);
 			stage.addChild(flames);
 			
-			createjs.Tween.get(flames).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, 400).to({alpha:0}, 100).call(removeThisFromStage, null, flames);
+			createjs.Tween.get(flames).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).to({alpha:0}, 100).call(removeThisFromStage, null, flames);
 		}
 	}
 	else if(weapon.isBallisticWeapon()) {
+		
+		projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_AC);
 		
 		var projectileWidth = 1;
 		var projectileLength = 1;
@@ -193,6 +216,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 				projectileLength = 10;
 			}
 			else if(wName == WeaponMGUN){
+				projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_MG);
+				
 				projectileWidth = 1;
 				projectileLength = 5;
 			}
@@ -203,7 +228,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			projectile.graphics.setStrokeStyle(projectileWidth).beginStroke("#FFD700").moveTo(0, 0).lineTo(point.x, point.y).endStroke();
 			stage.addChild(projectile);
 			
-			createjs.Tween.get(projectile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, 500).call(removeThisFromStage, null, projectile);
+			createjs.Tween.get(projectile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, projectile);
 		}
 	}
 	else if(weapon.isMissileWeapon()) {
@@ -213,9 +238,11 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		var projectileRadius = 1;
 		
 		if(isLRM) {
+			projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_LRM);
 			projectileRadius = 1.25;
 		}
 		else if(isSRM) {
+			projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_SRM);
 			projectileRadius = 1.5;
 		}
 		
@@ -225,6 +252,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		missile.graphics.beginStroke("#FFFFFF").beginFill("#FFFFFF").drawCircle(0, 0, projectileRadius).endStroke();
 		stage.addChild(missile);
 		
-		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, 500).call(removeThisFromStage, null, missile);
+		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, missile);
 	}
+	
+	return projectileTime;
 }
