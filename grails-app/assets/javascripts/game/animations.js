@@ -159,11 +159,42 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		if(wName == WeaponSLAS 
 				|| wName == WeaponMLAS 
 				|| wName == WeaponLLAS ){
+			
+			var laserConf;
+			switch(wName) {
+				case WeaponSLAS:
+					laserConf = {
+						laserWidth: 1,
+						laserColor: "#990000",
+						glowWidth: 2,
+						glowColor: "#FF0000"
+					};
+					break;
+				case WeaponMLAS:
+					laserConf = {
+						laserWidth: 2,
+						laserColor: "#00FF00",
+						glowWidth: 2,
+						glowColor: "#009900"
+					};
+					break;
+				case WeaponLLAS:
+					laserConf = {
+						laserWidth: 3,
+						laserColor: "#0000FF",
+						glowWidth: 3,
+						glowColor: "#000099"
+					};
+					break;
+				default:
+					laserConf = {};
+					break;
+			}
+			
 			// create a laser beam
-			var laser = new Projectile(weaponPoint.x, weaponPoint.y);
+			var laser = new Laser(laserConf);
 			laser.visible = false;
-			laser.graphics.setStrokeStyle(3).beginStroke("#FF0000").moveTo(0, 0).lineTo(weaponEndPoint.x-laser.x, weaponEndPoint.y-laser.y).endStroke();
-			laser.graphics.setStrokeStyle(1).beginStroke("#990000").moveTo(0, 0).lineTo(weaponEndPoint.x-laser.x, weaponEndPoint.y-laser.y).endStroke();
+			laser.show(weaponPoint.x, weaponPoint.y, weaponEndPoint.x, weaponEndPoint.y);
 			stage.addChild(laser);
 			
 			createjs.Tween.get(laser).wait(initialDelay).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, laser);
@@ -171,19 +202,21 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		else if(wName == WeaponPPC) {
 			// create a PPC projectile as lightning
 			var lightning = new Lightning();
+			lightning.visible = false;
 			lightning.show(weaponPoint.x, weaponPoint.y, weaponEndPoint.x, weaponEndPoint.y);
 			stage.addChild(lightning);
 			
-			createjs.Tween.get(lightning).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, lightning);
+			createjs.Tween.get(lightning).wait(initialDelay).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, lightning);
 		}
 		else if(wName == WeaponFlamer) {
 			// create a Flamer projectile
 			projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_FLAMER);
 			
 			var flames = new Flames(weaponPoint.x, weaponPoint.y, angle);
+			flames.visible = false;
 			stage.addChild(flames);
 			
-			createjs.Tween.get(flames).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).to({alpha:0}, 100).call(removeThisFromStage, null, flames);
+			createjs.Tween.get(flames).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).to({alpha:0}, 100).call(removeThisFromStage, null, flames);
 		}
 	}
 	else if(weapon.isBallisticWeapon()) {
