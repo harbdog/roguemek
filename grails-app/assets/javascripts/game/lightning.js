@@ -10,7 +10,7 @@ function Lightning(config) {
 	this.conf = {
 		detail: 1,
 		displace: 125,
-		glowWidth: 20,
+		glowWidth: 3,
 		boltWidth: 3,
 		boltColor: "#0066CC",
 		glow: true,
@@ -28,10 +28,13 @@ Lightning.prototype.initialize = function(config) {
 	
 	//copying configuration
 	for(var opt in config){
-		conf[opt] = config[opt];
+		this.conf[opt] = config[opt];
 	}
 }
 Lightning.prototype.show = function(startX, startY, endX, endY){
+	if(this.conf.glow) {
+		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, 10);
+	}
 	this.drawLightning(startX, startY, endX, endY, this.conf.displace);
 }
 Lightning.prototype.hide = function(){
@@ -54,7 +57,7 @@ Lightning.prototype.drawLightning = function(x1, y1, x2, y2, displace){
 			//ctx.moveTo(x1,y1);
 			//ctx.lineTo(x2,y2);
 			//ctx.stroke();
-			this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, 10);
+			this.g.setStrokeStyle(this.conf.glowWidth, "round").beginStroke(this.conf.glowColor).moveTo(x1, y1).lineTo(x2, y2).endStroke();
 		}
 
 		//draw bolt
