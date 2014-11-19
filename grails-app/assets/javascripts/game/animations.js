@@ -5,7 +5,7 @@
 // Projectile speeds in pixels per 1000 ms
 var PROJECTILE_SPEED_LRM = 600;
 var PROJECTILE_SPEED_SRM = 500;
-var PROJECTILE_SPEED_AC = 750;
+var PROJECTILE_SPEED_AC = 700;
 var PROJECTILE_SPEED_MG = 400;
 var PROJECTILE_SPEED_FLAMER = 400;
 
@@ -285,15 +285,16 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 				projectileLength = 5;
 			}
 			
-			// TODO: add muzzle flash to each projectile when fired
-			
 			var point = getMovementDestination(0, 0, projectileLength, angle);
 			var projectile = new Projectile(weaponPoint.x, weaponPoint.y);
 			projectile.visible = false;
+			projectile.shadow = new createjs.Shadow("#FFCC00", 0, 0, 10);
 			projectile.graphics.setStrokeStyle(projectileWidth).beginStroke("#FFD700").moveTo(0, 0).lineTo(point.x, point.y).endStroke();
 			stage.addChild(projectile);
 			
 			createjs.Tween.get(projectile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, projectile);
+			
+			// TODO: add shell casing ejection animation
 		}
 	}
 	else if(weapon.isMissileWeapon()) {
