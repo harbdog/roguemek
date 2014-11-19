@@ -3,8 +3,8 @@
  */
 
 // Projectile speeds in pixels per 1000 ms
-var PROJECTILE_SPEED_LRM = 1000;
-var PROJECTILE_SPEED_SRM = 600;
+var PROJECTILE_SPEED_LRM = 600;
+var PROJECTILE_SPEED_SRM = 500;
 var PROJECTILE_SPEED_AC = 750;
 var PROJECTILE_SPEED_MG = 400;
 var PROJECTILE_SPEED_FLAMER = 400;
@@ -297,21 +297,35 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		var isLRM = weapon.isLRM();
 		var isSRM = weapon.isSRM();
 		
-		var projectileRadius = 1;
-		
+		var missileConf;
 		if(isLRM) {
 			projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_LRM);
-			projectileRadius = 1.25;
+			
+			missileConf = {
+				missileLength: 7.5,
+				missileWidth: 2,
+				missileColor: "#333333",
+				burnerRadius: 2.5,
+				burnerColor: "#FFFF99",
+				burnerGlowSize: 20,
+				burnerGlowColor: "#FFCC00"
+			};
 		}
 		else if(isSRM) {
 			projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_SRM);
-			projectileRadius = 1.5;
+			missileConf = {
+				missileLength: 10,
+				missileWidth: 3,
+				missileColor: "#333333",
+				burnerRadius: 3,
+				burnerColor: "#FF9900",
+				burnerGlowSize: 25,
+				burnerGlowColor: "#FF3300"
+			};
 		}
 		
-		// TODO: make the missile projectiles look better than simple circles
-		var missile = new Projectile(weaponPoint.x, weaponPoint.y);
+		var missile = new Missile(weaponPoint.x, weaponPoint.y, angle, missileConf);
 		missile.visible = false;
-		missile.graphics.beginStroke("#FFFFFF").beginFill("#FFFFFF").drawCircle(0, 0, projectileRadius).endStroke();
 		stage.addChild(missile);
 		
 		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, missile);
