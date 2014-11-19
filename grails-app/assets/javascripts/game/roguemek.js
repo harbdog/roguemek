@@ -490,7 +490,7 @@ function getLocationName(index){
  * @param id
  * @returns
  */
-function getWeaponById(id) {
+function getPlayerWeaponById(id) {
 	for(var i=0; i<playerWeapons.length; i++) {
 		var chkWeapon = playerWeapons[i];
 		if(chkWeapon.id == id){
@@ -499,6 +499,25 @@ function getWeaponById(id) {
 	}
 	
 	return null;
+}
+
+/**
+ * Gets the unit weapon with the given ID
+ * @param id
+ * @returns
+ */
+function getUnitWeaponById(id) {
+	// check all units for the weapon id
+	var foundWeapon = null;
+	$.each(units, function(index, thisUnit) {
+		$.each(thisUnit.weapons, function(key, chkWeapon) {
+			if(chkWeapon.id == id){
+				foundWeapon = chkWeapon;
+			}
+		});
+	});
+	
+	return foundWeapon;
 }
 
 /**

@@ -823,11 +823,9 @@ class GameService {
 		if(unit.apRemaining == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
-		def weaponData = []
 		def data = [
 			unit: unit.id,
-			target: target.id,
-			weaponData: weaponData
+			target: target.id
 		]
 		
 		int totalHeat = 0
@@ -862,14 +860,14 @@ class GameService {
 			Object[] messageArgs
 			
 			// store data about this weapon fire results
+			def thisWeaponFire = [weaponId: weapon.id]
 			def thisWeaponData = [
-				weaponId: weapon.id,
-				weaponHit: weaponHit
+				unit: unit.id,
+				target: target.id,
+				weaponFire: thisWeaponFire
 			]
-			weaponData.add(thisWeaponData)
 			
 			if(weaponHit) {
-				data.armorHit = []
 				
 				// determine hit location based on relative position of the attack on the target
 				int hitLocation = getHitLocation(game, unit, weapon, target)
@@ -877,12 +875,13 @@ class GameService {
 				if(hitLocation < 0) {
 					// a hit can still be a miss if legs are rolled with partial cover
 					weaponHit = false
-					thisWeaponData.weaponHit = false
+					thisWeaponFire.weaponHit = false
 				}
 				else {
-					thisWeaponData.weaponHitLocations = []
-					if(thisWeaponData.weaponHitLocations[hitLocation] == null) {
-						thisWeaponData.weaponHitLocations[hitLocation] = 0
+					thisWeaponFire.weaponHit = true
+					thisWeaponFire.weaponHitLocations = []
+					if(thisWeaponFire.weaponHitLocations[hitLocation] == null) {
+						thisWeaponFire.weaponHitLocations[hitLocation] = 0
 					}
 					
 					if(target instanceof BattleMech) {
@@ -890,8 +889,7 @@ class GameService {
 						int damage = weapon.getDamage()
 						applyDamage(damage, target, hitLocation)
 						
-						
-						thisWeaponData.weaponHitLocations[hitLocation] += damage
+						thisWeaponFire.weaponHitLocations[hitLocation] += damage
 						
 						// set the message of the hit result
 						messageCode = "game.weapon.hit"
@@ -911,13 +909,14 @@ class GameService {
 			
 			// set the weapon on cooldown
 			weapon.cooldown = weapon.getCycle()
-			thisWeaponData.weaponCooldown = weapon.cooldown
+			thisWeaponFire.weaponCooldown = weapon.cooldown
 			
 			weapon.save flush:true
 			
 			// TODO: if applicable, consume ammo
 			
-			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, data)
+			// Add update information only about this weapon being fired
+			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, thisWeaponData)
 		}
 		
 		// update return data with target armor/internals
@@ -935,6 +934,9 @@ class GameService {
 		
 		unit.save flush:true
 		target.save flush:true
+		
+		// Add data only update information about the unit and target
+		Date update = GameMessage.addMessageUpdate(game, null, null, data)
 		
 		// automatically end the unit's turn after firing
 		this.initializeNextTurn(game)

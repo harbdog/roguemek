@@ -413,8 +413,10 @@ function addMessageUpdate(message) {
 		messagingArea = new createjs.DOMElement(document.getElementById("messagingArea"));
 	}
 	
-	messagingArea.htmlElement.innerHTML += "&#13;&#10;"+message;
-	messagingArea.htmlElement.scrollTop = messagingArea.htmlElement.scrollHeight;
+	if(message != null && message.length > 0) { 
+		messagingArea.htmlElement.innerHTML += "&#13;&#10;"+message;
+		messagingArea.htmlElement.scrollTop = messagingArea.htmlElement.scrollHeight;
+	}
 }
 
 /**

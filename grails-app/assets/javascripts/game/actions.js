@@ -29,7 +29,7 @@ function target() {
 				var id = wData.weaponId;
 				var toHit = wData.toHit;
 				
-				var weapon = getWeaponById(id);
+				var weapon = getPlayerWeaponById(id);
 				if(weapon != null){
 					weapon.toHit = toHit;
 				}
@@ -147,38 +147,7 @@ function fire_weapons(weapons) {
 			var u = units[data.unit];
 			var t = units[data.target];
 			
-			// update the cooldown status of the weapons fired
-			$.each(data.weaponData, function(key, wData) {
-				var id = wData.weaponId;
-				var hit = wData.weaponHit;
-				var hitLocations = wData.weaponHitLocations;
-				var cooldown = wData.weaponCooldown;
-				
-				var weapon = getWeaponById(id);
-				if(weapon != null){
-					weapon.cooldown = cooldown;
-					
-					if(hit) {
-						console.log("Weapon "+weapon+" hit the target in the following locations, cooldown for "+cooldown+" turns");
-						
-						$.each(hitLocations, function(loc, locDamage) {
-							if(locDamage == null) return;
-							
-							console.log("    "+getLocationText(loc)+": "+locDamage)
-						});
-					}
-					else{
-						console.log("Weapon "+weapon+" missed the target!");
-					}
-					
-					// TODO: show floating miss/hit numbers
-					animateWeaponFire(u, weapon, t, hitLocations);
-					
-				}
-				else{
-					console.log("Weapon null? Weapon ID:"+id);
-				}
-			});
+			// weapon fire results and animations will come through the next poll update
 			
 			// update armor values of the target
 			if(data.armorHit) {
@@ -209,9 +178,6 @@ function fire_weapons(weapons) {
 	
 			// update UI displays of target armor if showing
 			updateTargetDisplay();
-			
-			// update the weapons cooldown for the player weapons
-			updateWeaponsCooldown();
 		}
 		
 		// Toggle off all selected weapons
@@ -247,27 +213,73 @@ function pollUpdate(updates) {
 		
 		// Add the message from the update to the message display area
 		var t = new Date(thisUpdate.time);
-		addMessageUpdate("["+t.toLocaleTimeString()+"] "+thisUpdate.message);
+		if(thisUpdate.message != null && thisUpdate.message.length > 0) {
+			addMessageUpdate("["+t.toLocaleTimeString()+"] "+thisUpdate.message);
+		}
 		
 		$.each(thisUpdate, function(j, data) {
 			if(data.unit != null){
+				var unitMoved = false;
+				
 				var thisUnit = units[data.unit];
 				if(data.x != null && data.y != null) {
+					unitMoved = true;
 					thisUnit.setHexLocation(data.x, data.y);
 				}
 				if(data.heading != null) {
+					unitMoved = true;
 					thisUnit.heading = data.heading;
 				}
 				if(data.apRemaining != null) {
 					thisUnit.apRemaining = data.apRemaining;
 				}
-				  
-				thisUnit.updateDisplay();
+				
+				if(data.weaponFire != null){
+					// update result of weapons fire from another unit
+					var u = units[data.unit];
+					var t = units[data.target];
+					var wData = data.weaponFire;
+					
+					var id = wData.weaponId;
+					var hit = wData.weaponHit;
+					var hitLocations = wData.weaponHitLocations;
+					var cooldown = wData.weaponCooldown;
+					
+					var weapon = getUnitWeaponById(id);
+					if(weapon != null){
+						
+						weapon.cooldown = cooldown;
+						
+						if(hit) {
+							console.log("Weapon "+weapon+" hit the target in the following locations.");
+							
+							$.each(hitLocations, function(loc, locDamage) {
+								if(locDamage == null) return;
+								
+								console.log("    "+getLocationText(loc)+": "+locDamage)
+							});
+						}
+						else{
+							console.log("Weapon "+weapon+" missed the target!");
+						}
+						
+						// TODO: show floating miss/hit numbers
+						animateWeaponFire(u, weapon, t, hitLocations);
+						
+					}
+					else{
+						console.log("Weapon null? Weapon ID:"+id);
+					}
+				}
 				
 				if(playerUnit.id == thisUnit.id) {
 					setActionPoints(thisUnit.apRemaining);
 					setJumpPoints(thisUnit.jpRemaining);
 					setHeatDisplay(thisUnit.heat, false, false);
+					updateWeaponsCooldown();
+				}
+				else if(unitMoved){
+					thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
 				}
 			}
 			else if(data.turnUnit != null) {
@@ -286,7 +298,7 @@ function pollUpdate(updates) {
 							var id = wData.weaponId;
 							var cooldown = wData.weaponCooldown;
 							
-							var weapon = getWeaponById(id);
+							var weapon = getPlayerWeaponById(id);
 							if(weapon != null) {
 								weapon.cooldown = cooldown;
 								console.log("Weapon "+weapon+" cooldown now at "+cooldown);
