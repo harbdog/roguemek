@@ -69,6 +69,9 @@ function animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations){
 		if(weapon.isLRM()) {
 			initialDelay = i * 50;
 		}
+		else if(weapon.isSRM()) {
+			initialDelay = i * 100;
+		}
 		
 		var projectileTime = animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation, initialDelay);
 	}
