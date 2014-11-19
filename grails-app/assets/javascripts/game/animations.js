@@ -209,7 +209,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 					
 				case WeaponLLAS:
 					laserConf = {
-						laserWidth: 3,
+						laserWidth: 2,
 						laserColor: "#0000FF",
 						glowWidth: 3,
 						glowColor: "#000099"
