@@ -263,14 +263,20 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 				|| wName == WeaponMGUN){
 			// for ACs and Machine guns use lines of a given width and length as tracers
 			if(wName == WeaponAC20){
+				projectileTime *= 1.3;
+				
 				projectileWidth = 3;
 				projectileLength = 20;
 			}
 			else if(wName == WeaponAC10){
+				projectileTime *= 1.2;
+				
 				projectileWidth = 2.5;
 				projectileLength = 15;
 			}
 			else if(wName == WeaponAC5){
+				projectileTime *= 1.1;
+				
 				projectileWidth = 2;
 				projectileLength = 15;
 			}
