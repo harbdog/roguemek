@@ -162,6 +162,9 @@ Weapon.prototype.initialize = function(id, name, shortName, weaponType, location
 Weapon.prototype.getProjectiles = function() {
 	return this.projectiles;
 }
+Weapon.prototype.getDamage = function() {
+	return this.damage;
+}
 Weapon.prototype.isClusterWeapon = function() {
 	return (this.projectiles > 1);
 }

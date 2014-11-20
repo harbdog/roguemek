@@ -32,7 +32,7 @@ function animateWeaponFire(srcUnit, weapon, tgtUnit, hitLocations) {
 			}
 		});
 	}
-	
+
 	if(weapon.isClusterWeapon()) {
 		animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations);
 	}
@@ -46,6 +46,7 @@ function animateWeaponFire(srcUnit, weapon, tgtUnit, hitLocations) {
 
 /**
  * Creates multiple projectiles with slight variations on the target position for effect
+ * @return double projectileTime representing the time (ms) it will take for the first projectile to arrive at target 
  */
 function animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations){
 	// spawn off more projectiles in slightly different target locations
@@ -61,6 +62,8 @@ function animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations){
 		});
 	}
 	
+	var firstProjectileTime;
+	
 	for(var i=0; i<numProjectiles; i++){
 		// TODO: determine actual number that hit or missed
 		
@@ -74,11 +77,17 @@ function animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations){
 		}
 		
 		var projectileTime = animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation, initialDelay);
+		if(firstProjectileTime == null) {
+			firstProjectileTime = projectileTime;
+		}
 	}
+	
+	return firstProjectileTime;
 }
 
 /**
  * Creates multiple projectiles which follow each other in the same linear path for effect
+ * @return double projectileTime representing the time (ms) it will take for the first projectile to arrive at target 
  */
 function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 	var burstProjectiles = 3;
@@ -104,6 +113,8 @@ function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 			break;	
 	}
 
+	var firstProjectileTime;
+	
 	for(var i=0; i<burstProjectiles; i++){
 		var initialDelay = i * 100;
 		if(wName == WeaponMGUN) {
@@ -111,7 +122,12 @@ function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 		}
 		
 		var projectileTime = animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay);
+		if(firstProjectileTime == null) {
+			firstProjectileTime = projectileTime;
+		}
 	}
+	
+	return firstProjectileTime;
 }
 
 /**
@@ -341,5 +357,37 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, missile);
 	}
 	
+	// TODO: make the messages play nicer with each other
+	// TODO: reflect actual hit for LRM/SRM cluster portions
+	// create the floating message to display the results of the projectile that was fired
+	var floatMessagePoint = new Point(weaponEndPoint.x, weaponEndPoint.y - 20);
+	var floatMessageStr = (hit) ? getLocationText(hitLocation) + " -"+weapon.getDamage() : "MISS";
+	createFloatMessage(floatMessagePoint, floatMessageStr, null, initialDelay + projectileTime, 1.0, false);
+	
 	return projectileTime;
+}
+
+/**
+ * Creates an animated floating message
+ * @param srcLocation
+ * @param message
+ * @param color
+ * @param delay
+ * @param durationMultiplier
+ * @param staticMessage
+ */
+function createFloatMessage(srcPoint, message, color, delay, durationMultiplier, staticMessage){
+	var endPoint = new Point(srcPoint.x, srcPoint.y);
+	if(!staticMessage) {
+		// message floats upward
+		endPoint.y = srcPoint.y - 100;
+	}
+	
+	var floatMessageBox = new FloatMessage(message);
+	floatMessageBox.visible = false;
+	floatMessageBox.x = srcPoint.x;
+	floatMessageBox.y = srcPoint.y;
+	stage.addChild(floatMessageBox);
+	
+	createjs.Tween.get(floatMessageBox).wait(delay).to({visible:true}).to({x:endPoint.x, y:endPoint.y}, 2000 * durationMultiplier).to({alpha:0}, 200).call(removeThisFromStage, null, floatMessageBox);
 }
