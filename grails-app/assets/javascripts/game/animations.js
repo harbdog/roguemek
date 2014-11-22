@@ -24,11 +24,11 @@ function getProjectileTime(distance, speed) {
  */
 function animateWeaponFire(srcUnit, weapon, tgtUnit, hitLocations) {
 	
-	var thisHitLocation;
+	var firstHitLocation;
 	if(hitLocations != null) {
 		$.each(hitLocations, function(loc, damage) {
-			if(damage != null && damage > 0) {
-				thisHitLocation = loc;
+			if(firstHitLocation == null && damage != null && damage > 0) {
+				firstHitLocation = loc;
 			}
 		});
 	}
@@ -38,11 +38,11 @@ function animateWeaponFire(srcUnit, weapon, tgtUnit, hitLocations) {
 		projectileEndPoints = animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations);
 	}
 	else if(weapon.isBallisticWeapon()) {
-		projectileEndPoints = animateBurstProjectile(srcUnit, weapon, tgtUnit, thisHitLocation);
+		projectileEndPoints = animateBurstProjectile(srcUnit, weapon, tgtUnit, firstHitLocation);
 	}
 	else {
 		projectileEndPoints = {};
-		projectileEndPoints[thisHitLocation] = [animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation)];
+		projectileEndPoints[firstHitLocation] = [animateProjectile(srcUnit, weapon, tgtUnit, firstHitLocation)];
 		
 	}
 	
@@ -54,11 +54,14 @@ function animateWeaponFire(srcUnit, weapon, tgtUnit, hitLocations) {
 		var damage = (hitLocations != null) ? hitLocations[loc] : null;
 		var firstLocationEndPoint = thisLocationEndPoints[0];
 		
-		// TODO: make the messages play nicer with each other in positioning
-		// create the floating message to display the results above the first projectile that landed
-		var floatMessagePoint = new Point(firstLocationEndPoint.x, firstLocationEndPoint.y - 20);
-		var floatMessageStr = (damage != null) ? getLocationText(loc) + " -" + damage : "MISS";
-		createFloatMessage(floatMessagePoint, floatMessageStr, null, firstLocationEndPoint.projectileTime, 1.0, false);
+		// only show a MISS if the weapon missed entirely
+		if(firstHitLocation == null || damage != null){
+			// TODO: make the messages play nicer with each other in positioning
+			// create the floating message to display the results above the first projectile that landed
+			var floatMessagePoint = new Point(firstLocationEndPoint.x, firstLocationEndPoint.y - 20);
+			var floatMessageStr = (damage != null) ? getLocationText(loc) + " -" + damage : "MISS";
+			createFloatMessage(floatMessagePoint, floatMessageStr, null, firstLocationEndPoint.projectileTime, 1.0, false);
+		}
 	});
 }
 
