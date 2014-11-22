@@ -33,36 +33,60 @@ function animateWeaponFire(srcUnit, weapon, tgtUnit, hitLocations) {
 		});
 	}
 
+	var projectileEndPoints;
 	if(weapon.isClusterWeapon()) {
-		animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations);
+		projectileEndPoints = animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations);
 	}
 	else if(weapon.isBallisticWeapon()) {
-		animateBurstProjectile(srcUnit, weapon, tgtUnit, thisHitLocation);
+		projectileEndPoints = animateBurstProjectile(srcUnit, weapon, tgtUnit, thisHitLocation);
 	}
 	else {
-		animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation);
+		projectileEndPoints = {};
+		projectileEndPoints[thisHitLocation] = [animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation)];
+		
 	}
+	
+	$.each(projectileEndPoints, function(loc, thisLocationEndPoints) {
+		if(thisLocationEndPoints == null || thisLocationEndPoints.length == 0) {
+			return;
+		}
+		
+		var damage = (hitLocations != null) ? hitLocations[loc] : null;
+		var firstLocationEndPoint = thisLocationEndPoints[0];
+		
+		// TODO: make the messages play nicer with each other in positioning
+		// create the floating message to display the results above the first projectile that landed
+		var floatMessagePoint = new Point(firstLocationEndPoint.x, firstLocationEndPoint.y - 20);
+		var floatMessageStr = (damage != null) ? getLocationText(loc) + " -" + damage : "MISS";
+		createFloatMessage(floatMessagePoint, floatMessageStr, null, firstLocationEndPoint.projectileTime, 1.0, false);
+	});
 }
 
 /**
  * Creates multiple projectiles with slight variations on the target position for effect
- * @return double projectileTime representing the time (ms) it will take for the first projectile to arrive at target 
+ * @return Point end x,y location and projectileTime representing the time (ms) it will take for the first projectile to arrive at target 
  */
 function animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations){
 	// spawn off more projectiles in slightly different target locations
 	var numProjectiles = weapon.getProjectiles();
 	
-	// TODO: determine actual location for each projectile
-	var thisHitLocation;
+	// determine actual location for each projectile by cycling through a stack of counters
+	var hitLocationCounters = [];
 	if(hitLocations != null) {
 		$.each(hitLocations, function(loc, damage) {
-			if(damage != null && damage > 0) {
-				thisHitLocation = loc;
+			if(damage == null|| damage == 0) {
+				return;
 			}
+			
+			var locCounter = new Object();
+			locCounter.loc = loc;
+			locCounter.damage = damage;
+			hitLocationCounters.push(locCounter);
 		});
 	}
 	
-	var firstProjectileTime;
+	var thisLocCounter = hitLocationCounters.shift();
+	var projectileEndPoints = {};
 	
 	for(var i=0; i<numProjectiles; i++){
 		// TODO: determine actual number that hit or missed
@@ -76,18 +100,28 @@ function animateClusterProjectile(srcUnit, weapon, tgtUnit, hitLocations){
 			initialDelay = i * 100;
 		}
 		
-		var projectileTime = animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation, initialDelay);
-		if(firstProjectileTime == null) {
-			firstProjectileTime = projectileTime;
+		var thisHitLocation = (thisLocCounter != null) ? thisLocCounter.loc : null;
+		var thisEndPoint = animateProjectile(srcUnit, weapon, tgtUnit, thisHitLocation, initialDelay);
+		
+		if(projectileEndPoints[thisHitLocation] == null) {
+			projectileEndPoints[thisHitLocation] = [];
+		}
+		projectileEndPoints[thisHitLocation].push(thisEndPoint);
+		
+		if(thisLocCounter != null) {
+			thisLocCounter.damage -= weapon.getDamage();
+			if(thisLocCounter.damage <= 0) {
+				thisLocCounter = hitLocationCounters.shift();
+			}
 		}
 	}
 	
-	return firstProjectileTime;
+	return projectileEndPoints;
 }
 
 /**
  * Creates multiple projectiles which follow each other in the same linear path for effect
- * @return double projectileTime representing the time (ms) it will take for the first projectile to arrive at target 
+ * @return Point end x,y location and projectileTime representing the time (ms) it will take for the first projectile to arrive at target 
  */
 function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 	var burstProjectiles = 3;
@@ -113,21 +147,21 @@ function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 			break;	
 	}
 
-	var firstProjectileTime;
-	
+	var thisLocationEndPoints = [];
 	for(var i=0; i<burstProjectiles; i++){
 		var initialDelay = i * 100;
 		if(wName == WeaponMGUN) {
 			initialDelay = i * 50;
 		}
 		
-		var projectileTime = animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay);
-		if(firstProjectileTime == null) {
-			firstProjectileTime = projectileTime;
-		}
+		var thisEndPoint = animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay);
+		thisLocationEndPoints.push(thisEndPoint);
 	}
 	
-	return firstProjectileTime;
+	var projectileEndPoints = {};
+	projectileEndPoints[hitLocation] = thisLocationEndPoints;
+	
+	return projectileEndPoints;
 }
 
 /**
@@ -136,7 +170,7 @@ function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
  * @param weapon
  * @param tgtUnit
  * @param hitLocation
- * @return double projectileTime representing the time (ms) it will take for the projectile to arrive at target 
+ * @return Point end x,y location and projectileTime representing the time (ms) it will take for the first projectile to arrive at target 
  */
 function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) {
 	var hit = (hitLocation != null);
@@ -357,14 +391,10 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, missile);
 	}
 	
-	// TODO: make the messages play nicer with each other
-	// TODO: reflect actual hit for LRM/SRM cluster portions
-	// create the floating message to display the results of the projectile that was fired
-	var floatMessagePoint = new Point(weaponEndPoint.x, weaponEndPoint.y - 20);
-	var floatMessageStr = (hit) ? getLocationText(hitLocation) + " -"+weapon.getDamage() : "MISS";
-	createFloatMessage(floatMessagePoint, floatMessageStr, null, initialDelay + projectileTime, 1.0, false);
+	var projectileEndPoint = new Point(weaponEndPoint.x, weaponEndPoint.y);
+	projectileEndPoint.projectileTime = initialDelay + projectileTime;
 	
-	return projectileTime;
+	return projectileEndPoint;
 }
 
 /**

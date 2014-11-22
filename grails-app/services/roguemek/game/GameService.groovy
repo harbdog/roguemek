@@ -37,6 +37,21 @@ class GameService {
 		public String toString() { return str }
 	}
 	
+	def CLUSTER_HITS = [
+		//weapon size 2, 4, 5, 6, 10, 15, 20
+		 2:	[1,1,1,2,3,5,6],		// rolled 2
+		 3:	[1,2,2,2,3,5,6],
+		 4:	[1,2,2,3,4,6,9],
+		 5:	[1,2,3,3,6,9,12],
+		 6:	[1,2,3,4,6,9,12],
+		 7:	[1,3,3,4,6,9,12],		// rolled 7
+		 8:	[2,3,3,4,6,9,12],
+		 9:	[2,3,4,5,8,12,16],
+		10:	[2,3,4,5,8,12,16],
+		11:	[2,4,5,6,10,15,20],
+		12:	[2,4,5,6,10,15,20]		// rolled 12
+	];
+	
 	/**
 	 * Starts the game so it is ready to play the first turn
 	 */
@@ -833,6 +848,24 @@ class GameService {
 		for(BattleWeapon weapon in weapons) {
 			if(weapon.cooldown > 0) continue
 			
+			String messageCode
+			Object[] messageArgs
+			
+			// store data about this weapon fire results
+			def thisWeaponFire = [weaponId: weapon.id]
+			def thisWeaponData = [
+				unit: unit.id,
+				target: target.id,
+				weaponFire: thisWeaponFire
+			]
+			
+			// add the weapon heat
+			totalHeat += weapon.getHeat()
+			
+			// set the weapon on cooldown
+			weapon.cooldown = weapon.getCycle()
+			thisWeaponFire.weaponCooldown = weapon.cooldown
+			
 			// TODO: determine base toHit% based on Pilot skills
 			double toHit = 90.0
 			def modifiers = WeaponModifier.getToHitModifiers(game, unit, weapon, target)
@@ -856,45 +889,88 @@ class GameService {
 				}
 			}
 			
-			String messageCode
-			Object[] messageArgs
-			
-			// store data about this weapon fire results
-			def thisWeaponFire = [weaponId: weapon.id]
-			def thisWeaponData = [
-				unit: unit.id,
-				target: target.id,
-				weaponFire: thisWeaponFire
-			]
-			
 			if(weaponHit) {
+				int damage = weapon.getDamage()
+				int projectiles = weapon.getProjectiles()
 				
-				// determine hit location based on relative position of the attack on the target
-				int hitLocation = getHitLocation(game, unit, weapon, target)
+				String locationStr = null
+				String damageByLocationStr = null
 				
-				if(hitLocation < 0) {
+				int numHits = 1
+				if(projectiles > 1) {
+					def clusterDieResult = Roll.rollD6(2)
+					def clusterRow = CLUSTER_HITS[clusterDieResult]
+					
+					if(projectiles == 2){ numHits = clusterRow[0] }
+					else if(projectiles == 4){ numHits = clusterRow[1] }
+					else if(projectiles == 5){ numHits = clusterRow[2] }
+					else if(projectiles == 6){ numHits = clusterRow[3] }
+					else if(projectiles == 10){ numHits = clusterRow[4] }
+					else if(projectiles == 15){ numHits = clusterRow[5] }
+					else if(projectiles == 20){ numHits = clusterRow[6] }
+				}
+				
+				// handle weapons with cluster hit locations
+				boolean isLRM = weapon.isLRM()
+				
+				int groupAdd = 1
+				if(isLRM) groupAdd = 5
+				
+				for(int i=0; i<numHits; i+= groupAdd) {
+					// determine amount of damage for this grouping
+					int numThisGroup = groupAdd;
+					if(isLRM && groupAdd + i >= numHits){
+						numThisGroup = numHits - i;
+					}
+					
+					if(numThisGroup == 0){
+						break;
+					}
+					
+					int actualDamage = damage * numThisGroup
+					
+					// determine hit location based on relative position of the attack on the target
+					int hitLocation = getHitLocation(game, unit, weapon, target)
+
+					if(hitLocation >= 0) {
+						thisWeaponFire.weaponHit = true
+						if(thisWeaponFire.weaponHitLocations == null) {
+							thisWeaponFire.weaponHitLocations = []
+						}
+						if(thisWeaponFire.weaponHitLocations[hitLocation] == null) {
+							thisWeaponFire.weaponHitLocations[hitLocation] = 0
+						}
+						
+						if(target instanceof BattleMech) {
+							applyDamage(actualDamage, target, hitLocation)
+							
+							thisWeaponFire.weaponHitLocations[hitLocation] += actualDamage
+							
+							if(locationStr == null || damageByLocationStr == null) {
+								// set the message arguments of the hit result
+								locationStr = Mech.getLocationText(hitLocation)
+								damageByLocationStr = String.valueOf(actualDamage)
+							}
+							else {
+								// append the message arguments of the hit result
+								locationStr += ","+Mech.getLocationText(hitLocation)
+								if(isLRM) {
+									// only append the damage for LRM due to different damage by grouping
+									damageByLocationStr += ","+String.valueOf(actualDamage)
+								}
+							}
+						}
+					}
+				}
+				
+				if(locationStr == null || damageByLocationStr == null) {
 					// a hit can still be a miss if legs are rolled with partial cover
 					weaponHit = false
 					thisWeaponFire.weaponHit = false
 				}
-				else {
-					thisWeaponFire.weaponHit = true
-					thisWeaponFire.weaponHitLocations = []
-					if(thisWeaponFire.weaponHitLocations[hitLocation] == null) {
-						thisWeaponFire.weaponHitLocations[hitLocation] = 0
-					}
-					
-					if(target instanceof BattleMech) {
-						// TODO: handle cluster damage weapons (LRM, SRM, etc)
-						int damage = weapon.getDamage()
-						applyDamage(damage, target, hitLocation)
-						
-						thisWeaponFire.weaponHitLocations[hitLocation] += damage
-						
-						// set the message of the hit result
-						messageCode = "game.weapon.hit"
-						messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName(), damage, Mech.getLocationText(hitLocation)]
-					}
+				else{
+					messageCode = "game.weapon.hit"
+					messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName(), damageByLocationStr, locationStr]
 				}
 			}
 			
@@ -904,16 +980,9 @@ class GameService {
 				messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName()]
 			}
 			
-			// add the weapon heat
-			totalHeat += weapon.getHeat()
-			
-			// set the weapon on cooldown
-			weapon.cooldown = weapon.getCycle()
-			thisWeaponFire.weaponCooldown = weapon.cooldown
+			// TODO: if applicable, consume ammo
 			
 			weapon.save flush:true
-			
-			// TODO: if applicable, consume ammo
 			
 			// Add update information only about this weapon being fired
 			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, thisWeaponData)

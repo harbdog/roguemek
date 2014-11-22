@@ -406,82 +406,81 @@ function initUnitsDisplay() {
 // returns shortened text of the hit location index
 function getLocationText(index){
 	var locText = "";
-	switch(index){
-		case HEAD:
-			locText = "HD";
-			break;
-		case LEFT_ARM:
-			locText = "LA";
-			break;
-		case LEFT_TORSO:
-			locText = "LT";
-			break;
-		case CENTER_TORSO:
-			locText = "CT";
-			break;
-		case RIGHT_TORSO:
-			locText = "RT";
-			break;
-		case RIGHT_ARM:
-			locText = "RA";
-			break;
-		case LEFT_LEG:
-			locText = "LL";
-			break;
-		case RIGHT_LEG:
-			locText = "RL";
-			break;
-		case LEFT_REAR:
-			locText = "LTR";
-			break;
-		case CENTER_REAR:
-			locText = "CTR";
-			break;
-		case RIGHT_REAR:
-			locText = "RTR";
-			break;
+	
+	if(index == HEAD){
+		locText = "HD";
 	}
+	else if(index == LEFT_ARM){
+		locText = "LA";
+	}
+	else if(index == LEFT_TORSO){
+		locText = "LT";
+	}
+	else if(index == CENTER_TORSO){
+		locText = "CT";
+	}
+	else if(index == RIGHT_TORSO){
+		locText = "RT";
+	}
+	else if(index == RIGHT_ARM){
+		locText = "RA";
+	}
+	else if(index == LEFT_LEG){
+		locText = "LL";
+	}
+	else if(index == RIGHT_LEG){
+		locText = "RL";
+	}
+	else if(index == LEFT_REAR){
+		locText = "LTR";
+	}
+	else if(index == CENTER_REAR){
+		locText = "CTR";
+	}
+	else if(index == RIGHT_REAR){
+		locText = "RTR";
+	}
+		
 	return locText;
 }
 
 // returns full name of the hit location index
 function getLocationName(index){
 	var locText = "";
-	switch(index){
-		case HEAD:
+		if(index == HEAD){
 			locText = "Head";
-			break;
-		case LEFT_ARM:
+		}
+		else if(index == LEFT_ARM){
 			locText = "Left Arm";
-			break;
-		case LEFT_TORSO:
+		}
+		else if(index == LEFT_TORSO){
 			locText = "Left Torso";
-			break;
-		case CENTER_TORSO:
+		}
+		else if(index == CENTER_TORSO){
 			locText = "Center Torso";
-			break;
-		case RIGHT_TORSO:
+		}
+		else if(index == RIGHT_TORSO){
 			locText = "Right Torso";
-			break;
-		case RIGHT_ARM:
+		}
+		else if(index == RIGHT_ARM){
 			locText = "Right Arm";
-			break;
-		case LEFT_LEG:
+		}
+		else if(index == LEFT_LEG){
 			locText = "Left Leg";
-			break;
-		case RIGHT_LEG:
+		}
+		else if(index == RIGHT_LEG){
 			locText = "Right Leg";
-			break;
-		case LEFT_REAR:
+		}
+		else if(index == LEFT_REAR){
 			locText = "Left Torso Rear";
-			break;
-		case CENTER_REAR:
+		}
+		else if(index == CENTER_REAR){
 			locText = "Center Torso Rear";
-			break;
-		case RIGHT_REAR:
+		}
+		else if(index == RIGHT_REAR){
 			locText = "Right Torso Rear";
-			break;
-	}
+		}
+			
 	return locText;
 }
 

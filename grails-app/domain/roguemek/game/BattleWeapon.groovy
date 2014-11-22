@@ -54,4 +54,9 @@ class BattleWeapon extends BattleEquipment {
 	public int[] getRanges() {
 		return [this.getShortRange(), this.getMediumRange(), this.getLongRange()]
 	}
+	
+	public boolean isLRM() {
+		// TODO: come up with a better way to determine if a weapon is an LRM type
+		return this.getShortName().startsWith("LRM")
+	}
 }
