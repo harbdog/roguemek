@@ -142,43 +142,40 @@ function fire_weapons(weapons) {
 		}
 		
 		// TODO: consolidate to a single method than handles various update dynamically for all actions and polling data
+		var u = units[data.unit];
+		var t = units[data.target];
 		
-		if(data.weaponData){
-			var u = units[data.unit];
-			var t = units[data.target];
-			
-			// weapon fire results and animations will come through the next poll update
-			
-			// update armor values of the target
-			if(data.armorHit) {
-				var numArmorHits = data.armorHit.length;
-				for(var i=0; i<numArmorHits; i++) {
-					var armorRemains = data.armorHit[i];
-					if(armorRemains != null) {
-						t.armor[i] = armorRemains;
-					}
+		// weapon fire results and animations will come through the next poll update
+		
+		// update armor values of the target
+		if(data.armorHit) {
+			var numArmorHits = data.armorHit.length;
+			for(var i=0; i<numArmorHits; i++) {
+				var armorRemains = data.armorHit[i];
+				if(armorRemains != null) {
+					t.armor[i] = armorRemains;
 				}
 			}
-			
-			// update internal values of the target
-			if(data.internalsHit) {
-				var numInternalsHits = data.internalsHit.length;
-				for(var i=0; i<numInternalsHits; i++) {
-					var internalsRemains = data.internalsHit[i];
-					if(internalsRemains != null) {
-						t.internals[i] = internalsRemains;
-					}
-				}
-			}
-			
-			u.heat = data.heat;
-			
-			// update heat display
-			setHeatDisplay(u.heat, false, false);
-	
-			// update UI displays of target armor if showing
-			updateTargetDisplay();
 		}
+		
+		// update internal values of the target
+		if(data.internalsHit) {
+			var numInternalsHits = data.internalsHit.length;
+			for(var i=0; i<numInternalsHits; i++) {
+				var internalsRemains = data.internalsHit[i];
+				if(internalsRemains != null) {
+					t.internals[i] = internalsRemains;
+				}
+			}
+		}
+		
+		u.heat = data.heat;
+		
+		// update heat display
+		setHeatDisplay(u.heat, false, false);
+
+		// update UI displays of target armor if showing
+		updateTargetDisplay();
 		
 		// Toggle off all selected weapons
 		deselectWeapons();
