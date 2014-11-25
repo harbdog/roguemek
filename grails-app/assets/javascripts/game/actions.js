@@ -3,6 +3,8 @@
  */
 
 function target() {
+	if(playerTarget == null) return;
+	
 	var target_id = playerTarget.id;
 	
 	handleActionJSON({
@@ -219,6 +221,8 @@ function pollUpdate(updates) {
 				var unitMoved = false;
 				
 				var thisUnit = units[data.unit];
+				var tgtUnit = (data.target != null) ? units[data.target] : null;
+				
 				if(data.x != null && data.y != null) {
 					unitMoved = true;
 					thisUnit.setHexLocation(data.x, data.y);
@@ -233,8 +237,6 @@ function pollUpdate(updates) {
 				
 				if(data.weaponFire != null){
 					// update result of weapons fire from another unit
-					var u = units[data.unit];
-					var t = units[data.target];
 					var wData = data.weaponFire;
 					
 					var id = wData.weaponId;
@@ -248,25 +250,53 @@ function pollUpdate(updates) {
 						weapon.cooldown = cooldown;
 						
 						if(hit) {
-							console.log("Weapon "+weapon+" hit the target in the following locations.");
-							
 							$.each(hitLocations, function(loc, locDamage) {
 								if(locDamage == null) return;
 								
 								console.log("    "+getLocationText(loc)+": "+locDamage)
 							});
 						}
-						else{
-							console.log("Weapon "+weapon+" missed the target!");
-						}
 						
 						// TODO: show floating miss/hit numbers
-						animateWeaponFire(u, weapon, t, hitLocations);
+						animateWeaponFire(thisUnit, weapon, tgtUnit, hitLocations);
 						
 					}
 					else{
 						console.log("Weapon null? Weapon ID:"+id);
 					}
+				}
+				
+				// update armor values of the target
+				if(data.armorHit) {
+					var numArmorHits = data.armorHit.length;
+					for(var i=0; i<numArmorHits; i++) {
+						var armorRemains = data.armorHit[i];
+						if(armorRemains != null) {
+							tgtUnit.armor[i] = armorRemains;
+						}
+					}
+				}
+				
+				// update internal values of the target
+				if(data.internalsHit) {
+					var numInternalsHits = data.internalsHit.length;
+					for(var i=0; i<numInternalsHits; i++) {
+						var internalsRemains = data.internalsHit[i];
+						if(internalsRemains != null) {
+							tgtUnit.internals[i] = internalsRemains;
+						}
+					}
+				}
+				
+				if(playerUnit.id == tgtUnit.id 
+						&& (data.armorHit || data.internalsHit)) {
+					// update player armor/internals after being hit
+					setArmorDisplay(playerUnit.armor, playerUnit.internals);
+				}
+				else if(playerTarget.id == tgtUnit.id 
+						&& (data.armorHit || data.internalsHit)) {
+					// update target armor/internals after being hit
+					updateTargetDisplay();
 				}
 				
 				if(playerUnit.id == thisUnit.id) {
@@ -280,6 +310,9 @@ function pollUpdate(updates) {
 				}
 			}
 			else if(data.turnUnit != null) {
+				// used to determine if the player turn just ended
+				var playerTurnEnded = (playerUnit.id == turnUnit.id);
+				
 				turnUnit = units[data.turnUnit];
 				
 				if(data.apRemaining != null){
@@ -315,6 +348,9 @@ function pollUpdate(updates) {
 					
 					// update the weapons cooldown for the player weapons
 					updateWeaponsCooldown();
+					
+					// re-acquire the target
+					target();
 				
 					$('.action_end').removeClass("hidden");
 					$('.action_wait').addClass("hidden");
@@ -326,6 +362,12 @@ function pollUpdate(updates) {
 					$('.action_fire').addClass("hidden");
 					$('.action_end').addClass("hidden");
 					$('.action_wait').removeClass("hidden");
+				}
+				
+				if(playerTurnEnded) {
+					// clear toHit of weapons
+					resetWeaponsToHit();
+					updateWeaponsDisplay();
 				}
 			}
 		});

@@ -256,7 +256,6 @@ function updateWeaponsDisplay() {
 		skip();
 	});
 	
-	weaponsContainer.alpha = 0;
 	weaponsContainer.x = -stage.x + playerContainerWidth;
     weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
 	stage.addChild(weaponsContainer);
@@ -322,6 +321,16 @@ function deselectWeapons() {
 		$('.action_fire').addClass("hidden");
 		$('.action_end').removeClass("hidden");
 	}
+}
+
+/**
+ * Resets the toHit value for all player weapons
+ * @param weapon
+ */
+function resetWeaponsToHit() {
+	$.each(playerWeapons, function(key, w) {
+		w.toHit = null;
+	});
 }
 
 /**
@@ -392,7 +401,6 @@ function updateTargetDisplay() {
 	targetBracket.y = targetDisplayUnit.y;
 	stage.addChild(targetBracket);
 	
-	createjs.Tween.get(weaponsContainer).to({alpha: 1}, 500);
 	createjs.Tween.get(targetContainer).to({alpha: 1}, 500);
 	createjs.Tween.get(targetBracket).to({alpha: 1}, 500);
 	
