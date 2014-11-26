@@ -169,6 +169,11 @@ div.hidden {
 #weaponsDiv .weapon.cooldown:hover {
 	background-color: #000099;
 }
+#weaponsDiv .weapon.disabled {
+	border: 1px outset #FFFFFF;
+	background-color: #444444;
+	color: #999999;
+}
 
 #weaponsDiv .weaponNumber {
 	float: left;
@@ -180,6 +185,9 @@ div.hidden {
 	font-weight: 900;
 }
 #weaponsDiv .weaponNumber.disabled {
+	background-color: #666666;
+}
+#weaponsDiv .weapon.disabled .weaponNumber {
 	background-color: #666666;
 }
 #weaponsDiv .weaponLocation {

@@ -41,7 +41,9 @@ function handleKeyPress(key) {
 			var thisWeapon = playerWeapons[weaponFired];
 			
 			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
-			if(!$('#'+thisWeapon.id).hasClass("cooldown")){
+			if(playerUnit == turnUnit 
+					&& !$('#'+thisWeapon.id).hasClass("cooldown") 
+					&& !$('#'+thisWeapon.id).hasClass("disabled")){
 				// only allow weapons to be selected that aren't on cooldown
 				$('#'+thisWeapon.id).toggleClass("selected");
 				

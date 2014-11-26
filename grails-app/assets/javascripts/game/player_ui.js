@@ -191,6 +191,9 @@ function updateWeaponsDisplay() {
 		
 		var locationStr = getLocationText(w.location);
 		
+		// TODO: if the weapon is destroyed/damaged, add class "disabled"
+		var weaponClassStr = "weapon";
+		
 		// show actual calculated TO-HIT
 		var toHitAsPercent = "  --";
 		if(w.toHit != null) {
@@ -205,9 +208,13 @@ function updateWeaponsDisplay() {
 				ammoRemaining += ammoObj.ammoRemaining;
 			});
 			weaponInfo += "["+ammoRemaining+"]";
+			
+			if(ammoRemaining <= 0) {
+				weaponClassStr += " disabled";
+			}
 		}
 		
-		var weaponStr = "<div class='weapon' id='"+w.id+"'>" +
+		var weaponStr = "<div class='"+weaponClassStr+"' id='"+w.id+"'>" +
 							"<div class='weaponNumber'>"+weaponNum+"</div>" +
 							"<div class='weaponLocation'>"+locationStr+"</div>" +
 							"<div class='weaponIcon' id='"+w.weaponType+"'>"+"</div>" +
@@ -227,7 +234,9 @@ function updateWeaponsDisplay() {
 	
 	$(".weapon").click(function() {
 		// TODO: move to events.js
-		if(!$(this).hasClass("cooldown")){
+		if(playerUnit == turnUnit 
+				&& !$(this).hasClass("cooldown") 
+				&& !$(this).hasClass("disabled")){
 			// only allow weapons to be selected that aren't on cooldown
 			// TODO: only allow weapons to be selected that have >0% chance to hit
 			$(this).toggleClass("selected");
