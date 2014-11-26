@@ -1011,17 +1011,17 @@ class GameService {
 			
 			boolean weaponHit = false
 			if(toHit >= 100) {
-				log.info("Weapon "+weapon+" AUTO HIT ("+toHit+")!")
+				//log.info("Weapon "+weapon+" AUTO HIT ("+toHit+")!")
 				weaponHit = true
 			}
 			else if(toHit > 0){
 				int result = Roll.randomInt(100, 1)
 				if(result <= toHit) {
-					log.info("Weapon "+weapon+" HIT! Rolled: "+result+"/"+toHit)
+					//log.info("Weapon "+weapon+" HIT! Rolled: "+result+"/"+toHit)
 					weaponHit = true
 				}
 				else {
-					log.info("Weapon "+weapon+" MISSED! Rolled: "+result+"/"+toHit)
+					//log.info("Weapon "+weapon+" MISSED! Rolled: "+result+"/"+toHit)
 				}
 			}
 			
@@ -1293,7 +1293,7 @@ class GameService {
 			return
 		}
 		
-		log.info("Applying "+damage+" damage to "+unit+" @ "+Mech.getLocationText(hitLocation))
+		//log.info("Applying "+damage+" damage to "+unit+" @ "+Mech.getLocationText(hitLocation))
 		
 		// if(unit instanceof BattleMech)...
 		while(damage > 0 && unit.armor[hitLocation] > 0) {

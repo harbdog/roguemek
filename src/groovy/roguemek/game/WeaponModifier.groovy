@@ -206,10 +206,10 @@ class WeaponModifier {
 		def fromLocationMods = getToHitModifiersFromLocation(game, srcUnit.getLocation(), tgtUnit)
 		toHitMods = (toHitMods << fromLocationMods).flatten()
 		
-		log.info("Modifiers for "+weapon.toString()+" from "+srcUnit.toString() + " at "+tgtUnit.toString())
-		for(WeaponModifier modifier in toHitMods) {
-			log.info("  "+modifier.type+": "+modifier.value)
-		}
+		//log.info("Modifiers for "+weapon.toString()+" from "+srcUnit.toString() + " at "+tgtUnit.toString())
+		//for(WeaponModifier modifier in toHitMods) {
+			//log.info("  "+modifier.type+": "+modifier.value)
+		//}
 		
 		return toHitMods
 	}
