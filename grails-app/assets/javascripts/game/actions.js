@@ -288,15 +288,17 @@ function pollUpdate(updates) {
 					}
 				}
 				
-				if(playerUnit.id == tgtUnit.id 
-						&& (data.armorHit || data.internalsHit)) {
-					// update player armor/internals after being hit
-					setArmorDisplay(playerUnit.armor, playerUnit.internals);
-				}
-				else if(playerTarget.id == tgtUnit.id 
-						&& (data.armorHit || data.internalsHit)) {
-					// update target armor/internals after being hit
-					updateTargetDisplay();
+				if(tgtUnit != null) {
+					if(playerUnit.id == tgtUnit.id 
+							&& (data.armorHit || data.internalsHit)) {
+						// update player armor/internals after being hit
+						setArmorDisplay(playerUnit.armor, playerUnit.internals);
+					}
+					else if(playerTarget.id == tgtUnit.id 
+							&& (data.armorHit || data.internalsHit)) {
+						// update target armor/internals after being hit
+						updateTargetDisplay();
+					}
 				}
 				
 				if(playerUnit.id == thisUnit.id) {
