@@ -171,6 +171,14 @@ function fire_weapons(weapons) {
 			}
 		}
 		
+		// update ammo remaining
+		if(data.ammoRemaining) {
+			$.each(data.ammoRemaining, function(ammoId, ammoRemaining) {
+				var ammoObj = getCritObjectById(u, ammoId);
+				ammoObj.ammoRemaining = ammoRemaining;
+			});
+		}
+		
 		u.heat = data.heat;
 		
 		// update heat display
@@ -249,14 +257,6 @@ function pollUpdate(updates) {
 						
 						weapon.cooldown = cooldown;
 						
-						if(hit) {
-							$.each(hitLocations, function(loc, locDamage) {
-								if(locDamage == null) return;
-								
-								console.log("    "+getLocationText(loc)+": "+locDamage)
-							});
-						}
-						
 						// TODO: show floating miss/hit numbers
 						animateWeaponFire(thisUnit, weapon, tgtUnit, hitLocations);
 						
@@ -331,7 +331,6 @@ function pollUpdate(updates) {
 							var weapon = getPlayerWeaponById(id);
 							if(weapon != null) {
 								weapon.cooldown = cooldown;
-								console.log("Weapon "+weapon+" cooldown now at "+cooldown);
 							}
 						});
 					}

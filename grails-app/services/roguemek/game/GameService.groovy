@@ -429,7 +429,7 @@ class GameService {
 		def critsRender = []
 		if(u instanceof BattleMech) {
 			for(int i=0; i<u.crits.size(); i++) {
-				critsRender[i] = getEquipmentRender(BattleEquipment.get(u.crits[i]))
+				critsRender[i] = getEquipmentRender(u, BattleEquipment.get(u.crits[i]))
 			}
 		}
 		
@@ -441,7 +441,7 @@ class GameService {
 	 * @param equip
 	 * @return
 	 */
-	public def getEquipmentRender(BattleEquipment equip) {
+	public def getEquipmentRender(BattleUnit unit, BattleEquipment equip) {
 		if(equip == null) return null
 		
 		Equipment e = equip.equipment
@@ -481,7 +481,17 @@ class GameService {
 			equipRender.shortRange = e.shortRange
 			equipRender.mediumRange = e.mediumRange
 			equipRender.longRange = e.longRange
-			// TODO: model e.ammoTypes as something the client can associate or determine ammoRemains by Weapon instead?
+			
+			// add each BattleAmmo id applicable for this weapon 
+			if(e.ammoTypes != null && e.ammoTypes.size() > 0) {
+				equipRender.ammo = []
+				for(Ammo ammo in e.ammoTypes) {
+					BattleAmmo[] ammoCrits = unit.getEquipmentFromBaseObject(ammo)
+					for(BattleAmmo ammoEquip in ammoCrits) {
+						equipRender.ammo.add(ammoEquip.id)
+					}
+				}
+			}
 		}
 		if(equip instanceof BattleWeapon) {
 			equipRender.cooldown = equip.cooldown

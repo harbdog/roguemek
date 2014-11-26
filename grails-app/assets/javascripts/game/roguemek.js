@@ -288,6 +288,17 @@ function initUnitWeapons(unit) {
 								c.damage, c.projectiles, c.heat, c.cycle, c.cooldown, 
 								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
 			weapons[c.id] = w;
+			
+			if(c.ammo) {
+				// store the ammo objects directly on the weapon for easy lookup
+				w.ammo = {};
+				$.each(c.ammo, function(index, ammoId) {
+					var ammoObj = getCritObjectById(unit, ammoId);
+					if(ammoObj != null) {
+						w.ammo[ammoId] = ammoObj;
+					}
+				});
+			}
 		}
 	});
 	
@@ -550,6 +561,26 @@ function getDieRollTotal(numDie, numSides){
 	}
 	
 	return total;
+}
+
+/**
+ * Gets the crit object represented by the given id
+ * @param unit
+ * @param critId
+ */
+function getCritObjectById(unit, critId) {
+	var critObj = null;
+	
+	$.each(unit.crits, function(index, c) {
+		if(c != null && c.id == critId){
+			critObj = c;
+		}
+		
+		// end the each loop when the object is found
+		return (critObj == null);
+	});
+	
+	return critObj;
 }
 
 /**

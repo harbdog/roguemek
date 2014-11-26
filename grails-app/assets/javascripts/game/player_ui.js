@@ -198,9 +198,13 @@ function updateWeaponsDisplay() {
 		}
 		
 		var weaponInfo = w.shortName;
-		if(w.weaponType == WEAPON_BALLISTIC || w.weaponType == WEAPON_MISSILE) {
-			// TODO: determine actual remaining ammo
-			weaponInfo += "[1000]";
+		if(w.ammo) {
+			// show total remaining ammo
+			var ammoRemaining = 0;
+			$.each(w.ammo, function(key, ammoObj) {
+				ammoRemaining += ammoObj.ammoRemaining;
+			});
+			weaponInfo += "["+ammoRemaining+"]";
 		}
 		
 		var weaponStr = "<div class='weapon' id='"+w.id+"'>" +

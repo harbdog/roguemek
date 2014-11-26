@@ -158,6 +158,8 @@ Weapon.prototype.initialize = function(id, name, shortName, weaponType, location
 	this.range = range || [0, 0, 0];
 	this.cycle = cycle;
 	this.cooldown = cooldown;
+	
+	this.ammo = null;
 }
 Weapon.prototype.getProjectiles = function() {
 	return this.projectiles;
