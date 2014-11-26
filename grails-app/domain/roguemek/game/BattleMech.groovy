@@ -157,6 +157,28 @@ class BattleMech extends BattleUnit {
 	}
 	
 	/**
+	 * Gets only the BattleEquipment objects which match the base equipment object
+	 * @param equip
+	 * @return
+	 */
+	public BattleEquipment[] getEquipmentFromBaseObject(Equipment equip) {
+		def foundEquipment = []
+		
+		for(String equipId in crits) {
+			BattleEquipment thisEquip = BattleEquipment.get(equipId)
+			if(thisEquip == null) {
+				continue
+			}
+			
+			if(thisEquip.equipment == equip) {
+				foundEquipment.add(thisEquip)
+			}
+		}
+		
+		return foundEquipment
+	}
+	
+	/**
 	 * Gets the Critical section index of the given equipment index
 	 * @param critIndex
 	 * @return
@@ -184,7 +206,7 @@ class BattleMech extends BattleUnit {
 	
 	/**
 	 * Gets all BattleEquipment arrays keyed by the section index
-	 * @return
+	 * @return Array of arrays with BattleEquipment objects
 	 */
 	public def getAllCritSections() {
 		def allCritSections = []
@@ -197,8 +219,8 @@ class BattleMech extends BattleUnit {
 	}
 	
 	/**
-	 * Returns true if all internal armor on one of the legs is gone
-	 * @return
+	 * Determines if all internal armor on one of the legs is gone
+	 * @return true if all internal armor on a leg is gone
 	 */
 	public boolean isLegged() {
 		for(int legIndex in Mech.LEGS) {
@@ -212,7 +234,7 @@ class BattleMech extends BattleUnit {
 	
 	/**
 	 * Gets all weapons currently equipped
-	 * @return
+	 * @return Array of BattleWeapon objects
 	 */
 	public BattleWeapon[] getWeapons() {
 		def weapons = []

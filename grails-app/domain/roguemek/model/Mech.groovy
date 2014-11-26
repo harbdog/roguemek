@@ -81,6 +81,8 @@ class Mech extends Unit {
 	
 	public static final CRIT_LOCATIONS = [HEAD, LEFT_ARM, LEFT_TORSO, CENTER_TORSO, RIGHT_TORSO, RIGHT_ARM, LEFT_LEG, RIGHT_LEG]
 	
+	public static final AMMO_CONSUME_LOCATIONS = [HEAD, CENTER_TORSO, LEFT_TORSO, RIGHT_TORSO, LEFT_ARM, RIGHT_ARM, LEFT_LEG, RIGHT_LEG]
+	
 	// internal structure points for each tonnage
 	public static final INTERNAL_STRUCTURE = [
 		//	T:		[HD,LA,LT,CT,RT,RA,LL,RL]

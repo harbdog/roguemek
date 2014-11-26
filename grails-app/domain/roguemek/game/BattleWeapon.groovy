@@ -59,4 +59,8 @@ class BattleWeapon extends BattleEquipment {
 		// TODO: come up with a better way to determine if a weapon is an LRM type
 		return this.getShortName().startsWith("LRM")
 	}
+	
+	public def getAmmoTypes() {
+		return this.equipment.ammoTypes
+	}
 }

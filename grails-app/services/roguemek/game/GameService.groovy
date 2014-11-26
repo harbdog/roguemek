@@ -827,6 +827,58 @@ class GameService {
 		return data
 	}
 	
+	
+	/**
+	 * Consumes the given ammo type and count, if possible
+	 * @param unit
+	 * @param ammoType
+	 * @param ammoCount
+	 * @return Integer the amount of ammo remaining, or -1 if no ammo could be consumed
+	 */
+	public int consumeAmmo(BattleUnit unit, Ammo ammoType, int ammoCount) {
+		if(unit == null || ammoType == null || ammoCount <= 0) return -1
+		
+		int ammoRemaining = -1
+		
+		if(unit instanceof BattleMech) {
+			for(int critSectionIndex in Mech.AMMO_CONSUME_LOCATIONS) {
+				BattleEquipment[] thisCritSection = unit.getCritSection(critSectionIndex)
+				
+				for(BattleEquipment thisEquip in thisCritSection) {
+					if(thisEquip instanceof BattleAmmo 
+							&& thisEquip.isActive() 
+							&& thisEquip.equipment == ammoType
+							&& thisEquip.ammoRemaining > 0) {
+						// found ammo
+						if(ammoRemaining == -1) {
+							ammoRemaining = 0
+						}
+						
+						if(ammoCount > thisEquip.ammoRemaining) {
+							ammoCount = thisEquip.ammoRemaining
+						}
+						
+						if(ammoCount > 0) {
+							thisEquip.ammoRemaining -= ammoCount
+							thisEquip.save flush:true
+							
+							log.info("Unit "+unit+" consumed "+ammoCount+" ammo of "+ammoType)
+							log.info("    Ammo remaining in this crit: "+thisEquip.ammoRemaining)
+							
+							ammoCount = 0
+						}
+						
+						ammoRemaining += thisEquip.ammoRemaining
+					}
+				}
+			}
+		}
+		
+		log.info("Unit "+unit+" total ammo remaining of "+ammoType+": "+ammoRemaining)
+		
+		return ammoRemaining
+	}
+	
 	/**
 	 * Fires a weapon at the target
 	 * @param unit
@@ -850,6 +902,35 @@ class GameService {
 			
 			String messageCode
 			Object[] messageArgs
+			
+			// if applicable, look for and consume ammo
+			def ammoTypes = weapon.getAmmoTypes()
+			if(ammoTypes != null && ammoTypes.size() > 0) {
+				if(data.ammoRemaining == null) {
+					data.ammoRemaining = [:]
+				}
+				
+				int ammoRemaining = 0
+				
+				// TODO: handle different ammo types within a weapon
+				for(Ammo ammo in ammoTypes) {
+					ammoRemaining = consumeAmmo(unit, ammo, 1)
+					if(ammoRemaining >= 0) {
+						// return with data about ammo remaining in each ammo crit
+						BattleEquipment[] ammoEquipment = unit.getEquipmentFromBaseObject(ammo)
+						for(BattleEquipment ammoEquip in ammoEquipment) {
+							data.ammoRemaining[ammoEquip.id] = ammoEquip.ammoRemaining
+						}
+						
+						break;
+					}
+				}
+				
+				if(ammoRemaining < 0) {
+					// TODO: skip this weapon fire since no ammo remaining before firing, provide messaging just to the weapon owner
+					continue;
+				}
+			}
 			
 			// store data about this weapon fire results
 			def thisWeaponFire = [weaponId: weapon.id]
@@ -979,8 +1060,6 @@ class GameService {
 				messageCode = "game.weapon.missed"
 				messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName()]
 			}
-			
-			// TODO: if applicable, consume ammo
 			
 			weapon.save flush:true
 			
