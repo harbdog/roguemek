@@ -817,6 +817,25 @@ class GameService {
 			for(BattleWeapon w in weapons) {
 				if(!w.isActive() || w.cooldown > 0) continue
 				
+				// if applicable, determine if there is enough ammo
+				def ammoTypes = w.getAmmoTypes()
+				if(ammoTypes != null && ammoTypes.size() > 0) {
+					int ammoRemaining = 0
+					
+					// TODO: handle different ammo types within a weapon
+					for(Ammo ammo in ammoTypes) {
+						ammoRemaining = getRemainingAmmo(unit, ammo)
+						if(ammoRemaining >= 0) {
+							break
+						}
+					}
+					
+					if(ammoRemaining <= 0) {
+						// skip this weapon target info since no ammo remaining
+						continue
+					}
+				}
+				
 				// TODO: determine base toHit% based on Pilot skills
 				double toHit = 90.0
 				def modifiers = WeaponModifier.getToHitModifiers(game, unit, w, target)
@@ -846,7 +865,7 @@ class GameService {
 	 * @return Integer the amount of ammo remaining, or -1 if no ammo could be consumed
 	 */
 	public int consumeAmmo(BattleUnit unit, Ammo ammoType, int ammoCount) {
-		if(unit == null || ammoType == null || ammoCount <= 0) return -1
+		if(unit == null || ammoType == null) return -1
 		
 		int ammoRemaining = -1
 		
@@ -857,7 +876,7 @@ class GameService {
 				for(BattleEquipment thisEquip in thisCritSection) {
 					if(thisEquip instanceof BattleAmmo 
 							&& thisEquip.isActive() 
-							&& thisEquip.equipment == ammoType
+							&& thisEquip.equipment.id == ammoType.id
 							&& thisEquip.ammoRemaining > 0) {
 						// found ammo
 						if(ammoRemaining == -1) {
@@ -872,9 +891,6 @@ class GameService {
 							thisEquip.ammoRemaining -= ammoCount
 							thisEquip.save flush:true
 							
-							log.info("Unit "+unit+" consumed "+ammoCount+" ammo of "+ammoType)
-							log.info("    Ammo remaining in this crit: "+thisEquip.ammoRemaining)
-							
 							ammoCount = 0
 						}
 						
@@ -884,7 +900,36 @@ class GameService {
 			}
 		}
 		
-		log.info("Unit "+unit+" total ammo remaining of "+ammoType+": "+ammoRemaining)
+		return ammoRemaining
+	}
+	
+	/**
+	 * Gets the ammo remaining of the given type
+	 * @param unit
+	 * @param ammoType
+	 * @param ammoCount
+	 * @return
+	 */
+	public int getRemainingAmmo(BattleUnit unit, Ammo ammoType) {
+		if(unit == null || ammoType == null) return -1
+		
+		int ammoRemaining = 0
+
+		if(unit instanceof BattleMech) {
+			for(int critSectionIndex in Mech.AMMO_CONSUME_LOCATIONS) {
+				BattleEquipment[] thisCritSection = unit.getCritSection(critSectionIndex)
+				
+				for(BattleEquipment thisEquip in thisCritSection) {
+					if(thisEquip instanceof BattleAmmo
+							&& thisEquip.isActive()
+							&& thisEquip.equipment.id == ammoType.id
+							&& thisEquip.ammoRemaining > 0) {
+						// found ammo
+						ammoRemaining += thisEquip.ammoRemaining
+					}
+				}
+			}
+		}
 		
 		return ammoRemaining
 	}
@@ -932,13 +977,13 @@ class GameService {
 							data.ammoRemaining[ammoEquip.id] = ammoEquip.ammoRemaining
 						}
 						
-						break;
+						break
 					}
 				}
 				
 				if(ammoRemaining < 0) {
 					// TODO: skip this weapon fire since no ammo remaining before firing, provide messaging just to the weapon owner
-					continue;
+					continue
 				}
 			}
 			
