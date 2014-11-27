@@ -27,14 +27,16 @@ class GameControllerService {
 			// set the pilot last update time to the last message's time
 			if(updates != null && !updates.isEmpty()) {
 				lastUpdate = new Date(updates.last().getTime())
-				pilot.lastUpdate = lastUpdate
-				pilot.save flush: true
+				
+				Pilot p = Pilot.get(pilot.id)
+				p.lastUpdate = lastUpdate
+				p.save flush: true
 				
 				return [date: lastUpdate, messageUpdates: updates]
 			}
 			
 			tries ++
-			Thread.sleep(500)
+			Thread.sleep(250)
 		}
 		
 		return [date: lastUpdate]
