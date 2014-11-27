@@ -207,7 +207,7 @@ class GameService {
 	
 	/**
 	 * Calculates the amount of ActionPoints a unit gets for a new turn.
-	 * 1 AP is given per 2 walk MP.
+	 * 1 AP is given per 2 run MP (walk MP * 1.5 rounded up).
 	 * @param game
 	 * @param unit
 	 * @return
@@ -226,7 +226,9 @@ class GameService {
 				return 0
 			}
 			
-			ap = Math.floor(walkMPThisTurn / 2) + (walkMPThisTurn % 2)
+			int runMPThisTurn = Math.ceil(walkMPThisTurn * 1.5)
+			
+			ap = Math.floor(runMPThisTurn / 2) + (runMPThisTurn % 2)
 		}
 		
 		return ap
