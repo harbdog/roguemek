@@ -25,6 +25,10 @@ class BootStrap {
 		def testCallsign = 'RogueMekWarrior'
 		def testPassword = 'Pass99'
 		
+		def sampleEmail = 'test@test.com'
+		def sampleCallsign = 'TestWarrior'
+		def samplePassword = 'Pass99'
+		
 		// Create Admin user with all Roles
 		def adminUser = User.findByUsername(adminEmail)
 		def adminPilot
@@ -95,10 +99,44 @@ class BootStrap {
 		
 		UserRole.create testUser, userRole, true
 		
-		assert User.count() == 2
+		// Create sample user with User role
+		def sampleUser = User.findByUsername(sampleEmail)
+		def samplePilot
+		if(!sampleUser) {
+			// initialize testing admin user
+			sampleUser = new User(username: sampleEmail, callsign: sampleCallsign, password: samplePassword, enabled: true)
+			if(!sampleUser.validate()) {
+				log.error("Errors with tester "+sampleUser.username+":\n")
+				sampleUser.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				sampleUser.save flush:true
+			
+				log.info('Initialized test user '+sampleUser.username)
+			}
+			
+			samplePilot = new Pilot(firstName: "Samply", lastName: "Sampler", ownerUser: sampleUser, status: Pilot.STATUS_ACTIVE)
+			if(!samplePilot.validate()) {
+				log.error("Errors with pilot "+samplePilot.firstName+":\n")
+				samplePilot.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				samplePilot.save flush:true
+			
+				log.info('Initialized sample pilot '+samplePilot.firstName)
+			}
+		}
+		
+		UserRole.create sampleUser, userRole, true
+		
+		assert User.count() == 3
 		assert Role.count() == 3
-		assert UserRole.count() == 4
-		assert Pilot.count() == 2
+		assert UserRole.count() == 5
+		assert Pilot.count() == 3
 		
 		
 		// Initialize factions
@@ -125,7 +163,7 @@ class BootStrap {
 		HexMap boardMap = HexMap.loadBoardFile(boardFile)
 		
 		// Initialize a sample BattleMech
-		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Stalker"), x: 4, y: 2, heading: 3, rgb: [255, 0, 0])
+		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("BattleMaster"), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
 		if(!battleMech.validate()) {
 			log.error("Errors with battle mech "+battleMech.mech?.name+":\n")
 			battleMech.errors.allErrors.each {
@@ -139,7 +177,7 @@ class BootStrap {
 		}
 		
 		// and another BattleMech
-		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Annihilator"), x: 6, y: 5, heading: 5)
+		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Warhammer"), x: 4, y: 4, heading: 5, rgb: [0, 0, 255])
 		if(!battleMech2.validate()) {
 			log.error("Errors with battle mech "+battleMech2.mech?.name+":\n")
 			battleMech2.errors.allErrors.each {
@@ -152,10 +190,24 @@ class BootStrap {
 			log.info('Initialized battle mech '+battleMech2.mech.name)
 		}
 		
-		assert BattleMech.count() == 2
+		// yet another BattleMech
+		def battleMech3 = new BattleMech(pilot: samplePilot, mech: Mech.findByName("Zeus"), x: 8, y: 8, heading: 5, rgb: [0, 255, 0])
+		if(!battleMech3.validate()) {
+			log.error("Errors with battle mech "+battleMech3.mech?.name+":\n")
+			battleMech3.errors.allErrors.each {
+				log.error(it)
+			}
+		}
+		else {
+			battleMech3.save flush:true
+		
+			log.info('Initialized battle mech '+battleMech3.mech.name)
+		}
+		
+		assert BattleMech.count() == 3
 		
 		// Initialize a sample Game
-		Game sampleGame = new Game(ownerPilot: adminPilot, pilots: [adminPilot, testPilot], units: [battleMech, battleMech2], board: boardMap)
+		Game sampleGame = new Game(ownerPilot: adminPilot, pilots: [adminPilot, testPilot, samplePilot], units: [battleMech, battleMech2, battleMech3], board: boardMap)
 		
 		if(!sampleGame.validate()) {
 			log.error("Errors with game:\n")
