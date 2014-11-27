@@ -71,7 +71,7 @@ class WeaponModifier {
 			boolean isArmWeapon = Mech.ARMS.contains(weapon.location)
 			if(isArmWeapon){
 				// check if the mech has no Lower Arm or Hand actuators in BOTH arms, as it can reverse/flip the arms to fire in rear arc
-				def armCrits = getCritSection(weapon.location)
+				def armCrits = srcUnit.getCritSection(weapon.location)
 				
 				for(thisCrit in armCrits) {
 					if(MechMTF.MTF_CRIT_LOW_ARM_ACT == thisCrit.getName()
