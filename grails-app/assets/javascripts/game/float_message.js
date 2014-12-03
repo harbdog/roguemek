@@ -33,6 +33,8 @@ FloatMessage.prototype.initialize = function(message, config) {
 	this.drawFloatMessage(message);
 }
 FloatMessage.prototype.drawFloatMessage = function(message){
+	this.uncache();
+	
 	// create the message text
 	var messageText = new createjs.Text(message, this.conf.messageTextFont, this.conf.messageTextColor);
 	
@@ -45,4 +47,6 @@ FloatMessage.prototype.drawFloatMessage = function(message){
 	
 	this.addChild(messageBox);
 	this.addChild(messageText);
+	
+	this.cache(textBounds.x - 5, textBounds.y, textBounds.width + 10, textBounds.height + 10);
 }

@@ -207,7 +207,7 @@ class BootStrap {
 		assert BattleMech.count() == 3
 		
 		// Initialize a sample Game
-		Game sampleGame = new Game(ownerPilot: adminPilot, pilots: [adminPilot, testPilot, samplePilot], units: [battleMech, battleMech2, battleMech3], board: boardMap)
+		Game sampleGame = new Game(ownerPilot: adminPilot, pilots: [adminPilot, testPilot, samplePilot], units: [battleMech, battleMech2], board: boardMap)
 		
 		if(!sampleGame.validate()) {
 			log.error("Errors with game:\n")

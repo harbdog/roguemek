@@ -24,10 +24,12 @@ Laser.prototype.initialize = function(config) {
 	}
 }
 Laser.prototype.show = function(startX, startY, endX, endY){
+	this.uncache();
 	if(this.conf.glow) {
 		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, 10);
 	}
 	this.drawLaser(startX, startY, endX, endY);
+	this.doCache(startX, startY, endX, endY);
 }
 Laser.prototype.hide = function(){
 	this.visible = false;
@@ -38,4 +40,20 @@ Laser.prototype.drawLaser = function(x1, y1, x2, y2){
 	}
 	
 	this.g.setStrokeStyle(this.conf.laserWidth, "round").beginStroke(this.conf.laserColor).moveTo(x1, y1).lineTo(x2, y2).endStroke();
+}
+Laser.prototype.doCache = function(startX, startY, endX, endY) {
+	var cacheX = startX;
+	var cacheY = startY;
+	var cacheW = endX - startX;
+	var cacheH = endY - startY;
+	if(startX > endX) {
+		cacheX = endX;
+		cacheW = startX - endX;
+	}
+	if(startY > endY) {
+		cacheY = endY;
+		cacheH = startY - endY;
+	}
+	
+	this.cache(cacheX, cacheY, cacheW, cacheH);
 }
