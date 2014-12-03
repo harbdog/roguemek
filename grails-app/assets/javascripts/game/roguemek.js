@@ -160,8 +160,9 @@ function initGame(){
 	// begin long polling for game updates during play
 	poll();
 		
+	// TODO: make target FPS a customizable value
 	createjs.Ticker.on("tick", tick);
-	createjs.Ticker.setFPS(60);
+	createjs.Ticker.setFPS(30);
 }
 
 /**
