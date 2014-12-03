@@ -25,11 +25,13 @@ Laser.prototype.initialize = function(config) {
 }
 Laser.prototype.show = function(startX, startY, endX, endY){
 	this.uncache();
+	
+	this.drawLaser(startX, startY, endX, endY);
+	this.doCache(startX, startY, endX, endY);
+	
 	if(this.conf.glow) {
 		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, 10);
 	}
-	this.drawLaser(startX, startY, endX, endY);
-	this.doCache(startX, startY, endX, endY);
 }
 Laser.prototype.hide = function(){
 	this.visible = false;
