@@ -414,6 +414,8 @@ function initUnitsDisplay() {
 		}
 		
 		stage.addChild(thisDisplayUnit);
+		
+		// TODO: cache thisDisplayUnit, being aware that it will not be updated unless recached when new things are drawn on it
 	});
 }
 
