@@ -31,6 +31,8 @@ Missile.prototype.initialize = function(x, y, angle, config) {
 	this.update();
 }
 Missile.prototype.update = function() {
+	this.uncache();
+	
 	// draw the missile body as a small line
 	var ordinance = new createjs.Shape();
 	var ordDestination = getMovementDestination(0, 0, this.conf.missileLength, this.angle);
@@ -44,4 +46,22 @@ Missile.prototype.update = function() {
 	burner.shadow = new createjs.Shadow(this.conf.burnerGlowColor, burnDestination.x, burnDestination.y, this.conf.burnerLength);
 	burner.graphics.beginStroke(this.conf.burnerColor).beginFill(this.conf.burnerColor).drawCircle(0, 0, this.conf.burnerRadius).endStroke();
 	this.addChild(burner);
+	
+	this.doCache(burnDestination.x, burnDestination.y, ordDestination.x, ordDestination.y);
+}
+Missile.prototype.doCache = function(startX, startY, endX, endY) {
+	var cacheX = startX;
+	var cacheY = startY;
+	var cacheW = endX - startX;
+	var cacheH = endY - startY;
+	if(startX > endX) {
+		cacheX = endX;
+		cacheW = startX - endX;
+	}
+	if(startY > endY) {
+		cacheY = endY;
+		cacheH = startY - endY;
+	}
+	
+	this.cache(cacheX, cacheY, cacheW, cacheH);
 }

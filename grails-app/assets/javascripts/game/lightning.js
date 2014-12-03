@@ -32,10 +32,12 @@ Lightning.prototype.initialize = function(config) {
 	}
 }
 Lightning.prototype.show = function(startX, startY, endX, endY){
+	this.uncache();
 	if(this.conf.glow) {
 		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, 10);
 	}
 	this.drawLightning(startX, startY, endX, endY, this.conf.displace);
+	this.doCache(startX, startY, endX, endY);
 }
 Lightning.prototype.hide = function(){
 	this.visible = false;
@@ -78,4 +80,20 @@ Lightning.prototype.drawLightning = function(x1, y1, x2, y2, displace){
 		this.drawLightning(x1, y1, midx, midy, displace/2);
 		this.drawLightning(x2, y2, midx, midy, displace/2);
 	}
+}
+Lightning.prototype.doCache = function(startX, startY, endX, endY) {
+	var cacheX = startX;
+	var cacheY = startY;
+	var cacheW = endX - startX;
+	var cacheH = endY - startY;
+	if(startX > endX) {
+		cacheX = endX;
+		cacheW = startX - endX;
+	}
+	if(startY > endY) {
+		cacheY = endY;
+		cacheH = startY - endY;
+	}
+	
+	this.cache(cacheX, cacheY, cacheW, cacheH);
 }

@@ -352,6 +352,8 @@ function initHexMapDisplay() {
 			});
 			
 			stage.addChild(thisDisplayHex);
+			
+			thisDisplayHex.cache(0, 0, hexWidth, hexHeight);
 		}
 	}
 	
