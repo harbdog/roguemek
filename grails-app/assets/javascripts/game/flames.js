@@ -2,14 +2,17 @@
  * Flame code originally sourced from 
  * http://thecodeplayer.com/walkthrough/html5-canvas-experiment-a-cool-flame-fire-effect-using-particles
  */
+(function() {
+	
 function Flames(x, y, angle) {
+	this.Shape_constructor();
+	
 	this.particles = [];
-	this.initialize(x, y, angle);
+	this.setup(x, y, angle);
 }
-Flames.prototype = new createjs.Shape();
-Flames.prototype.Shape_initialize = Flames.prototype.initialize;
-Flames.prototype.initialize = function(x, y, angle) {
-	this.Shape_initialize();
+var s = createjs.extend(Flames, createjs.Shape);
+
+s.setup = function(x, y, angle) {
 	this.x = x;
 	this.y = y;
 	this.angle = angle;
@@ -24,8 +27,9 @@ Flames.prototype.initialize = function(x, y, angle) {
 	this.g = this.graphics;
 	
 	this.on("tick", this.update);
-}
-Flames.prototype.update = function() {
+};
+
+s.update = function() {
 	for(var i = 0; i < this.particles.length; i++)
 	{
 		var p = this.particles[i];
@@ -60,7 +64,7 @@ Flames.prototype.update = function() {
 			this.particles[i] = new Particle(0, 0, this.angle);
 		}
 	}
-}
+};
 
 function Particle(x, y, angle) {
 	this.initialize(x, y, angle);
@@ -85,3 +89,6 @@ Particle.prototype.initialize = function(x, y, angle) {
 	this.g = Math.round(Math.random()*100);
 	this.b = Math.round(0);
 }
+
+window.Flames = createjs.promote(Flames, "Shape");
+}());

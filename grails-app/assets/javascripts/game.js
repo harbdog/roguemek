@@ -5,7 +5,7 @@
 //= require jquery
 //= require jquery-ui.min.js
 //= require jquery.form.js
-//= require createjs-2013.12.12.min.js
+//= require createjs-2014.12.12.min.js
 //= require game/roguemek.js
 //= require_self
 

@@ -1,7 +1,11 @@
 /**
  * Generates a missile with some effects
  */
+(function() {
+	
 function Missile(x, y, angle, config) {
+	this.Container_constructor();
+	
 	this.conf = {
 		missileLength: 10,
 		missileWidth: 2,
@@ -11,12 +15,11 @@ function Missile(x, y, angle, config) {
 		burnerGlowSize: 20,
 		burnerGlowColor: "#FF3300"
 	};
-	this.initialize(x, y, angle, config);
+	this.setup(x, y, angle, config);
 }
-Missile.prototype = new createjs.Container();
-Missile.prototype.Container_initialize = Missile.prototype.initialize;
-Missile.prototype.initialize = function(x, y, angle, config) {
-	this.Container_initialize();
+var c = createjs.extend(Missile, createjs.Container);
+
+c.setup = function(x, y, angle, config) {
 	this.x = x;
 	this.y = y;
 	this.angle = angle;
@@ -29,8 +32,9 @@ Missile.prototype.initialize = function(x, y, angle, config) {
 	// TODO: update needs to be run on tick to give LRMs a curved flight path
 	//this.on("tick", this.update);
 	this.update();
-}
-Missile.prototype.update = function() {
+};
+
+c.update = function() {
 	this.uncache();
 	
 	// draw the missile body as a small line
@@ -48,8 +52,9 @@ Missile.prototype.update = function() {
 	this.addChild(burner);
 	
 	this.doCache(burnDestination.x, burnDestination.y, ordDestination.x, ordDestination.y);
-}
-Missile.prototype.doCache = function(startX, startY, endX, endY) {
+};
+
+c.doCache = function(startX, startY, endX, endY) {
 	var cacheX = startX;
 	var cacheY = startY;
 	var cacheW = endX - startX;
@@ -64,4 +69,7 @@ Missile.prototype.doCache = function(startX, startY, endX, endY) {
 	}
 	
 	this.cache(cacheX, cacheY, cacheW, cacheH);
-}
+};
+
+window.Missile = createjs.promote(Missile, "Container");
+}());

@@ -6,7 +6,11 @@
  * from x and y coordinates, to other x and y coordinates.
  *
 **************************************************************/
+(function() {
+	
 function Lightning(config) {
+	this.Shape_constructor();
+	
 	this.conf = {
 		detail: 1,
 		displace: 125,
@@ -17,21 +21,20 @@ function Lightning(config) {
 		glowColor: "#4D94DB",
 		glowAlpha: 0.1
 	};
-	this.initialize(config);
+	this.setup(config);
 }
-Lightning.prototype = new createjs.Shape();
-Lightning.prototype.Shape_initialize = Lightning.prototype.initialize;
-Lightning.prototype.initialize = function(config) {
-	this.Shape_initialize();
-	
+var s = createjs.extend(Lightning, createjs.Shape);
+
+s.setup = function(config) {
 	this.g = this.graphics;
 	
 	//copying configuration
 	for(var opt in config){
 		this.conf[opt] = config[opt];
 	}
-}
-Lightning.prototype.show = function(startX, startY, endX, endY){
+};
+
+s.show = function(startX, startY, endX, endY){
 	this.uncache();
 	this.drawLightning(startX, startY, endX, endY, this.conf.displace);
 	this.doCache(startX, startY, endX, endY, this.conf.displace);
@@ -39,11 +42,13 @@ Lightning.prototype.show = function(startX, startY, endX, endY){
 	if(this.conf.glow) {
 		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, 10);
 	}
-}
-Lightning.prototype.hide = function(){
+};
+
+s.hide = function(){
 	this.visible = false;
-}
-Lightning.prototype.drawLightning = function(x1, y1, x2, y2, displace){
+};
+
+s.drawLightning = function(x1, y1, x2, y2, displace){
 	if(displace < this.conf.detail)
 	{	
 		if(this.conf.glow)
@@ -81,8 +86,9 @@ Lightning.prototype.drawLightning = function(x1, y1, x2, y2, displace){
 		this.drawLightning(x1, y1, midx, midy, displace/2);
 		this.drawLightning(x2, y2, midx, midy, displace/2);
 	}
-}
-Lightning.prototype.doCache = function(startX, startY, endX, endY, displace) {
+};
+
+s.doCache = function(startX, startY, endX, endY, displace) {
 	var cacheX = startX;
 	var cacheY = startY;
 	var cacheW = endX - startX;
@@ -96,5 +102,8 @@ Lightning.prototype.doCache = function(startX, startY, endX, endY, displace) {
 		cacheH = startY - endY;
 	}
 	
-	this.cache(cacheX - displace/2, cacheY - displace/2, cacheW + displace/2, cacheH + displace/2);
-}
+	this.cache(cacheX - displace, cacheY - displace, cacheW + displace, cacheH + displace);
+};
+
+window.Lightning = createjs.promote(Lightning, "Shape");
+}());

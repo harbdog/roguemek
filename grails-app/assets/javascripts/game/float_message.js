@@ -1,10 +1,13 @@
 /**
  * Generates a floating, moving message
  */
+(function() {
 
 var FLOAT_MESSAGE_DELAY = 300;	// delay time (ms) between consecutive floating messages
 
 function FloatMessage(message, config) {
+	this.Container_constructor();
+	
 	this.conf = {
 		glow: false,
 		glowSize: 3,
@@ -14,13 +17,11 @@ function FloatMessage(message, config) {
 		messageTextFont: "Bold 18px Monospace",
 		messageTextColor: "#FF0000"
 	};
-	this.initialize(message, config);
+	this.setup(message, config);
 }
-FloatMessage.prototype = new createjs.Container();
-FloatMessage.prototype.Container_initialize = FloatMessage.prototype.initialize;
-FloatMessage.prototype.initialize = function(message, config) {
-	this.Container_initialize();
-	
+var c = createjs.extend(FloatMessage, createjs.Container);
+
+c.setup = function(message, config) {
 	//copying configuration
 	for(var opt in config){
 		this.conf[opt] = config[opt];
@@ -31,8 +32,9 @@ FloatMessage.prototype.initialize = function(message, config) {
 		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, this.conf.glowSize);
 	}
 	this.drawFloatMessage(message);
-}
-FloatMessage.prototype.drawFloatMessage = function(message){
+};
+
+c.drawFloatMessage = function(message){
 	this.uncache();
 	
 	// create the message text
@@ -49,4 +51,7 @@ FloatMessage.prototype.drawFloatMessage = function(message){
 	this.addChild(messageText);
 	
 	this.cache(textBounds.x - 5, textBounds.y, textBounds.width + 10, textBounds.height + 10);
-}
+};
+
+window.FloatMessage = createjs.promote(FloatMessage, "Container");
+}());
