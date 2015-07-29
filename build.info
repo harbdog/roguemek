@@ -3,8 +3,8 @@ RogueMek Build Instructions for Linux, Windows, and OSX
 -----------------------------------------------
 
 Required Software:
-Git
-Oracle JDK 1.7+
+Git (git-scm.com)
+Oracle JDK 1.7 (oracle.com)
 
 -----------------------------------------------
 
@@ -12,15 +12,15 @@ Oracle JDK 1.7+
 
 2. Download and extract the GGTS (Groovy/Grails Tool Suite, available from https://grails.org/products/ggts). Version 3.6.4.RELEASE is the version last tested with these build instructions.
 
-3. Open GGTS executable from extracted location, and choose a new or existing workspace (should not be in same location as local repository).
+3. Run the GGTS executable from extracted location, and choose a new or existing workspace (should not be in same location as local repository).
 
 4. To load the project into GGTS, first go to File -> Import..
 4a. Select Grails -> Grails Project, then Next.
 4b. In Location, choose the local "roguemek" repository folder location that was created from the git pull operation above.
 4c. Do NOT check the box to copy resources into workspace.
-4d. Notice the required grails version for the project. If this version is not available in the dropdown box, download the required version from https://grails.org/download.html. Then after it is downloaded, extract it to the folder where GGTS was extracted. Next use the "Configure Grails Installations..." option to add it so it can be selected.
+4d. Notice the required grails version for the project. If this version is not already available in the dropdown box, download the required version from https://grails.org/download.html. Then after it is downloaded, extract it to the folder where GGTS was extracted. Next use the "Configure Grails Installations..." option to add it so it can be selected.
 4e. Click Finish to proceed.
 
-5. The project should automatically build, and may take a couple minutes the first time.
+5. The project should automatically build, and may take a couple minutes the first time. If you get an error saying "Grails requires a JDK", make sure you get an Oracle JDK of the correct version installed and try again.
 
 6. Finally, to run the application, select Run -> Run As -> Grails Command (run-app). When the server is running it will present a URL that can be accessed to login and start using the application (ex: "Server running. Browse to http://localhost:8080/RogueMek").
