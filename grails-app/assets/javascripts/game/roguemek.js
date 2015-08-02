@@ -162,7 +162,7 @@ function initGame(){
 		
 	// TODO: make target FPS a customizable value
 	createjs.Ticker.on("tick", tick);
-	createjs.Ticker.setFPS(30);
+	createjs.Ticker.setFPS(60);
 }
 
 /**
