@@ -106,9 +106,7 @@ function resize_canvas(){
 		    }
 		}
 		
-		// resize certain UI elements to fit the window size
-		$("#messagingArea").css({width: stage.canvas.width - playerContainerWidth - 10, height: messagingContainerHeight});
-		$("#controlDiv").css({width: stage.canvas.width - playerContainerWidth});
+		// TODO: resize certain UI elements to fit the window size
 		
 		// update displayable hexes
 		updateHexMapDisplay();
@@ -199,7 +197,7 @@ function handleComplete(event) {
 	var fpsDiv = document.getElementById("fpsDiv");
 	fpsDisplay = new createjs.DOMElement(fpsDiv);
 	fpsDisplay.x = -stage.x - 10;
-    fpsDisplay.y = -stage.y + stage.canvas.height - 20;
+    fpsDisplay.y = -stage.y;
     stage.addChild(fpsDisplay);
 }
 
@@ -393,41 +391,21 @@ function handleStageDrag(evt) {
     if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
     	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
     }
-    if(stage.x > playerContainerWidth) {
-    	stage.x = playerContainerWidth;
+    if(stage.x > 10) {
+    	stage.x = 10;
     }
     
-    if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height + weaponsContainerOffsetY){
-    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height + weaponsContainerOffsetY;
+    if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height){
+    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height;
     }
-    if(stage.y > messagingContainerHeight) {
-    	stage.y = messagingContainerHeight;
+    if(stage.y > 10) {
+    	stage.y = 10;
     }
     
     // handle stage overlay movement
     fpsDisplay.x = -stage.x - 10;
-    fpsDisplay.y = -stage.y + stage.canvas.height - 20;
-    
-    weaponsContainer.x = -stage.x + playerContainerWidth;
-    weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
-    
-    playerContainer.x = -stage.x;
-    playerContainer.y = -stage.y;
-    
-    messagingContainer.x = -stage.x + playerContainerWidth;
-    messagingContainer.y = -stage.y;
+    fpsDisplay.y = -stage.y;
     
     // update visible hexes
     updateHexMapDisplay();
-}
-
-function handleTargetDrag(evt) {
-	if(evt.type == "pressup"){
-		allowStageDragMove = true;
-		return;
-	}
-	
-	allowStageDragMove = false;
-	targetContainer.x = evt.stageX - playerContainerWidth;
-	targetContainer.y = evt.stageY - hexHeight / 2;
 }

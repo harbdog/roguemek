@@ -1,94 +1,14 @@
 /**
- * player_ui.js - Methods that handle the non-canvas player UI
+ * player_ui.js - Methods that handle the canvas player UI
  */
-
-var playerContainer, messagingContainer, messagingArea, mapDisplay, playerInfoDisplay, unitStatsDisplay, unitArmorDisplay, unitHeatDisplay,
-	controlDisplay, weaponsContainer, weaponsDisplay, targetContainer, targetDisplay, targetBracket;
 
 // Close enough...
 var PI = 3.14;
 
-// X width of the player display bar
-var playerContainerWidth = 200;
-
-// Y direction offset for the Weapon display
-var weaponsContainerOffsetY = -100;
-
-var messagingContainerHeight = 75;
-
 var apDisplaying, jpDisplaying;
 
 function initPlayerUI() {
-	playerContainer = new createjs.Container();
-	// create an alpha background for the player display
-	var playerBackground = new createjs.Shape();
-	playerBackground.graphics.beginFill("#000000").drawRect(0, 0, playerContainerWidth, stage.canvas.height);
-	playerBackground.alpha = 0.75;
-	// Get the div container for the player displays
-	playerDisplay = new createjs.DOMElement(document.getElementById("playerDiv"));
-	mapDisplay = document.getElementById("mapDiv");
-	mapDisplay.innerHTML = "map";	// TODO: a map
-	playerInfoDisplay = document.getElementById("infoDiv");
-	unitStatsDisplay = document.getElementById("statsDiv");
-	unitArmorDisplay = document.getElementById("htalDiv");
-	unitHeatDisplay = document.getElementById("heatDiv");
-	playerContainer.addChild(playerBackground);
-	playerContainer.addChild(playerDisplay);
-	stage.addChild(playerContainer);
-	
-	weaponsContainer = new createjs.Container();
-	// Create an alpha background for the weapons display
-	var weaponsBackground = new createjs.Shape();
-	weaponsBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width-playerContainerWidth, -weaponsContainerOffsetY);
-	weaponsBackground.alpha = 0.5;
-	// Get the div container for the weapons display
-	controlDisplay = new createjs.DOMElement(document.getElementById("controlDiv"));
-	weaponsContainer.addChild(weaponsBackground);
-	weaponsContainer.addChild(controlDisplay);
-    
-    targetContainer = new createjs.Container();
-    // Create and alpha background for the target display
-	var targetBackground = new createjs.Shape();
-	var targetWidth = 200;
-	var targetHeight = 300;
-	targetBackground.graphics.beginFill("#000000").drawRect(0, 0, targetWidth, targetHeight);
-	targetBackground.alpha = 0.5;
-	// Create an 'X' as an icon to close the weapons display
-	var targetClose = new createjs.Shape();
-	targetClose.graphics.s("#FFFFFF").ss(2,"round").mt(targetWidth-2, 0).lt(targetWidth-12, 10).mt(targetWidth-12, 0).lt(targetWidth-2, 10);
-	targetClose.alpha = 0.75;
-	var targetCloseHit = new createjs.Shape();
-	targetCloseHit.graphics.beginFill("#000000").drawRect(targetWidth-12, 0, 10, 10);
-	targetClose.hitArea = targetCloseHit;
-	targetClose.on("click", handleTargetCloseClick);
-	// Get the div container for the target display
-	targetDisplay = new createjs.DOMElement(document.getElementById("targetDiv"));
-	targetContainer.addChild(targetBackground);
-	targetContainer.addChild(targetDisplay);
-	targetContainer.addChild(targetClose);
-
-	// TODO: move to events.js and fix it so it drags the correct location of the container from the press location
-	targetContainer.on("pressmove", handleTargetDrag);
-	targetContainer.on("pressup", handleTargetDrag);
-	
-	messagingContainer = new createjs.Container();
-	// create an alpha background for the messaging display
-	var messagingBackground = new createjs.Shape();
-	messagingBackground.graphics.beginFill("#000000").drawRect(0, 0, stage.canvas.width-playerContainerWidth, messagingContainerHeight);
-	messagingBackground.alpha = 0.25;
-	// Get the textarea for the messaging display
-	messagingArea = new createjs.DOMElement(document.getElementById("messagingArea"));
-	messagingContainer.addChild(messagingBackground);
-	messagingContainer.addChild(messagingArea);
-	messagingContainer.x = -stage.x + playerContainerWidth;
-    messagingContainer.y = -stage.y;
-	stage.addChild(messagingContainer);
-	
-	// Create target bracket
-	var targetImg = queue.getResult("target");
-	targetBracket = new createjs.Bitmap(targetImg);
-	targetBracket.regX = targetImg.width/2;
-	targetBracket.regY = targetImg.height/2;
+	// TODO: initialize new canvas based UI overlay
 }
 
 /**
@@ -99,9 +19,7 @@ function removeThisFromStage() {
 }
 
 function setPlayerInfo(unitName, playerName) {
-	playerInfoDisplay.innerHTML = 
-			"<p>"+unitName+"</p>"+
-			"<p>"+playerName+"</p>";
+	//TODO: display player name and battle unit name
 }
 
 function setActionPoints(apRemaining) {
@@ -125,24 +43,14 @@ function setJumpPoints(jpRemaining) {
 }
 
 function updateUnitStatsDisplay() {
-	var statsString = "";
-	
-	if(apDisplaying != null) {
-		statsString += "<p>AP "+apDisplaying+"</p>";
-	}
-	
-	if(jpDisplaying != null) {
-		statsString += "<p>JP "+jpDisplaying+"</p>";
-	}
-	
-	unitStatsDisplay.innerHTML = statsString;
+	// TODO: update AP and JP display
 }
 
 function setArmorDisplay(armor, internals) {
 	// TODO: HTAL graph display
 	// TODO: HTAL paper doll display
 	
-	var line1 = "HD:"+armor[HEAD]+"("+internals[HEAD]+")";
+	/*var line1 = "HD:"+armor[HEAD]+"("+internals[HEAD]+")";
 	var line2 = "LA:"+armor[LEFT_ARM]+"("+internals[LEFT_ARM]+")" +"          "+ "RA:"+armor[RIGHT_ARM]+"("+internals[RIGHT_ARM]+")";
 	var line3 = "LT:"+armor[LEFT_TORSO]+"("+internals[LEFT_TORSO]+")" +" "+ "CT:"+armor[CENTER_TORSO]+"("+internals[CENTER_TORSO]+")" +" "+ "RT:"+armor[RIGHT_TORSO]+"("+internals[RIGHT_TORSO]+")";
 	var line4 = "LTR:"+armor[LEFT_REAR] +"    "+ "CTR:"+armor[CENTER_REAR] +"    "+ "RTR:"+armor[RIGHT_REAR];
@@ -152,21 +60,14 @@ function setArmorDisplay(armor, internals) {
 			"<p><pre>"+line2+"</pre></p>" +
 			"<p><pre>"+line3+"</pre></p>" +
 			"<p><pre>"+line4+"</pre></p>" +
-			"<p><pre>"+line5+"</pre></p>";
+			"<p><pre>"+line5+"</pre></p>";*/
 }
 
 
 function setHeatDisplay(heat, heatGen, heatDiss) {
+	// TODO: update unit heat, heat generation, heat dissipation
+	
 	// TODO: Heat meter with indicators of heat that weapons will generate and where the heat penalties are
-	unitHeatDisplay.innerHTML = "<p>Heat "+heat+"</p>";
-	
-	if(heatGen) {
-		unitHeatDisplay.innerHTML += "<pre>    +"+heatGen+"</pre>";
-	}
-	
-	if(heatDiss) {
-		unitHeatDisplay.innerHTML += "<pre>    -"+heatDiss+"</pre>";
-	}
 }
 
 function updateWeaponsDisplay() {
@@ -226,13 +127,12 @@ function updateWeaponsDisplay() {
 		i++;
 	});
 	
-	weaponsDisplay = document.getElementById("weaponsDiv");
-	weaponsDisplay.innerHTML = testingStr;
+	// TODO: update weapons display
 	
 	// update the initial cooldown display for each weapon
 	updateWeaponsCooldown();
 	
-	$(".weapon").click(function() {
+	/*$(".weapon").click(function() {
 		// TODO: move to events.js
 		if(playerUnit == turnUnit 
 				&& !$(this).hasClass("cooldown") 
@@ -242,9 +142,9 @@ function updateWeaponsDisplay() {
 			$(this).toggleClass("selected");
 			updateSelectedWeapons();
 		}
-	});
+	});*/
 	
-	var actionStr;
+	/*var actionStr;
 	if(playerUnit.id == turnUnit.id) {
 		// TESTING (button will eventually need to switch between 'action_fire' and 'action_end' based on whether weapons are selected to fire)
 		actionStr = "<div class='action_fire hidden'>Fire</div>"+
@@ -255,23 +155,18 @@ function updateWeaponsDisplay() {
 		actionStr = "<div class='action_fire hidden'>Fire</div>"+
 					"<div class='action_end hidden'>End<br/>Turn</div>"+
 					"<div class='action_wait'>Wait</div>";
-	}
-	actionDisplay = document.getElementById("actionDiv");
-	actionDisplay.innerHTML = actionStr;
+	}*/
 	
-	$(".action_fire").click(function() {
+	
+	/*$(".action_fire").click(function() {
 		// TODO: combine to a single method that is also called by the key press equivalent
 		var selectedWeapons = getSelectedWeapons();
 		fire_weapons(selectedWeapons);
-	});
+	});*/
 	
-	$(".action_end").click(function() {
+	/*$(".action_end").click(function() {
 		skip();
-	});
-	
-	weaponsContainer.x = -stage.x + playerContainerWidth;
-    weaponsContainer.y = -stage.y + stage.canvas.height + weaponsContainerOffsetY;
-	stage.addChild(weaponsContainer);
+	});*/
 }
 
 function updateSelectedWeapons() {
@@ -281,7 +176,9 @@ function updateSelectedWeapons() {
 	
 	var weaponHeatTotal = 0
 	
-	$.each(playerWeapons, function(key, w) {
+	// TODO: store selected weapons
+	
+	/*$.each(playerWeapons, function(key, w) {
 		if($("#"+w.id).hasClass("selected")) {
 			hasSelected = true;
 			
@@ -300,7 +197,7 @@ function updateSelectedWeapons() {
 		$('.action_end').removeClass("hidden");
 		
 		setHeatDisplay(playerUnit.heat, false, false);
-	}
+	}*/
 }
 
 /**
@@ -309,11 +206,13 @@ function updateSelectedWeapons() {
  */
 function getSelectedWeapons() {
 	var selectedWeapons = [];
-	$.each(playerWeapons, function(key, w) {
+	
+	// TODO: determine weapons that are selected to fire
+	/*$.each(playerWeapons, function(key, w) {
 		if($("#"+w.id).hasClass("selected")) {
 			selectedWeapons.push(w);
 		}
-	});
+	});*/
 	
 	return selectedWeapons;
 }
@@ -323,7 +222,8 @@ function getSelectedWeapons() {
  */
 function deselectWeapons() {
 	var hasSelected = false;
-	$.each(playerWeapons, function(key, w) {
+	// TODO: deselect all weapons currently selected
+	/*$.each(playerWeapons, function(key, w) {
 		if($("#"+w.id).hasClass("selected")) {
 			hasSelected = true;
 			$('#'+w.id).toggleClass("selected");
@@ -333,7 +233,7 @@ function deselectWeapons() {
 	if(hasSelected) {
 		$('.action_fire').addClass("hidden");
 		$('.action_end').removeClass("hidden");
-	}
+	}*/
 }
 
 /**
@@ -341,16 +241,18 @@ function deselectWeapons() {
  * @param weapon
  */
 function resetWeaponsToHit() {
-	$.each(playerWeapons, function(key, w) {
+	// TODO: reset the to hit value displayed for displayed weapons
+	/*$.each(playerWeapons, function(key, w) {
 		w.toHit = null;
-	});
+	});*/
 }
 
 /**
  * Updates the player weapons' cooldown display as needed
  */
 function updateWeaponsCooldown() {
-	$.each(playerWeapons, function(key, w) {
+	// TODO: update cooldown displayed for each weapon
+	/*$.each(playerWeapons, function(key, w) {
 		if(w.cooldown > 0) {
 			var cooldownAsPercent = ""+100 * w.cooldown/w.cycle+"% 100%";
 			
@@ -363,7 +265,7 @@ function updateWeaponsCooldown() {
 			// TODO: if a weapon is destroyed or out of ammo, do not remove its disabled state
 			$("#"+w.id+" .weaponNumber").removeClass("disabled");
 		}
-	});
+	});*/
 }
 
 /**
@@ -402,7 +304,9 @@ function updateTargetDisplay() {
 		testingStr += locationStr+"-"+w.shortName + "<br/>";
 	});
 	
-	targetContainer.alpha = 0;
+	// TODO: show the target info display
+	
+	/*targetContainer.alpha = 0;
 	targetContainer.x = targetDisplayUnit.x + hexWidth/3;
 	targetContainer.y = targetDisplayUnit.y - hexHeight/2;
 	targetDisplay.htmlElement.innerHTML = testingStr;
@@ -415,7 +319,7 @@ function updateTargetDisplay() {
 	stage.addChild(targetBracket);
 	
 	createjs.Tween.get(targetContainer).to({alpha: 1}, 500);
-	createjs.Tween.get(targetBracket).to({alpha: 1}, 500);
+	createjs.Tween.get(targetBracket).to({alpha: 1}, 500);*/
 	
 	/*// Just played around with Timeline a bit
 	var bracketTween = new createjs.Tween(targetBracket);
@@ -430,14 +334,15 @@ function updateTargetDisplay() {
  * @param message
  */
 function addMessageUpdate(message) {
-	if(messagingArea == null) {
+	// TODO: add message to the UI and scroll to it
+	/*if(messagingArea == null) {
 		messagingArea = new createjs.DOMElement(document.getElementById("messagingArea"));
 	}
 	
 	if(message != null && message.length > 0) { 
 		messagingArea.htmlElement.innerHTML += "&#13;&#10;"+message;
 		messagingArea.htmlElement.scrollTop = messagingArea.htmlElement.scrollHeight;
-	}
+	}*/
 }
 
 /**

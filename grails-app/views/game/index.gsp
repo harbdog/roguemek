@@ -14,23 +14,6 @@
 			<canvas id="canvas">
 		        <g:message code="page.browser.not.supported" />
 		    </canvas>
-		    
-		    <div id="targetDiv"></div>
-		    
-		    <div id="controlDiv">
-		    	<div id="weaponsDiv"></div>
-		    	<div id="actionDiv">Fire</div>
-	    	</div>
-		    
-		    <div id="playerDiv">
-				<div id="infoDiv"></div>
-				<div id="mapDiv"></div>
-				<div id="statsDiv"></div>
-				<div id="htalDiv"></div>
-				<div id="heatDiv"></div>
-			</div>
-			
-			<textarea id="messagingArea" readonly><g:message code="game.you.joined" /></textarea>
 	    </div>
 	    
 	</body>
