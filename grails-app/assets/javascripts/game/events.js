@@ -93,7 +93,7 @@ function resize_canvas(){
 		
 		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+stage.canvas.width+"x"+stage.canvas.height);
 		
-		// Keep the board from shifting to the center the first time it is dragged if the windows is wider than the board
+		// Keep the board from shifting to the center the first time it is dragged if the window is wider than the board
 		if(stage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
 			console.log("stage width "+stage.canvas.width+" > "+
 				"board width "+(numCols+1)+" * "+(3 * hexWidth / 4)+"="+((numCols+1) * (3 * hexWidth / 4)));
@@ -109,7 +109,58 @@ function resize_canvas(){
 		// resize certain UI elements to fit the window size
 		$("#messagingArea").css({width: stage.canvas.width - playerContainerWidth - 10, height: messagingContainerHeight});
 		$("#controlDiv").css({width: stage.canvas.width - playerContainerWidth});
+		
+		// update displayable hexes
+		updateHexMapDisplay();
 	}
+}
+
+/**
+ * Updates the visible HexDisplay objects that are rendered on screen or off
+ */
+function updateHexMapDisplay() {
+	var startX = - stage.x;
+    var startY = - stage.y;
+    
+    var canvasX = startX + stage.canvas.width;
+    var canvasY = startY + stage.canvas.height;
+    
+    for(var y=0; y<numRows; y++){
+		
+		var thisHexRow = hexMap[y];
+		if(thisHexRow == null){
+			continue;
+		}
+		
+		for(var x=0; x<numCols; x++){
+			
+			var thisHex = thisHexRow[x];
+			if(thisHex == null){
+				continue;
+			}
+			
+			var thisDisplayHex = thisHex.hexDisplay;
+			if(thisDisplayHex == null){
+				continue;
+			}
+			
+			// start with making it visible until the location checks prove it is not
+			thisDisplayHex.visible = true;
+			
+			var xOffset = x * (3 * hexWidth / 4);
+			var yOffset = y * hexHeight;
+			
+			if(thisDisplayHex.isXOdd()){
+				yOffset = (hexHeight / 2) + (y * hexHeight);
+			}
+			
+			if((xOffset + hexWidth < startX || xOffset > canvasX) 
+					|| (yOffset + hexHeight < startY || yOffset > canvasY)) {
+				// hex object is outside of the view area
+				thisDisplayHex.visible = false;
+			}
+		}
+    }
 }
 
 function handleProgress(event) {
@@ -365,6 +416,9 @@ function handleStageDrag(evt) {
     
     messagingContainer.x = -stage.x + playerContainerWidth;
     messagingContainer.y = -stage.y;
+    
+    // update visible hexes
+    updateHexMapDisplay();
 }
 
 function handleTargetDrag(evt) {
