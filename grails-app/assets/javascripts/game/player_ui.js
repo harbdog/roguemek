@@ -5,6 +5,9 @@
 // Close enough...
 var PI = 3.14;
 
+var update = true;
+var lastUpdate = 0;
+
 var apDisplaying, jpDisplaying;
 
 function initPlayerUI() {

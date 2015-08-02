@@ -29,6 +29,14 @@ div.hidden {
 	display: none;
 }
 
+div #fpsDiv {
+	color: #FFFFFF;
+}
+
+div #fpsDiv.selected{
+	color: #66FF99;
+}
+
 #playerDiv {
 	position: absolute;
 	left: 0px;

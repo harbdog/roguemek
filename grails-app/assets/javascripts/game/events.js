@@ -1,16 +1,33 @@
 /**
  * events.js - Handles all events for the game
  */
-
 function tick(event) {
 	
 	if(fpsDisplay != null) {
-		fpsDisplay.htmlElement.innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
+		if(update) {
+			fpsDisplay.htmlElement.innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
+			
+			if(!$("#fpsDiv").hasClass("selected")) {
+				$('#fpsDiv').toggleClass("selected");
+			}
+		}
+		else{
+			fpsDisplay.htmlElement.innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
+			
+			if($("#fpsDiv").hasClass("selected") 
+					&& createjs.Ticker.getTime() - lastUpdate > 500) {
+				$('#fpsDiv').toggleClass("selected");
+			}
+		}
 	}
 	
-	// TODO: only update when something actually needs to be updated on screen
-	
-	stage.update(event);
+	// only update when something actually needs to be updated on screen
+	if(update) {
+		stage.update(event);
+		
+		lastUpdate = createjs.Ticker.getTime();
+		update = false;
+	}
 }
 
 function handleKeyPress(key) {
@@ -110,6 +127,8 @@ function resize_canvas(){
 		
 		// update displayable hexes
 		updateHexMapDisplay();
+		
+		update = true;
 	}
 }
 
@@ -169,6 +188,8 @@ function handleProgress(event) {
     
     // Draw the progress bar
     progress.graphics.beginFill("#ff0000").drawRect(0,0,100*event.progress,20);
+    
+    update = true;
 }
 
 function handleComplete(event) {
@@ -199,6 +220,8 @@ function handleComplete(event) {
 	fpsDisplay.x = -stage.x - 10;
     fpsDisplay.y = -stage.y;
     stage.addChild(fpsDisplay);
+    
+    update = true;
 }
 
 /**
@@ -408,4 +431,6 @@ function handleStageDrag(evt) {
     
     // update visible hexes
     updateHexMapDisplay();
+    
+    update = true;
 }
