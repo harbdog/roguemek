@@ -73,9 +73,15 @@ Coords.prototype.toString = function() {
 function Hex(hexX, hexY, hexDisplay) {
 	this.initialize(hexX, hexY, hexDisplay);
 }
-Hex.prototype.initialize = function(hexX, hexY, hexDisplay) {
+Hex.prototype.initialize = function(hexX, hexY, elevation) {
 	this.coords = new Coords(hexX, hexY);
+	this.elevation = elevation;
+}
+Hex.prototype.setHexDisplay = function(hexDisplay) {
 	this.hexDisplay = hexDisplay;
+}
+Hex.prototype.getHexDisplay = function() {
+	return this.hexDisplay;
 }
 Hex.prototype.isXOdd = function() {
 	return isXOdd(this.xCoords());
@@ -88,6 +94,9 @@ Hex.prototype.xCoords = function() {
 }
 Hex.prototype.yCoords = function() {
 	return this.coords.y;
+}
+Hex.prototype.getElevation = function() {
+	return this.elevation;
 }
 Hex.prototype.toString = function() {
 	return "[Hex@"+this.xCoords()+","+this.yCoords()+"]";

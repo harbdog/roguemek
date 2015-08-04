@@ -345,6 +345,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			}
 			
 			var point = getMovementDestination(0, 0, projectileLength, angle);
+			
+			// TODO: make Projectile use the new class methods similar to Laser/Lightning
 			var projectile = new Projectile(weaponPoint.x, weaponPoint.y);
 			projectile.visible = false;
 			projectile.shadow = new createjs.Shadow("#FFCC00", 0, 0, 10);

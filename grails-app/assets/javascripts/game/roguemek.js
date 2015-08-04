@@ -191,7 +191,11 @@ function loadGameElements() {
 		  $.each(data.board.hexMap, function(key, thisHex) {
 			  if(thisHex != null){
 				  var hexDisplay = new HexDisplay(thisHex.x, thisHex.y, thisHex.images);
-				  var hexInstance = new Hex(thisHex.x, thisHex.y, hexDisplay);
+				  var hexInstance = new Hex(thisHex.x, thisHex.y, thisHex.elevation);
+				  
+				  // Add references between Hex and its HexDisplay objects
+				  hexDisplay.setHex(hexInstance);
+				  hexInstance.setHexDisplay(hexDisplay);
 				  
 				  // add mouse listener
 				  hexDisplay.on("click", handleHexClick);
@@ -354,7 +358,10 @@ function initHexMapDisplay() {
 			
 			stage.addChild(thisDisplayHex);
 			
-			thisDisplayHex.cache(0, 0, hexWidth, hexHeight);
+			
+			// TODO: Testing isometric, when finished enable caching again!
+			thisDisplayHex.drawIsometric();
+			//thisDisplayHex.cache(0, 0, hexWidth, hexHeight);
 		}
 	}
 	
