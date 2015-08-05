@@ -9,6 +9,7 @@ var update = true;
 var lastUpdate = 0;
 
 var useIsometric = true;
+var elevationHeight = 15;
 
 var apDisplaying, jpDisplaying;
 

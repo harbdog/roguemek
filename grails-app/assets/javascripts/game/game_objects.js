@@ -139,12 +139,8 @@ Unit.prototype.xCoords = function() {
 Unit.prototype.yCoords = function() {
 	return this.coords.y;
 }
-Unit.prototype.updateDisplay = function() {
-	if(this.displayUnit != null) {
-		this.displayUnit.x = this.displayUnit.getUpdatedDisplayX(this.coords);
-		this.displayUnit.y = this.displayUnit.getUpdatedDisplayY(this.coords);
-		this.displayUnit.rotation = this.displayUnit.getUpdatedDisplayRotation(this.heading);
-	}
+Unit.prototype.getUnitDisplay = function() {
+	return this.displayUnit;
 }
 Unit.prototype.toString = function() {
 	return "[Unit@"+this.xCoords()+","+this.yCoords()+">"+this.heading+"]";

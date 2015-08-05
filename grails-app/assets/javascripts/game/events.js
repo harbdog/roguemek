@@ -100,6 +100,7 @@ function handleKeyPress(key) {
 		// toggle isometric view
 		useIsometric = !useIsometric;
 		updateHexDisplayObjects();
+		updateUnitDisplayObjects();
 		update = true;
 	}
 	else {

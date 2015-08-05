@@ -7,8 +7,6 @@ var lightgray = "#D3D3D3";
 var gray = "#A9A9A9";
 var darkgray = "#808080";
 
-var elevationHeight = 15;
-
 function HexDisplay(hex) {
 	this.Container_constructor();
 	
