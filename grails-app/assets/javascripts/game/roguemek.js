@@ -325,22 +325,71 @@ function initHexMapDisplay() {
 				continue;
 			}
 			
+			// Create the HexDisplay object and add references between it and the Hex
 			var hexDisplay = new HexDisplay(thisHex);
+			thisHex.setHexDisplay(hexDisplay);
 			
 			// add mouse listener
 			hexDisplay.on("click", handleHexClick);
 			hexDisplay.mouseChildren = false;
 			
-			// Add references between Hex and its HexDisplay objects
-			thisHex.setHexDisplay(hexDisplay);
+			var thisHexImages = thisHex.getImages();
+			$.each(thisHexImages, function(i, img){
+				// add the hex images to the stage
+				var hexImg = new createjs.Bitmap(queue.getResult(img));
+				hexDisplay.addChild(hexImg);
+			});
 			
-			// TODO: make the HexDisplay objects show themselves and add themselves to the stage in ascending elevation order
-			hexDisplay.show();
+			// so they won't overlap incorrectly, add to the stage only the evenX columns first, later will add oddX
+			if(!thisHex.isXOdd()) {
+				stage.addChild(hexDisplay);
+			}
+		}
+		
+		// now add to the stage only the oddX columns in this row
+		for(var x=1; x<numCols; x+=2){
+			
+			var thisHex = thisHexRow[x];
+			if(thisHex == null){
+				continue;
+			}
+			
+			// TODO: add the HexDisplay objects to the stage in ascending elevation order, in addition to evenX before oddX columns
+			var hexDisplay = thisHex.getHexDisplay();
+			stage.addChild(hexDisplay);
 		}
 	}
 	
+	updateHexDisplayObjects();
+	
 	// resize the canvas and adjust the board to the canvas on first load
 	resize_canvas();
+}
+
+/**
+ * Runs the update call on each HexDisplay object
+ */
+function updateHexDisplayObjects() {
+	if(hexMap == null){return;}
+	
+	for(var y=0; y<numRows; y++){
+			
+		var thisHexRow = hexMap[y];
+		if(thisHexRow == null){
+			continue;
+		}
+		
+		for(var x=0; x<numCols; x++){
+			
+			var thisHex = thisHexRow[x];
+			if(thisHex == null){
+				continue;
+			}
+			
+			var hexDisplay = thisHex.getHexDisplay();
+			hexDisplay.update();
+		}
+	}
 }
 
 /**

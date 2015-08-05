@@ -14,6 +14,7 @@ function HexDisplay(hex) {
 	
 	this.hex = hex;
 	this.coords = new Coords(hex.xCoords(), hex.yCoords());
+	this.isometricChildren = null;
 }
 var c = createjs.extend(HexDisplay, createjs.Container);
 
@@ -21,10 +22,14 @@ c.getHex = function() {
 	return this.hex;
 }
 
-c.show = function() {
-	this.visible = true;
-	
+c.update = function() {
 	this.uncache();
+	if(this.isometricChildren != null) {
+		for(var i=0; i<this.isometricChildren.length; i++){
+			this.removeChild(this.isometricChildren[i]);
+		}
+		this.isometricChildren = null;
+	}
 	
 	var xOffset = this.xCoords() * (3 * hexWidth / 4);
 	var yOffset = this.yCoords() * hexHeight;
@@ -36,18 +41,6 @@ c.show = function() {
 	this.x = xOffset;
 	this.y = yOffset;
 	
-	var me = this;
-	
-	var thisHexImages = this.getHex().getImages();
-	$.each(thisHexImages, function(i, img){
-		// add the hex images to the stage
-		var hexImg = new createjs.Bitmap(queue.getResult(img));
-		me.addChild(hexImg);
-	});
-	
-	stage.addChild(this);
-	
-	
 	// TODO: create toggle option to easily enable/disable isometric mode
 	this.drawIsometric();
 	
@@ -56,7 +49,12 @@ c.show = function() {
 }
 
 c.drawIsometric = function() {
-	if(this.getHex() != null && this.getHex().elevation > 0) {
+	if(useIsometric 
+			&& this.getHex() != null 
+			&& this.getHex().elevation > 0) {
+		
+		// keep track of the isometric child display object indices so they can be easily removed
+		this.isometricChildren = [];
 		
 		// move the hex image up or down based on elevation
 		var elev = this.getHex().elevation;
@@ -71,7 +69,7 @@ c.drawIsometric = function() {
 				.lineTo((hexWidth/4), hexHeight + (elevationHeight * elev))
 				.lineTo((hexWidth/4), hexHeight)
 				.lineTo(0, (hexHeight/2)).endStroke();
-		this.addChild(p1);
+		this.isometricChildren[0] = this.addChild(p1);
 		
 		var p2 = new createjs.Shape();
 		p2.graphics.setStrokeStyle(1)
@@ -82,7 +80,7 @@ c.drawIsometric = function() {
 				.lineTo((3*hexWidth/4), hexHeight)
 				.lineTo((hexWidth/4), hexHeight).endStroke();
 		
-		this.addChild(p2);
+		this.isometricChildren[1] = this.addChild(p2);
 		
 		var p3 = new createjs.Shape();
 		p3.graphics.setStrokeStyle(1)
@@ -93,7 +91,7 @@ c.drawIsometric = function() {
 				.lineTo(hexWidth, (hexHeight/2))
 				.lineTo((3*hexWidth/4), hexHeight).endStroke();
 		
-		this.addChild(p3);
+		this.isometricChildren[2] = this.addChild(p3);
 	}
 }
 

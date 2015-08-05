@@ -96,6 +96,15 @@ function handleKeyPress(key) {
 		// move backward
 		move(false);
 	}
+	else if(key == "`"){
+		// toggle isometric view
+		useIsometric = !useIsometric;
+		updateHexDisplayObjects();
+		update = true;
+	}
+	else {
+		console.log("Unbound key pressed: " + key);
+	}
 }
 
 /**

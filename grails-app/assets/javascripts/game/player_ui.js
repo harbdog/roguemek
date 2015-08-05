@@ -8,6 +8,8 @@ var PI = 3.14;
 var update = true;
 var lastUpdate = 0;
 
+var useIsometric = true;
+
 var apDisplaying, jpDisplaying;
 
 function initPlayerUI() {
