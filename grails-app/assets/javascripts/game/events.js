@@ -181,6 +181,8 @@ function updateHexMapDisplay() {
 				yOffset = (hexHeight / 2) + (y * hexHeight);
 			}
 			
+			// TODO: handle pop-in of hexes at the bottom of the screen when using isometric mode
+			
 			if((xOffset + hexWidth < startX || xOffset > canvasX) 
 					|| (yOffset + hexHeight < startY || yOffset > canvasY)) {
 				// hex object is outside of the view area
@@ -431,8 +433,8 @@ function handleStageDrag(evt) {
     if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height){
     	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height;
     }
-    if(stage.y > 10) {
-    	stage.y = 10;
+    if(stage.y > 10 + isometricPadding) {
+    	stage.y = 10 + isometricPadding;
     }
     
     // handle stage overlay movement

@@ -3,9 +3,9 @@
  */
 (function() {
 
-var lightgray = "#D3D3D3";
-var gray = "#A9A9A9";
-var darkgray = "#808080";
+var lightgray = "#C0C0C0";
+var gray = "#808080";
+var darkgray = "#404040";
 
 function HexDisplay(hex) {
 	this.Container_constructor();

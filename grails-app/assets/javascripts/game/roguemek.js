@@ -381,6 +381,30 @@ function updateHexDisplayObjects() {
 			continue;
 		}
 		
+		if(y == 0) {
+			if(useIsometric) {
+				// screen boundary padding is needed for isometric view to see the 
+				// top of high elevation hexes at the top of the screen 
+				var highestElevation = 0;
+				for(var x=0; x<numCols; x++){
+					var thisHex = thisHexRow[x];
+					if(thisHex == null){
+						continue;
+					}
+					
+					if(thisHex.getElevation() > highestElevation) {
+						highestElevation = thisHex.getElevation();
+					}
+				}
+				
+				isometricPadding = elevationHeight * highestElevation;
+			}
+			else{
+				// isometric is off, no screen boundary padding needed
+				isometricPadding = 0;
+			}
+		}
+		
 		for(var x=0; x<numCols; x++){
 			
 			var thisHex = thisHexRow[x];
