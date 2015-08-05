@@ -70,12 +70,13 @@ Coords.prototype.toString = function() {
 /**
  * Class used to store Hex information and its display object
  */
-function Hex(hexX, hexY, hexDisplay) {
-	this.initialize(hexX, hexY, hexDisplay);
+function Hex(hexX, hexY, hexDisplay, images) {
+	this.initialize(hexX, hexY, hexDisplay, images);
 }
-Hex.prototype.initialize = function(hexX, hexY, elevation) {
+Hex.prototype.initialize = function(hexX, hexY, elevation, images) {
 	this.coords = new Coords(hexX, hexY);
 	this.elevation = elevation;
+	this.images = images;
 }
 Hex.prototype.setHexDisplay = function(hexDisplay) {
 	this.hexDisplay = hexDisplay;
@@ -98,8 +99,11 @@ Hex.prototype.yCoords = function() {
 Hex.prototype.getElevation = function() {
 	return this.elevation;
 }
+Hex.prototype.getImages = function() {
+	return this.images;
+}
 Hex.prototype.toString = function() {
-	return "[Hex@"+this.xCoords()+","+this.yCoords()+"]";
+	return "[Hex@"+this.xCoords()+","+this.yCoords()+" +"+this.elevation+"]";
 }
 
 

@@ -190,16 +190,7 @@ function loadGameElements() {
 		  // create the board hex display
 		  $.each(data.board.hexMap, function(key, thisHex) {
 			  if(thisHex != null){
-				  var hexDisplay = new HexDisplay(thisHex.x, thisHex.y, thisHex.images);
-				  var hexInstance = new Hex(thisHex.x, thisHex.y, thisHex.elevation);
-				  
-				  // Add references between Hex and its HexDisplay objects
-				  hexDisplay.setHex(hexInstance);
-				  hexInstance.setHexDisplay(hexDisplay);
-				  
-				  // add mouse listener
-				  hexDisplay.on("click", handleHexClick);
-				  hexDisplay.mouseChildren = false;
+				  var hexInstance = new Hex(thisHex.x, thisHex.y, thisHex.elevation, thisHex.images);
 				  
 				  // Place the hex in the map
 				  var hexRow = hexMap[hexInstance.yCoords()];
@@ -334,34 +325,17 @@ function initHexMapDisplay() {
 				continue;
 			}
 			
-			var thisDisplayHex = thisHex.hexDisplay;
-			if(thisDisplayHex == null){
-				continue;
-			}
+			var hexDisplay = new HexDisplay(thisHex);
 			
-			var xOffset = x * (3 * hexWidth / 4);
-			var yOffset = y * hexHeight;
+			// add mouse listener
+			hexDisplay.on("click", handleHexClick);
+			hexDisplay.mouseChildren = false;
 			
-			if(thisDisplayHex.isXOdd()){
-				yOffset = (hexHeight / 2) + (y * hexHeight);
-			}
+			// Add references between Hex and its HexDisplay objects
+			thisHex.setHexDisplay(hexDisplay);
 			
-			thisDisplayHex.x = xOffset;
-			thisDisplayHex.y = yOffset;
-			
-			var thisHexImages = thisDisplayHex.getImages();
-			$.each(thisHexImages, function(i, img){
-				// add the hex images to the stage
-				var hexImg = new createjs.Bitmap(queue.getResult(img));
-				thisDisplayHex.addChild(hexImg);
-			});
-			
-			stage.addChild(thisDisplayHex);
-			
-			
-			// TODO: Testing isometric, when finished enable caching again!
-			thisDisplayHex.drawIsometric();
-			//thisDisplayHex.cache(0, 0, hexWidth, hexHeight);
+			// TODO: make the HexDisplay objects show themselves and add themselves to the stage in ascending elevation order
+			hexDisplay.show();
 		}
 	}
 	

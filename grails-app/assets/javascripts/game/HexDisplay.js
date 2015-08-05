@@ -9,24 +9,51 @@ var darkgray = "#808080";
 
 var elevationHeight = 15;
 
-function HexDisplay(hexX, hexY, images) {
+function HexDisplay(hex) {
 	this.Container_constructor();
 	
-	this.coords = new Coords(hexX, hexY);
-	this.images = images;
+	this.hex = hex;
+	this.coords = new Coords(hex.xCoords(), hex.yCoords());
 }
 var c = createjs.extend(HexDisplay, createjs.Container);
 
-c.setHex = function(hex) {
-	this.hex = hex;
-}
 c.getHex = function() {
 	return this.hex;
 }
 
-c.hide = function() {
-	this.visible = false;
-};
+c.show = function() {
+	this.visible = true;
+	
+	this.uncache();
+	
+	var xOffset = this.xCoords() * (3 * hexWidth / 4);
+	var yOffset = this.yCoords() * hexHeight;
+	
+	if(this.isXOdd()){
+		yOffset = (hexHeight / 2) + (this.yCoords() * hexHeight);
+	}
+	
+	this.x = xOffset;
+	this.y = yOffset;
+	
+	var me = this;
+	
+	var thisHexImages = this.getHex().getImages();
+	$.each(thisHexImages, function(i, img){
+		// add the hex images to the stage
+		var hexImg = new createjs.Bitmap(queue.getResult(img));
+		me.addChild(hexImg);
+	});
+	
+	stage.addChild(this);
+	
+	
+	// TODO: create toggle option to easily enable/disable isometric mode
+	this.drawIsometric();
+	
+	// TODO: cache the object
+	//this.cache(0,0, 0,0);
+}
 
 c.drawIsometric = function() {
 	if(this.getHex() != null && this.getHex().elevation > 0) {
@@ -42,7 +69,8 @@ c.drawIsometric = function() {
 				.moveTo(0, (hexHeight/2))
 				.lineTo(0, (hexHeight/2) + (elevationHeight * elev))
 				.lineTo((hexWidth/4), hexHeight + (elevationHeight * elev))
-				.lineTo((hexWidth/4), hexHeight).endStroke();
+				.lineTo((hexWidth/4), hexHeight)
+				.lineTo(0, (hexHeight/2)).endStroke();
 		this.addChild(p1);
 		
 		var p2 = new createjs.Shape();
@@ -51,7 +79,8 @@ c.drawIsometric = function() {
 				.moveTo((hexWidth/4), hexHeight)
 				.lineTo((hexWidth/4), hexHeight + (elevationHeight * elev))
 				.lineTo((3*hexWidth/4), hexHeight + (elevationHeight * elev))
-				.lineTo((3*hexWidth/4), hexHeight).endStroke();
+				.lineTo((3*hexWidth/4), hexHeight)
+				.lineTo((hexWidth/4), hexHeight).endStroke();
 		
 		this.addChild(p2);
 		
@@ -61,7 +90,8 @@ c.drawIsometric = function() {
 				.moveTo((3*hexWidth/4), hexHeight)
 				.lineTo((3*hexWidth/4), hexHeight + (elevationHeight * elev))
 				.lineTo(hexWidth, (hexHeight/2) + (elevationHeight * elev))
-				.lineTo(hexWidth, (hexHeight/2)).endStroke();
+				.lineTo(hexWidth, (hexHeight/2))
+				.lineTo((3*hexWidth/4), hexHeight).endStroke();
 		
 		this.addChild(p3);
 	}
@@ -69,9 +99,6 @@ c.drawIsometric = function() {
 
 c.isXOdd = function() {
 	return isXOdd(this.coords.x);
-}
-c.getImages = function() {
-	return this.images;
 }
 c.getHexLocation = function() {
 	return this.coords;
@@ -87,7 +114,7 @@ c.toString = function() {
 	if(this.getHex() != null) {
 		elevationStr = this.getHex().elevation;
 	}
-	return "[HexDisplay@"+this.x+", "+this.y+" +"+elevationStr+" :"+this.images+"]";
+	return "[HexDisplay@"+this.x+", "+this.y+": "+this.hex+"]";
 }
 
 c.doCache = function(startX, startY, endX, endY) {
@@ -105,7 +132,7 @@ c.doCache = function(startX, startY, endX, endY) {
 	}
 	
 	this.cache(cacheX, cacheY, cacheW, cacheH);
-};
+}
 
 window.HexDisplay = createjs.promote(HexDisplay, "Container");
 }());
