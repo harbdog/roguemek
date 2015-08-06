@@ -190,7 +190,7 @@ function loadGameElements() {
 		  // create the board hex display
 		  $.each(data.board.hexMap, function(key, thisHex) {
 			  if(thisHex != null){
-				  var hexInstance = new Hex(thisHex.x, thisHex.y, thisHex.elevation, thisHex.images);
+				  var hexInstance = new Hex(thisHex.x, thisHex.y, thisHex.elevation, this.terrains, thisHex.images);
 				  
 				  // Place the hex in the map
 				  var hexRow = hexMap[hexInstance.yCoords()];

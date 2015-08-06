@@ -5,9 +5,14 @@
 // Close enough...
 var PI = 3.14;
 
+// variables for updating the stage on demand
 var update = true;
 var lastUpdate = 0;
 
+// variable to show level (elevation/depth/etc.)
+var showLevels = true;
+
+// variables for isometric view
 var useIsometric = true;
 var isometricPadding = 0;
 var elevationHeight = 15;

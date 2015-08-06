@@ -70,13 +70,48 @@ Coords.prototype.toString = function() {
 /**
  * Class used to store Hex information and its display object
  */
-function Hex(hexX, hexY, hexDisplay, images) {
-	this.initialize(hexX, hexY, hexDisplay, images);
+function Hex(hexX, hexY, elevation, terrains, images) {
+	this.initialize(hexX, hexY, elevation, terrains, images);
 }
-Hex.prototype.initialize = function(hexX, hexY, elevation, images) {
+Hex.prototype.initialize = function(hexX, hexY, elevation, terrains, images) {
 	this.coords = new Coords(hexX, hexY);
 	this.elevation = elevation;
 	this.images = images;
+	
+	this.terrains = [];
+	if(terrains != null && terrains.length > 0) {
+		for(var i=0; i<terrains.length; i++){
+			var terrainData = terrains[i];
+			var thisTerrain = new Terrain(terrainData.type, terrainData.level, 
+					terrainData.exits, terrainData.terrainFactor);
+			
+			this.terrains[i] = thisTerrain;
+		}
+	}
+}
+Hex.prototype.containsTerrain = function(type) {
+	if(this.terrains != null && this.terrains.length > 0){
+		for(var i=0; i<this.terrains.length; i++){
+			var thisTerrain = this.terrains[i];
+			if(thisTerrain.type == type) {
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+Hex.prototype.getTerrain = function(type) {
+	if(this.terrains != null && this.terrains.length > 0){
+		for(var i=0; i<this.terrains.length; i++){
+			var thisTerrain = this.terrains[i];
+			if(thisTerrain.type == type) {
+				return thisTerrain;
+			}
+		}
+	}
+	
+	return null;
 }
 Hex.prototype.setHexDisplay = function(hexDisplay) {
 	this.hexDisplay = hexDisplay;
@@ -103,7 +138,7 @@ Hex.prototype.getImages = function() {
 	return this.images;
 }
 Hex.prototype.toString = function() {
-	return "[Hex@"+this.xCoords()+","+this.yCoords()+" +"+this.elevation+"]";
+	return "[Hex@"+this.xCoords()+","+this.yCoords()+" +"+this.elevation+"; "+this.terrains+"]";
 }
 
 
