@@ -40,8 +40,18 @@ c.update = function() {
 	this.drawIsometric();
 	this.drawLevel();
 	
-	// TODO: cache the object
-	//this.cache(0,0, 0,0);
+	// cache the object
+	if(useIsometric && this.getHex() != null) {
+		if(this.getHex().getElevation() >= 0) {
+			this.cache(0, 0, hexWidth, hexHeight + (elevationHeight * this.getHex().getElevation()));
+		}
+		else {
+			this.cache(0, (elevationHeight * this.getHex().getElevation()), hexWidth, hexHeight);
+		}
+	}
+	else {
+		this.cache(0, 0, hexWidth, hexHeight);
+	}
 }
 
 c.cleanChildren = function() {
@@ -63,8 +73,8 @@ c.drawLevel = function() {
 			&& this.getHex() != null) {
 		
 		// draw elevation level
-		if(this.getHex().elevation != 0) {
-			var levelObj = new createjs.Text("LEVEL "+this.getHex().elevation, "10px Arial", "black");
+		if(this.getHex().getElevation() != 0) {
+			var levelObj = new createjs.Text("LEVEL "+this.getHex().getElevation(), "10px Arial", "black");
 			
 			levelObj.x = (hexWidth - levelObj.getMeasuredWidth()) / 2;
 			levelObj.y = hexHeight - levelObj.getMeasuredHeight() - 1;
@@ -90,16 +100,16 @@ c.drawLevel = function() {
 c.drawIsometric = function() {
 	if(useIsometric 
 			&& this.getHex() != null 
-			&& this.getHex().elevation != 0) {
+			&& this.getHex().getElevation() != 0) {
 		
 		// keep track of the isometric child display object indices so they can be easily removed/toggled
 		this.isometricChildren = [];
 		
 		// move the hex image up or down based on elevation
-		var elev = this.getHex().elevation;
+		var elev = this.getHex().getElevation();
 		this.y -= (elevationHeight * elev);
 		
-		if(this.getHex().elevation > 0) {
+		if(elev > 0) {
 			// draw the polygons that make up the isometric elevation
 			var p1 = new createjs.Shape();
 			p1.graphics.setStrokeStyle(1)
@@ -134,7 +144,7 @@ c.drawIsometric = function() {
 			this.isometricChildren[2] = this.addChild(p3);
 		}
 		
-		if(this.getHex().elevation < 0) {
+		if(elev < 0) {
 			// draw the polygons that make up the isometric elevation
 			var p1 = new createjs.Shape();
 			p1.graphics.setStrokeStyle(1)
@@ -185,23 +195,6 @@ c.yCoords = function() {
 }
 c.toString = function() {
 	return "[HexDisplay@"+this.x+", "+this.y+": "+this.hex+"]";
-}
-
-c.doCache = function(startX, startY, endX, endY) {
-	var cacheX = startX;
-	var cacheY = startY;
-	var cacheW = endX - startX;
-	var cacheH = endY - startY;
-	if(startX > endX) {
-		cacheX = endX;
-		cacheW = startX - endX;
-	}
-	if(startY > endY) {
-		cacheY = endY;
-		cacheH = startY - endY;
-	}
-	
-	this.cache(cacheX, cacheY, cacheW, cacheH);
 }
 
 window.HexDisplay = createjs.promote(HexDisplay, "Container");
