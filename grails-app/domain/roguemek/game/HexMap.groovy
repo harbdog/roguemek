@@ -28,9 +28,10 @@ class HexMap {
 		def numRows = 0
 		
 		String[] hexMap
+		FileInputStream fs
 		
 		try {
-			FileInputStream fs = new FileInputStream(boardFile)
+			fs = new FileInputStream(boardFile)
 			StreamTokenizer st = new StreamTokenizer(fs)
 			st.eolIsSignificant(true)
 			st.commentChar((int)'#')
@@ -109,7 +110,12 @@ class HexMap {
 		} catch (IOException ex) {
 			System.err.println("i/o error reading board")
 			System.err.println(ex)
+		} finally {
+			if(fs != null) {
+				fs.close()
+			}
 		}
+		
 	
 		// TODO: if there are any nulls, the board file is invalid
 		/*for (int i = 0; i < nd.length; i++) {
