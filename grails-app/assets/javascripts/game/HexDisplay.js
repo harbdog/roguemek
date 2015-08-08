@@ -70,7 +70,8 @@ c.cleanChildren = function() {
 
 c.drawLevel = function() {
 	if(showLevels 
-			&& this.getHex() != null) {
+			&& this.getHex() != null
+			&& hexScale >= 0.9) {
 		
 		// draw elevation level
 		if(this.getHex().getElevation() != 0) {

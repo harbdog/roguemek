@@ -447,23 +447,14 @@ function initUnitsDisplay() {
 		var image = queue.getResult(imgStr);
 		var rgb = thisDisplayUnit.rgb;
 		
-		// adjust the rotation around its own center (which also adjusts its x/y reference point)
-		//thisDisplayUnit.regX = scale * (image.width/2);
-		//thisDisplayUnit.regY = scale * (image.height/2);
-		
-		thisDisplayUnit.regX = hexScale * (defHexWidth/2);
-		thisDisplayUnit.regY = hexScale * (defHexHeight/2);
-		
-		//thisDisplayUnit.regX = (2/0.8) * (hexWidth - (scale * image.width));
-		//thisDisplayUnit.regY = (2/0.8) * (hexHeight - (scale * image.height));
-		
 		// load the unit image as a Bitmap
 		var unitImg = new createjs.Bitmap(image);
 		// make the unit image just a bit smaller since it currently is same size as the hex
 		unitImg.scaleX = scale;
 		unitImg.scaleY = scale;
-		unitImg.regX = (scale * thisDisplayUnit.regX) - thisDisplayUnit.regX;
-		unitImg.regY = (scale * thisDisplayUnit.regY) - thisDisplayUnit.regY;
+		// adjust the rotation around its own center (which also adjusts its x/y reference point)
+		unitImg.regX = image.width/2;
+		unitImg.regY = image.height/2;
 		thisDisplayUnit.addChild(unitImg);
 		
 		// load the unit image again and apply alpha color filter
@@ -472,10 +463,10 @@ function initUnitsDisplay() {
 	        new createjs.ColorFilter(0,0,0,0.5, 
 	        						 rgb[0],rgb[1],rgb[2],0)
 	    ];
-		unitAlphaImg.scaleX = scale;
-		unitAlphaImg.scaleY = scale;
-		unitAlphaImg.regX = (scale * thisDisplayUnit.regX) - thisDisplayUnit.regX;
-		unitAlphaImg.regY = (scale * thisDisplayUnit.regY) - thisDisplayUnit.regY;
+		unitAlphaImg.scaleX = unitImg.scaleX;
+		unitAlphaImg.scaleY = unitImg.scaleY;
+		unitAlphaImg.regX = unitImg.regX;
+		unitAlphaImg.regY = unitImg.regY;
 		unitAlphaImg.cache(0, 0, image.width, image.height);
 		thisDisplayUnit.addChild(unitAlphaImg);
 		

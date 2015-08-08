@@ -32,16 +32,16 @@ c.update = function() {
 }
 
 c.getUpdatedDisplayX = function(coords) {
-	return coords.x * (3 * hexWidth / 4) + this.regX;
+	return coords.x * (3 * hexWidth / 4) + (hexWidth / 2);
 }
 c.getUpdatedDisplayY = function(coords) {
 	
 	var displayY = 0;
 	if(coords.isXOdd()){
-		displayY = (hexHeight / 2) + (coords.y * hexHeight) + this.regY;
+		displayY = (hexHeight / 2) + (coords.y * hexHeight) + (hexHeight / 2);
 	}
 	else{
-		displayY = coords.y * hexHeight + this.regY;
+		displayY = coords.y * hexHeight + (hexHeight / 2);
 	}
 	
 	if(useIsometric) {
