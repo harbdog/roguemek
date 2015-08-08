@@ -52,10 +52,6 @@ function yInDirection(x, y, direction) {
 var numCols = 0;
 var numRows = 0;
 
-//all hex images are the same size
-var hexWidth = 84;
-var hexHeight = 72;
-
 // STATIC variables
 var HEADING_N = 0;
 var HEADING_NE = 1;
@@ -97,7 +93,7 @@ var ACTION_FORWARD = "forward";
 var ACTION_BACKWARD = "backward";
 
 // Global variables used throughout the game
-var stage, queue, progress, fpsDisplay, hexMap, units;
+var stage, canvas, queue, progress, fpsDisplay, hexMap, units;
 
 // Keep track of which unit belongs to the player
 var playerUnit;
@@ -121,6 +117,7 @@ function initGame(){
 	
 	// Create the EaselJS stage
 	stage = new createjs.Stage("canvas");
+	canvas = document.getElementById("canvas");
 	
 	// apply Touch capability for touch screens
 	createjs.Touch.enable(stage);
@@ -310,8 +307,14 @@ function initUnitWeapons(unit) {
 function initHexMapDisplay() {
 	if(hexMap == null){return;}
 	
-	stage.on("pressmove", handleStageDrag);
-	stage.on("pressup", handleStageDrag);
+	if(firstUpdate) {
+		// Add events for using the mouse to interact with the canvas/stage
+		stage.on("pressmove", handleStageDrag);
+		stage.on("pressup", handleStageDrag);
+		
+		canvas.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
+		canvas.addEventListener("mousewheel", handleMouseWheel, false); 	// for everyone else
+	}
 		
 	for(var y=0; y<numRows; y++){
 		
@@ -327,24 +330,33 @@ function initHexMapDisplay() {
 				continue;
 			}
 			
-			// Create the HexDisplay object and add references between it and the Hex
-			var hexDisplay = new HexDisplay(thisHex);
-			thisHex.setHexDisplay(hexDisplay);
-			
-			// add mouse listener
-			hexDisplay.on("click", handleHexClick);
-			hexDisplay.mouseChildren = false;
+			var hexDisplay = thisHex.getHexDisplay();
+			if(thisHex.getHexDisplay() == null) {
+				// Create the HexDisplay object and add references between it and the Hex
+				var hexDisplay = new HexDisplay(thisHex);
+				thisHex.setHexDisplay(hexDisplay);
+				
+				// add mouse listener
+				hexDisplay.on("click", handleHexClick);
+				hexDisplay.mouseChildren = false;
+			}
+			else{
+				// clear the children so they can be recreated
+				hexDisplay.removeAllChildren();
+			}
 			
 			var thisHexImages = thisHex.getImages();
 			$.each(thisHexImages, function(i, img){
 				// add the hex images to the stage
 				var hexImg = new createjs.Bitmap(queue.getResult(img));
+				hexImg.scaleX = hexScale;
+				hexImg.scaleY = hexScale;
 				hexDisplay.addChild(hexImg);
 			});
 			
 			// so they won't overlap incorrectly, add to the stage only the evenX columns first, later will add oddX
 			if(!thisHex.isXOdd()) {
-				stage.addChild(hexDisplay);
+				if(firstUpdate) stage.addChild(hexDisplay);
 			}
 		}
 		
@@ -358,7 +370,7 @@ function initHexMapDisplay() {
 			
 			// TODO: add the HexDisplay objects to the stage in ascending elevation order, in addition to evenX before oddX columns
 			var hexDisplay = thisHex.getHexDisplay();
-			stage.addChild(hexDisplay);
+			if(firstUpdate) stage.addChild(hexDisplay);
 		}
 	}
 	
@@ -426,16 +438,24 @@ function initUnitsDisplay() {
 	
 	$.each(units, function(index, thisUnit) {
 		// TODO: scale differently based on mech tonnage/weight class also?
-		var scale = 0.8;
+		var scale = 0.8 * hexScale;
 		
 		var thisDisplayUnit = thisUnit.displayUnit;
+		thisDisplayUnit.removeAllChildren();
+		
 		var imgStr = thisDisplayUnit.getImageString();
 		var image = queue.getResult(imgStr);
 		var rgb = thisDisplayUnit.rgb;
 		
 		// adjust the rotation around its own center (which also adjusts its x/y reference point)
-		thisDisplayUnit.regX = image.width/2;
-		thisDisplayUnit.regY = image.height/2;
+		//thisDisplayUnit.regX = scale * (image.width/2);
+		//thisDisplayUnit.regY = scale * (image.height/2);
+		
+		thisDisplayUnit.regX = hexScale * (defHexWidth/2);
+		thisDisplayUnit.regY = hexScale * (defHexHeight/2);
+		
+		//thisDisplayUnit.regX = (2/0.8) * (hexWidth - (scale * image.width));
+		//thisDisplayUnit.regY = (2/0.8) * (hexHeight - (scale * image.height));
 		
 		// load the unit image as a Bitmap
 		var unitImg = new createjs.Bitmap(image);

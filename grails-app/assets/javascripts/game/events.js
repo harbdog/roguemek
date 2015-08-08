@@ -234,6 +234,7 @@ function handleComplete(event) {
     stage.addChild(fpsDisplay);
     
     update = true;
+    firstUpdate = false;
 }
 
 /**
@@ -445,4 +446,25 @@ function handleStageDrag(evt) {
     updateHexMapDisplay();
     
     update = true;
+}
+
+// stage onmousewheel event triggers this method
+var allowMouseWheelZoom = true;
+function handleMouseWheel(evt) {
+	if(allowMouseWheelZoom === false) return;
+	
+	// need to handle different browsers differently based on event and property type defined when mouse scroll is used
+	if (!evt) evt = event;
+	var direction = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1;
+	
+	hexScale += (direction * 0.1);
+	hexWidth = defHexWidth * hexScale;
+	hexHeight = defHexHeight * hexScale;
+	elevationHeight = defElevationHeight * hexScale;
+	console.log("hexScale="+hexScale+"; hexW/H="+hexWidth+", "+hexHeight);
+	
+	initHexMapDisplay();
+	initUnitsDisplay();
+	
+	update = true;
 }

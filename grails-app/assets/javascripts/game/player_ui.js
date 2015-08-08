@@ -7,15 +7,25 @@ var PI = 3.14;
 
 // variables for updating the stage on demand
 var update = true;
+var firstUpdate = true;
 var lastUpdate = 0;
 
-// variable to show level (elevation/depth/etc.)
-var showLevels = true;
+//all hex images are the same size
+var hexScale = 1.0;
+
+var defHexWidth = 84;
+var defHexHeight = 72;
+var hexWidth = defHexWidth * hexScale;
+var hexHeight = defHexHeight * hexScale;
 
 // variables for isometric view
 var useIsometric = true;
 var isometricPadding = 0;
-var elevationHeight = 15;
+var defElevationHeight = 15;
+var elevationHeight = defElevationHeight * hexScale;
+
+//variable to show level (elevation/depth/etc.)
+var showLevels = true;
 
 var apDisplaying, jpDisplaying;
 
