@@ -90,7 +90,7 @@ c.drawLevel = function() {
 c.drawIsometric = function() {
 	if(useIsometric 
 			&& this.getHex() != null 
-			&& this.getHex().elevation > 0) {
+			&& this.getHex().elevation != 0) {
 		
 		// keep track of the isometric child display object indices so they can be easily removed/toggled
 		this.isometricChildren = [];
@@ -99,38 +99,75 @@ c.drawIsometric = function() {
 		var elev = this.getHex().elevation;
 		this.y -= (elevationHeight * elev);
 		
-		// draw the polygons that make up the isometric elevation
-		var p1 = new createjs.Shape();
-		p1.graphics.setStrokeStyle(1)
-				.beginStroke(darkgray).beginFill(darkgray)
-				.moveTo(0, (hexHeight/2))
-				.lineTo(0, (hexHeight/2) + (elevationHeight * elev))
-				.lineTo((hexWidth/4), hexHeight + (elevationHeight * elev))
-				.lineTo((hexWidth/4), hexHeight)
-				.lineTo(0, (hexHeight/2)).endStroke();
-		this.isometricChildren[0] = this.addChild(p1);
+		if(this.getHex().elevation > 0) {
+			// draw the polygons that make up the isometric elevation
+			var p1 = new createjs.Shape();
+			p1.graphics.setStrokeStyle(1)
+					.beginStroke(darkgray).beginFill(darkgray)
+					.moveTo(0, (hexHeight/2))
+					.lineTo(0, (hexHeight/2) + (elevationHeight * elev))
+					.lineTo((hexWidth/4), hexHeight + (elevationHeight * elev))
+					.lineTo((hexWidth/4), hexHeight)
+					.lineTo(0, (hexHeight/2)).endStroke();
+			this.isometricChildren[0] = this.addChild(p1);
+			
+			var p2 = new createjs.Shape();
+			p2.graphics.setStrokeStyle(1)
+					.beginStroke(darkgray).beginFill(gray)
+					.moveTo((hexWidth/4), hexHeight)
+					.lineTo((hexWidth/4), hexHeight + (elevationHeight * elev))
+					.lineTo((3*hexWidth/4), hexHeight + (elevationHeight * elev))
+					.lineTo((3*hexWidth/4), hexHeight)
+					.lineTo((hexWidth/4), hexHeight).endStroke();
+			
+			this.isometricChildren[1] = this.addChild(p2);
+			
+			var p3 = new createjs.Shape();
+			p3.graphics.setStrokeStyle(1)
+					.beginStroke(darkgray).beginFill(lightgray)
+					.moveTo((3*hexWidth/4), hexHeight)
+					.lineTo((3*hexWidth/4), hexHeight + (elevationHeight * elev))
+					.lineTo(hexWidth, (hexHeight/2) + (elevationHeight * elev))
+					.lineTo(hexWidth, (hexHeight/2))
+					.lineTo((3*hexWidth/4), hexHeight).endStroke();
+			
+			this.isometricChildren[2] = this.addChild(p3);
+		}
 		
-		var p2 = new createjs.Shape();
-		p2.graphics.setStrokeStyle(1)
-				.beginStroke(darkgray).beginFill(gray)
-				.moveTo((hexWidth/4), hexHeight)
-				.lineTo((hexWidth/4), hexHeight + (elevationHeight * elev))
-				.lineTo((3*hexWidth/4), hexHeight + (elevationHeight * elev))
-				.lineTo((3*hexWidth/4), hexHeight)
-				.lineTo((hexWidth/4), hexHeight).endStroke();
-		
-		this.isometricChildren[1] = this.addChild(p2);
-		
-		var p3 = new createjs.Shape();
-		p3.graphics.setStrokeStyle(1)
-				.beginStroke(darkgray).beginFill(lightgray)
-				.moveTo((3*hexWidth/4), hexHeight)
-				.lineTo((3*hexWidth/4), hexHeight + (elevationHeight * elev))
-				.lineTo(hexWidth, (hexHeight/2) + (elevationHeight * elev))
-				.lineTo(hexWidth, (hexHeight/2))
-				.lineTo((3*hexWidth/4), hexHeight).endStroke();
-		
-		this.isometricChildren[2] = this.addChild(p3);
+		if(this.getHex().elevation < 0) {
+			// draw the polygons that make up the isometric elevation
+			var p1 = new createjs.Shape();
+			p1.graphics.setStrokeStyle(1)
+					.beginStroke(darkgray).beginFill(lightgray)
+					.moveTo(0, (hexHeight/2))
+					.lineTo(0, (hexHeight/2) + (elevationHeight * elev))
+					.lineTo((hexWidth/4), (elevationHeight * elev))
+					.lineTo((hexWidth/4), 0)
+					.lineTo(0, (hexHeight/2)).endStroke();
+			this.isometricChildren[0] = this.addChild(p1);
+			
+			var p2 = new createjs.Shape();
+			p2.graphics.setStrokeStyle(1)
+					.beginStroke(darkgray).beginFill(gray)
+					.moveTo((hexWidth/4), 0)
+					.lineTo((hexWidth/4), (elevationHeight * elev))
+					.lineTo((3*hexWidth/4), (elevationHeight * elev))
+					.lineTo((3*hexWidth/4), 0)
+					.lineTo((hexWidth/4), 0).endStroke();
+			
+			this.isometricChildren[1] = this.addChild(p2);
+			
+			var p3 = new createjs.Shape();
+			p3.graphics.setStrokeStyle(1)
+					.beginStroke(darkgray).beginFill(darkgray)
+					.moveTo((3*hexWidth/4), 0)
+					.lineTo((3*hexWidth/4), (elevationHeight * elev))
+					.lineTo(hexWidth, (hexHeight/2) + (elevationHeight * elev))
+					.lineTo(hexWidth, (hexHeight/2))
+					.lineTo((3*hexWidth/4), 0).endStroke();
+			
+			this.isometricChildren[2] = this.addChild(p3);
+		}
 	}
 }
 
