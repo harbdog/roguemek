@@ -301,6 +301,14 @@ function initUnitWeapons(unit) {
 }
 
 
+// TESTING variables, move to events later
+var touch1 = null;
+var touch2 = null;
+var stageInitPinchDist = null;
+function distanceP(p1, p2) {
+    return Math.sqrt((p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y));
+}
+
 /**
  * Initializes the display of the board hex map on the stage
  */
@@ -314,6 +322,72 @@ function initHexMapDisplay() {
 		
 		canvas.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
 		canvas.addEventListener("mousewheel", handleMouseWheel, false); 	// for everyone else
+		
+		// TESTING pinch zooming with touchscreen
+		stage.on("mousedown", function (evt) {
+		    if (evt.pointerID == 0 || evt.pointerID == -1) { //touch 1 or mouse
+		        touch1 = new createjs.Point(stage.globalToLocal(evt.stageX, 0).x, stage.globalToLocal(0, evt.stageY).y);
+		    } else if (evt.pointerID == 1) { //touch 2
+		        touch2 = new createjs.Point(stage.globalToLocal(evt.stageX, 0).x, stage.globalToLocal(0, evt.stageY).y);
+		    }
+		    
+		    if(touch1 != null && touch2 != null) {
+		    	stageInitPinchDist = distanceP(touch1, touch2);
+		    	
+		    	console.log("*** INIT PINCH DIST="+stageInitPinchDist);
+		    }
+		});
+
+		stage.on("pressup", function (evt) {
+		    if (evt.pointerID == 0 || evt.pointerID == -1) { //touch 1 or mouse
+		        touch1 = null;
+		    } else if (evt.pointerID == 1) { //touch 2
+		        touch2 = null;
+		    }
+		    
+		    if(touch1 == null || touch2 == null) {
+		    	stageInitPinchDist = null;
+		    }
+		});
+
+		stage.on("pressmove", function(evt) {
+		    if (evt.pointerID == -1 || evt.pointerID == 0) {
+		        var touch = touch1;
+		    } else if (evt.pointerID == 1) {
+		        var touch = touch2;
+		    }
+
+		    var dX = evt.stageX - touch.x;
+		    var dY = evt.stageY - touch.y;
+
+		    if (touch1 && touch2) var oldDist = distanceP(touch1, touch2);
+
+		    touch.x += dX;
+		    touch.y += dY;
+
+		    //if both fingers are used zoom and move the canvas
+		    if (touch1 && touch2) {
+		        var newDist = distanceP(touch1, touch2);
+		        var newScale = stage.scaleX * newDist / oldDist;
+		        //zoomMap(newZoom, new createjs.Point((touch1.x+touch2.x)/2, (touch1.y + touch2.y)/2))
+		    	
+		        if(newScale > 0.05 && newScale <= 5) {
+			        console.log("initDist="+stageInitPinchDist+" ==> newDist="+newDist+", oldDist="+oldDist+", newScale="+newScale);
+			        stage.scaleX = newScale;
+			        stage.scaleY = newScale;
+					
+					// Keep the board from going off the window too much
+				    keepBoardInWindow();
+					
+					// update visible hexes
+				    updateHexMapDisplay();
+				    
+				    update = true;
+		        }
+		    }
+		    
+		    // update!
+		});
 	}
 		
 	for(var y=0; y<numRows; y++){
