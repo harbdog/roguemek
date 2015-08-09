@@ -152,6 +152,9 @@ function updateHexMapDisplay() {
     var canvasX = startX + stage.canvas.width;
     var canvasY = startY + stage.canvas.height;
     
+    var scaledHexWidth = hexWidth * stage.scaleX;
+    var scaledHexHeight = hexHeight * stage.scaleY;
+    
     for(var y=0; y<numRows; y++){
 		
 		var thisHexRow = hexMap[y];
@@ -174,17 +177,17 @@ function updateHexMapDisplay() {
 			// start with making it visible until the location checks prove it is not
 			thisDisplayHex.visible = true;
 			
-			var xOffset = x * (3 * hexWidth / 4);
-			var yOffset = y * hexHeight;
+			var xOffset = x * (3 * scaledHexWidth / 4);
+			var yOffset = y * scaledHexHeight;
 			
 			if(thisDisplayHex.isXOdd()){
-				yOffset = (hexHeight / 2) + (y * hexHeight);
+				yOffset = (scaledHexHeight / 2) + (y * scaledHexHeight);
 			}
 			
 			// TODO: handle pop-in of hexes at the bottom of the screen when using isometric mode
 			
-			if((xOffset + hexWidth < startX || xOffset > canvasX) 
-					|| (yOffset + hexHeight < startY || yOffset > canvasY)) {
+			if((xOffset + scaledHexWidth < startX || xOffset > canvasX) 
+					|| (yOffset + scaledHexHeight < startY || yOffset > canvasY)) {
 				// hex object is outside of the view area
 				thisDisplayHex.visible = false;
 			}
@@ -398,7 +401,9 @@ function addEventHandlers() {
 // Goes along with the stage pressmove event
 var allowStageDragMove = true;
 function handleStageDrag(evt) {
+	evt.preventDefault();
 	if(allowStageDragMove === false) return;
+	
 	else if(evt.type == "pressup"){
 		// reset click and drag map panning
 		stageInitDragMoveX = null;
@@ -420,25 +425,16 @@ function handleStageDrag(evt) {
 		return;
 	}
 	
+	var scaledHexWidth = hexWidth * stage.scaleX;
+    var scaledHexHeight = hexHeight * stage.scaleY;
+	
     stage.x = newX;
     stage.y = newY;
     
     // Keep the board from going off the window too much
-    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
-    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
-    }
-    if(stage.x > 10) {
-    	stage.x = 10;
-    }
+    keepBoardInWindow();
     
-    if(stage.y < -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height){
-    	stage.y = -((hexHeight / 2) + (numRows * hexHeight)) + stage.canvas.height;
-    }
-    if(stage.y > 10 + isometricPadding) {
-    	stage.y = 10 + isometricPadding;
-    }
-    
-    // handle stage overlay movement
+    // handle fps overlay movement
     fpsDisplay.x = -stage.x - 10;
     fpsDisplay.y = -stage.y;
     
@@ -451,20 +447,53 @@ function handleStageDrag(evt) {
 // stage onmousewheel event triggers this method
 var allowMouseWheelZoom = true;
 function handleMouseWheel(evt) {
+	evt.preventDefault();
+	
 	if(allowMouseWheelZoom === false) return;
 	
 	// need to handle different browsers differently based on event and property type defined when mouse scroll is used
 	if (!evt) evt = event;
 	var direction = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1;
 	
-	hexScale += (direction * 0.1);
-	hexWidth = defHexWidth * hexScale;
-	hexHeight = defHexHeight * hexScale;
-	elevationHeight = defElevationHeight * hexScale;
-	console.log("hexScale="+hexScale+"; hexW/H="+hexWidth+", "+hexHeight);
+	var mouseX = evt.clientX;
+	var mouseY = evt.clientY;
+	console.log("xy="+mouseX+", "+mouseY);
 	
-	initHexMapDisplay();
-	initUnitsDisplay();
+	var oldScale = stage.scaleX;
+	var newScale = stage.scaleX + (direction * 0.05);
 	
-	update = true;
+	if(newScale > 0 && newScale <= 5) {
+		stage.scaleX = newScale;
+		stage.scaleY = newScale;
+		
+		console.log("scale="+newScale);
+		
+		// Keep the board from going off the window too much
+	    keepBoardInWindow();
+		
+		// update visible hexes
+	    updateHexMapDisplay();
+	    
+	    update = true;
+	}
+}
+
+function keepBoardInWindow() {
+	var scaledHexWidth = hexWidth * stage.scaleX;
+    var scaledHexHeight = hexHeight * stage.scaleY;
+    
+    // Keep the board from going off the window too much
+    if(stage.x < -((numCols+1) * (3 * scaledHexWidth / 4)) + stage.canvas.width){
+    	stage.x = -((numCols+1) * (3 * scaledHexWidth / 4)) + stage.canvas.width;
+    }
+    if(stage.x > 10) {
+    	stage.x = 10;
+    }
+    
+    if(stage.y < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + stage.canvas.height){
+    	stage.y = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + stage.canvas.height;
+    }
+    if(stage.y > 10 + (isometricPadding * stage.scaleY)) {
+    	stage.y = 10 + (isometricPadding * stage.scaleY);
+    }
 }
