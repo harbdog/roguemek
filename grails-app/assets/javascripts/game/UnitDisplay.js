@@ -87,10 +87,10 @@ c.setOtherTurnVisible = function(visible) {
 	}
 }
 c.setControlsVisible = function(visible) {
-	this.showRotateControlCW(visible);
+	/*this.showRotateControlCW(visible);
 	this.showRotateControlCCW(visible);
 	this.showForwardControl(visible);
-	this.showBackwardControl(visible);
+	this.showBackwardControl(visible);*/
 }
 c.animateUpdateDisplay = function(coords, heading) {
 	var newX = this.getUpdatedDisplayX(coords);

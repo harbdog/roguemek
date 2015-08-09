@@ -7,16 +7,16 @@ function tick(event) {
 		if(update) {
 			fpsDisplay.htmlElement.innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
 			
-			if(!$("#fpsDiv").hasClass("selected")) {
-				$('#fpsDiv').toggleClass("selected");
+			if(!$("#fpsDiv").hasClass("active")) {
+				$('#fpsDiv').toggleClass("active");
 			}
 		}
 		else{
 			fpsDisplay.htmlElement.innerHTML = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
 			
-			if($("#fpsDiv").hasClass("selected") 
+			if($("#fpsDiv").hasClass("active") 
 					&& createjs.Ticker.getTime() - lastUpdate > 500) {
-				$('#fpsDiv').toggleClass("selected");
+				$('#fpsDiv').toggleClass("active");
 			}
 		}
 	}
@@ -457,7 +457,6 @@ function handleMouseWheel(evt) {
 	
 	var mouseX = evt.clientX;
 	var mouseY = evt.clientY;
-	console.log("xy="+mouseX+", "+mouseY);
 	
 	var oldScale = stage.scaleX;
 	var newScale = stage.scaleX + (direction * 0.05);
