@@ -1,7 +1,10 @@
 package roguemek.game
 
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import java.awt.Component
 import java.awt.Canvas
+import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.awt.image.ImageObserver
@@ -15,6 +18,8 @@ import javax.imageio.ImageIO
  * Sourced from MegeMek TilesetManager.java
  */
 class EntityImage {
+	private static Log log = LogFactory.getLog(this)
+	
 	private Image base;
 	private Image icon;
 	private short[] tint;
@@ -47,8 +52,10 @@ class EntityImage {
 	}
 	
 	public byte[] toByteArray() {
+		Image color = applyColor(this.base);
+		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream()
-		ImageIO.write(this.base, BattleUnit.imagesExtension, baos)
+		ImageIO.write(color, BattleUnit.imagesExtension, baos)
 		
 		return baos.toByteArray()
 	}
@@ -84,35 +91,29 @@ class EntityImage {
 
 		int[] pMech = new int[IMG_SIZE];
 		int[] pCamo = new int[IMG_SIZE];
-		PixelGrabber pgMech = new PixelGrabber(iMech, 0, 0, IMG_WIDTH,
-				IMG_HEIGHT, pMech, 0, IMG_WIDTH);
+		PixelGrabber pgMech = new PixelGrabber(iMech, 0, 0, IMG_WIDTH, IMG_HEIGHT, pMech, 0, IMG_WIDTH);
 
 		try {
 			pgMech.grabPixels();
 		} catch (InterruptedException e) {
-			System.err
-					.println("EntityImage.applyColor(): Failed to grab pixels for mech image." + e.getMessage()); //$NON-NLS-1$
+			log.error("EntityImage.applyColor(): Failed to grab pixels for mech image." + e.getMessage()); //$NON-NLS-1$
 			return image;
 		}
 		if ((pgMech.getStatus() & ImageObserver.ABORT) != 0) {
-			System.err
-					.println("EntityImage.applyColor(): Failed to grab pixels for mech image. ImageObserver aborted."); //$NON-NLS-1$
+			log.error("EntityImage.applyColor(): Failed to grab pixels for mech image. ImageObserver aborted."); //$NON-NLS-1$
 			return image;
 		}
 
 		if (useCamo) {
-			PixelGrabber pgCamo = new PixelGrabber(camo, 0, 0, IMG_WIDTH,
-					IMG_HEIGHT, pCamo, 0, IMG_WIDTH);
+			PixelGrabber pgCamo = new PixelGrabber(camo, 0, 0, IMG_WIDTH, IMG_HEIGHT, pCamo, 0, IMG_WIDTH);
 			try {
 				pgCamo.grabPixels();
 			} catch (InterruptedException e) {
-				System.err
-						.println("EntityImage.applyColor(): Failed to grab pixels for camo image." + e.getMessage()); //$NON-NLS-1$
+				log.error("EntityImage.applyColor(): Failed to grab pixels for camo image." + e.getMessage()); //$NON-NLS-1$
 				return image;
 			}
 			if ((pgCamo.getStatus() & ImageObserver.ABORT) != 0) {
-				System.err
-						.println("EntityImage.applyColor(): Failed to grab pixels for camo image. ImageObserver aborted."); //$NON-NLS-1$
+				log.error("EntityImage.applyColor(): Failed to grab pixels for camo image. ImageObserver aborted."); //$NON-NLS-1$
 				return image;
 			}
 		}
@@ -122,23 +123,51 @@ class EntityImage {
 			int alpha = (pixel >> 24) & 0xff;
 
 			if (alpha != 0) {
-				int pixel1 = useCamo ? pCamo[i] : tint;
-				float red1 = ((float) ((pixel1 >> 16) & 0xff)) / 255;
-				float green1 = ((float) ((pixel1 >> 8) & 0xff)) / 255;
-				float blue1 = ((float) ((pixel1) & 0xff)) / 255;
+				//int pixel1 = useCamo ? pCamo[i] : tint;
+				//float red1 = ((float) ((pixel1 >> 16) & 0xff)) / 255;
+				//float green1 = ((float) ((pixel1 >> 8) & 0xff)) / 255;
+				//float blue1 = ((float) ((pixel1) & 0xff)) / 255;
+				float red1 = ((float) tint[0]) / 255
+				float green1 = ((float) tint[1]) / 255
+				float blue1 = ((float) tint[2]) / 255
 
 				float black = ((pMech[i]) & 0xff);
 
 				int red2 = Math.round(red1 * black);
 				int green2 = Math.round(green1 * black);
 				int blue2 = Math.round(blue1 * black);
-
+				
 				pMech[i] = (alpha << 24) | (red2 << 16) | (green2 << 8) | blue2;
 			}
 		}
 
-		image = parent.createImage(new MemoryImageSource(IMG_WIDTH,
-				IMG_HEIGHT, pMech, 0, IMG_WIDTH));
-		return image;
+		image = parent.createImage(new MemoryImageSource(IMG_WIDTH, IMG_HEIGHT, pMech, 0, IMG_WIDTH));
+			
+		return EntityImage.toBufferedImage(image);
+	}
+	
+	/**
+	 * Converts a given Image into a BufferedImage
+	 *
+	 * @param img The Image to be converted
+	 * @return The converted BufferedImage
+	 */
+	public static BufferedImage toBufferedImage(Image img)
+	{
+		if (img instanceof BufferedImage)
+		{
+			return (BufferedImage) img;
+		}
+	
+		// Create a buffered image with transparency
+		BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+	
+		// Draw the image on to the buffered image
+		Graphics2D bGr = bimage.createGraphics();
+		bGr.drawImage(img, 0, 0, null);
+		bGr.dispose();
+	
+		// Return the buffered image
+		return bimage;
 	}
 }
