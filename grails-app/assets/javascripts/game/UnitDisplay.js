@@ -3,12 +3,22 @@
  */
 (function() {
 
-function UnitDisplay(id, imageStr, rgb) {
+function UnitDisplay(id, imageArr, imageStr, rgb) {
 	this.Container_constructor();
 	
 	this.id = id;
 	this.imageStr = imageStr;
-	this.rgb = rgb
+	this.rgb = rgb;
+	
+	if(imageArr != null) {
+		// render the Image from the byte array
+		var base64 = _arrayBufferToBase64(imageArr);
+		  
+		var img = new Image();
+		img.src = "data:image/gif;base64," + base64;
+		  
+		this.image = img;
+	}
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
 
@@ -19,6 +29,21 @@ c.setUnit = function(unit) {
 c.getImageString = function() {
 	return this.imageStr;
 }
+
+c.getImage = function() {
+	return this.image;
+}
+
+//http://stackoverflow.com/a/9458996/128597
+function _arrayBufferToBase64(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+};
 
 c.update = function() {
 	this.uncache();

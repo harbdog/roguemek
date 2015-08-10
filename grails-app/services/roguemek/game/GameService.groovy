@@ -411,6 +411,7 @@ class GameService {
 				armor: armor,
 				internals: internals,
 				crits: crits,
+				imageFile: u.imageFile,
 				image: u.image,
 				rgb: [u.rgb[0], u.rgb[1], u.rgb[2]]
 			]

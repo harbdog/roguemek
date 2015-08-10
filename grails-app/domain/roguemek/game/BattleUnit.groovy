@@ -4,6 +4,7 @@ import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 
 import roguemek.game.Coords
+import roguemek.game.EntityImage
 
 /**
  * Represents the owned unit that can be taken into battle as a base class for BattleMech, BattleTank, etc
@@ -38,8 +39,9 @@ class BattleUnit {
 	
 	Character status = STATUS_ACTIVE
 	
-	String image
+	String imageFile
 	Short[] rgb = [100,100,100]
+	byte[] image
 	
 	// STATIC value mappings
 	public static final Character STATUS_ACTIVE = 'A'
@@ -52,6 +54,9 @@ class BattleUnit {
 	public static final Integer HEADING_S = 3
 	public static final Integer HEADING_SW = 4
 	public static final Integer HEADING_NW = 5
+	
+	public static String imagesExtension = "gif"
+	public static String imagesServerPath = "grails-app/assets/images/"
 	
     static constraints = {
 		pilot nullable: true
@@ -71,8 +76,9 @@ class BattleUnit {
 		shutdown nullable: false
 		prone nullable: false
 		
-		image nullable: false
+		imageFile nullable: false
 		rgb size: 3..3
+		image nullable: false, maxSize: 16384
 		
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED]
     }
@@ -106,6 +112,16 @@ class BattleUnit {
 		}
 		
 		return pilot.ownerUser.callsign
+	}
+	
+	public static byte[] initUnitImage(BattleUnit unit) {
+		if(unit == null) return null;
+		
+		def imageLocation = imagesServerPath + unit.imageFile
+		log.info("Creating EntityImage with "+imageLocation+", "+unit.rgb)
+		
+		EntityImage entity = new EntityImage(imageLocation, unit.rgb)
+		return entity.toByteArray()
 	}
 	
 	@Override

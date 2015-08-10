@@ -34,8 +34,11 @@ class BattleMech extends BattleUnit {
 			armor = mech.armor
 			internals = mech.internals
 			
-			// initialize the displayed image
-			image = BattleMech.initMechImage(mech)
+			// determine the displayed image
+			imageFile = BattleMech.initMechImage(mech)
+			
+			// generate the displayed image with default color/camo
+			image = BattleUnit.initUnitImage(this)
 			
 			// convert Equipment to BattleEquipment to store in crits
 			def counter = 0
@@ -101,9 +104,8 @@ class BattleMech extends BattleUnit {
 	}
 	
 	private static String imagesBasePath = "units/mechs/"
-	private static String imagesTestPath = "grails-app/assets/images/units/mechs/"
-	private static String imagesExtension = ".gif"
-	
+	private static String imagesTestPath = imagesServerPath + imagesBasePath
+
 	/**
 	 * Used during creation of the BattleMech to determine the image to be used
 	 * @param mech
@@ -115,10 +117,10 @@ class BattleMech extends BattleUnit {
 		
 		// If no specific image found, use a default based on the mech's weight class
 		String weightClass = mech.getWeightClass()
-		mechImage = "default_"+weightClass+".gif"
+		mechImage = "default_"+ weightClass +"."+imagesExtension
 		
 		// TODO: for now just matching by mech name (all lower case, no spaces), but should also extend to try chassis+variant first
-		String testImage = mech.name.toLowerCase().replaceAll(" ", "") + imagesExtension
+		String testImage = mech.name.toLowerCase().replaceAll(" ", "") + "."+imagesExtension
 		File imageFile = new File(imagesTestPath + testImage)
 		
 		if(imageFile.exists()) {
