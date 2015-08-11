@@ -14,12 +14,12 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'ownerPilot', 'error')} ">
-	<label for="ownerPilot">
-		<g:message code="game.ownerPilot.label" default="Owner Pilot" />
+<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'ownerUser', 'error')} ">
+	<label for="ownerUser">
+		<g:message code="game.ownerUser.label" default="Owner User" />
 		
 	</label>
-	<g:select name="ownerPilot" from="${roguemek.game.Pilot.list()}" optionKey="id" value="${gameInstance?.ownerPilot?.id}"/>
+	<g:select name="ownerUser" from="${roguemek.game.User.list()}" optionKey="id" value="${gameInstance?.ownerUser?.id}"/>
 
 </div>
 

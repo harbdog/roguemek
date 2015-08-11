@@ -1,5 +1,7 @@
 package roguemek.game
 
+import roguemek.User
+
 class Game {
 	private static final Date NULL_DATE = new Date(0)
 	
@@ -10,8 +12,9 @@ class Game {
 		id generator: 'uuid'
 	}
 
-	Pilot ownerPilot
+	User ownerUser
 	
+	List pilots
 	List units
 	static hasMany = [pilots:Pilot, units:BattleUnit]
 	Integer unitTurn = 0
@@ -31,7 +34,7 @@ class Game {
 	public static final GAME_OVER = 'O'
 	
     static constraints = {
-		ownerPilot nullable: false
+		ownerUser nullable: false
 		unitTurn min: 0
 		gameTurn min: 0
 		gameState nullable: false
@@ -91,5 +94,39 @@ class Game {
 	 */
 	public Hex getHexAt(Coords c) {
 		return board.getHexAt(c.x, c.y)
+	}
+	
+	/**
+	 * Gets the Primary Pilot in the game for the given User
+	 * @param user
+	 * @return
+	 */
+	public Pilot getPrimaryPilotForUser(User user) {
+		if(user == null) return null
+		for(Pilot pilot in pilots) {
+			if(user == pilot.ownerUser) {
+				return pilot
+			}
+		}
+		return null
+	}
+	
+	/**
+	 * Gets the Primary Unit in the game for the given User
+	 * @param user
+	 * @return
+	 */
+	public BattleUnit getPrimaryUnitForUser(User user) {
+		if(user == null) return null
+		
+		// find using the primary pilot
+		Pilot pilot = getPrimaryPilotForUser(user)
+		if(pilot == null) return null
+		for(BattleUnit unit in units) {
+			if(pilot.id == unit.pilot.id) {
+				return unit
+			}
+		}
+		return null
 	}
 }

@@ -32,11 +32,11 @@
 				</li>
 				</g:if>
 				
-				<g:if test="${gameInstance?.ownerPilot}">
+				<g:if test="${gameInstance?.ownerUser}">
 				<li class="fieldcontain">
-					<span id="ownerPilot-label" class="property-label"><g:message code="game.ownerPilot.label" default="Owner Pilot" /></span>
+					<span id="ownerUser-label" class="property-label"><g:message code="game.ownerUser.label" default="Owner User" /></span>
 					
-						<span class="property-value" aria-labelledby="ownerPilot-label"><g:link controller="pilot" action="show" id="${gameInstance?.ownerPilot.id}">${gameInstance?.ownerPilot?.encodeAsHTML()}</g:link></span>
+						<span class="property-value" aria-labelledby="ownerUser-label"><g:link controller="user" action="show" id="${gameInstance?.ownerUser.id}">${gameInstance?.ownerUser?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>

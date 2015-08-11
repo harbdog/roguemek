@@ -26,7 +26,7 @@
 					
 						<g:sortableColumn property="id" title="${message(code: 'game.id.label', default: 'ID')}" />
 						
-						<g:sortableColumn property="ownerPilot" title="${message(code: 'game.ownerPilot.label', default: 'Owner Pilot')}" />
+						<g:sortableColumn property="ownerUser" title="${message(code: 'game.ownerUser.label', default: 'Owner User')}" />
 					
 						<g:sortableColumn property="gameState" title="${message(code: 'game.gameState.label', default: 'Game State')}" />
 					
@@ -42,7 +42,7 @@
 					
 						<td><g:link action="show" id="${gameInstance.id}">${fieldValue(bean: gameInstance, field: "id")}</g:link></td>
 						
-						<td><g:link controller="pilot" action="show" id="${gameInstance.ownerPilot.id}">${fieldValue(bean: gameInstance, field: "ownerPilot")}</g:link></td>
+						<td><g:link controller="user" action="show" id="${gameInstance.ownerUser.id}">${fieldValue(bean: gameInstance, field: "ownerUser")}</g:link></td>
 						
 						<td>${fieldValue(bean: gameInstance, field: "gameState")}</td>
 					

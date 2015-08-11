@@ -28,29 +28,12 @@ class RogueMekController {
 	def playGame() {
 		def user = currentUser()
 		
-		// make sure the pilot is owned by the user
-		def pilot = Pilot.get(params.pilot)
-		if(pilot != null && !user.pilots.contains(pilot)) {
-			pilot = null
-		}
-		
-		// make sure the pilot is in the game
+		// TODO: make sure the user has a pilot in the game (it can be attached to the game even without a unit)
 		def game = Game.get(params.game)
-		if(game != null && !game.pilots.contains(pilot)) {
-			game = null
-		}
 		
-		if(game != null && pilot != null) {
-			// if the pilot has a Unit in the game, set it as well
-			for(BattleUnit u in game.units) {
-				if(pilot == u.pilot) {
-					session["unit"] = u.id
-					break
-				}
-			}
-			
+		if(game != null) {
 			session["game"] = game.id
-			session["pilot"] = pilot.id
+			session["user"] = user.id
 			
 			redirect controller: 'game'
 		}
