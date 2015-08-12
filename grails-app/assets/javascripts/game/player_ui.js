@@ -29,6 +29,8 @@ var showLevels = true;
 
 var apDisplaying, jpDisplaying;
 
+var playerWeapons;
+
 function initPlayerUI() {
 	// TODO: initialize new canvas based UI overlay
 }
@@ -38,10 +40,6 @@ function initPlayerUI() {
  */
 function removeThisFromStage() {
 	stage.removeChild(this);
-}
-
-function setPlayerInfo(unitName, playerName) {
-	//TODO: display player name and battle unit name
 }
 
 function setActionPoints(apRemaining) {
@@ -92,8 +90,26 @@ function setHeatDisplay(heat, heatGen, heatDiss) {
 	// TODO: Heat meter with indicators of heat that weapons will generate and where the heat penalties are
 }
 
+/**
+ * Gets the player weapon currently being displayed with the given ID
+ * @param id
+ * @returns
+ */
+function getPlayerWeaponById(id) {
+	for(var i=0; i<playerWeapons.length; i++) {
+		var chkWeapon = playerWeapons[i];
+		if(chkWeapon.id == id){
+			return chkWeapon;
+		}
+	}
+	
+	return null;
+}
+
 function updateWeaponsDisplay() {
-	var weapons = playerUnit.weapons;
+	// TODO: update weapons display
+	
+	/*var weapons = playerUnit.weapons;
 	playerWeapons = [];
 	
 	// TESTING
@@ -149,10 +165,8 @@ function updateWeaponsDisplay() {
 		i++;
 	});
 	
-	// TODO: update weapons display
-	
 	// update the initial cooldown display for each weapon
-	updateWeaponsCooldown();
+	updateWeaponsCooldown();*/
 	
 	/*$(".weapon").click(function() {
 		// TODO: move to events.js

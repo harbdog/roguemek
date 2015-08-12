@@ -95,10 +95,11 @@ var ACTION_BACKWARD = "backward";
 // Global variables used throughout the game
 var stage, canvas, queue, progress, fpsDisplay, hexMap, units;
 
-// Keep track of which unit belongs to the player
-var playerUnit;
-var playerWeapons;
-var playerTarget;
+// Keep track of which units belong to the player
+var playerUnits;
+
+// Keep track of targets for each unit belonging to the player
+var unitTargets;
 
 // Keep track of which unit's turn it currently is
 var turnUnit;
@@ -181,6 +182,10 @@ function loadGameElements() {
 		  units = {};
 		  hexMap = [];
 		  
+		  playerUnits = [];
+		  unitWeapons = {};
+		  unitTargets = {};
+		  
 		  numCols = data.board.numCols;
 		  numRows = data.board.numRows;
 		  
@@ -227,14 +232,9 @@ function loadGameElements() {
 				  unitInstance.crits = thisUnit.crits;
 				  unitInstance.weapons = initUnitWeapons(thisUnit);
 
-				  if(data.playerUnit == thisUnit.unit){
-					  playerUnit = unitInstance;
-				  }
-				  else{
-					  // only add mouse event listener for non-player unit
-					  unitDisplay.on("click", handleUnitClick);
-					  unitDisplay.mouseChildren = false;
-				  }
+				  // only add mouse event listener for non-player unit
+				  unitDisplay.on("click", handleUnitClick);
+				  unitDisplay.mouseChildren = false;
 				  
 				  if(data.turnUnit == thisUnit.unit){
 					  turnUnit = unitInstance;
@@ -248,6 +248,13 @@ function loadGameElements() {
 					  alreadyManifested[thisUnit.imageFile] = true;
 				  }
 			  }
+		  });
+		  
+		  // find out which units are controlled by the player
+		  $.each(data.playerUnits, function(index, unitId) {
+			 if(unitId != null && units[unitId] != null) {
+				 playerUnits.push(units[unitId]);
+			 } 
 		  });
 		  
 		  
@@ -478,13 +485,13 @@ function initUnitsDisplay() {
 			thisDisplayUnit.addChild(unitAlphaImg);
 		}
 		
-		if(playerUnit.id == thisUnit.id && playerUnit.id == turnUnit.id) {
+		/*if(playerUnit.id == thisUnit.id && playerUnit.id == turnUnit.id) {
 			// TODO: move these out to a method that can also be used at init
 			thisDisplayUnit.setControlsVisible(true);
 		}
 		else if(thisUnit.id == turnUnit.id) {
 			thisDisplayUnit.setOtherTurnVisible(true);
-		}
+		}*/
 		
 		stage.addChild(thisDisplayUnit);
 		
@@ -492,6 +499,33 @@ function initUnitsDisplay() {
 	});
 	
 	updateUnitDisplayObjects();
+}
+
+/**
+ * Returns true if a unit controlled by the player is currently having its turn
+ * @returns
+ */
+function isPlayerUnitTurn() {
+	return isPlayerUnit(turnUnit);
+}
+
+/**
+ * Return true if the given unit is controlled by the player
+ * @param unit
+ * @returns
+ */
+function isPlayerUnit(unit) {
+	if(unit == null || unit.id == null || playerUnits == null){return false;}
+	
+	var isPlayerUnit = false;
+	$.each(playerUnits, function(index, pUnit) {
+		if(pUnit.id == unit.id) {
+			isPlayerUnit = true;
+			return;
+		}
+	});
+	
+	return isPlayerUnit;
 }
 
 /**
@@ -587,22 +621,6 @@ function getLocationName(index){
 		}
 			
 	return locText;
-}
-
-/**
- * Gets the player weapon with the given ID
- * @param id
- * @returns
- */
-function getPlayerWeaponById(id) {
-	for(var i=0; i<playerWeapons.length; i++) {
-		var chkWeapon = playerWeapons[i];
-		if(chkWeapon.id == id){
-			return chkWeapon;
-		}
-	}
-	
-	return null;
 }
 
 /**

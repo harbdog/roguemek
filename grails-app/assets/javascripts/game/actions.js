@@ -22,9 +22,9 @@ function target() {
 			var t = units[data.target];
 			
 			// TODO: move clearing previous toHit for each weapon to its own method
-			$.each(playerUnit.weapons, function(key, w) {
+			/*$.each(playerUnit.weapons, function(key, w) {
 				w.toHit = null;
-			});
+			});*/
 			
 			// update the cooldown status of the weapons fired
 			$.each(data.weaponData, function(key, wData) {
@@ -77,7 +77,7 @@ function move(forward) {
 		// update heat display
 		setHeatDisplay(thisUnit.heat, false, false);
 		  
-		playerUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
+		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
 		//playerUnit.displayUnit.setControlsVisible(true);
 	});
 }
@@ -111,14 +111,14 @@ function rotate(rotation) {
 		// update heat display
 		setHeatDisplay(thisUnit.heat, false, false);
 		  
-		playerUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
+		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
 		//playerUnit.displayUnit.setControlsVisible(true);
 	});
 }
 
 function skip() {
-	playerUnit.displayUnit.setControlsVisible(false);
-	turnUnit.displayUnit.setOtherTurnVisible(false);
+	//playerUnit.displayUnit.setControlsVisible(false);
+	//turnUnit.displayUnit.setOtherTurnVisible(false);
 	handleActionJSON({
 		perform: "skip"
 	}, function( data ) {
@@ -289,19 +289,19 @@ function pollUpdate(updates) {
 				}
 				
 				if(tgtUnit != null) {
-					if(playerUnit.id == tgtUnit.id 
+					if(isPlayerUnit(tgtUnit)
 							&& (data.armorHit || data.internalsHit)) {
 						// update player armor/internals after being hit
-						setArmorDisplay(playerUnit.armor, playerUnit.internals);
+						setArmorDisplay(tgtUnit.armor, tgtUnit.internals);
 					}
-					else if(playerTarget.id == tgtUnit.id 
+					else if(isPlayerUnit(tgtUnit)
 							&& (data.armorHit || data.internalsHit)) {
 						// update target armor/internals after being hit
 						updateTargetDisplay();
 					}
 				}
 				
-				if(playerUnit.id == thisUnit.id) {
+				if(isPlayerUnit(thisUnit)) {
 					setActionPoints(thisUnit.apRemaining);
 					setJumpPoints(thisUnit.jpRemaining);
 					setHeatDisplay(thisUnit.heat, false, false);
@@ -312,8 +312,8 @@ function pollUpdate(updates) {
 				}
 			}
 			else if(data.turnUnit != null) {
-				// used to determine if the player turn just ended
-				var playerTurnEnded = (playerUnit.id == turnUnit.id);
+				// TODO: used to determine if the player turn just ended
+				/*var playerTurnEnded = (playerUnit.id == turnUnit.id);
 				
 				turnUnit = units[data.turnUnit];
 				
@@ -345,7 +345,7 @@ function pollUpdate(updates) {
 					setActionPoints(turnUnit.apRemaining);
 					setJumpPoints(turnUnit.jpRemaining);
 					setHeatDisplay(turnUnit.heat, false, turnUnit.heatDiss);
-					playerUnit.displayUnit.setControlsVisible(true);
+					//playerUnit.displayUnit.setControlsVisible(true);
 					
 					// update the weapons cooldown for the player weapons
 					updateWeaponsCooldown();
@@ -369,7 +369,7 @@ function pollUpdate(updates) {
 					// clear toHit of weapons
 					resetWeaponsToHit();
 					updateWeaponsDisplay();
-				}
+				}*/
 			}
 		});
 	});

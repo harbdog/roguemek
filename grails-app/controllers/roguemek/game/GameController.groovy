@@ -70,17 +70,8 @@ class GameController {
 			return
 		}
 		
-		//BattleUnit u = BattleUnit.read(session.unit)
-		// find any pilots and units the user controls
-		def playerPilots = []
+		// find any units the user controls
 		def playerUnits = []
-		
-		for(Pilot pilot in g.pilots) {
-			if(user.pilots.contains(pilot)) {
-				playerPilots.add(pilot.id)
-			}
-		}
-		
 		for(BattleUnit unit in g.units) {
 			Pilot pilot = unit.pilot
 			if(user.pilots.contains(pilot)) {
@@ -96,8 +87,6 @@ class GameController {
 		def elements = [
 			board: gameService.getHexMapRender(g),
 			units: gameService.getUnitsRender(g),
-			playerUnit: u.id,
-			playerPilots: playerPilots,
 			playerUnits: playerUnits,
 			turnUnit: turnUnit.id
 		]

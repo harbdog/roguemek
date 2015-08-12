@@ -58,14 +58,15 @@ function handleKeyPress(key) {
 			var thisWeapon = playerWeapons[weaponFired];
 			
 			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
-			if(playerUnit == turnUnit 
+			// TODO: handle firing weapons only from current player turn unit using isPlayerUnitTurn()
+			/*if(playerUnit == turnUnit 
 					&& !$('#'+thisWeapon.id).hasClass("cooldown") 
 					&& !$('#'+thisWeapon.id).hasClass("disabled")){
 				// only allow weapons to be selected that aren't on cooldown
 				$('#'+thisWeapon.id).toggleClass("selected");
 				
 				updateSelectedWeapons();
-			}
+			}*/
 		}
 	}
 	else if(key == "." || key == "space" || key == "enter"){
@@ -218,13 +219,12 @@ function handleComplete(event) {
 	
 	// Initialize the player UI
 	initPlayerUI();
-	setPlayerInfo(playerUnit.name+" "+playerUnit.chassisVariant, playerUnit.callsign);
 	
-	// Initialize player AP display
-	setActionPoints(playerUnit.apRemaining);
+	// TODO: Initialize current selected/player turn unit AP display
+	/*setActionPoints(playerUnit.apRemaining);
 	setJumpPoints(playerUnit.jpRemaining);
 	setHeatDisplay(playerUnit.heat);
-	setArmorDisplay(playerUnit.armor, playerUnit.internals);
+	setArmorDisplay(playerUnit.armor, playerUnit.internals);*/
 	
 	// TESTING weapons display
 	updateWeaponsDisplay();
@@ -319,7 +319,7 @@ function handleUnitClick(event) {
 	
 	console.log("clicked "+x+","+y+": "+unit); 
 	
-	if(playerUnit != unit) {
+	if(isPlayerUnit(unit)) {
 		playerTarget = unit;
 		updateTargetDisplay();
 		

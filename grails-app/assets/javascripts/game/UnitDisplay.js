@@ -137,6 +137,7 @@ c.animateUpdateDisplay = function(coords, heading) {
 		.call(function() {
 			// put the actual angle in after animated so it doesn't rotate the long way at a different angle
 			this.rotation = actualRot;
+			update = true;
 		});
 }
 c.showRotateControlCW = function(visible) {
