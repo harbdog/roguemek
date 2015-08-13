@@ -52,6 +52,13 @@ c.update = function() {
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	
+	if(isPlayerUnit(this.unit)) {
+		this.showPlayerUnitIndicator();
+	}
+	else{
+		this.showEnemyUnitIndicator();
+	}
+	
 	// TODO: cache the object
 	//this.cache(0,0, 0,0);
 }
@@ -137,6 +144,9 @@ c.animateUpdateDisplay = function(coords, heading) {
 		.call(function() {
 			// put the actual angle in after animated so it doesn't rotate the long way at a different angle
 			this.rotation = actualRot;
+			update = true;
+		})
+		.addEventListener("change", function() {
 			update = true;
 		});
 }
@@ -263,6 +273,24 @@ c.showBackwardControl = function(visible) {
 		createjs.Tween.get(this.backwardControl).to({alpha: 0}, 250);
 		this.removeChild(this.backwardControl);
 	}
+}
+
+c.showPlayerUnitIndicator = function() {
+	var indicator = new createjs.Shape();
+	
+	// TODO: allow customization of the player unit indicator color
+	indicator.graphics.setStrokeStyle(3, "round").beginStroke("#3399FF").drawCircle(0, 0, hexWidth/3).endStroke();
+	
+	this.addChildAt(indicator, 0);
+}
+
+c.showEnemyUnitIndicator = function() {
+var indicator = new createjs.Shape();
+	
+	// TODO: allow customization of the enemy unit indicator color
+	indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF3737").drawCircle(0, 0, hexWidth/3).endStroke();
+	
+	this.addChildAt(indicator, 0);
 }
 
 c.doCache = function(startX, startY, endX, endY) {

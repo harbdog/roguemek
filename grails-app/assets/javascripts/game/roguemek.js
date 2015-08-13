@@ -502,33 +502,6 @@ function initUnitsDisplay() {
 }
 
 /**
- * Returns true if a unit controlled by the player is currently having its turn
- * @returns
- */
-function isPlayerUnitTurn() {
-	return isPlayerUnit(turnUnit);
-}
-
-/**
- * Return true if the given unit is controlled by the player
- * @param unit
- * @returns
- */
-function isPlayerUnit(unit) {
-	if(unit == null || unit.id == null || playerUnits == null){return false;}
-	
-	var isPlayerUnit = false;
-	$.each(playerUnits, function(index, pUnit) {
-		if(pUnit.id == unit.id) {
-			isPlayerUnit = true;
-			return;
-		}
-	});
-	
-	return isPlayerUnit;
-}
-
-/**
  * Runs the update call on each UnitDisplay object
  */
 function updateUnitDisplayObjects() {
@@ -581,6 +554,36 @@ function getLocationText(index){
 	}
 		
 	return locText;
+}
+
+/**
+ * Returns true if a unit controlled by the player is currently having its turn
+ * @returns
+ */
+function isPlayerUnitTurn() {
+	return isPlayerUnit(turnUnit);
+}
+
+/**
+ * Return true if the given unit is controlled by the player
+ * @param unit
+ * @returns
+ */
+function isPlayerUnit(unit) {
+	if(unit == null || unit.id == null 
+			|| playerUnits == null || playerUnits.length == 0){
+		return false;
+	}
+	
+	var isPlayerUnit = false;
+	$.each(playerUnits, function(index, pUnit) {
+		if(pUnit.id == unit.id) {
+			isPlayerUnit = true;
+			return;
+		}
+	});
+	
+	return isPlayerUnit;
 }
 
 // returns full name of the hit location index

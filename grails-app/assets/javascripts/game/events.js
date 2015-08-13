@@ -319,7 +319,7 @@ function handleUnitClick(event) {
 	
 	console.log("clicked "+x+","+y+": "+unit); 
 	
-	if(isPlayerUnit(unit)) {
+	if(!isPlayerUnit(unit)) {
 		playerTarget = unit;
 		updateTargetDisplay();
 		
