@@ -176,6 +176,20 @@ class BootStrap {
 			log.info('Initialized battle mech '+battleMech.mech.name)
 		}
 		
+		// and a 2nd mech for the admin pilot
+		def battleMechB = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Assassin"), x: 1, y: 0, heading: 3, rgb: [255, 105, 105])
+		if(!battleMechB.validate()) {
+			log.error("Errors with battle mech "+battleMechB.mech?.name+":\n")
+			battleMechB.errors.allErrors.each {
+				log.error(it)
+			}
+		}
+		else {
+			battleMechB.save flush:true
+		
+			log.info('Initialized battle mech '+battleMechB.mech.name)
+		}
+		
 		// and another BattleMech
 		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Warhammer"), x: 4, y: 4, heading: 5, rgb: [0, 0, 255])
 		if(!battleMech2.validate()) {
@@ -204,10 +218,10 @@ class BootStrap {
 			log.info('Initialized battle mech '+battleMech3.mech.name)
 		}
 		
-		assert BattleMech.count() == 3
+		assert BattleMech.count() == 4
 		
 		// Initialize a sample Game
-		Game sampleGame = new Game(ownerUser: adminUser, pilots: [adminPilot, testPilot, samplePilot], units: [battleMech, battleMech2], board: boardMap)
+		Game sampleGame = new Game(ownerUser: adminUser, pilots: [adminPilot, testPilot, samplePilot], units: [battleMech, battleMechB, battleMech2], board: boardMap)
 		
 		if(!sampleGame.validate()) {
 			log.error("Errors with game:\n")

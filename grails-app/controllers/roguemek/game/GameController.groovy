@@ -74,15 +74,15 @@ class GameController {
 		def playerUnits = []
 		for(BattleUnit unit in g.units) {
 			Pilot pilot = unit.pilot
-			if(user.pilots.contains(pilot)) {
-				playerUnits.add(unit.id)
+			
+			for(Pilot p in user.pilots) {
+				if(pilot.id == p.id) {
+					playerUnits.add(unit.id)
+				}
 			}
 		}
 		
 		BattleUnit turnUnit = g.getTurnUnit()
-		
-		// TODO: support more than one pilot/units per user
-		BattleUnit u = g.getPrimaryUnitForUser(user)
 		
 		def elements = [
 			board: gameService.getHexMapRender(g),
