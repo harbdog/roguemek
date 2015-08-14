@@ -306,7 +306,7 @@ c.showTurnDisplay = function(show) {
 		
 		createjs.Tween.get(turnDisplay, { loop: true})
 			.to({alpha: 0.75, scaleX: 2.5, scaleY: 2.5}, 750)
-			.to({alpha: 0.25, scaleX: 4.0, scaleY: 4.0}, 750)
+			.to({alpha: 0.25, scaleX: 4.0, scaleY: 4.0}, 500)
 			.addEventListener("change", function() {
 				update = true;
 			});
