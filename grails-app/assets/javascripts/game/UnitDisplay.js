@@ -52,12 +52,7 @@ c.update = function() {
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	
-	if(isPlayerUnit(this.unit)) {
-		this.showPlayerUnitIndicator();
-	}
-	else{
-		this.showEnemyUnitIndicator();
-	}
+	this.showUnitIndicator();
 	
 	// TODO: cache the object
 	//this.cache(0,0, 0,0);
@@ -275,22 +270,50 @@ c.showBackwardControl = function(visible) {
 	}
 }
 
-c.showPlayerUnitIndicator = function() {
+c.showUnitIndicator = function() {
 	var indicator = new createjs.Shape();
 	
 	// TODO: allow customization of the player unit indicator color
-	indicator.graphics.setStrokeStyle(3, "round").beginStroke("#3399FF").drawCircle(0, 0, hexWidth/3).endStroke();
+	if(isPlayerUnit(this.unit)) {
+		indicator.graphics.setStrokeStyle(3, "round").beginStroke("#3399FF").drawCircle(0, 0, hexWidth/3-2).endStroke();
+	}
+	else{
+		//indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF3737").drawCircle(0, 0, hexWidth/3-2).endStroke();
+		indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF3737").drawPolyStar(0, 0, hexWidth/3, 4, 0.6, -90).endStroke();
+	}
 	
 	this.addChildAt(indicator, 0);
 }
 
-c.showEnemyUnitIndicator = function() {
-var indicator = new createjs.Shape();
+c.showTurnDisplay = function(show) {
+	if(this.getChildAt(0) != null) {
+		// TODO store these Shape objects or their index in a better way
+		createjs.Tween.removeTweens(this.getChildAt(0));
+		this.removeChildAt(0);
+	}
 	
-	// TODO: allow customization of the enemy unit indicator color
-	indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF3737").drawCircle(0, 0, hexWidth/3).endStroke();
-	
-	this.addChildAt(indicator, 0);
+	if(show) {
+		var turnDisplay = new createjs.Shape();
+		
+		if(isPlayerUnit(this.unit)) {
+			turnDisplay.graphics.setStrokeStyle(2, "round").beginStroke("#3399FF").drawCircle(0, 0 ,hexWidth/10).endStroke();
+		}
+		else {
+			turnDisplay.graphics.setStrokeStyle(2, "round").beginStroke("#FF3737").drawPolyStar(0, 0, hexWidth/10, 4, 0.6, -90).endStroke();
+		}
+		
+		this.addChildAt(turnDisplay, 0);
+		
+		createjs.Tween.get(turnDisplay, { loop: true})
+			.to({alpha: 0.75, scaleX: 2.5, scaleY: 2.5}, 750)
+			.to({alpha: 0.25, scaleX: 4.0, scaleY: 4.0}, 750)
+			.addEventListener("change", function() {
+				update = true;
+			});
+	}
+	else{
+		this.showUnitIndicator();
+	}
 }
 
 c.doCache = function(startX, startY, endX, endY) {

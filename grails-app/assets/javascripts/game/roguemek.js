@@ -215,7 +215,7 @@ function loadGameElements() {
 		  // create each unit display
 		  $.each(data.units, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  // TODO: make Unit and UnitDisplay behave like the new Hex and HexDisplay object models
+				  // TODO: separate Unit and UnitDisplay init behavior like the new Hex and HexDisplay object models
 				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.image, thisUnit.imageFile, thisUnit.rgb);
 				  var unitInstance = new Unit(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, unitDisplay);
 				  unitDisplay.setUnit(unitInstance);
@@ -238,6 +238,7 @@ function loadGameElements() {
 				  
 				  if(data.turnUnit == thisUnit.unit){
 					  turnUnit = unitInstance;
+					  turnUnit.getUnitDisplay().showTurnDisplay(true);
 				  }
 				  
 				  // add to unit list

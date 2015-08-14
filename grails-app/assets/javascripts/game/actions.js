@@ -312,6 +312,21 @@ function pollUpdate(updates) {
 				}
 			}
 			else if(data.turnUnit != null) {
+				
+				var prevTurnUnit = turnUnit;
+				
+				turnUnit = units[data.turnUnit];
+				
+				if(prevTurnUnit != null && prevTurnUnit.id != turnUnit.id) {
+					var prevUnitDisplay = prevTurnUnit.getUnitDisplay();
+					var turnUnitDisplay = turnUnit.getUnitDisplay();
+					
+					prevUnitDisplay.showTurnDisplay(false);
+					turnUnitDisplay.showTurnDisplay(true);
+					
+					update = true;
+				}
+				
 				// TODO: used to determine if the player turn just ended
 				/*var playerTurnEnded = (playerUnit.id == turnUnit.id);
 				
