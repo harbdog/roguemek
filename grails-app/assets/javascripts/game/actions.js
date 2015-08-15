@@ -327,6 +327,8 @@ function pollUpdate(updates) {
 					update = true;
 				}
 				
+				updatePlayerUnitListDisplay();
+				
 				// TODO: used to determine if the player turn just ended
 				/*var playerTurnEnded = (playerUnit.id == turnUnit.id);
 				

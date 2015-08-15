@@ -94,7 +94,7 @@ var ACTION_BACKWARD = "backward";
 
 // Global variables used throughout the game
 var rootStage, stage, overlay, canvas;
-var unitListDisplay, unitTurnDisplay;
+var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray;
 var queue, progress;
 var fpsDisplay;
 var hexMap, units;
@@ -131,7 +131,7 @@ function initGame(){
 	rootStage.addChild(overlay);
 	
 	// apply Touch capability for touch screens
-	createjs.Touch.enable(stage);
+	createjs.Touch.enable(rootStage);
 	
 	// add resizing event
 	window.addEventListener('resize', resize_canvas, false);
@@ -510,7 +510,7 @@ function initUnitsDisplay() {
 	
 	updateUnitDisplayObjects();
 	
-	updatePlayerUnitListDisplay();
+	initPlayerUnitListDisplay();
 }
 
 /**
@@ -528,12 +528,14 @@ function updateUnitDisplayObjects() {
 }
 
 /**
- * Shows/updates the player unit display list
+ * Shows the player unit display list
  */
-function updatePlayerUnitListDisplay() {
+function initPlayerUnitListDisplay() {
 	if(unitListDisplay == null) {
 		unitListDisplay = new createjs.Container();
 		overlay.addChild(unitListDisplay);
+		
+		unitListDisplayArray = [];
 	}
 	
 	$.each(playerUnits, function(index, unit) {
@@ -549,14 +551,30 @@ function updatePlayerUnitListDisplay() {
 			image = queue.getResult(imgStr);
 		}
 		
-		var scale = 0.5;
-		
 		// create container as background for the display
-		var listUnit = new ListUnitDisplay(image);
-		listUnit.update();
-		listUnit.x = 0;
-		listUnit.y = rootStage.canvas.height - (index+1) * image.height * scale;
+		var listUnit = new ListUnitDisplay(thisDisplayUnit);
+		listUnit.init();
+		listUnit.x = 1;
+		listUnit.y = rootStage.canvas.height - (index+1) * listUnit.image.height * listUnit.scale;
 		unitListDisplay.addChild(listUnit);
+		
+		unitListDisplayArray.push(listUnit);
+	});
+}
+
+/**
+ * Updates the player unit display list
+ */
+function updatePlayerUnitListDisplay() {
+	if(unitListDisplayArray == null) return;
+	
+	$.each(unitListDisplayArray, function(index, listUnit) {
+		// update the position in case the resize was called
+		listUnit.x = 1;
+		listUnit.y = rootStage.canvas.height - (index+1) * listUnit.image.height * listUnit.scale;
+		
+		// update the selected status in case its the unit's turn
+		listUnit.setSelected(isTurnUnit(listUnit.unit));
 	});
 }
 

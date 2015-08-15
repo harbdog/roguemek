@@ -27,6 +27,9 @@ var c = createjs.extend(UnitDisplay, createjs.Container);
 c.setUnit = function(unit) {
 	this.unit = unit;
 }
+c.getUnit = function() {
+	return this.unit;
+}
 
 c.getImageString = function() {
 	return this.imageStr;
@@ -289,7 +292,7 @@ c.updateUnitIndicator = function() {
 			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke("#3399FF").drawCircle(0, 0, hexWidth/3-2).endStroke();
 		}
 		else{
-			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF3737").drawPolyStar(0, 0, hexWidth/3, 4, 0.5, -90).endStroke();
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF0000").drawPolyStar(0, 0, hexWidth/3, 4, 0.5, -90).endStroke();
 		}
 		
 		this.addChildAt(this.indicator, 0);
@@ -304,7 +307,7 @@ c.showTurnDisplay = function(show) {
 		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke("#3399FF").drawCircle(0, 0 ,hexWidth/10).endStroke();
 	}
 	else {
-		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke("#FF3737").drawPolyStar(0, 0, hexWidth/8, 4, 0.5, -90).endStroke();
+		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke("#FF0000").drawPolyStar(0, 0, hexWidth/8, 4, 0.5, -90).endStroke();
 	}
 	
 	this.addChildAt(this.indicator, 0);

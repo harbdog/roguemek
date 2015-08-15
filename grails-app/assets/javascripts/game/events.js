@@ -104,6 +104,12 @@ function handleKeyPress(key) {
 		updateUnitDisplayObjects();
 		update = true;
 	}
+	else if(key == "home"){
+		// toggle fullscreen mode
+		if (fullScreenApi.supportsFullScreen) {
+			fullScreenApi.requestFullScreen(canvas);
+		}
+	}
 	else {
 		console.log("Unbound key pressed: " + key);
 	}
@@ -138,6 +144,9 @@ function resize_canvas(){
 		
 		// update displayable hexes
 		updateHexMapDisplay();
+		
+		// update the UI elements that need to change position
+		updatePlayerUnitListDisplay();
 		
 		update = true;
 	}
