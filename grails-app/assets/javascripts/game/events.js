@@ -252,7 +252,9 @@ function handleComplete(event) {
     fpsDisplay.y = -rootStage.y;
     rootStage.addChild(fpsDisplay);
     
-    if (fullScreenApi.supportsFullScreen) {
+    // only show the fullscreen button on mobile devices browsers
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    		&& fullScreenApi.supportsFullScreen) {
     	// TODO: find a better place for the fullscreen button
 		var fsButton = new createjs.Container();
 		rootStage.addChild(fsButton);
