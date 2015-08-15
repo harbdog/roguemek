@@ -105,13 +105,20 @@ function handleKeyPress(key) {
 		update = true;
 	}
 	else if(key == "home"){
-		// toggle fullscreen mode
-		if (fullScreenApi.supportsFullScreen) {
-			fullScreenApi.requestFullScreen(canvas);
-		}
+		// enter fullscreen mode
+		goFullScreen();
 	}
 	else {
 		console.log("Unbound key pressed: " + key);
+	}
+}
+
+/**
+ * Enables fullscreen mode, if supported
+ */
+function goFullScreen(){
+	if (fullScreenApi.supportsFullScreen) {
+		fullScreenApi.requestFullScreen(canvas);
 	}
 }
 
@@ -244,6 +251,24 @@ function handleComplete(event) {
 	fpsDisplay.x = -rootStage.x - 10;
     fpsDisplay.y = -rootStage.y;
     rootStage.addChild(fpsDisplay);
+    
+    if (fullScreenApi.supportsFullScreen) {
+    	// TODO: find a better place for the fullscreen button
+		var fsButton = new createjs.Container();
+		rootStage.addChild(fsButton);
+		
+		var fsBackground = new createjs.Shape();
+		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0,100,25);
+		fsButton.addChild(fsBackground);
+		
+		var fsText = new createjs.Text("Go Fullscreen", "12px Arial", "white");
+		fsText.x = (100 - fsText.getMeasuredWidth())/2;
+		fsText.y = (25 - fsText.getMeasuredHeight())/2;
+		fsButton.addChild(fsText);
+		
+		fsButton.on("click", goFullScreen);
+		fsButton.mouseChildren = false;
+    }
     
     update = true;
     firstUpdate = false;
