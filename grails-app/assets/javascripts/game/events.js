@@ -349,15 +349,44 @@ function handleUnitClick(event) {
 	var x = event.stageX;
 	var y = event.stageY;
 	var unitDisplay = event.target;
-	if(unitDisplay != null){
-		var unit = units[unitDisplay.id];
-	}
+	var unit = unitDisplay.getUnit();
 	
 	console.log("clicked "+x+","+y+": "+unit); 
 	
 	if(!isPlayerUnit(unit)) {
 		playerTarget = unit;
-		updateTargetDisplay();
+		
+		// TODO: move target bracket show/hide/update to function
+		// show target bracket on top of the target
+		var scale = 0.8 * hexScale;
+		if(targetBracket == null) {
+			targetBracket = new createjs.Shape();
+			targetBracket.graphics.setStrokeStyle(5, "square").beginStroke("#FF0000")
+					.moveTo(0, 0).lineTo(hexWidth/6, 0)
+					.moveTo(0, 0).lineTo(0, hexHeight/6)
+					.moveTo(0, hexHeight).lineTo(hexWidth/6, hexHeight)
+					.moveTo(0, hexHeight).lineTo(0, hexHeight-hexHeight/6)
+					.moveTo(hexWidth, 0).lineTo(hexWidth-hexWidth/6, 0)
+					.moveTo(hexWidth, 0).lineTo(hexWidth, hexHeight/6)
+					.moveTo(hexWidth, hexHeight).lineTo(hexWidth-hexWidth/6, hexHeight)
+					.moveTo(hexWidth, hexHeight).lineTo(hexWidth, hexHeight-hexHeight/6);
+			targetBracket.scaleX = scale;
+			targetBracket.scaleY = scale;
+			stage.addChild(targetBracket);
+		}
+		
+		targetBracket.alpha = 1.0;
+		targetBracket.x = unitDisplay.x - scale*hexWidth/2;
+		targetBracket.y = unitDisplay.y - scale*hexHeight/2;
+		
+		createjs.Tween.removeTweens(targetBracket);
+		createjs.Tween.get(targetBracket, { loop: true})
+				.to({alpha: 0.5}, 750)
+				.to({alpha: 1.0}, 750)
+				.addEventListener("change", function() {
+					update = true;
+				});
+			
 		
 		target();
 	}

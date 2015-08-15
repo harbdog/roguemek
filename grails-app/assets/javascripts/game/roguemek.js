@@ -539,8 +539,6 @@ function initPlayerUnitListDisplay() {
 	}
 	
 	$.each(playerUnits, function(index, unit) {
-		console.log(index+": "+unit);
-		
 		var thisDisplayUnit = unit.getUnitDisplay();
 		var image = null;
 		if(thisDisplayUnit.getImage() != null) {

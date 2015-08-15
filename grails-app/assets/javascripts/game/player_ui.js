@@ -27,6 +27,8 @@ var elevationHeight = defElevationHeight * hexScale;
 //variable to show level (elevation/depth/etc.)
 var showLevels = true;
 
+var targetBracket;
+
 var apDisplaying, jpDisplaying;
 
 var playerWeapons;
@@ -96,12 +98,12 @@ function setHeatDisplay(heat, heatGen, heatDiss) {
  * @returns
  */
 function getPlayerWeaponById(id) {
-	for(var i=0; i<playerWeapons.length; i++) {
+	/*for(var i=0; i<playerWeapons.length; i++) {
 		var chkWeapon = playerWeapons[i];
 		if(chkWeapon.id == id){
 			return chkWeapon;
 		}
-	}
+	}*/
 	
 	return null;
 }
