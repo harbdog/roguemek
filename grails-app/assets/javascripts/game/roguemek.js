@@ -3,50 +3,7 @@
 //= require_self
 //= require_tree .
 
-function isXOdd(X) {
-	return (X & 1 == 1);
-}
-
-/**
- * Returns the x parameter of the coordinates in the direction
- *
- * based off of the same method from MegaMek (Coords.java)
- */
-function xInDirection(x, y, direction) {
-	 switch (direction) {
-		 case 1 :
-		 case 2 :
-			 return x + 1;
-		 case 4 :
-		 case 5 :
-			 return x - 1;
-		 default :
-			 return x;
-	 }
-}
-
-/**
- * Returns the y parameter of the coordinates in the direction
- *
- * based off of the same method from MegaMek (Coords.java)
- */
-function yInDirection(x, y, direction) {
-	switch (direction) {
-		case 0 : 
-			return y - 1;
-		case 1 : 
-		case 5 :
-			return y - ((x + 1) & 1);
-		case 2 : 
-		case 4 : 
-			return y + (x & 1);
-		case 3 : 
-			return y + 1;
-		default :
-			return y;
-	}
-}
-
+"use strict";
 
 // Create HexMap variables 
 var numCols = 0;
@@ -102,8 +59,8 @@ var hexMap, units;
 // Keep track of which units belong to the player
 var playerUnits;
 
-// Keep track of targets for each unit belonging to the player
-var unitTargets;
+// Keep track of targets and weapons for each unit belonging to the player
+var unitTargets, unitWeapons;
 
 // Keep track of which unit's turn it currently is
 var turnUnit;
@@ -171,6 +128,51 @@ function initGame(){
 	// TODO: make target FPS a customizable value
 	createjs.Ticker.on("tick", tick);
 	createjs.Ticker.setFPS(60);
+}
+
+
+function isXOdd(X) {
+	return (X & 1 == 1);
+}
+
+/**
+ * Returns the x parameter of the coordinates in the direction
+ *
+ * based off of the same method from MegaMek (Coords.java)
+ */
+function xInDirection(x, y, direction) {
+	 switch (direction) {
+		 case 1 :
+		 case 2 :
+			 return x + 1;
+		 case 4 :
+		 case 5 :
+			 return x - 1;
+		 default :
+			 return x;
+	 }
+}
+
+/**
+ * Returns the y parameter of the coordinates in the direction
+ *
+ * based off of the same method from MegaMek (Coords.java)
+ */
+function yInDirection(x, y, direction) {
+	switch (direction) {
+		case 0 : 
+			return y - 1;
+		case 1 : 
+		case 5 :
+			return y - ((x + 1) & 1);
+		case 2 : 
+		case 4 : 
+			return y + (x & 1);
+		case 3 : 
+			return y + 1;
+		default :
+			return y;
+	}
 }
 
 /**
@@ -659,6 +661,21 @@ function isTurnUnit(unit) {
 	}
 	
 	return (unit.id == turnUnit.id);
+}
+
+
+/**
+ * Sets the given unit's target to target
+ * @param unit
+ * @param target
+ */
+function setUnitTarget(unit, target) {
+	if(unit == null) return;
+	unitTargets[unit.id] = target;
+}
+function getUnitTarget(unit) {
+	if(unit == null) return;
+	return unitTargets[unit.id];
 }
 
 // returns full name of the hit location index

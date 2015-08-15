@@ -2,6 +2,7 @@
  * Class for displaying each Hex
  */
 (function() {
+"use strict";
 
 var lightgray = "#C0C0C0";
 var gray = "#808080";

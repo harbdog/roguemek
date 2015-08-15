@@ -2,7 +2,8 @@
  * Generates a laser beam with some effects
  */
 (function() {
-	
+"use strict";
+
 function Laser(config) {
 	this.Shape_constructor();
 	

@@ -1,8 +1,9 @@
 /**
  * actions.js - Handles all JSON actions for the game
  */
+"use strict";
 
-function target() {
+function target(playerTarget) {
 	if(playerTarget == null) return;
 	
 	var target_id = playerTarget.id;

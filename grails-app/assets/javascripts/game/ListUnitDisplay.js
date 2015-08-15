@@ -2,6 +2,7 @@
  * Class for displaying each Unit in a displayed list
  */
 (function() {
+"use strict";
 
 function ListUnitDisplay(unitDisplay) {
 	this.Container_constructor();

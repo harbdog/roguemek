@@ -1,6 +1,8 @@
 /**
  * events.js - Handles all events for the game
  */
+"use strict";
+
 function tick(event) {
 	
 	if(fpsDisplay != null) {
@@ -240,10 +242,8 @@ function handleComplete(event) {
 	/*setActionPoints(playerUnit.apRemaining);
 	setJumpPoints(playerUnit.jpRemaining);
 	setHeatDisplay(playerUnit.heat);
-	setArmorDisplay(playerUnit.armor, playerUnit.internals);*/
-	
-	// TESTING weapons display
-	updateWeaponsDisplay();
+	setArmorDisplay(playerUnit.armor, playerUnit.internals);
+	updateWeaponsDisplay();*/
 	
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");
@@ -348,47 +348,25 @@ function handleHexClick(event) {
 function handleUnitClick(event) {
 	var x = event.stageX;
 	var y = event.stageY;
-	var unitDisplay = event.target;
-	var unit = unitDisplay.getUnit();
+	var targetUnitDisplay = event.target;
+	var targetUnit = targetUnitDisplay.getUnit();
 	
-	console.log("clicked "+x+","+y+": "+unit); 
+	console.log("clicked "+x+","+y+": "+targetUnit); 
 	
-	if(!isPlayerUnit(unit)) {
-		playerTarget = unit;
+	if(isPlayerUnitTurn() && !isPlayerUnit(targetUnit)) {
+		var prevTargetUnit = getUnitTarget(turnUnit);
+		setUnitTarget(turnUnit, targetUnit);
 		
-		// TODO: move target bracket show/hide/update to function
-		// show target bracket on top of the target
-		var scale = 0.8 * hexScale;
-		if(targetBracket == null) {
-			targetBracket = new createjs.Shape();
-			targetBracket.graphics.setStrokeStyle(5, "square").beginStroke("#FF0000")
-					.moveTo(0, 0).lineTo(hexWidth/6, 0)
-					.moveTo(0, 0).lineTo(0, hexHeight/6)
-					.moveTo(0, hexHeight).lineTo(hexWidth/6, hexHeight)
-					.moveTo(0, hexHeight).lineTo(0, hexHeight-hexHeight/6)
-					.moveTo(hexWidth, 0).lineTo(hexWidth-hexWidth/6, 0)
-					.moveTo(hexWidth, 0).lineTo(hexWidth, hexHeight/6)
-					.moveTo(hexWidth, hexHeight).lineTo(hexWidth-hexWidth/6, hexHeight)
-					.moveTo(hexWidth, hexHeight).lineTo(hexWidth, hexHeight-hexHeight/6);
-			targetBracket.scaleX = scale;
-			targetBracket.scaleY = scale;
-			stage.addChild(targetBracket);
+		setPlayerTarget(targetUnit);
+		
+		// show the unit indicator on the previous target, hide on the new target
+		if(prevTargetUnit != null && prevTargetUnit.getUnitDisplay()!= null
+				&& prevTargetUnit.id != targetUnit.id) {
+			prevTargetUnit.getUnitDisplay().setUnitIndicatorVisible(true);
 		}
+		targetUnitDisplay.setUnitIndicatorVisible(false);
 		
-		targetBracket.alpha = 1.0;
-		targetBracket.x = unitDisplay.x - scale*hexWidth/2;
-		targetBracket.y = unitDisplay.y - scale*hexHeight/2;
-		
-		createjs.Tween.removeTweens(targetBracket);
-		createjs.Tween.get(targetBracket, { loop: true})
-				.to({alpha: 0.5}, 750)
-				.to({alpha: 1.0}, 750)
-				.addEventListener("change", function() {
-					update = true;
-				});
-			
-		
-		target();
+		target(targetUnit);
 	}
 }
 
@@ -399,6 +377,7 @@ function handleTargetCloseClick(event) {
 }
 
 //Using jQuery add the event handlers after the DOM is loaded
+var specialKeyCodes = [8, 9, 13, 16, 17, 18, 27, 32, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46];
 function addEventHandlers() {
 	// add event handler for key presses
 	document.onkeypress = function(e){
@@ -410,7 +389,6 @@ function addEventHandlers() {
 		e.preventDefault();
 	};
 	
-	specialKeyCodes = [8, 9, 13, 16, 17, 18, 27, 32, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46];
 	window.addEventListener("keydown", function(e) {
 		// handle special keys which don't have char codes, such as space and arrow keys
 		if(specialKeyCodes.indexOf(e.keyCode) > -1) {

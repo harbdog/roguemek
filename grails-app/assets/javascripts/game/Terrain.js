@@ -2,7 +2,8 @@
  * Class for displaying each Terrain
  */
 (function() {
-	
+"use strict";
+
 function Terrain(type, level, exits, terrainFactor) {
 	this.type = type;
 	this.level = level;

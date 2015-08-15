@@ -7,7 +7,8 @@
  *
 **************************************************************/
 (function() {
-	
+"use strict";
+
 function Lightning(config) {
 	this.Shape_constructor();
 	

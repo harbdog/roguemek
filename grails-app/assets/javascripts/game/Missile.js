@@ -2,7 +2,8 @@
  * Generates a missile with some effects
  */
 (function() {
-	
+"use strict";
+
 function Missile(x, y, angle, config) {
 	this.Container_constructor();
 	

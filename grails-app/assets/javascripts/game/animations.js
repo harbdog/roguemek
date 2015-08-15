@@ -1,6 +1,7 @@
 /**
  * animations.js - Animation related methods for the UI
  */
+"use strict";
 
 // Projectile speeds in pixels per 1000 ms
 var PROJECTILE_SPEED_LRM = 600;

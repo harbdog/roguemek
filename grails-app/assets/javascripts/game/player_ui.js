@@ -2,6 +2,8 @@
  * player_ui.js - Methods that handle the canvas player UI
  */
 
+"use strict";
+
 // Close enough...
 var PI = 3.14;
 
@@ -38,10 +40,57 @@ function initPlayerUI() {
 }
 
 /**
- * Intended to be called back from Tweens when the object is ready to remove itself from teh stage
+ * 
+ * @param unit
  */
-function removeThisFromStage() {
-	stage.removeChild(this);
+function setPlayerTarget(unit) {
+	if(unit == null) {
+		if(targetBracket != null) {
+			targetBracket.visible = false;
+			createjs.Tween.removeTweens(targetBracket);
+		}
+		return;
+	}
+	
+	// show target bracket on top of the target
+	var scale = 0.8 * hexScale;
+	var unitDisplay = unit.getUnitDisplay();
+	
+	if(targetBracket == null) {
+		targetBracket = new createjs.Shape();
+		targetBracket.graphics.setStrokeStyle(5, "square").beginStroke("#FF0000")
+				.moveTo(0, 0).lineTo(hexWidth/6, 0)
+				.moveTo(0, 0).lineTo(0, hexHeight/6)
+				//.moveTo(0, 0).lineTo(-hexWidth/20, -hexHeight/20)
+				
+				.moveTo(0, hexHeight).lineTo(hexWidth/6, hexHeight)
+				.moveTo(0, hexHeight).lineTo(0, hexHeight-hexHeight/6)
+				//.moveTo(0, hexHeight).lineTo(-hexWidth/20, hexHeight+hexHeight/20)
+				
+				.moveTo(hexWidth, 0).lineTo(hexWidth-hexWidth/6, 0)
+				.moveTo(hexWidth, 0).lineTo(hexWidth, hexHeight/6)
+				//.moveTo(hexWidth, 0).lineTo(hexWidth+hexWidth/20, -hexHeight/20)
+				
+				.moveTo(hexWidth, hexHeight).lineTo(hexWidth-hexWidth/6, hexHeight)
+				.moveTo(hexWidth, hexHeight).lineTo(hexWidth, hexHeight-hexHeight/6)
+				//.moveTo(hexWidth, hexHeight).lineTo(hexWidth+hexWidth/20, hexHeight+hexHeight/20);
+		targetBracket.scaleX = scale;
+		targetBracket.scaleY = scale;
+		stage.addChild(targetBracket);
+	}
+	
+	targetBracket.visible = true;
+	targetBracket.alpha = 1.0;
+	targetBracket.x = unitDisplay.x - scale*hexWidth/2;
+	targetBracket.y = unitDisplay.y - scale*hexHeight/2;
+	
+	createjs.Tween.removeTweens(targetBracket);
+	createjs.Tween.get(targetBracket, { loop: true})
+			.to({alpha: 0.35}, 750)
+			.to({alpha: 1.0}, 750)
+			.addEventListener("change", function() {
+				update = true;
+			});
 }
 
 function setActionPoints(apRemaining) {

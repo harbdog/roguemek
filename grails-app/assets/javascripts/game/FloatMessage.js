@@ -2,6 +2,7 @@
  * Generates a floating, moving message
  */
 (function() {
+"use strict";
 
 var FLOAT_MESSAGE_DELAY = 300;	// delay time (ms) between consecutive floating messages
 

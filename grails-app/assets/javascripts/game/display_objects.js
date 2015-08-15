@@ -1,6 +1,7 @@
 /**
  * display_objects.js - Definitions for displayable object classes and their methods
  */
+"use strict";
 
 /**
  * Class for string an x, y point on the display

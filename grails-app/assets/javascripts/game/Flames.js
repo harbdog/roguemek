@@ -3,7 +3,8 @@
  * http://thecodeplayer.com/walkthrough/html5-canvas-experiment-a-cool-flame-fire-effect-using-particles
  */
 (function() {
-	
+"use strict";
+
 function Flames(x, y, angle) {
 	this.Shape_constructor();
 	

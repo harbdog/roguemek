@@ -1,6 +1,7 @@
 /**
  * display_objects.js - Definitions for game model related object classes and their methods
  */
+"use strict";
 
 // Weapon classifications
 var WEAPON_MELEE = "Melee";

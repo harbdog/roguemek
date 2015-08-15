@@ -2,7 +2,8 @@
  * Class for displaying each Projectile
  */
 (function() {
-	
+"use strict";
+
 function Projectile(x, y) {
 	this.Shape_constructor();
 	

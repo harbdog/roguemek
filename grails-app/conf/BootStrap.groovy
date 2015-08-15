@@ -205,7 +205,7 @@ class BootStrap {
 		}
 		
 		// yet another BattleMech
-		def battleMech3 = new BattleMech(pilot: samplePilot, mech: Mech.findByName("Zeus"), x: 8, y: 8, heading: 5, rgb: [0, 255, 0])
+		def battleMech3 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Blackjack"), x: 5, y: 6, heading: 4, rgb: [0, 255, 0])
 		if(!battleMech3.validate()) {
 			log.error("Errors with battle mech "+battleMech3.mech?.name+":\n")
 			battleMech3.errors.allErrors.each {
@@ -221,7 +221,7 @@ class BootStrap {
 		assert BattleMech.count() == 4
 		
 		// Initialize a sample Game
-		Game sampleGame = new Game(ownerUser: adminUser, pilots: [adminPilot, testPilot, samplePilot], units: [battleMech, battleMechB, battleMech2], board: boardMap)
+		Game sampleGame = new Game(ownerUser: adminUser, pilots: [adminPilot, testPilot, samplePilot], units: [battleMech, battleMechB, battleMech2, battleMech3], board: boardMap)
 		
 		if(!sampleGame.validate()) {
 			log.error("Errors with game:\n")

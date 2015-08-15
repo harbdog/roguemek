@@ -2,6 +2,7 @@
  * Class for displaying each Unit
  */
 (function() {
+"use strict";
 
 function UnitDisplay(id, imageArr, imageStr, rgb) {
 	this.Container_constructor();
@@ -272,6 +273,12 @@ c.showBackwardControl = function(visible) {
 	else if(this.backwardControl != null) {
 		createjs.Tween.get(this.backwardControl).to({alpha: 0}, 250);
 		this.removeChild(this.backwardControl);
+	}
+}
+
+c.setUnitIndicatorVisible = function(visible) {
+	if(this.indicator != null) {
+		this.indicator.visible = visible;
 	}
 }
 
