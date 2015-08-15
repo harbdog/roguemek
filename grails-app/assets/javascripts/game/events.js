@@ -23,7 +23,7 @@ function tick(event) {
 	
 	// only update when something actually needs to be updated on screen
 	if(update) {
-		stage.update(event);
+		rootStage.update(event);
 		
 		lastUpdate = createjs.Ticker.getTime();
 		update = false;
@@ -116,18 +116,18 @@ function resize_canvas(){
 	if(stage != null){
 		// TODO: add method to also center on the player unit on resize
 		
-		stage.canvas.width = window.innerWidth - 5;
-		stage.canvas.height = window.innerHeight - 5;
+		rootStage.canvas.width = window.innerWidth - 5;
+		rootStage.canvas.height = window.innerHeight - 5;
 		
-		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+stage.canvas.width+"x"+stage.canvas.height);
+		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+rootStage.canvas.width+"x"+rootStage.canvas.height);
 		
 		// Keep the board from shifting to the center the first time it is dragged if the window is wider than the board
-		if(stage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
-			console.log("stage width "+stage.canvas.width+" > "+
+		if(rootStage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
+			console.log("stage width "+rootStage.canvas.width+" > "+
 				"board width "+(numCols+1)+" * "+(3 * hexWidth / 4)+"="+((numCols+1) * (3 * hexWidth / 4)));
 			
-		    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width){
-		    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + stage.canvas.width;
+		    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + rootStage.canvas.width){
+		    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + rootStage.canvas.width;
 		    }
 		    if(stage.x > (3 * hexWidth / 4)) {
 		    	stage.x = (3 * hexWidth / 4);
@@ -150,8 +150,8 @@ function updateHexMapDisplay() {
 	var startX = - stage.x;
     var startY = - stage.y;
     
-    var canvasX = startX + stage.canvas.width;
-    var canvasY = startY + stage.canvas.height;
+    var canvasX = startX + rootStage.canvas.width;
+    var canvasY = startY + rootStage.canvas.height;
     
     var scaledHexWidth = hexWidth * stage.scaleX;
     var scaledHexHeight = hexHeight * stage.scaleY;
@@ -232,9 +232,9 @@ function handleComplete(event) {
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");
 	fpsDisplay = new createjs.DOMElement(fpsDiv);
-	fpsDisplay.x = -stage.x - 10;
-    fpsDisplay.y = -stage.y;
-    stage.addChild(fpsDisplay);
+	fpsDisplay.x = -rootStage.x - 10;
+    fpsDisplay.y = -rootStage.y;
+    rootStage.addChild(fpsDisplay);
     
     update = true;
     firstUpdate = false;
@@ -434,10 +434,6 @@ function handleStageDrag(evt) {
     // Keep the board from going off the window too much
     keepBoardInWindow();
     
-    // handle fps overlay movement
-    fpsDisplay.x = -stage.x - 10;
-    fpsDisplay.y = -stage.y;
-    
     // update visible hexes
     updateHexMapDisplay();
     
@@ -482,15 +478,15 @@ function keepBoardInWindow() {
     var scaledHexHeight = hexHeight * stage.scaleY;
     
     // Keep the board from going off the window too much
-    if(stage.x < -((numCols+1) * (3 * scaledHexWidth / 4)) + stage.canvas.width){
-    	stage.x = -((numCols+1) * (3 * scaledHexWidth / 4)) + stage.canvas.width;
+    if(stage.x < -((numCols+1) * (3 * scaledHexWidth / 4)) + rootStage.canvas.width){
+    	stage.x = -((numCols+1) * (3 * scaledHexWidth / 4)) + rootStage.canvas.width;
     }
     if(stage.x > 10) {
     	stage.x = 10;
     }
     
-    if(stage.y < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + stage.canvas.height){
-    	stage.y = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + stage.canvas.height;
+    if(stage.y < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + rootStage.canvas.height){
+    	stage.y = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + rootStage.canvas.height;
     }
     if(stage.y > 10 + (isometricPadding * stage.scaleY)) {
     	stage.y = 10 + (isometricPadding * stage.scaleY);

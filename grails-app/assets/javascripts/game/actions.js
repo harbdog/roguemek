@@ -321,8 +321,8 @@ function pollUpdate(updates) {
 					var prevUnitDisplay = prevTurnUnit.getUnitDisplay();
 					var turnUnitDisplay = turnUnit.getUnitDisplay();
 					
-					prevUnitDisplay.showTurnDisplay(false);
-					turnUnitDisplay.showTurnDisplay(true);
+					prevUnitDisplay.updateUnitIndicator();
+					turnUnitDisplay.updateUnitIndicator();
 					
 					update = true;
 				}

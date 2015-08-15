@@ -93,7 +93,11 @@ var ACTION_FORWARD = "forward";
 var ACTION_BACKWARD = "backward";
 
 // Global variables used throughout the game
-var stage, canvas, queue, progress, fpsDisplay, hexMap, units;
+var rootStage, stage, overlay, canvas;
+var unitListDisplay, unitTurnDisplay;
+var queue, progress;
+var fpsDisplay;
+var hexMap, units;
 
 // Keep track of which units belong to the player
 var playerUnits;
@@ -117,8 +121,14 @@ var stageInitDragMoveY = null;
 function initGame(){
 	
 	// Create the EaselJS stage
-	stage = new createjs.Stage("canvas");
+	rootStage = new createjs.Stage("canvas");
 	canvas = document.getElementById("canvas");
+	
+	// add board stage and UI containers to the root stage
+	stage = new createjs.Container();
+	overlay = new createjs.Container();
+	rootStage.addChild(stage);
+	rootStage.addChild(overlay);
 	
 	// apply Touch capability for touch screens
 	createjs.Touch.enable(stage);
@@ -238,7 +248,6 @@ function loadGameElements() {
 				  
 				  if(data.turnUnit == thisUnit.unit){
 					  turnUnit = unitInstance;
-					  turnUnit.getUnitDisplay().showTurnDisplay(true);
 				  }
 				  
 				  // add to unit list
@@ -500,6 +509,8 @@ function initUnitsDisplay() {
 	});
 	
 	updateUnitDisplayObjects();
+	
+	updatePlayerUnitListDisplay();
 }
 
 /**
@@ -513,6 +524,39 @@ function updateUnitDisplayObjects() {
 		if(displayUnit != null) {
 			displayUnit.update();
 		}
+	});
+}
+
+/**
+ * Shows/updates the player unit display list
+ */
+function updatePlayerUnitListDisplay() {
+	if(unitListDisplay == null) {
+		unitListDisplay = new createjs.Container();
+		overlay.addChild(unitListDisplay);
+	}
+	
+	$.each(playerUnits, function(index, unit) {
+		console.log(index+": "+unit);
+		
+		var thisDisplayUnit = unit.getUnitDisplay();
+		var image = null;
+		if(thisDisplayUnit.getImage() != null) {
+			image = thisDisplayUnit.getImage();
+		}
+		else{
+			var imgStr = thisDisplayUnit.getImageString();
+			image = queue.getResult(imgStr);
+		}
+		
+		var scale = 0.5;
+		
+		// create container as background for the display
+		var listUnit = new ListUnitDisplay(image);
+		listUnit.update();
+		listUnit.x = 0;
+		listUnit.y = rootStage.canvas.height - (index+1) * image.height * scale;
+		unitListDisplay.addChild(listUnit);
 	});
 }
 
@@ -572,7 +616,7 @@ function isPlayerUnitTurn() {
  */
 function isPlayerUnit(unit) {
 	if(unit == null || unit.id == null 
-			|| playerUnits == null || playerUnits.length == 0){
+			|| playerUnits == null || playerUnits.length == 0) {
 		return false;
 	}
 	
@@ -585,6 +629,20 @@ function isPlayerUnit(unit) {
 	});
 	
 	return isPlayerUnit;
+}
+
+/**
+ * Return true if the given unit is the current turn unit
+ * @param unit
+ * @returns {Boolean}
+ */
+function isTurnUnit(unit) {
+	if(unit == null || unit.id == null 
+			|| turnUnit == null || turnUnit.id == null) {
+		return false;
+	}
+	
+	return (unit.id == turnUnit.id);
 }
 
 // returns full name of the hit location index

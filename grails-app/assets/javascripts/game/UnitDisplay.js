@@ -19,6 +19,8 @@ function UnitDisplay(id, imageArr, imageStr, rgb) {
 		  
 		this.image = img;
 	}
+	
+	this.indicator = null;
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
 
@@ -52,7 +54,7 @@ c.update = function() {
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	
-	this.showUnitIndicator();
+	this.updateUnitIndicator();
 	
 	// TODO: cache the object
 	//this.cache(0,0, 0,0);
@@ -270,50 +272,49 @@ c.showBackwardControl = function(visible) {
 	}
 }
 
-c.showUnitIndicator = function() {
-	var indicator = new createjs.Shape();
-	
-	// TODO: allow customization of the player unit indicator color
-	if(isPlayerUnit(this.unit)) {
-		indicator.graphics.setStrokeStyle(3, "round").beginStroke("#3399FF").drawCircle(0, 0, hexWidth/3-2).endStroke();
-	}
-	else{
-		//indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF3737").drawCircle(0, 0, hexWidth/3-2).endStroke();
-		indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF3737").drawPolyStar(0, 0, hexWidth/3, 4, 0.6, -90).endStroke();
+c.updateUnitIndicator = function() {
+	if(this.indicator != null) {
+		createjs.Tween.removeTweens(this.indicator);
+		this.removeChild(this.indicator);
 	}
 	
-	this.addChildAt(indicator, 0);
+	if(isTurnUnit(this.unit)) {
+		this.showTurnDisplay();
+	}
+	else {
+		this.indicator = new createjs.Shape();
+		
+		// TODO: allow customization of the player unit indicator color
+		if(isPlayerUnit(this.unit)) {
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke("#3399FF").drawCircle(0, 0, hexWidth/3-2).endStroke();
+		}
+		else{
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF3737").drawPolyStar(0, 0, hexWidth/3, 4, 0.5, -90).endStroke();
+		}
+		
+		this.addChildAt(this.indicator, 0);
+	}
 }
 
 c.showTurnDisplay = function(show) {
-	if(this.getChildAt(0) != null) {
-		// TODO store these Shape objects or their index in a better way
-		createjs.Tween.removeTweens(this.getChildAt(0));
-		this.removeChildAt(0);
+	
+	this.indicator = new createjs.Shape();
+	
+	if(isPlayerUnit(this.unit)) {
+		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke("#3399FF").drawCircle(0, 0 ,hexWidth/10).endStroke();
+	}
+	else {
+		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke("#FF3737").drawPolyStar(0, 0, hexWidth/8, 4, 0.5, -90).endStroke();
 	}
 	
-	if(show) {
-		var turnDisplay = new createjs.Shape();
-		
-		if(isPlayerUnit(this.unit)) {
-			turnDisplay.graphics.setStrokeStyle(2, "round").beginStroke("#3399FF").drawCircle(0, 0 ,hexWidth/10).endStroke();
-		}
-		else {
-			turnDisplay.graphics.setStrokeStyle(2, "round").beginStroke("#FF3737").drawPolyStar(0, 0, hexWidth/10, 4, 0.6, -90).endStroke();
-		}
-		
-		this.addChildAt(turnDisplay, 0);
-		
-		createjs.Tween.get(turnDisplay, { loop: true})
-			.to({alpha: 0.75, scaleX: 2.5, scaleY: 2.5}, 750)
-			.to({alpha: 0.25, scaleX: 4.0, scaleY: 4.0}, 500)
-			.addEventListener("change", function() {
-				update = true;
-			});
-	}
-	else{
-		this.showUnitIndicator();
-	}
+	this.addChildAt(this.indicator, 0);
+	
+	createjs.Tween.get(this.indicator, { loop: true})
+		.to({alpha: 0.75, scaleX: 2.5, scaleY: 2.5}, 750)
+		.to({alpha: 0.25, scaleX: 3.5, scaleY: 3.5}, 500)
+		.addEventListener("change", function() {
+			update = true;
+		});
 }
 
 c.doCache = function(startX, startY, endX, endY) {
