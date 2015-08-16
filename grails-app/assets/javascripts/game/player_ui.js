@@ -58,33 +58,45 @@ function setPlayerTarget(unit) {
 	
 	if(targetBracket == null) {
 		targetBracket = new createjs.Shape();
+		targetBracket.visible = false;
 		targetBracket.graphics.setStrokeStyle(5, "square").beginStroke("#FF0000")
 				.moveTo(0, 0).lineTo(hexWidth/6, 0)
 				.moveTo(0, 0).lineTo(0, hexHeight/6)
-				//.moveTo(0, 0).lineTo(-hexWidth/20, -hexHeight/20)
-				
-				.moveTo(0, hexHeight).lineTo(hexWidth/6, hexHeight)
-				.moveTo(0, hexHeight).lineTo(0, hexHeight-hexHeight/6)
-				//.moveTo(0, hexHeight).lineTo(-hexWidth/20, hexHeight+hexHeight/20)
 				
 				.moveTo(hexWidth, 0).lineTo(hexWidth-hexWidth/6, 0)
 				.moveTo(hexWidth, 0).lineTo(hexWidth, hexHeight/6)
-				//.moveTo(hexWidth, 0).lineTo(hexWidth+hexWidth/20, -hexHeight/20)
+				
+				.moveTo(0, hexHeight).lineTo(hexWidth/6, hexHeight)
+				.moveTo(0, hexHeight).lineTo(0, hexHeight-hexHeight/6)
 				
 				.moveTo(hexWidth, hexHeight).lineTo(hexWidth-hexWidth/6, hexHeight)
-				.moveTo(hexWidth, hexHeight).lineTo(hexWidth, hexHeight-hexHeight/6)
-				//.moveTo(hexWidth, hexHeight).lineTo(hexWidth+hexWidth/20, hexHeight+hexHeight/20);
+				.moveTo(hexWidth, hexHeight).lineTo(hexWidth, hexHeight-hexHeight/6);
+		
 		targetBracket.scaleX = scale;
 		targetBracket.scaleY = scale;
 		stage.addChild(targetBracket);
 	}
 	
-	targetBracket.visible = true;
-	targetBracket.alpha = 1.0;
-	targetBracket.x = unitDisplay.x - scale*hexWidth/2;
-	targetBracket.y = unitDisplay.y - scale*hexHeight/2;
-	
 	createjs.Tween.removeTweens(targetBracket);
+	var targetX = unitDisplay.x - scale*hexWidth/2;
+	var targetY = unitDisplay.y - scale*hexHeight/2;
+	
+	if(targetBracket.visible) {
+		// animate move the bracket to the new location
+		targetBracket.alpha = 1.0;
+		createjs.Tween.get(targetBracket)
+			.to({x: targetX, y: targetY}, 250)
+			.addEventListener("change", function() {
+				update = true;
+			});
+	}
+	else{
+		targetBracket.visible = true;
+		targetBracket.alpha = 1.0;
+		targetBracket.x = targetX;
+		targetBracket.y = targetY;
+	}
+	
 	createjs.Tween.get(targetBracket, { loop: true})
 			.to({alpha: 0.35}, 750)
 			.to({alpha: 1.0}, 750)

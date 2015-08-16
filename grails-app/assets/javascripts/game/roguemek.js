@@ -674,7 +674,7 @@ function setUnitTarget(unit, target) {
 	unitTargets[unit.id] = target;
 }
 function getUnitTarget(unit) {
-	if(unit == null) return;
+	if(unit == null) return null;
 	return unitTargets[unit.id];
 }
 

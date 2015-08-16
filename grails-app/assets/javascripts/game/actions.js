@@ -315,8 +315,10 @@ function pollUpdate(updates) {
 			else if(data.turnUnit != null) {
 				
 				var prevTurnUnit = turnUnit;
-				
 				turnUnit = units[data.turnUnit];
+				
+				var prevTurnTarget = getUnitTarget(prevTurnUnit);
+				var newTurnTarget = getUnitTarget(turnUnit);
 				
 				if(prevTurnUnit != null && prevTurnUnit.id != turnUnit.id) {
 					var prevUnitDisplay = prevTurnUnit.getUnitDisplay();
@@ -324,6 +326,24 @@ function pollUpdate(updates) {
 					
 					prevUnitDisplay.updateUnitIndicator();
 					turnUnitDisplay.updateUnitIndicator();
+					
+					if(isPlayerUnit(prevTurnUnit)) {
+						if(!isPlayerUnit(turnUnit)) {
+							setPlayerTarget(null);
+						}
+						
+						if(prevTurnTarget != null) {
+							prevTurnTarget.getUnitDisplay().setUnitIndicatorVisible(true);
+						}
+					}
+					
+					if(isPlayerUnit(turnUnit)) {
+						setPlayerTarget(newTurnTarget);
+						
+						if(newTurnTarget != null) {
+							newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
+						}
+					}
 					
 					update = true;
 				}

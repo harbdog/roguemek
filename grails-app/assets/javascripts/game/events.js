@@ -56,20 +56,20 @@ function handleKeyPress(key) {
 	
 	if(weaponFired >= 0){
 		// Toggle the weapon UI for firing
-		if(playerWeapons[weaponFired] != null) {
+		/*if(playerWeapons[weaponFired] != null) {
 			var thisWeapon = playerWeapons[weaponFired];
 			
 			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
 			// TODO: handle firing weapons only from current player turn unit using isPlayerUnitTurn()
-			/*if(playerUnit == turnUnit 
+			if(playerUnit == turnUnit 
 					&& !$('#'+thisWeapon.id).hasClass("cooldown") 
 					&& !$('#'+thisWeapon.id).hasClass("disabled")){
 				// only allow weapons to be selected that aren't on cooldown
 				$('#'+thisWeapon.id).toggleClass("selected");
 				
 				updateSelectedWeapons();
-			}*/
-		}
+			}
+		}*/
 	}
 	else if(key == "." || key == "space" || key == "enter"){
 		// Skip the remainder of the turn
