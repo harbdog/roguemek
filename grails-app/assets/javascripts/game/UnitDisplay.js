@@ -58,6 +58,11 @@ c.update = function() {
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	
+	// create hit area (it never needs to be added to display)
+	var hit = new createjs.Shape();
+	hit.graphics.beginFill("#000000").drawCircle(0, 0, hexWidth/3).endStroke();
+	this.hitArea = hit;
+	
 	this.updateUnitIndicator();
 }
 
@@ -332,11 +337,11 @@ c.showTurnDisplay = function(show) {
 }
 
 c.doCache = function() {
-	this.cache(-hexWidth,-hexHeight, hexWidth*2,hexHeight*2);
+	this.cache(-hexWidth/2,-hexHeight/2, hexWidth,hexHeight);
 }
 
 c.toString = function() {
-	return "[UnitDisplay@"+this.x+","+this.y+":"+this.imageStr+"]";
+	return "[UnitDisplay@"+this.x+","+this.y+": "+this.unit+"]";
 }
 
 window.UnitDisplay = createjs.promote(UnitDisplay, "Container");

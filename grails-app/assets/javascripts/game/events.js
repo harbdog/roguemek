@@ -355,7 +355,7 @@ function handleUnitClick(event) {
 	var targetUnitDisplay = event.target;
 	var targetUnit = targetUnitDisplay.getUnit();
 	
-	console.log("clicked "+x+","+y+": "+targetUnit); 
+	console.log("clicked "+targetUnitDisplay); 
 	
 	if(isPlayerUnitTurn() && !isPlayerUnit(targetUnit)) {
 		var prevTargetUnit = getUnitTarget(turnUnit);
