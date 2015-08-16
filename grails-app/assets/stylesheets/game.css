@@ -52,3 +52,16 @@ div #fpsDiv.active{
 	right: 0px;
 	color: #FFFFFF;
 }
+
+#messagingArea {
+	cursor: default;
+	padding: 0px 0px 0px 0px;
+	resize: none;
+	background-color: transparent;
+	color: #FFFFFF;
+	outline: none;
+	border: none;
+	border-bottom: 1px solid #FFFFFF;
+	border-left: 1px solid #FFFFFF;
+	font-family: monospace;
+}

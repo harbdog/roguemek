@@ -29,18 +29,83 @@ var elevationHeight = defElevationHeight * hexScale;
 //variable to show level (elevation/depth/etc.)
 var showLevels = true;
 
+var messagingDisplay;
+
 var targetBracket;
 
 var apDisplaying, jpDisplaying;
 
 var playerWeapons;
 
+//initialize canvas based UI overlay
 function initPlayerUI() {
-	// TODO: initialize new canvas based UI overlay
+	// create the messaging area
+	messagingDisplay = new MessagingDisplay();
+	messagingDisplay.init();
+	overlay.addChild(messagingDisplay);
+	
+	// create the player unit display list
+	initPlayerUnitListDisplay();
+}
+
+// updates the positions of the UI overlays on the canvas
+function updatePlayerUI() {
+	messagingDisplay.update();
+	
+	updatePlayerUnitListDisplay();
 }
 
 /**
- * 
+ * Shows the player unit display list
+ */
+function initPlayerUnitListDisplay() {
+	if(unitListDisplay == null) {
+		unitListDisplay = new createjs.Container();
+		overlay.addChild(unitListDisplay);
+		
+		unitListDisplayArray = [];
+	}
+	
+	$.each(playerUnits, function(index, unit) {
+		var thisDisplayUnit = unit.getUnitDisplay();
+		var image = null;
+		if(thisDisplayUnit.getImage() != null) {
+			image = thisDisplayUnit.getImage();
+		}
+		else{
+			var imgStr = thisDisplayUnit.getImageString();
+			image = queue.getResult(imgStr);
+		}
+		
+		// create container as background for the display
+		var listUnit = new ListUnitDisplay(thisDisplayUnit);
+		listUnit.init();
+		listUnit.x = 1;
+		listUnit.y = canvas.height - (index+1) * listUnit.image.height * listUnit.scale;
+		unitListDisplay.addChild(listUnit);
+		
+		unitListDisplayArray.push(listUnit);
+	});
+}
+
+/**
+ * Updates the player unit display list
+ */
+function updatePlayerUnitListDisplay() {
+	if(unitListDisplayArray == null) return;
+	
+	$.each(unitListDisplayArray, function(index, listUnit) {
+		// update the position in case the resize was called
+		listUnit.x = 1;
+		listUnit.y = canvas.height - (index+1) * listUnit.image.height * listUnit.scale;
+		
+		// update the selected status in case its the unit's turn
+		listUnit.setSelected(isTurnUnit(listUnit.unit));
+	});
+}
+
+/**
+ * Sets the animated target brackets on the given unit (or hides the brackets with null target)
  * @param unit
  */
 function setPlayerTarget(unit) {
@@ -433,15 +498,7 @@ function updateTargetDisplay() {
  * @param message
  */
 function addMessageUpdate(message) {
-	// TODO: add message to the UI and scroll to it
-	/*if(messagingArea == null) {
-		messagingArea = new createjs.DOMElement(document.getElementById("messagingArea"));
-	}
-	
-	if(message != null && message.length > 0) { 
-		messagingArea.htmlElement.innerHTML += "&#13;&#10;"+message;
-		messagingArea.htmlElement.scrollTop = messagingArea.htmlElement.scrollHeight;
-	}*/
+	messagingDisplay.addMessage(message, true);
 }
 
 /**

@@ -59,9 +59,6 @@ c.update = function() {
 	this.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	
 	this.updateUnitIndicator();
-	
-	// TODO: cache the object
-	//this.cache(0,0, 0,0);
 }
 
 c.getUpdatedDisplayX = function(coords) {
@@ -277,12 +274,17 @@ c.showBackwardControl = function(visible) {
 }
 
 c.setUnitIndicatorVisible = function(visible) {
+	this.uncache();
 	if(this.indicator != null) {
 		this.indicator.visible = visible;
 	}
+	
+	this.doCache();
 }
 
 c.updateUnitIndicator = function() {
+	this.uncache();
+	
 	if(this.indicator != null) {
 		createjs.Tween.removeTweens(this.indicator);
 		this.removeChild(this.indicator);
@@ -303,6 +305,8 @@ c.updateUnitIndicator = function() {
 		}
 		
 		this.addChildAt(this.indicator, 0);
+		
+		this.doCache();
 	}
 }
 
@@ -327,21 +331,8 @@ c.showTurnDisplay = function(show) {
 		});
 }
 
-c.doCache = function(startX, startY, endX, endY) {
-	var cacheX = startX;
-	var cacheY = startY;
-	var cacheW = endX - startX;
-	var cacheH = endY - startY;
-	if(startX > endX) {
-		cacheX = endX;
-		cacheW = startX - endX;
-	}
-	if(startY > endY) {
-		cacheY = endY;
-		cacheH = startY - endY;
-	}
-	
-	this.cache(cacheX, cacheY, cacheW, cacheH);
+c.doCache = function() {
+	this.cache(-hexWidth,-hexHeight, hexWidth*2,hexHeight*2);
 }
 
 c.toString = function() {

@@ -72,6 +72,9 @@ var playerActionReady = true;
 var stageInitDragMoveX = null;
 var stageInitDragMoveY = null;
 
+// Enables certain development functions only when run locally
+var devMode = (document.location.hostname == "localhost");
+
 /**
  * Gets the game ready to play
  */
@@ -79,7 +82,11 @@ function initGame(){
 	
 	// Create the EaselJS stage
 	rootStage = new createjs.Stage("canvas");
-	canvas = document.getElementById("canvas");
+	canvas = rootStage.canvas;
+	
+	// setup initial size of canvas to window
+	canvas.width = window.innerWidth - 5;
+	canvas.height = window.innerHeight - 5;
 	
 	// add board stage and UI containers to the root stage
 	stage = new createjs.Container();
@@ -393,9 +400,6 @@ function initHexMapDisplay() {
 	}
 	
 	updateHexDisplayObjects();
-	
-	// resize the canvas and adjust the board to the canvas on first load
-	resize_canvas();
 }
 
 /**
@@ -511,8 +515,6 @@ function initUnitsDisplay() {
 	});
 	
 	updateUnitDisplayObjects();
-	
-	initPlayerUnitListDisplay();
 }
 
 /**
@@ -526,55 +528,6 @@ function updateUnitDisplayObjects() {
 		if(displayUnit != null) {
 			displayUnit.update();
 		}
-	});
-}
-
-/**
- * Shows the player unit display list
- */
-function initPlayerUnitListDisplay() {
-	if(unitListDisplay == null) {
-		unitListDisplay = new createjs.Container();
-		overlay.addChild(unitListDisplay);
-		
-		unitListDisplayArray = [];
-	}
-	
-	$.each(playerUnits, function(index, unit) {
-		var thisDisplayUnit = unit.getUnitDisplay();
-		var image = null;
-		if(thisDisplayUnit.getImage() != null) {
-			image = thisDisplayUnit.getImage();
-		}
-		else{
-			var imgStr = thisDisplayUnit.getImageString();
-			image = queue.getResult(imgStr);
-		}
-		
-		// create container as background for the display
-		var listUnit = new ListUnitDisplay(thisDisplayUnit);
-		listUnit.init();
-		listUnit.x = 1;
-		listUnit.y = rootStage.canvas.height - (index+1) * listUnit.image.height * listUnit.scale;
-		unitListDisplay.addChild(listUnit);
-		
-		unitListDisplayArray.push(listUnit);
-	});
-}
-
-/**
- * Updates the player unit display list
- */
-function updatePlayerUnitListDisplay() {
-	if(unitListDisplayArray == null) return;
-	
-	$.each(unitListDisplayArray, function(index, listUnit) {
-		// update the position in case the resize was called
-		listUnit.x = 1;
-		listUnit.y = rootStage.canvas.height - (index+1) * listUnit.image.height * listUnit.scale;
-		
-		// update the selected status in case its the unit's turn
-		listUnit.setSelected(isTurnUnit(listUnit.unit));
 	});
 }
 

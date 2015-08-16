@@ -120,7 +120,7 @@ function handleKeyPress(key) {
  */
 function goFullScreen(){
 	if (fullScreenApi.supportsFullScreen) {
-		fullScreenApi.requestFullScreen(canvas);
+		fullScreenApi.requestFullScreen(document.body);
 	}
 }
 
@@ -129,33 +129,31 @@ function goFullScreen(){
  */
 function resize_canvas(){
 	if(stage != null){
-		// TODO: add method to also center on the player unit on resize
+		// TODO: add method to also center on the turn unit on resize
 		
-		rootStage.canvas.width = window.innerWidth - 5;
-		rootStage.canvas.height = window.innerHeight - 5;
+		canvas.width = window.innerWidth - 5;
+		canvas.height = window.innerHeight - 5;
 		
-		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+rootStage.canvas.width+"x"+rootStage.canvas.height);
+		console.log("resizing window ("+window.innerWidth+"x"+window.innerHeight+") stage: "+canvas.width+"x"+canvas.height);
 		
 		// Keep the board from shifting to the center the first time it is dragged if the window is wider than the board
-		if(rootStage.canvas.width > (numCols+1) * (3 * hexWidth / 4)){
-			console.log("stage width "+rootStage.canvas.width+" > "+
+		if(canvas.width > (numCols+1) * (3 * hexWidth / 4)){
+			console.log("stage width "+canvas.width+" > "+
 				"board width "+(numCols+1)+" * "+(3 * hexWidth / 4)+"="+((numCols+1) * (3 * hexWidth / 4)));
 			
-		    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + rootStage.canvas.width){
-		    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + rootStage.canvas.width;
+		    if(stage.x < -((numCols+1) * (3 * hexWidth / 4)) + canvas.width){
+		    	stage.x = -((numCols+1) * (3 * hexWidth / 4)) + canvas.width;
 		    }
 		    if(stage.x > (3 * hexWidth / 4)) {
 		    	stage.x = (3 * hexWidth / 4);
 		    }
 		}
 		
-		// TODO: resize certain UI elements to fit the window size
-		
 		// update displayable hexes
 		updateHexMapDisplay();
 		
 		// update the UI elements that need to change position
-		updatePlayerUnitListDisplay();
+		updatePlayerUI();
 		
 		update = true;
 	}
@@ -168,8 +166,8 @@ function updateHexMapDisplay() {
 	var startX = - stage.x;
     var startY = - stage.y;
     
-    var canvasX = startX + rootStage.canvas.width;
-    var canvasY = startY + rootStage.canvas.height;
+    var canvasX = startX + canvas.width;
+    var canvasY = startY + canvas.height;
     
     var scaledHexWidth = hexWidth * stage.scaleX;
     var scaledHexHeight = hexHeight * stage.scaleY;
@@ -249,14 +247,17 @@ function handleComplete(event) {
 	var fpsDiv = document.getElementById("fpsDiv");
 	fpsDisplay = new createjs.DOMElement(fpsDiv);
 	fpsDisplay.x = -rootStage.x - 10;
-    fpsDisplay.y = -rootStage.y;
-    rootStage.addChild(fpsDisplay);
+    fpsDisplay.y = -rootStage.y + 100 ;
+    overlay.addChild(fpsDisplay);
     
     // only show the fullscreen button on mobile devices browsers
-    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    		&& fullScreenApi.supportsFullScreen) {
+    if( fullScreenApi.supportsFullScreen
+    		&& (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    		|| devMode)) {
     	// TODO: find a better place for the fullscreen button
 		var fsButton = new createjs.Container();
+		fsButton.x = 0;
+		fsButton.y = 100;
 		rootStage.addChild(fsButton);
 		
 		var fsBackground = new createjs.Shape();
@@ -271,6 +272,9 @@ function handleComplete(event) {
 		fsButton.on("click", goFullScreen);
 		fsButton.mouseChildren = false;
     }
+    
+    // resize the canvas and adjust the board to the canvas on first load
+	resize_canvas();
     
     update = true;
     firstUpdate = false;
@@ -521,15 +525,15 @@ function keepBoardInWindow() {
     var scaledHexHeight = hexHeight * stage.scaleY;
     
     // Keep the board from going off the window too much
-    if(stage.x < -((numCols+1) * (3 * scaledHexWidth / 4)) + rootStage.canvas.width){
-    	stage.x = -((numCols+1) * (3 * scaledHexWidth / 4)) + rootStage.canvas.width;
+    if(stage.x < -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width){
+    	stage.x = -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width;
     }
     if(stage.x > 10) {
     	stage.x = 10;
     }
     
-    if(stage.y < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + rootStage.canvas.height){
-    	stage.y = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + rootStage.canvas.height;
+    if(stage.y < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height){
+    	stage.y = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height;
     }
     if(stage.y > 10 + (isometricPadding * stage.scaleY)) {
     	stage.y = 10 + (isometricPadding * stage.scaleY);

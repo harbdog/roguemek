@@ -11,9 +11,12 @@
 		
 		<div id="canvasDiv">
 			<div id="fpsDiv"></div>
+			
 			<canvas id="canvas">
 		        <g:message code="page.browser.not.supported" />
 		    </canvas>
+		    
+		    <textarea id="messagingArea" readonly><g:message code="game.you.joined" /></textarea>
 	    </div>
 	    
 	</body>
