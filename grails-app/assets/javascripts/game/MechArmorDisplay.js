@@ -64,40 +64,21 @@ c.init = function() {
 }
 
 c.createSection = function(text, startIndex) {
-	var section = new createjs.Container();
+	var section = new ArmorSectionDisplay(this.SECTION_WIDTH, DEFAULT_HEIGHT, 
+			this.BAR_WIDTH, text, startIndex);
+	
 	section.x = startIndex * this.SECTION_WIDTH;
-	
-	var label = new createjs.Text(text, "11px Consolas", "#FFFFFF");
-	label.x = (text.length * this.SECTION_WIDTH - label.getMeasuredWidth())/2;
-	label.y = this.height - label.getMeasuredHeight()*2;
-	section.addChild(label);
-	
-	var barHeight = label.y - 4;
-	
-	// The first bar is full height for external armor
-	var barOutline = new createjs.Shape();
-	barOutline.graphics.setStrokeStyle(2, "square").beginStroke("#FFFFFF")
-			.drawRect(this.SECTION_WIDTH-this.BAR_WIDTH, 1+BORDER_WIDTH, 
-					this.BAR_WIDTH, barHeight);
-	section.addChild(barOutline);
-	
-	// second bar is 1/2 height for internal armor
-	var barOutline2 = new createjs.Shape();
-	barOutline2.graphics.setStrokeStyle(2, "square").beginStroke("#FFFFFF")
-			.drawRect(1*this.SECTION_WIDTH+BORDER_WIDTH, 1+BORDER_WIDTH+barHeight/2, 
-					this.BAR_WIDTH, barHeight/2);
-	section.addChild(barOutline2);
-	
-	// third bar, if there is one, is full height for rear armor
-	if(text.length > 2) {
-		var barOutline3 = new createjs.Shape();
-		barOutline3.graphics.setStrokeStyle(2, "square").beginStroke("#FFFFFF")
-				.drawRect(2*this.SECTION_WIDTH-BORDER_WIDTH, 1+BORDER_WIDTH, 
-						this.BAR_WIDTH, barHeight);
-		section.addChild(barOutline3);
-	}
-	
 	return section;
+}
+
+c.setSectionPercent = function(section, index, percent) {
+	if(section == null) return;
+	this.uncache();
+	
+	section.setDisplayedPercent(index, percent);
+	
+	// do NOT cache here because it will cause the bar flashing animations to not work
+	//this.doCache();
 }
 
 c.update = function() {
