@@ -4,6 +4,8 @@
 (function() {
 "use strict";
 
+var BORDER_WIDTH = 3;
+
 function ListUnitDisplay(unitDisplay) {
 	this.Container_constructor();
 	
@@ -35,21 +37,31 @@ c.setSelected = function(selected) {
 	this.uncache();
 	this.background.graphics.clear();
 	
-	var borderWidth = 3;
-	
 	// TODO: allow customization of the player unit indicator color
 	if(selected) {
-		this.background.graphics.setStrokeStyle(borderWidth, "round").beginStroke("#C0C0C0").beginFill("#3399FF")
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#3399FF")
 				.drawRect(0, 0, this.image.width * this.scale, this.image.height * this.scale);
 	}
 	else{
-		this.background.graphics.setStrokeStyle(borderWidth, "round").beginStroke("#C0C0C0").beginFill("#404040")
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#404040")
 				.drawRect(0, 0, this.image.width * this.scale, this.image.height * this.scale);
 	}
 	
 	// cache the object
-	this.cache(-borderWidth,-borderWidth, 
-			borderWidth + this.image.width * this.scale,borderWidth + this.image.height * this.scale);
+	this.doCache();
+}
+
+c.getDisplayWidth = function() {
+	return this.image.width * this.scale;
+}
+
+c.getDisplayHeight = function() {
+	return this.image.height * this.scale;
+}
+
+c.doCache = function() {
+	this.cache(-BORDER_WIDTH, -BORDER_WIDTH, 
+			BORDER_WIDTH + this.image.width * this.scale, BORDER_WIDTH + this.image.height * this.scale);
 }
 
 c.toString = function() {

@@ -63,5 +63,5 @@ div #fpsDiv.active{
 	border: none;
 	border-bottom: 1px solid #FFFFFF;
 	border-left: 1px solid #FFFFFF;
-	font-family: monospace;
+	font-family: Consolas;
 }

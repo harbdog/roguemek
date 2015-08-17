@@ -261,12 +261,12 @@ function handleComplete(event) {
 		rootStage.addChild(fsButton);
 		
 		var fsBackground = new createjs.Shape();
-		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0,100,25);
+		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 100,25);
 		fsButton.addChild(fsBackground);
 		
-		var fsText = new createjs.Text("Go Fullscreen", "12px Arial", "white");
+		var fsText = new createjs.Text("Go Fullscreen", "12px Consolas", "white");
 		fsText.x = (100 - fsText.getMeasuredWidth())/2;
-		fsText.y = (25 - fsText.getMeasuredHeight())/2;
+		fsText.y = (20 - fsText.getMeasuredHeight())/2;
 		fsButton.addChild(fsText);
 		
 		fsButton.on("click", goFullScreen);

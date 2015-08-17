@@ -29,7 +29,7 @@ var elevationHeight = defElevationHeight * hexScale;
 //variable to show level (elevation/depth/etc.)
 var showLevels = true;
 
-var messagingDisplay;
+var messagingDisplay, armorDisplay;
 
 var targetBracket;
 
@@ -46,17 +46,48 @@ function initPlayerUI() {
 	
 	// create the player unit display list
 	initPlayerUnitListDisplay();
+	
+	// create the player unit armor display
+	initPlayerUnitArmorDisplay();
 }
 
-// updates the positions of the UI overlays on the canvas
+// updates the sizings/positions of the UI overlays on the canvas
 function updatePlayerUI() {
 	messagingDisplay.update();
 	
 	updatePlayerUnitListDisplay();
+	
+	updatePlayerUnitArmorDisplay();
 }
 
 /**
- * Shows the player unit display list
+ * Creates the player unit armor UI
+ */
+function initPlayerUnitArmorDisplay() {
+	if(unitListDisplayArray == null || unitListDisplayArray.length == 0) return;
+	
+	var firstListUnit = unitListDisplayArray[0];
+	if(armorDisplay == null) {
+		// the armor display is to the right of the unit list display
+		armorDisplay = new MechArmorDisplay();
+		armorDisplay.height = firstListUnit.getDisplayHeight() * 2;
+		armorDisplay.init();
+		
+		armorDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
+		armorDisplay.y = canvas.height - armorDisplay.height;
+		
+		overlay.addChild(armorDisplay);
+	}
+}
+
+function updatePlayerUnitArmorDisplay() {
+	if(armorDisplay == null) return;
+	
+	armorDisplay.y = canvas.height - armorDisplay.height;
+}
+
+/**
+ * Creates the player unit display list
  */
 function initPlayerUnitListDisplay() {
 	if(unitListDisplay == null) {
@@ -97,7 +128,7 @@ function updatePlayerUnitListDisplay() {
 	$.each(unitListDisplayArray, function(index, listUnit) {
 		// update the position in case the resize was called
 		listUnit.x = 1;
-		listUnit.y = canvas.height - (index+1) * listUnit.image.height * listUnit.scale;
+		listUnit.y = canvas.height - (index+1) * listUnit.getDisplayHeight();
 		
 		// update the selected status in case its the unit's turn
 		listUnit.setSelected(isTurnUnit(listUnit.unit));
