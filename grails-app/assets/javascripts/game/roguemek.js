@@ -246,7 +246,9 @@ function loadGameElements() {
 				  unitInstance.chassisVariant = thisUnit.chassisVariant;
 				  unitInstance.mass = thisUnit.mass;
 				  unitInstance.armor = thisUnit.armor;
+				  unitInstance.initialArmor = thisUnit.initialArmor;
 				  unitInstance.internals = thisUnit.internals;
+				  unitInstance.initialInternals = thisUnit.initialInternals;
 				  
 				  unitInstance.crits = thisUnit.crits;
 				  unitInstance.weapons = initUnitWeapons(thisUnit);

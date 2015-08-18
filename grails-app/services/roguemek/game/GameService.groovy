@@ -368,7 +368,9 @@ class GameService {
 		game.units?.each { BattleUnit u ->
 			
 			def armor = null
+			def initialArmor = null
 			def internals = null
+			def initialInternals = null
 			def chassisVariant = null
 			def crits = null
 			
@@ -383,12 +385,26 @@ class GameService {
 						armor[i] = u.armor[i]
 					}
 				}
+				initialArmor = []
+				if(m.armor != null) {
+					int armorSize = m.armor.size();
+					for(int i=0; i<armorSize; i++) {
+						initialArmor[i] = m.armor[i]
+					}
+				}
 				
 				internals = []
 				if(u.internals != null) {
 					int internalSize = u.internals.size()
 					for(int i=0; i<internalSize; i++) {
 						internals[i] = u.internals[i]
+					}
+				}
+				initialInternals = []
+				if(m.internals != null) {
+					int internalSize = m.internals.size()
+					for(int i=0; i<internalSize; i++) {
+						initialInternals[i] = m.internals[i]
 					}
 				}
 				
@@ -409,7 +425,9 @@ class GameService {
 				jpRemaining: u.jpRemaining,
 				heat: u.heat,
 				armor: armor,
+				initialArmor: initialArmor,
 				internals: internals,
+				initialInternals: initialInternals,
 				crits: crits,
 				imageFile: u.imageFile,
 				image: u.image,

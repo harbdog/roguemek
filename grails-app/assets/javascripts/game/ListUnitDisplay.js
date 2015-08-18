@@ -41,8 +41,6 @@ c.setSelected = function(selected) {
 	
 	// TODO: allow customization of the player unit indicator color
 	if(selected) {
-		/*this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#404040")
-				.drawRect(0, 0, this.image.width, this.image.height);*/
 		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#404040")
 				.moveTo(this.image.width, this.image.height)
 				.lineTo(0, this.image.height)
@@ -55,7 +53,6 @@ c.setSelected = function(selected) {
 				.drawRect(0, 0, this.image.width, this.image.height);
 	}
 	
-	// cache the object
 	this.doCache();
 }
 
