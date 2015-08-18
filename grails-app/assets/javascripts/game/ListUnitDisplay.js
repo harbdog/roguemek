@@ -15,10 +15,14 @@ function ListUnitDisplay(unitDisplay) {
 	
 	this.background = null;
 	this.scale = 0.5;
+	this.BORDER_WIDTH = BORDER_WIDTH;
 }
 var c = createjs.extend(ListUnitDisplay, createjs.Container);
 
 c.init = function() {
+	this.scaleX = this.scale;
+	this.scaleY = this.scale;
+	
 	// create background shape with color
 	this.background = new createjs.Shape();
 	this.background.alpha = 0.75;
@@ -26,8 +30,6 @@ c.init = function() {
 	
 	// load the unit image as a Bitmap
 	var unitImg = new createjs.Bitmap(this.image);
-	unitImg.scaleX = this.scale;
-	unitImg.scaleY = this.scale;
 	this.addChild(unitImg);
 	
 	this.setSelected(isTurnUnit(this.unit));
@@ -39,12 +41,18 @@ c.setSelected = function(selected) {
 	
 	// TODO: allow customization of the player unit indicator color
 	if(selected) {
-		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#3399FF")
-				.drawRect(0, 0, this.image.width * this.scale, this.image.height * this.scale);
+		/*this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#404040")
+				.drawRect(0, 0, this.image.width, this.image.height);*/
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#404040")
+				.moveTo(this.image.width, this.image.height)
+				.lineTo(0, this.image.height)
+				.lineTo(0, 0)
+				.lineTo(this.image.width, 0)
+				.endStroke();
 	}
 	else{
-		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#404040")
-				.drawRect(0, 0, this.image.width * this.scale, this.image.height * this.scale);
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0")
+				.drawRect(0, 0, this.image.width, this.image.height);
 	}
 	
 	// cache the object
@@ -61,7 +69,7 @@ c.getDisplayHeight = function() {
 
 c.doCache = function() {
 	this.cache(-BORDER_WIDTH, -BORDER_WIDTH, 
-			BORDER_WIDTH + this.image.width * this.scale, BORDER_WIDTH + this.image.height * this.scale);
+			BORDER_WIDTH + this.image.width, BORDER_WIDTH + this.image.height);
 }
 
 c.toString = function() {

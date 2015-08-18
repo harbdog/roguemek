@@ -112,7 +112,7 @@ function initPlayerUnitListDisplay() {
 		var listUnit = new ListUnitDisplay(thisDisplayUnit);
 		listUnit.init();
 		listUnit.x = 1;
-		listUnit.y = canvas.height - (index+1) * listUnit.image.height * listUnit.scale;
+		listUnit.y = canvas.height - (index+1) * listUnit.getDisplayHeight();
 		unitListDisplay.addChild(listUnit);
 		
 		unitListDisplayArray.push(listUnit);

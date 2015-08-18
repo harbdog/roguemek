@@ -141,6 +141,7 @@ class BootStrap {
 		
 		// Initialize factions
 		Faction.init()
+		log.info('Initialized Factions')
 		
 		// Initialize equipment, weapons, ammo, and heat sinks
 		Equipment.init()
@@ -148,10 +149,12 @@ class BootStrap {
 		HeatSink.init()
 		Ammo.init()
 		Weapon.init()
+		log.info('Initialized Equipment')
 		
 		
 		// Initialize stock mechs
 		Mech.init()
+		log.info('Initialized Mechs')
 		
 		// Initialize heat effects
 		HeatEffect.initializeHeatEffects()
@@ -161,6 +164,7 @@ class BootStrap {
 		//File boardFile = new File("src/boards/battletech.board")
 		File boardFile = new File("src/boards/80x17_Benj_7.board")
 		HexMap boardMap = HexMap.loadBoardFile(boardFile)
+		log.info('Loaded sample Board')
 		
 		// Initialize a sample BattleMech
 		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("BattleMaster"), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])

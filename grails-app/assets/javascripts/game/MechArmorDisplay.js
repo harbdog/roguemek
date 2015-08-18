@@ -6,7 +6,7 @@
 
 var DEFAULT_WIDTH = 300;
 var DEFAULT_HEIGHT = 75;
-var BORDER_WIDTH = 1;
+var BORDER_WIDTH = 3;
 
 function MechArmorDisplay() {
 	this.Container_constructor();
@@ -64,7 +64,8 @@ c.init = function() {
 }
 
 c.createSection = function(text, startIndex) {
-	var section = new ArmorSectionDisplay(this.SECTION_WIDTH, DEFAULT_HEIGHT, 
+	var section = new ArmorSectionDisplay(
+			this.SECTION_WIDTH, DEFAULT_HEIGHT, 
 			this.BAR_WIDTH, text, startIndex);
 	
 	section.x = startIndex * this.SECTION_WIDTH;
@@ -85,8 +86,10 @@ c.update = function() {
 	this.uncache();
 	this.background.graphics.clear();
 	
-	this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#404040")
-			.drawRect(0, 0, this.width, this.height);
+	this.background.graphics.beginFill("#404040")
+			.drawRect(0, 0, this.width, this.height)
+			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
+			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 	
 	this.doCache();
 }
