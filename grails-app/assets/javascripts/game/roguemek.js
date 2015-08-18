@@ -478,15 +478,7 @@ function initUnitsDisplay() {
 			rgb = thisDisplayUnit.rgb;
 		}
 		
-		// load the unit image as a Bitmap
-		var unitImg = new createjs.Bitmap(image);
-		// make the unit image just a bit smaller since it currently is same size as the hex
-		unitImg.scaleX = scale;
-		unitImg.scaleY = scale;
-		// adjust the rotation around its own center (which also adjusts its x/y reference point)
-		unitImg.regX = image.width/2;
-		unitImg.regY = image.height/2;
-		thisDisplayUnit.addChild(unitImg);
+		thisDisplayUnit.drawImage(image, scale);
 		
 		if(rgb != null) {
 			// load the unit image again and apply alpha color filter

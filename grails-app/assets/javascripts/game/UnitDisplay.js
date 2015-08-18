@@ -58,12 +58,28 @@ c.update = function() {
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	
+	// TODO: figure out proper location of shadow when rotation is set
+	//this.unitImage.shadow = new createjs.Shadow("#000000", -5, -5, 5);
+	
 	// create hit area (it never needs to be added to display)
 	var hit = new createjs.Shape();
 	hit.graphics.beginFill("#000000").drawCircle(0, 0, hexWidth/3).endStroke();
 	this.hitArea = hit;
 	
 	this.updateUnitIndicator();
+}
+
+c.drawImage = function(image, scale) {
+	// load the unit image as a Bitmap
+	this.unitImage = new createjs.Bitmap(image);
+	// make the unit image just a bit smaller since it currently is same size as the hex
+	this.unitImage.scaleX = scale;
+	this.unitImage.scaleY = scale;
+	// adjust the rotation around its own center (which also adjusts its x/y reference point)
+	this.unitImage.regX = image.width/2;
+	this.unitImage.regY = image.height/2;
+	
+	this.addChild(this.unitImage);
 }
 
 c.getUpdatedDisplayX = function(coords) {
@@ -297,17 +313,26 @@ c.updateUnitIndicator = function() {
 	
 	if(isTurnUnit(this.unit)) {
 		this.showTurnDisplay();
+		
+		// do not cache the object when using the animated turn indicator
 	}
 	else {
 		this.indicator = new createjs.Shape();
 		
-		// TODO: allow customization of the player unit indicator color
+		// TODO: allow customization of the unit indicator color
+		var color = null;
 		if(isPlayerUnit(this.unit)) {
-			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke("#3399FF").drawCircle(0, 0, hexWidth/3-2).endStroke();
+			color = "#3399FF";
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawCircle(0, 0, hexWidth/3-2).endStroke();
 		}
 		else{
-			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke("#FF0000").drawPolyStar(0, 0, hexWidth/3, 4, 0.5, -90).endStroke();
+			color = "#FF0000"
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/3, 4, 0.5, -90).endStroke();
 		}
+		
+		// give the indicator a glow
+		var glowColor = shadeColor(color, 0.75);
+		this.indicator.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
 		
 		this.addChildAt(this.indicator, 0);
 		
@@ -319,12 +344,19 @@ c.showTurnDisplay = function(show) {
 	
 	this.indicator = new createjs.Shape();
 	
+	var color = null;
 	if(isPlayerUnit(this.unit)) {
-		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke("#3399FF").drawCircle(0, 0 ,hexWidth/10).endStroke();
+		color = "#3399FF";
+		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke(color).drawCircle(0, 0 ,hexWidth/10).endStroke();
 	}
 	else {
-		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke("#FF0000").drawPolyStar(0, 0, hexWidth/8, 4, 0.5, -90).endStroke();
+		color = "#FF0000"
+		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/8, 4, 0.5, -90).endStroke();
 	}
+	
+	// give the indicator a glow
+	var glowColor = shadeColor(color, 0.75);
+	this.indicator.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
 	
 	this.addChildAt(this.indicator, 0);
 	
