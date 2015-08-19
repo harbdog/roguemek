@@ -49,6 +49,9 @@ function initPlayerUI() {
 	
 	// create the player unit display
 	initPlayerUnitDisplay();
+	
+	// create other unit displays
+	initOtherUnitDisplay();
 }
 
 // updates the sizings/positions of the UI overlays on the canvas
@@ -61,7 +64,40 @@ function updatePlayerUI() {
 }
 
 /**
- * Creates each player unit UI elements
+ * Create each other unit UI elements, such as armor and weapons
+ */
+function initOtherUnitDisplay() {
+	var firstListUnit = unitListDisplayArray[0];
+	$.each(units, function(id, unit) {
+		if(isPlayerUnit(unit)) return;
+		
+		// other unit armor displays are on the right side of the window 
+		var unitArmorDisplay = new MechArmorDisplay();
+		unitArmorDisplay.visible = false;
+		
+		unitArmorDisplay.width = 200;
+		unitArmorDisplay.height = 50;
+		unitArmorDisplay.init();
+		
+		unitArmorDisplay.x = canvas.width - unitArmorDisplay.width;
+		unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+		
+		overlay.addChild(unitArmorDisplay);
+		 
+		armorDisplays[unit.id] = unitArmorDisplay;
+		
+		// apply initial damage to this unit, if any
+		for(var n=0; n<unit.armor.length; n++) {
+			applyUnitDamage(unit, n, false);
+		}
+		for(var n=0; n<unit.internals.length; n++) {
+			applyUnitDamage(unit, n, true);
+		}
+	});
+}
+
+/**
+ * Creates each player unit UI elements, such as armor, weapons, and heat
  */
 function initPlayerUnitDisplay() {
 	if(unitListDisplayArray == null || unitListDisplayArray.length == 0) return;
@@ -112,6 +148,36 @@ function updatePlayerUnitDisplay() {
 }
 
 /**
+ * Ensures that only the given player unit shows its display, others are hidden
+ * @param unit
+ */
+function showPlayerUnitDisplay(unit) {
+	if(!isPlayerUnit(unit)) return;
+	
+	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
+		var chkUnit = units[unitId];
+		if(isPlayerUnit(chkUnit)){
+			unitArmorDisplay.visible = (unit == null || unit.id == unitId);
+		}
+	});
+}
+
+/**
+ * Ensures that only the given non-player unit shows its display, others are hidden
+ * @param unit
+ */
+function showOtherUnitDisplay(unit) {
+	if(isPlayerUnit(unit)) return;
+	
+	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
+		var chkUnit = units[unitId];
+		if(!isPlayerUnit(chkUnit)){
+			unitArmorDisplay.visible = (unit == null || unit.id == unitId);
+		}
+	});
+}
+
+/**
  * Updates the player armor diagram for the given unit to account for damage taken
  * @param unit
  * @param isInternal
@@ -120,78 +186,73 @@ function updatePlayerUnitDisplay() {
 function applyUnitDamage(unit, index, isInternal) {
 	if(unit == null || index < 0) return;
 	
-	if(isPlayerUnit(unit)) {
-		var value, initialValue;
-		if(isInternal) {
-			value = unit.internals[index];
-			initialValue = unit.initialInternals[index];
-		}
-		else{
-			value = unit.armor[index];
-			initialValue = unit.initialArmor[index];
-		}
-		
-		if(value == null || value < 0) {
-			value = 0;
-		}
-		if(initialValue == null || initialValue <= 0) {
-			initialValue = 1;
-		}
-		
-		var unitArmorDisplay = armorDisplays[unit.id];
-		if(unitArmorDisplay != null) {
-			var section, subIndex;
-			if(index == HEAD){
-				// TODO: correct section and index to proper values for HTAL display
-				section = unitArmorDisplay.HD;
-				subIndex = isInternal ? 1 : 0;
-			}
-			else if(index == LEFT_ARM){
-				section = unitArmorDisplay.LA;
-				subIndex = isInternal ? 1 : 0;
-			}
-			else if(index == LEFT_TORSO){
-				section = unitArmorDisplay.LTR;
-				subIndex = isInternal ? 1 : 0;
-			}
-			else if(index == CENTER_TORSO){
-				section = unitArmorDisplay.CTR;
-				subIndex = isInternal ? 1 : 0;
-			}
-			else if(index == RIGHT_TORSO){
-				section = unitArmorDisplay.RTR;
-				subIndex = isInternal ? 1 : 0;
-			}
-			else if(index == RIGHT_ARM){
-				section = unitArmorDisplay.RA;
-				subIndex = isInternal ? 1 : 0;
-			}
-			else if(index == LEFT_LEG){
-				section = unitArmorDisplay.LL;
-				subIndex = isInternal ? 1 : 0;
-			}
-			else if(index == RIGHT_LEG){
-				section = unitArmorDisplay.RL;
-				subIndex = isInternal ? 1 : 0;
-			}
-			else if(index == LEFT_REAR){
-				section = unitArmorDisplay.LTR;
-				subIndex = 2;
-			}
-			else if(index == CENTER_REAR){
-				section = unitArmorDisplay.CTR;
-				subIndex = 2;
-			}
-			else if(index == RIGHT_REAR){
-				section = unitArmorDisplay.RTR;
-				subIndex = 2;
-			}
-			
-			unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue);
-		}
+	var value, initialValue;
+	if(isInternal) {
+		value = unit.internals[index];
+		initialValue = unit.initialInternals[index];
 	}
 	else{
-		// TODO: apply damage to non-player units
+		value = unit.armor[index];
+		initialValue = unit.initialArmor[index];
+	}
+	
+	if(value == null || value < 0) {
+		value = 0;
+	}
+	if(initialValue == null || initialValue <= 0) {
+		initialValue = 1;
+	}
+	
+	var unitArmorDisplay = armorDisplays[unit.id];
+	if(unitArmorDisplay != null) {
+		var section, subIndex;
+		if(index == HEAD){
+			// TODO: correct section and index to proper values for HTAL display
+			section = unitArmorDisplay.HD;
+			subIndex = isInternal ? 1 : 0;
+		}
+		else if(index == LEFT_ARM){
+			section = unitArmorDisplay.LA;
+			subIndex = isInternal ? 1 : 0;
+		}
+		else if(index == LEFT_TORSO){
+			section = unitArmorDisplay.LTR;
+			subIndex = isInternal ? 1 : 0;
+		}
+		else if(index == CENTER_TORSO){
+			section = unitArmorDisplay.CTR;
+			subIndex = isInternal ? 1 : 0;
+		}
+		else if(index == RIGHT_TORSO){
+			section = unitArmorDisplay.RTR;
+			subIndex = isInternal ? 1 : 0;
+		}
+		else if(index == RIGHT_ARM){
+			section = unitArmorDisplay.RA;
+			subIndex = isInternal ? 1 : 0;
+		}
+		else if(index == LEFT_LEG){
+			section = unitArmorDisplay.LL;
+			subIndex = isInternal ? 1 : 0;
+		}
+		else if(index == RIGHT_LEG){
+			section = unitArmorDisplay.RL;
+			subIndex = isInternal ? 1 : 0;
+		}
+		else if(index == LEFT_REAR){
+			section = unitArmorDisplay.LTR;
+			subIndex = 2;
+		}
+		else if(index == CENTER_REAR){
+			section = unitArmorDisplay.CTR;
+			subIndex = 2;
+		}
+		else if(index == RIGHT_REAR){
+			section = unitArmorDisplay.RTR;
+			subIndex = 2;
+		}
+		
+		unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue);
 	}
 }
 
@@ -250,12 +311,17 @@ function updatePlayerUnitListDisplay() {
  */
 function setPlayerTarget(unit) {
 	if(unit == null) {
+		showOtherUnitDisplay(null);
+		
 		if(targetBracket != null) {
 			targetBracket.visible = false;
 			createjs.Tween.removeTweens(targetBracket);
 		}
 		return;
 	}
+	
+	// show target unit info display
+	showOtherUnitDisplay(unit);
 	
 	// show target bracket on top of the target
 	var scale = 0.8 * hexScale;

@@ -354,11 +354,15 @@ function pollUpdate(updates) {
 						if(newTurnTarget != null) {
 							newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
 						}
+						
+						showPlayerUnitDisplay(turnUnit);
+					}
+					else {
+						showOtherUnitDisplay(turnUnit);
 					}
 				}
 				
 				updatePlayerUnitListDisplay();
-				updatePlayerUnitDisplay();
 				
 				update = true;
 				

@@ -65,7 +65,7 @@ c.init = function() {
 
 c.createSection = function(text, startIndex) {
 	var section = new ArmorSectionDisplay(
-			this.SECTION_WIDTH, DEFAULT_HEIGHT, 
+			this.SECTION_WIDTH, this.height, 
 			this.BAR_WIDTH, text, startIndex);
 	
 	section.x = startIndex * this.SECTION_WIDTH;
