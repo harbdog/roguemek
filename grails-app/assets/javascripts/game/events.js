@@ -55,7 +55,33 @@ function handleKeyPress(key) {
 	}
 	
 	if(weaponFired >= 0){
-		// Toggle the weapon UI for firing
+
+		// TESTING: weapons fire, see console
+		if(isPlayerUnit(turnUnit)) {
+			var weapon, index = 0;
+			for(var id in turnUnit.weapons) {
+				if(weaponFired == index) {
+					weapon = turnUnit.weapons[id];
+					break;
+				}
+				
+				index ++;
+			}
+			
+			if(weapon != null) {
+				var selectedIndex = $.inArray(weapon, selectedWeapons);
+				if(selectedIndex == -1) {
+					console.log("fired "+weaponFired+": "+weapon);
+					selectedWeapons.push(weapon);
+				}
+				else {
+					console.log("deselected "+weaponFired+": "+weapon);
+					delete selectedWeapons[selectedIndex];
+				}
+			}
+		}
+		
+		// TODO: Toggle the weapon UI for firing		
 		/*if(playerWeapons[weaponFired] != null) {
 			var thisWeapon = playerWeapons[weaponFired];
 			
@@ -74,13 +100,14 @@ function handleKeyPress(key) {
 	else if(key == "." || key == "space" || key == "enter"){
 		// Skip the remainder of the turn
 		// TODO: OR fire any selected weapons
-		var selectedWeapons = getSelectedWeapons();
+		//var selectedWeapons = getSelectedWeapons();
 		
 		if(selectedWeapons.length == 0){
 			skip();
 		}
 		else{
 			fire_weapons(selectedWeapons);
+			selectedWeapons = [];
 		}
 	}
 	else if(key == "a" || key == "left"){

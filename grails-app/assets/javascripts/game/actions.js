@@ -128,10 +128,13 @@ function skip() {
 }
 
 function fire_weapons(weapons) {
+	var playerTarget = unitTargets[turnUnit.id];
+	if(playerTarget == null) return;
+	
 	var target_id = playerTarget.id;
 	var weapon_ids = []
 	$.each(weapons, function(key, w) {
-		weapon_ids.push(w.id);
+		if(w != null) weapon_ids.push(w.id);
 	});
 		
 	handleActionJSON({
@@ -352,11 +355,12 @@ function pollUpdate(updates) {
 							newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
 						}
 					}
-					
-					update = true;
 				}
 				
 				updatePlayerUnitListDisplay();
+				updatePlayerUnitDisplay();
+				
+				update = true;
 				
 				// TODO: used to determine if the player turn just ended
 				/*var playerTurnEnded = (playerUnit.id == turnUnit.id);

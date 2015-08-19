@@ -71,8 +71,12 @@ function initPlayerUnitDisplay() {
 		armorDisplays = {};
 		
 		$.each(unitListDisplayArray, function(index, listUnit) {
+			var unit = listUnit.unit;
+			
 			// the armor display is to the right of the unit list display
 			var unitArmorDisplay = new MechArmorDisplay();
+			unitArmorDisplay.visible = false;
+			
 			unitArmorDisplay.height = firstListUnit.getDisplayHeight() * 2;
 			unitArmorDisplay.init();
 			
@@ -81,7 +85,15 @@ function initPlayerUnitDisplay() {
 			
 			overlay.addChild(unitArmorDisplay);
 			 
-			armorDisplays[listUnit.unit.id] = unitArmorDisplay;
+			armorDisplays[unit.id] = unitArmorDisplay;
+			
+			// apply initial damage to this unit, if any
+			for(var n=0; n<unit.armor.length; n++) {
+				applyUnitDamage(unit, n, false);
+			}
+			for(var n=0; n<unit.internals.length; n++) {
+				applyUnitDamage(unit, n, true);
+			}
 		});
 	}
 }
@@ -93,8 +105,9 @@ function initPlayerUnitDisplay() {
 function updatePlayerUnitDisplay() {
 	if(armorDisplays == null) return;
 	
-	 $.each(armorDisplays, function(index, unitArmorDisplay) {
+	 $.each(armorDisplays, function(unitId, unitArmorDisplay) {
 		 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+		 unitArmorDisplay.visible = (turnUnit.id == unitId);
 	 });
 }
 
@@ -108,9 +121,6 @@ function applyUnitDamage(unit, index, isInternal) {
 	if(unit == null || index < 0) return;
 	
 	if(isPlayerUnit(unit)) {
-		
-		console.log("applyUnitDamage: "+unit+" at "+index+", internal="+isInternal);
-		
 		var value, initialValue;
 		if(isInternal) {
 			value = unit.internals[index];
@@ -130,8 +140,54 @@ function applyUnitDamage(unit, index, isInternal) {
 		
 		var unitArmorDisplay = armorDisplays[unit.id];
 		if(unitArmorDisplay != null) {
-			console.log("  updating to "+value+"/"+initialValue);
-			unitArmorDisplay.setSectionPercent(unitArmorDisplay.CTR, 0, 100 * value/initialValue);
+			var section, subIndex;
+			if(index == HEAD){
+				// TODO: correct section and index to proper values for HTAL display
+				section = unitArmorDisplay.HD;
+				subIndex = isInternal ? 1 : 0;
+			}
+			else if(index == LEFT_ARM){
+				section = unitArmorDisplay.LA;
+				subIndex = isInternal ? 1 : 0;
+			}
+			else if(index == LEFT_TORSO){
+				section = unitArmorDisplay.LTR;
+				subIndex = isInternal ? 1 : 0;
+			}
+			else if(index == CENTER_TORSO){
+				section = unitArmorDisplay.CTR;
+				subIndex = isInternal ? 1 : 0;
+			}
+			else if(index == RIGHT_TORSO){
+				section = unitArmorDisplay.RTR;
+				subIndex = isInternal ? 1 : 0;
+			}
+			else if(index == RIGHT_ARM){
+				section = unitArmorDisplay.RA;
+				subIndex = isInternal ? 1 : 0;
+			}
+			else if(index == LEFT_LEG){
+				section = unitArmorDisplay.LL;
+				subIndex = isInternal ? 1 : 0;
+			}
+			else if(index == RIGHT_LEG){
+				section = unitArmorDisplay.RL;
+				subIndex = isInternal ? 1 : 0;
+			}
+			else if(index == LEFT_REAR){
+				section = unitArmorDisplay.LTR;
+				subIndex = 2;
+			}
+			else if(index == CENTER_REAR){
+				section = unitArmorDisplay.CTR;
+				subIndex = 2;
+			}
+			else if(index == RIGHT_REAR){
+				section = unitArmorDisplay.RTR;
+				subIndex = 2;
+			}
+			
+			unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue);
 		}
 	}
 	else{
@@ -252,6 +308,13 @@ function setPlayerTarget(unit) {
 			.addEventListener("change", function() {
 				update = true;
 			});
+}
+
+/**
+ * Intended to be called back from Tweens when the object is ready to remove itself from teh stage
+ */
+function removeThisFromStage() {
+	stage.removeChild(this);
 }
 
 function setActionPoints(apRemaining) {
@@ -435,7 +498,7 @@ function updateSelectedWeapons() {
  * @returns {Array}
  */
 function getSelectedWeapons() {
-	var selectedWeapons = [];
+	//var selectedWeapons = [];
 	
 	// TODO: determine weapons that are selected to fire
 	/*$.each(playerWeapons, function(key, w) {
@@ -502,7 +565,9 @@ function updateWeaponsCooldown() {
  * Updates the target info display
  */
 function updateTargetDisplay() {
-	if(playerTarget == null) return;
+	//TODO: update the target display 
+	// if(playerTarget == null) return;
+	return;
 	
 	var targetDisplayUnit = playerTarget.displayUnit;
 	

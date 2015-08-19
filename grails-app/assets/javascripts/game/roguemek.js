@@ -64,6 +64,7 @@ var unitTargets, unitWeapons;
 
 // Keep track of which unit's turn it currently is
 var turnUnit;
+var selectedWeapons = [];//TESTING
 
 // Keep track of when actions are ready to be performed during the player turn
 var playerActionReady = true;
