@@ -61,6 +61,7 @@ function updatePlayerUI() {
 	updatePlayerUnitListDisplay();
 	
 	updatePlayerUnitDisplay();
+	updateOtherUnitDisplay();
 }
 
 /**
@@ -92,6 +93,37 @@ function initOtherUnitDisplay() {
 		}
 		for(var n=0; n<unit.internals.length; n++) {
 			applyUnitDamage(unit, n, true);
+		}
+	});
+}
+
+/**
+ * Updates sizing/position of each non-player unit UI element
+ * @returns
+ */
+function updateOtherUnitDisplay() {
+	if(armorDisplays == null) return;
+	
+	 $.each(armorDisplays, function(unitId, unitArmorDisplay) {
+		 var chkUnit = units[unitId];
+		 if(!isPlayerUnit(chkUnit)) {
+			 unitArmorDisplay.x = canvas.width - unitArmorDisplay.width;
+			 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+		 }
+	 });
+}
+
+/**
+ * Ensures that only the given non-player unit shows its display, others are hidden
+ * @param unit
+ */
+function showOtherUnitDisplay(unit) {
+	if(isPlayerUnit(unit)) return;
+	
+	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
+		var chkUnit = units[unitId];
+		if(!isPlayerUnit(chkUnit)){
+			unitArmorDisplay.visible = (unit == null || unit.id == unitId);
 		}
 	});
 }
@@ -131,6 +163,8 @@ function initPlayerUnitDisplay() {
 				applyUnitDamage(unit, n, true);
 			}
 		});
+		
+		showPlayerUnitDisplay(turnUnit);
 	}
 }
 
@@ -142,8 +176,10 @@ function updatePlayerUnitDisplay() {
 	if(armorDisplays == null) return;
 	
 	 $.each(armorDisplays, function(unitId, unitArmorDisplay) {
-		 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
-		 unitArmorDisplay.visible = (turnUnit.id == unitId);
+		 var chkUnit = units[unitId];
+		 if(isPlayerUnit(chkUnit)) {
+			 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+		 }
 	 });
 }
 
@@ -157,21 +193,6 @@ function showPlayerUnitDisplay(unit) {
 	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
 		var chkUnit = units[unitId];
 		if(isPlayerUnit(chkUnit)){
-			unitArmorDisplay.visible = (unit == null || unit.id == unitId);
-		}
-	});
-}
-
-/**
- * Ensures that only the given non-player unit shows its display, others are hidden
- * @param unit
- */
-function showOtherUnitDisplay(unit) {
-	if(isPlayerUnit(unit)) return;
-	
-	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
-		var chkUnit = units[unitId];
-		if(!isPlayerUnit(chkUnit)){
 			unitArmorDisplay.visible = (unit == null || unit.id == unitId);
 		}
 	});
