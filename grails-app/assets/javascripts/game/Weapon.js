@@ -5,32 +5,32 @@
 "use strict";
 
 //Weapon classifications
-var WEAPON_MELEE = "Melee";
-var WEAPON_ENERGY = "Energy";
-var WEAPON_BALLISTIC = "Ballistic";
-var WEAPON_MISSILE = "Missile";
+Weapon.WEAPON_MELEE = "Melee";
+Weapon.WEAPON_ENERGY = "Energy";
+Weapon.WEAPON_BALLISTIC = "Ballistic";
+Weapon.WEAPON_MISSILE = "Missile";
 
-// Specific weapons
-var WeaponAC20 = "AC/20";
-var WeaponAC10 = "AC/10";
-var WeaponAC5 = "AC/5";
-var WeaponAC2 = "AC/2";
-var WeaponMGUN = "MGUN";
+//Specific weapons
+Weapon.WeaponAC20 = "AC/20";
+Weapon.WeaponAC10 = "AC/10";
+Weapon.WeaponAC5 = "AC/5";
+Weapon.WeaponAC2 = "AC/2";
+Weapon.WeaponMGUN = "MGUN";
 
-var WeaponSLAS = "SLAS";
-var WeaponMLAS = "MLAS";
-var WeaponLLAS = "LLAS";
-var WeaponPPC = "PPC";
-var WeaponFlamer = "FLAMR";
+Weapon.WeaponSLAS = "SLAS";
+Weapon.WeaponMLAS = "MLAS";
+Weapon.WeaponLLAS = "LLAS";
+Weapon.WeaponPPC = "PPC";
+Weapon.WeaponFlamer = "FLAMR";
 
-var WeaponSRM2 = "SRM2";
-var WeaponSRM4 = "SRM4";
-var WeaponSRM6 = "SRM6";
+Weapon.WeaponSRM2 = "SRM2";
+Weapon.WeaponSRM4 = "SRM4";
+Weapon.WeaponSRM6 = "SRM6";
 
-var WeaponLRM5 = "LRM5";
-var WeaponLRM10 = "LRM10";
-var WeaponLRM15 = "LRM15";
-var WeaponLRM20 = "LRM20";
+Weapon.WeaponLRM5 = "LRM5";
+Weapon.WeaponLRM10 = "LRM10";
+Weapon.WeaponLRM15 = "LRM15";
+Weapon.WeaponLRM20 = "LRM20";
 
 function Weapon(id, name, shortName, weaponType, location, damage, projectiles, heat, cycle, cooldown, minRange, range) {
 	this.id = id;
@@ -62,27 +62,27 @@ w.isClusterWeapon = function() {
 	return (this.projectiles > 1);
 }
 w.isMeleeWeapon = function() {
-	return (this.weaponType == WEAPON_MELEE);
+	return (this.weaponType == Weapon.WEAPON_MELEE);
 }
 w.isEnergyWeapon = function() {
-	return (this.weaponType == WEAPON_ENERGY);
+	return (this.weaponType == Weapon.WEAPON_ENERGY);
 }
 w.isBallisticWeapon = function() {
-	return (this.weaponType == WEAPON_BALLISTIC);
+	return (this.weaponType == Weapon.WEAPON_BALLISTIC);
 }
 w.isMissileWeapon = function() {
-	return (this.weaponType == WEAPON_MISSILE);
+	return (this.weaponType == Weapon.WEAPON_MISSILE);
 }
 w.isLRM = function() {
-	return (this.shortName == WeaponLRM5
-			|| this.shortName == WeaponLRM10
-			|| this.shortName == WeaponLRM15
-			|| this.shortName == WeaponLRM20);
+	return (this.shortName == Weapon.WeaponLRM5
+			|| this.shortName == Weapon.WeaponLRM10
+			|| this.shortName == Weapon.WeaponLRM15
+			|| this.shortName == Weapon.WeaponLRM20);
 }
 w.isSRM = function() {
-	return (this.shortName == WeaponSRM2
-			|| this.shortName == WeaponSRM4
-			|| this.shortName == WeaponSRM6);
+	return (this.shortName == Weapon.WeaponSRM2
+			|| this.shortName == Weapon.WeaponSRM4
+			|| this.shortName == Weapon.WeaponSRM6);
 }
 w.toString = function() {
 	return this.name;

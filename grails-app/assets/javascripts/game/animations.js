@@ -132,20 +132,20 @@ function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 	
 	var wName = weapon.shortName;
 	switch(wName) {
-		case WeaponMGUN: 
+		case Weapon.WeaponMGUN: 
 			burstProjectiles = 10;
 			break;
 			
-		case WeaponAC5:
-		case WeaponAC2:
+		case Weapon.WeaponAC5:
+		case Weapon.WeaponAC2:
 			burstProjectiles = 5;
 			break;
 			
-		case WeaponAC10:
+		case Weapon.WeaponAC10:
 			burstProjectiles = 4;
 			break;
 			
-		case WeaponAC20:
+		case Weapon.WeaponAC20:
 		default:
 			burstProjectiles = 3;
 			break;	
@@ -154,7 +154,7 @@ function animateBurstProjectile(srcUnit, weapon, tgtUnit, hitLocation){
 	var thisLocationEndPoints = [];
 	for(var i=0; i<burstProjectiles; i++){
 		var initialDelay = i * 100;
-		if(wName == WeaponMGUN) {
+		if(wName == Weapon.WeaponMGUN) {
 			initialDelay = i * 50;
 		}
 		
@@ -237,13 +237,13 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 	}
 	
 	if(weapon.isEnergyWeapon()) {
-		if(wName == WeaponSLAS 
-				|| wName == WeaponMLAS 
-				|| wName == WeaponLLAS ){
+		if(wName == Weapon.WeaponSLAS 
+				|| wName == Weapon.WeaponMLAS 
+				|| wName == Weapon.WeaponLLAS ){
 			
 			var laserConf;
 			switch(wName) {
-				case WeaponSLAS:
+				case Weapon.WeaponSLAS:
 					laserConf = {
 						laserWidth: 1,
 						laserColor: "#990000",
@@ -252,7 +252,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 					};
 					break;
 					
-				case WeaponMLAS:
+				case Weapon.WeaponMLAS:
 					laserConf = {
 						laserWidth: 2,
 						laserColor: "#00FF00",
@@ -261,7 +261,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 					};
 					break;
 					
-				case WeaponLLAS:
+				case Weapon.WeaponLLAS:
 					laserConf = {
 						laserWidth: 2,
 						laserColor: "#0000FF",
@@ -283,7 +283,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			
 			createjs.Tween.get(laser).wait(initialDelay).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, laser);
 		}
-		else if(wName == WeaponPPC) {
+		else if(wName == Weapon.WeaponPPC) {
 			// create a PPC projectile as lightning
 			var lightning = new Lightning();
 			lightning.visible = false;
@@ -292,7 +292,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			
 			createjs.Tween.get(lightning).wait(initialDelay).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, lightning);
 		}
-		else if(wName == WeaponFlamer) {
+		else if(wName == Weapon.WeaponFlamer) {
 			// create a Flamer projectile
 			projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_FLAMER);
 			
@@ -310,35 +310,35 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		var projectileWidth = 1;
 		var projectileLength = 1;
 		
-		if(wName == WeaponAC20 
-				|| wName == WeaponAC10 
-				|| wName == WeaponAC5
-				|| wName == WeaponAC2
-				|| wName == WeaponMGUN){
+		if(wName == Weapon.WeaponAC20 
+				|| wName == Weapon.WeaponAC10 
+				|| wName == Weapon.WeaponAC5
+				|| wName == Weapon.WeaponAC2
+				|| wName == Weapon.WeaponMGUN){
 			// for ACs and Machine guns use lines of a given width and length as tracers
-			if(wName == WeaponAC20){
+			if(wName == Weapon.WeaponAC20){
 				projectileTime *= 1.3;
 				
 				projectileWidth = 3;
 				projectileLength = 20;
 			}
-			else if(wName == WeaponAC10){
+			else if(wName == Weapon.WeaponAC10){
 				projectileTime *= 1.2;
 				
 				projectileWidth = 2.5;
 				projectileLength = 15;
 			}
-			else if(wName == WeaponAC5){
+			else if(wName == Weapon.WeaponAC5){
 				projectileTime *= 1.1;
 				
 				projectileWidth = 2;
 				projectileLength = 15;
 			}
-			else if(wName == WeaponAC2){
+			else if(wName == Weapon.WeaponAC2){
 				projectileWidth = 2;
 				projectileLength = 10;
 			}
-			else if(wName == WeaponMGUN){
+			else if(wName == Weapon.WeaponMGUN){
 				projectileTime = getProjectileTime(distance, PROJECTILE_SPEED_MG);
 				
 				projectileWidth = 1;

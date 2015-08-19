@@ -90,10 +90,13 @@ c.setDisplayedPercent = function(index, percent) {
 		percent = 100;
 	}
 	
+	// blend color as percent goes down
+	var barColor = blendColors("#FF0000", "#3399FF", percent/100);
+	
 	var bar = this.bars[index];
 	var barBounds = this.barBounds[index];
 	bar.graphics.clear();
-	bar.graphics.beginFill("#3399FF")
+	bar.graphics.beginFill(barColor)
 			.drawRect(barBounds.x, barBounds.y+barBounds.height,
 					barBounds.width, -barBounds.height*(percent/100));
 	

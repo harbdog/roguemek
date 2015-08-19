@@ -157,6 +157,8 @@ function fire_weapons(weapons) {
 				var armorRemains = data.armorHit[i];
 				if(armorRemains != null) {
 					t.armor[i] = armorRemains;
+					
+					applyUnitDamage(t, i, false);
 				}
 			}
 		}
@@ -168,6 +170,8 @@ function fire_weapons(weapons) {
 				var internalsRemains = data.internalsHit[i];
 				if(internalsRemains != null) {
 					t.internals[i] = internalsRemains;
+					
+					applyUnitDamage(t, i, true);
 				}
 			}
 		}
@@ -274,6 +278,8 @@ function pollUpdate(updates) {
 						var armorRemains = data.armorHit[i];
 						if(armorRemains != null) {
 							tgtUnit.armor[i] = armorRemains;
+							
+							applyUnitDamage(tgtUnit, i, false);
 						}
 					}
 				}
@@ -285,6 +291,8 @@ function pollUpdate(updates) {
 						var internalsRemains = data.internalsHit[i];
 						if(internalsRemains != null) {
 							tgtUnit.internals[i] = internalsRemains;
+							
+							applyUnitDamage(tgtUnit, i, true);
 						}
 					}
 				}
@@ -293,12 +301,12 @@ function pollUpdate(updates) {
 					if(isPlayerUnit(tgtUnit)
 							&& (data.armorHit || data.internalsHit)) {
 						// update player armor/internals after being hit
-						setArmorDisplay(tgtUnit.armor, tgtUnit.internals);
+						//setArmorDisplay(tgtUnit.armor, tgtUnit.internals);
 					}
-					else if(isPlayerUnit(tgtUnit)
+					else if(!isPlayerUnit(tgtUnit)
 							&& (data.armorHit || data.internalsHit)) {
 						// update target armor/internals after being hit
-						updateTargetDisplay();
+						//updateTargetDisplay();
 					}
 				}
 				

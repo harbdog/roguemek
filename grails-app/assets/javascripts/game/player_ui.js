@@ -29,7 +29,7 @@ var elevationHeight = defElevationHeight * hexScale;
 //variable to show level (elevation/depth/etc.)
 var showLevels = true;
 
-var messagingDisplay, armorDisplay;
+var messagingDisplay, armorDisplays;
 
 var targetBracket;
 
@@ -47,8 +47,8 @@ function initPlayerUI() {
 	// create the player unit display list
 	initPlayerUnitListDisplay();
 	
-	// create the player unit armor display
-	initPlayerUnitArmorDisplay();
+	// create the player unit display
+	initPlayerUnitDisplay();
 }
 
 // updates the sizings/positions of the UI overlays on the canvas
@@ -57,33 +57,86 @@ function updatePlayerUI() {
 	
 	updatePlayerUnitListDisplay();
 	
-	updatePlayerUnitArmorDisplay();
+	updatePlayerUnitDisplay();
 }
 
 /**
- * Creates the player unit armor UI
+ * Creates each player unit UI elements
  */
-function initPlayerUnitArmorDisplay() {
+function initPlayerUnitDisplay() {
 	if(unitListDisplayArray == null || unitListDisplayArray.length == 0) return;
 	
 	var firstListUnit = unitListDisplayArray[0];
-	if(armorDisplay == null) {
-		// the armor display is to the right of the unit list display
-		armorDisplay = new MechArmorDisplay();
-		armorDisplay.height = firstListUnit.getDisplayHeight() * 2;
-		armorDisplay.init();
+	if(armorDisplays == null) {
+		armorDisplays = {};
 		
-		armorDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
-		armorDisplay.y = canvas.height - armorDisplay.height;
-		
-		overlay.addChild(armorDisplay);
+		$.each(unitListDisplayArray, function(index, listUnit) {
+			// the armor display is to the right of the unit list display
+			var unitArmorDisplay = new MechArmorDisplay();
+			unitArmorDisplay.height = firstListUnit.getDisplayHeight() * 2;
+			unitArmorDisplay.init();
+			
+			unitArmorDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
+			unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+			
+			overlay.addChild(unitArmorDisplay);
+			 
+			armorDisplays[listUnit.unit.id] = unitArmorDisplay;
+		});
 	}
 }
 
-function updatePlayerUnitArmorDisplay() {
-	if(armorDisplay == null) return;
+/**
+ * Updates sizing/position of each player unit UI element
+ * @returns
+ */
+function updatePlayerUnitDisplay() {
+	if(armorDisplays == null) return;
 	
-	armorDisplay.y = canvas.height - armorDisplay.height;
+	 $.each(armorDisplays, function(index, unitArmorDisplay) {
+		 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+	 });
+}
+
+/**
+ * Updates the player armor diagram for the given unit to account for damage taken
+ * @param unit
+ * @param isInternal
+ * @param index
+ */
+function applyUnitDamage(unit, index, isInternal) {
+	if(unit == null || index < 0) return;
+	
+	if(isPlayerUnit(unit)) {
+		
+		console.log("applyUnitDamage: "+unit+" at "+index+", internal="+isInternal);
+		
+		var value, initialValue;
+		if(isInternal) {
+			value = unit.internals[index];
+			initialValue = unit.initialInternals[index];
+		}
+		else{
+			value = unit.armor[index];
+			initialValue = unit.initialArmor[index];
+		}
+		
+		if(value == null || value < 0) {
+			value = 0;
+		}
+		if(initialValue == null || initialValue <= 0) {
+			initialValue = 1;
+		}
+		
+		var unitArmorDisplay = armorDisplays[unit.id];
+		if(unitArmorDisplay != null) {
+			console.log("  updating to "+value+"/"+initialValue);
+			unitArmorDisplay.setSectionPercent(unitArmorDisplay.CTR, 0, 100 * value/initialValue);
+		}
+	}
+	else{
+		// TODO: apply damage to non-player units
+	}
 }
 
 /**
@@ -224,24 +277,6 @@ function setJumpPoints(jpRemaining) {
 function updateUnitStatsDisplay() {
 	// TODO: update AP and JP display
 }
-
-function setArmorDisplay(armor, internals) {
-	// TODO: HTAL graph display
-	// TODO: HTAL paper doll display
-	
-	/*var line1 = "HD:"+armor[HEAD]+"("+internals[HEAD]+")";
-	var line2 = "LA:"+armor[LEFT_ARM]+"("+internals[LEFT_ARM]+")" +"          "+ "RA:"+armor[RIGHT_ARM]+"("+internals[RIGHT_ARM]+")";
-	var line3 = "LT:"+armor[LEFT_TORSO]+"("+internals[LEFT_TORSO]+")" +" "+ "CT:"+armor[CENTER_TORSO]+"("+internals[CENTER_TORSO]+")" +" "+ "RT:"+armor[RIGHT_TORSO]+"("+internals[RIGHT_TORSO]+")";
-	var line4 = "LTR:"+armor[LEFT_REAR] +"    "+ "CTR:"+armor[CENTER_REAR] +"    "+ "RTR:"+armor[RIGHT_REAR];
-	var line5 = "LL:"+armor[LEFT_LEG]+"("+internals[LEFT_LEG]+")" +"          "+ "RL:"+armor[RIGHT_LEG]+"("+internals[RIGHT_LEG]+")";
-	unitArmorDisplay.innerHTML = 
-			"<p><pre>"+line1+"</pre></p>" +
-			"<p><pre>"+line2+"</pre></p>" +
-			"<p><pre>"+line3+"</pre></p>" +
-			"<p><pre>"+line4+"</pre></p>" +
-			"<p><pre>"+line5+"</pre></p>";*/
-}
-
 
 function setHeatDisplay(heat, heatGen, heatDiss) {
 	// TODO: update unit heat, heat generation, heat dissipation
