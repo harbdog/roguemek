@@ -6,8 +6,9 @@
 
 var BORDER_WIDTH = 1;
 
-function ArmorSectionDisplay(width, height, barWidth, text, startIndex) {
+function ArmorSectionDisplay(parent, width, height, barWidth, text, startIndex) {
 	this.Container_constructor();
+	this.parent = parent;
 	
 	this.width = width;
 	this.height = height;
@@ -80,7 +81,7 @@ c.init = function(text, startIndex) {
 	}
 }
 
-c.setDisplayedPercent = function(index, percent) {
+c.setDisplayedPercent = function(index, percent, doAnimate) {
 	if(index < 0 || index > 2) return;
 	
 	if(percent < 0) {
@@ -101,7 +102,7 @@ c.setDisplayedPercent = function(index, percent) {
 					barBounds.width, -barBounds.height*(percent/100));
 	
 	createjs.Tween.removeTweens(bar);
-	if(percent > 0 && percent < 100) {
+	if(doAnimate && percent > 0 && percent < 100) {
 		createjs.Tween.get(bar)
 				.to({alpha: 0.25}, 250)
 				.to({alpha: 1.0}, 250)
@@ -109,6 +110,7 @@ c.setDisplayedPercent = function(index, percent) {
 				.to({alpha: 1.0}, 250)
 				.to({alpha: 0.25}, 250)
 				.to({alpha: 1.0}, 250)
+				.call(callDoCache, null, this.parent)
 				.addEventListener("change", function() {
 					update = true;
 				});

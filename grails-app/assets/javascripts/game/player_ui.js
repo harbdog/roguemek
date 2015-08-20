@@ -89,10 +89,10 @@ function initOtherUnitDisplay() {
 		
 		// apply initial damage to this unit, if any
 		for(var n=0; n<unit.armor.length; n++) {
-			applyUnitDamage(unit, n, false);
+			applyUnitDamage(unit, n, false, true);
 		}
 		for(var n=0; n<unit.internals.length; n++) {
-			applyUnitDamage(unit, n, true);
+			applyUnitDamage(unit, n, true, true);
 		}
 	});
 }
@@ -157,10 +157,10 @@ function initPlayerUnitDisplay() {
 			
 			// apply initial damage to this unit, if any
 			for(var n=0; n<unit.armor.length; n++) {
-				applyUnitDamage(unit, n, false);
+				applyUnitDamage(unit, n, false, true);
 			}
 			for(var n=0; n<unit.internals.length; n++) {
-				applyUnitDamage(unit, n, true);
+				applyUnitDamage(unit, n, true, true);
 			}
 		});
 		
@@ -388,7 +388,7 @@ function setPlayerTarget(unit) {
 		targetLine.graphics.clear();
 	}
 	
-	targetLine.graphics.setStrokeDash([10, 20], 5).
+	targetLine.graphics.setStrokeDash([10, 20], 10).
 			setStrokeStyle(3, "round").beginStroke("#FF0000")
 			.moveTo(turnUnit.getUnitDisplay().x, turnUnit.getUnitDisplay().y)
 			.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
@@ -428,10 +428,19 @@ function setPlayerTarget(unit) {
 }
 
 /**
- * Intended to be called back from Tweens when the object is ready to remove itself from teh stage
+ * Intended to be called back from Tweens when the object is ready to remove itself from the stage after animation is completed
  */
 function removeThisFromStage() {
 	stage.removeChild(this);
+}
+
+/**
+ * Intended to be called back from Tweens when the object is ready to be cached again after animation is completed
+ */
+function callDoCache() {
+	if(!createjs.Tween.hasActiveTweens(this)){
+		this.doCache();
+	}
 }
 
 function setActionPoints(apRemaining) {

@@ -65,6 +65,7 @@ c.init = function() {
 
 c.createSection = function(text, startIndex) {
 	var section = new ArmorSectionDisplay(
+			this,
 			this.SECTION_WIDTH, this.height, 
 			this.BAR_WIDTH, text, startIndex);
 	
@@ -72,14 +73,19 @@ c.createSection = function(text, startIndex) {
 	return section;
 }
 
-c.setSectionPercent = function(section, index, percent) {
+c.setSectionPercent = function(section, index, percent, doCache) {
 	if(section == null) return;
 	this.uncache();
 	
-	section.setDisplayedPercent(index, percent);
+	var doAnimate = true;
+	if(doCache) {
+		doAnimate = false;
+	}
+	section.setDisplayedPercent(index, percent, doAnimate);
 	
-	// do NOT cache here because it will cause the bar flashing animations to not work
-	//this.doCache();
+	if(doCache) {
+		this.doCache();
+	}
 }
 
 c.update = function() {
