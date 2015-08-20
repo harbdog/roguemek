@@ -31,7 +31,7 @@ var showLevels = true;
 
 var messagingDisplay, armorDisplays;
 
-var targetBracket;
+var targetBracket, targetLine;
 
 var apDisplaying, jpDisplaying;
 
@@ -334,6 +334,11 @@ function setPlayerTarget(unit) {
 	if(unit == null) {
 		showOtherUnitDisplay(null);
 		
+		if(targetLine != null) {
+			targetLine.visible = false;
+			createjs.Tween.removeTweens(targetLine);
+		}
+		
 		if(targetBracket != null) {
 			targetBracket.visible = false;
 			createjs.Tween.removeTweens(targetBracket);
@@ -372,6 +377,31 @@ function setPlayerTarget(unit) {
 	createjs.Tween.removeTweens(targetBracket);
 	var targetX = unitDisplay.x - scale*hexWidth/2;
 	var targetY = unitDisplay.y - scale*hexHeight/2;
+	
+	// create dashed line from player unit to target bracket
+	if(targetLine == null) {
+		targetLine = new createjs.Shape();
+		stage.addChild(targetLine);
+	}
+	else{
+		targetLine.visible = true;
+		targetLine.graphics.clear();
+	}
+	
+	targetLine.graphics.setStrokeDash([10, 20], 5).
+			setStrokeStyle(3, "round").beginStroke("#FF0000")
+			.moveTo(turnUnit.getUnitDisplay().x, turnUnit.getUnitDisplay().y)
+			.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
+	// give the indicator a glow
+	var glowColor = shadeColor("#FF0000", 0.75);
+	targetLine.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+	targetLine.alpha = 0;
+	
+	createjs.Tween.get(targetLine)
+			.to({alpha: 0.75}, 500)
+			.addEventListener("change", function() {
+				update = true;
+			});	
 	
 	if(targetBracket.visible) {
 		// animate move the bracket to the new location
