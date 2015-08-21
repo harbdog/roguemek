@@ -17,7 +17,10 @@ function MechHeatDisplay() {
 	this.background = null;
 	this.staticHeatBar = null;
 	this.heatMask = null;
+	this.staticHeatLabel = null;
 	this.heatLabel = null;
+	this.staticGenDissLabel = null;
+	this.heatGenDissLabel = null;
 }
 var c = createjs.extend(MechHeatDisplay, createjs.Container);
 
@@ -44,15 +47,26 @@ c.init = function() {
 	this.addChild(this.staticHeatBar);
 	
 	// draw static and dynamic heat labels
-	var staticHeatLabel = new createjs.Text("Heat", "11px Consolas", "#FFFFFF");
-	staticHeatLabel.x = 5;
-	staticHeatLabel.y = 0;
-	this.addChild(staticHeatLabel);
+	this.staticHeatLabel = new createjs.Text("Heat", "11px Consolas", "#FFFFFF");
+	this.staticHeatLabel.x = 5;
+	this.staticHeatLabel.y = 0;
+	this.addChild(this.staticHeatLabel);
 	
 	this.heatLabel = new createjs.Text("-", "16px Consolas", "#FFFFFF");
-	this.heatLabel.x = 5 + staticHeatLabel.getMeasuredWidth()/2 - this.heatLabel.getMeasuredWidth()/2;
-	this.heatLabel.y = 5/2 + staticHeatLabel.getMeasuredHeight();
+	//this.heatLabel.x = this.staticHeatLabel.x + this.staticHeatLabel.getMeasuredWidth()/2 - this.heatLabel.getMeasuredWidth()/2;
+	this.heatLabel.y = this.staticHeatLabel.x/2 + this.staticHeatLabel.getMeasuredHeight();
 	this.addChild(this.heatLabel);
+	
+	// draw static and dynamic heat gen/diss labels
+	this.staticGenDissLabel = new createjs.Text("GEN/DISS", "10px Consolas", "#FFFFFF");
+	this.staticGenDissLabel.x = this.staticHeatLabel.x*2 + this.width/3 - this.staticGenDissLabel.getMeasuredWidth()/2;
+	this.staticGenDissLabel.y = 0;
+	this.addChild(this.staticGenDissLabel);
+	
+	this.heatGenDissLabel = new createjs.Text("+ / -", "10px Consolas", "#FFFFFF");
+	//this.heatGenDissLabel.x = this.staticGenDissLabel.x + this.staticGenDissLabel.getMeasuredWidth()/2 -this.heatGenDissLabel.getMeasuredWidth()/2 ;
+	this.heatGenDissLabel.y = this.staticGenDissLabel.y + this.staticGenDissLabel.getMeasuredHeight()*1.5;
+	this.addChild(this.heatGenDissLabel);
 	
 	this.update();
 }
@@ -69,11 +83,25 @@ c.update = function() {
 	this.doCache();
 }
 
-c.setDisplayedHeat = function(heat) {
+c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
+	if(heat == null) return;
+	
+	if(heatGen == null) heatGen = "0.0";
+	if(heatDiss == null) heatDiss = "0.0";
+	
 	this.uncache();
 	
 	this.heatLabel.text = heat;
+	this.heatLabel.x = this.staticHeatLabel.x + this.staticHeatLabel.getMeasuredWidth()/2 - this.heatLabel.getMeasuredWidth()/2;
+	if(this.heatLabel.x < this.staticHeatLabel.x) {
+		this.heatLabel.x = this.staticHeatLabel.x;
+	}
+	
+	this.heatGenDissLabel.text = "+"+heatGen+"/"+"-"+heatDiss;
+	this.heatGenDissLabel.x = this.staticGenDissLabel.x + this.staticGenDissLabel.getMeasuredWidth()/2 -this.heatGenDissLabel.getMeasuredWidth()/2 ;
+	
 	this.staticHeatBar.alpha = 0.5 + 0.5 * heat/30;
+	
 	this.heatMask.graphics.clear();
 	this.heatMask.graphics.drawRect(0, 0, this.width * (heat / 30), this.height);
 	

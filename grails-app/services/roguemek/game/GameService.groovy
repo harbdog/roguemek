@@ -373,6 +373,7 @@ class GameService {
 			def initialInternals = null
 			def chassisVariant = null
 			def crits = null
+			def heatDiss = 0
 			
 			if(u instanceof BattleMech) {
 				Mech m = u.mech
@@ -409,6 +410,8 @@ class GameService {
 				}
 				
 				crits = getCritsRender(u)
+				
+				heatDiss = getHeatDissipation(game, u)
 			}
 			
 			def uRender = [
@@ -424,6 +427,7 @@ class GameService {
 				apRemaining: u.apRemaining,
 				jpRemaining: u.jpRemaining,
 				heat: u.heat,
+				heatDiss: heatDiss,
 				armor: armor,
 				initialArmor: initialArmor,
 				internals: internals,

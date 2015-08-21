@@ -242,6 +242,7 @@ function loadGameElements() {
 				  unitInstance.apRemaining = thisUnit.apRemaining;
 				  unitInstance.jpRemaining = thisUnit.jpRemaining;
 				  unitInstance.heat = thisUnit.heat;
+				  unitInstance.heatDiss = thisUnit.heatDiss;
 				  unitInstance.callsign = thisUnit.callsign;
 				  unitInstance.name = thisUnit.name;
 				  unitInstance.chassisVariant = thisUnit.chassisVariant;

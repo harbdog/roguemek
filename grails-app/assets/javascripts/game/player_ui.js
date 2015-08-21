@@ -233,7 +233,7 @@ function updateHeatDisplay(unit) {
 	
 	// TODO: update unit heat, heat generation, heat dissipation
 	var unitHeatDisplay = heatDisplays[unit.id];
-	unitHeatDisplay.setDisplayedHeat(unit.heat);
+	unitHeatDisplay.setDisplayedHeat(unit.heat, 0, unit.heatDiss);
 	
 	// TODO: Heat meter with indicators of heat that weapons will generate and where the heat penalties are
 }
