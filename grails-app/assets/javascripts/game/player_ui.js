@@ -29,7 +29,8 @@ var elevationHeight = defElevationHeight * hexScale;
 //variable to show level (elevation/depth/etc.)
 var showLevels = true;
 
-var messagingDisplay, armorDisplays;
+var messagingDisplay;
+var unitDisplays, armorDisplays, heatDisplays;
 
 var targetBracket, targetLine;
 
@@ -68,6 +69,8 @@ function updatePlayerUI() {
  * Create each other unit UI elements, such as armor and weapons
  */
 function initOtherUnitDisplay() {
+	if(unitDisplays == null) return;
+	
 	var firstListUnit = unitListDisplayArray[0];
 	$.each(units, function(id, unit) {
 		if(isPlayerUnit(unit)) return;
@@ -102,15 +105,13 @@ function initOtherUnitDisplay() {
  * @returns
  */
 function updateOtherUnitDisplay() {
-	if(armorDisplays == null) return;
-	
-	 $.each(armorDisplays, function(unitId, unitArmorDisplay) {
-		 var chkUnit = units[unitId];
-		 if(!isPlayerUnit(chkUnit)) {
-			 unitArmorDisplay.x = canvas.width - unitArmorDisplay.width;
-			 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
-		 }
-	 });
+	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
+		var chkUnit = units[unitId];
+		if(!isPlayerUnit(chkUnit)) {
+			unitArmorDisplay.x = canvas.width - unitArmorDisplay.width;
+			unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+		}
+	});
 }
 
 /**
@@ -134,38 +135,67 @@ function showOtherUnitDisplay(unit) {
 function initPlayerUnitDisplay() {
 	if(unitListDisplayArray == null || unitListDisplayArray.length == 0) return;
 	
+	// create the arrays that store the individual for unit displays
+	if(armorDisplays == null) armorDisplays = {};
+	if(heatDisplays == null) heatDisplays = {};
+	
+	// initialize the containers which have each unit's displays grouped together inside
+	if(unitDisplays == null) unitDisplays = {};
+	$.each(units, function(index, unit) {
+		var unitGroupDisplay = new createjs.Container();
+		unitGroupDisplay.visible = false;
+		overlay.addChild(unitGroupDisplay)
+		
+		unitDisplays[unit.id] = unitGroupDisplay;
+	});
+	
+	// Create each player unit display next to the list of player units
 	var firstListUnit = unitListDisplayArray[0];
-	if(armorDisplays == null) {
-		armorDisplays = {};
+	$.each(unitListDisplayArray, function(index, listUnit) {
+		var unit = listUnit.unit;
+		var unitGroupDisplay = unitDisplays[unit.id];
 		
-		$.each(unitListDisplayArray, function(index, listUnit) {
-			var unit = listUnit.unit;
-			
-			// the armor display is to the right of the unit list display
-			var unitArmorDisplay = new MechArmorDisplay();
-			unitArmorDisplay.visible = false;
-			
-			unitArmorDisplay.height = firstListUnit.getDisplayHeight() * 2;
-			unitArmorDisplay.init();
-			
-			unitArmorDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
-			unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
-			
-			overlay.addChild(unitArmorDisplay);
-			 
-			armorDisplays[unit.id] = unitArmorDisplay;
-			
-			// apply initial damage to this unit, if any
-			for(var n=0; n<unit.armor.length; n++) {
-				applyUnitDamage(unit, n, false, true);
-			}
-			for(var n=0; n<unit.internals.length; n++) {
-				applyUnitDamage(unit, n, true, true);
-			}
-		});
+		// the armor display is to the right of the unit list display
+		var unitArmorDisplay = new MechArmorDisplay();
 		
-		showPlayerUnitDisplay(turnUnit);
-	}
+		unitArmorDisplay.width = 250;
+		unitArmorDisplay.height = firstListUnit.getDisplayHeight() * 2;
+		unitArmorDisplay.init();
+		
+		unitArmorDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
+		unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+		
+		unitGroupDisplay.addChild(unitArmorDisplay);
+		 
+		armorDisplays[unit.id] = unitArmorDisplay;
+		
+		// the heat display is directly above the armor display
+		var unitHeatDisplay = new MechHeatDisplay();
+		
+		unitHeatDisplay.width = 250;
+		unitHeatDisplay.height = firstListUnit.getDisplayHeight();
+		unitHeatDisplay.init();
+		
+		unitHeatDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
+		unitHeatDisplay.y = canvas.height - unitArmorDisplay.height - unitHeatDisplay.height;
+		
+		unitGroupDisplay.addChild(unitHeatDisplay);
+		 
+		heatDisplays[unit.id] = unitHeatDisplay;
+		
+		// apply initial damage to this unit, if any
+		for(var n=0; n<unit.armor.length; n++) {
+			applyUnitDamage(unit, n, false, true);
+		}
+		for(var n=0; n<unit.internals.length; n++) {
+			applyUnitDamage(unit, n, true, true);
+		}
+		
+		// apply initial heat
+		updateHeatDisplay(unit);
+	});
+	
+	showPlayerUnitDisplay(turnUnit);
 }
 
 /**
@@ -173,9 +203,9 @@ function initPlayerUnitDisplay() {
  * @returns
  */
 function updatePlayerUnitDisplay() {
-	if(armorDisplays == null) return;
+	if(unitDisplays == null) return;
 	
-	 $.each(armorDisplays, function(unitId, unitArmorDisplay) {
+	 $.each(unitDisplays, function(unitId, unitArmorDisplay) {
 		 var chkUnit = units[unitId];
 		 if(isPlayerUnit(chkUnit)) {
 			 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
@@ -190,12 +220,22 @@ function updatePlayerUnitDisplay() {
 function showPlayerUnitDisplay(unit) {
 	if(!isPlayerUnit(unit)) return;
 	
-	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
+	$.each(unitDisplays, function(unitId, unitDisplay) {
 		var chkUnit = units[unitId];
 		if(isPlayerUnit(chkUnit)){
-			unitArmorDisplay.visible = (unit == null || unit.id == unitId);
+			unitDisplay.visible = (unit == null || unit.id == unitId);
 		}
 	});
+}
+
+function updateHeatDisplay(unit) {
+	if(unit == null) return;
+	
+	// TODO: update unit heat, heat generation, heat dissipation
+	var unitHeatDisplay = heatDisplays[unit.id];
+	unitHeatDisplay.setDisplayedHeat(unit.heat);
+	
+	// TODO: Heat meter with indicators of heat that weapons will generate and where the heat penalties are
 }
 
 /**
@@ -465,12 +505,6 @@ function setJumpPoints(jpRemaining) {
 
 function updateUnitStatsDisplay() {
 	// TODO: update AP and JP display
-}
-
-function setHeatDisplay(heat, heatGen, heatDiss) {
-	// TODO: update unit heat, heat generation, heat dissipation
-	
-	// TODO: Heat meter with indicators of heat that weapons will generate and where the heat penalties are
 }
 
 /**

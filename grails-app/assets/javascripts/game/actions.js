@@ -76,7 +76,7 @@ function move(forward) {
 		}
 		
 		// update heat display
-		setHeatDisplay(thisUnit.heat, false, false);
+		updateHeatDisplay(thisUnit);
 		  
 		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
 		//playerUnit.displayUnit.setControlsVisible(true);
@@ -110,7 +110,7 @@ function rotate(rotation) {
 		}
 		
 		// update heat display
-		setHeatDisplay(thisUnit.heat, false, false);
+		updateHeatDisplay(thisUnit);
 		  
 		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
 		//playerUnit.displayUnit.setControlsVisible(true);
@@ -190,7 +190,7 @@ function fire_weapons(weapons) {
 		u.heat = data.heat;
 		
 		// update heat display
-		setHeatDisplay(u.heat, false, false);
+		updateHeatDisplay(u);
 
 		// update UI displays of target armor if showing
 		updateTargetDisplay();
@@ -314,9 +314,12 @@ function pollUpdate(updates) {
 				}
 				
 				if(isPlayerUnit(thisUnit)) {
+					thisUnit.heat = data.heat;
+					thisUnit.heatDiss = data.heatDiss;
+					
 					setActionPoints(thisUnit.apRemaining);
 					setJumpPoints(thisUnit.jpRemaining);
-					setHeatDisplay(thisUnit.heat, false, false);
+					updateHeatDisplay(thisUnit);
 					updateWeaponsCooldown();
 				}
 				else if(unitMoved){
@@ -327,6 +330,11 @@ function pollUpdate(updates) {
 				
 				var prevTurnUnit = turnUnit;
 				turnUnit = units[data.turnUnit];
+				
+				if(isPlayerUnit(turnUnit)) {
+					turnUnit.heat = data.heat;
+					turnUnit.heatDiss = data.heatDiss;
+				}
 				
 				var prevTurnTarget = getUnitTarget(prevTurnUnit);
 				var newTurnTarget = getUnitTarget(turnUnit);
@@ -349,6 +357,9 @@ function pollUpdate(updates) {
 					turnUnitDisplay.updateUnitIndicator();
 					
 					if(isPlayerUnit(turnUnit)) {
+						// update player unit displays to prepare for its new turn
+						updateHeatDisplay(turnUnit);
+						
 						setPlayerTarget(newTurnTarget);
 						
 						if(newTurnTarget != null) {
