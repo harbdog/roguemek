@@ -77,10 +77,22 @@ function move(forward) {
 		
 		// update heat display
 		updateHeatDisplay(thisUnit);
-		  
-		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
+		
+		// hide the target line before starting the animated move
+		setPlayerTargetLineVisible(false);
+		
+		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading(), updateTargetPosition);
+		
 		//playerUnit.displayUnit.setControlsVisible(true);
 	});
+}
+
+function updateTargetPosition() {
+	// update line to target
+	var unitTarget = getUnitTarget(turnUnit);
+	if(unitTarget != null) {
+		setPlayerTarget(unitTarget);
+	}
 }
 
 function rotate(rotation) {
@@ -359,14 +371,12 @@ function pollUpdate(updates) {
 					if(isPlayerUnit(turnUnit)) {
 						// update player unit displays to prepare for its new turn
 						updateHeatDisplay(turnUnit);
-						
-						setPlayerTarget(newTurnTarget);
+						showPlayerUnitDisplay(turnUnit);
 						
 						if(newTurnTarget != null) {
 							newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
 						}
-						
-						showPlayerUnitDisplay(turnUnit);
+						setPlayerTarget(newTurnTarget);
 					}
 					else {
 						showOtherUnitDisplay(turnUnit);

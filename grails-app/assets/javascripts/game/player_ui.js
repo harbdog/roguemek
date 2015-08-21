@@ -30,7 +30,7 @@ var elevationHeight = defElevationHeight * hexScale;
 var showLevels = true;
 
 var messagingDisplay;
-var unitDisplays, armorDisplays, heatDisplays;
+var unitDisplays, armorDisplays, heatDisplays, infoDisplays;
 
 var targetBracket, targetLine;
 
@@ -74,11 +74,10 @@ function initOtherUnitDisplay() {
 	var firstListUnit = unitListDisplayArray[0];
 	$.each(units, function(id, unit) {
 		if(isPlayerUnit(unit)) return;
+		var unitGroupDisplay = unitDisplays[unit.id];
 		
 		// other unit armor displays are on the right side of the window 
 		var unitArmorDisplay = new MechArmorDisplay();
-		unitArmorDisplay.visible = false;
-		
 		unitArmorDisplay.width = 200;
 		unitArmorDisplay.height = 50;
 		unitArmorDisplay.init();
@@ -86,9 +85,62 @@ function initOtherUnitDisplay() {
 		unitArmorDisplay.x = canvas.width - unitArmorDisplay.width;
 		unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
 		
-		overlay.addChild(unitArmorDisplay);
-		 
+		unitGroupDisplay.addChild(unitArmorDisplay);
 		armorDisplays[unit.id] = unitArmorDisplay;
+		
+		// the weapons display is directly above the armor display
+		var unitWeaponsDisplay = new createjs.Shape();
+		unitWeaponsDisplay.width = 200;
+		unitWeaponsDisplay.height = 100;
+		//unitWeaponsDisplay.init();
+		
+		// TODO: create as new class for containing weapons list for the unit
+		unitWeaponsDisplay.alpha = 0.75;
+		unitWeaponsDisplay.graphics.beginFill("#404040")
+				.drawRect(0, 0, unitWeaponsDisplay.width, unitWeaponsDisplay.height)
+				.setStrokeStyle(3/2, "round").beginStroke("#C0C0C0")
+				.moveTo(0, unitWeaponsDisplay.height)
+				.lineTo(unitWeaponsDisplay.width, unitWeaponsDisplay.height).endStroke();
+		
+		unitWeaponsDisplay.x = unitArmorDisplay.x;
+		unitWeaponsDisplay.y = unitArmorDisplay.y - unitWeaponsDisplay.height;
+		
+		unitGroupDisplay.addChild(unitWeaponsDisplay);
+		
+		// the info display is directly above the weapons display
+		var unitInfoDisplay = new MechInfoDisplay(unit);
+		unitInfoDisplay.width = 200;
+		unitInfoDisplay.height = 50;
+		unitInfoDisplay.init();
+		
+		unitInfoDisplay.x = unitWeaponsDisplay.x;
+		unitInfoDisplay.y = unitWeaponsDisplay.y - unitInfoDisplay.height;
+		
+		unitGroupDisplay.addChild(unitInfoDisplay);
+		infoDisplays[unit.id] = unitInfoDisplay;
+		
+		// the other unit icon is directly above the info display
+		var thisDisplayUnit = unit.getUnitDisplay();
+		var listUnit = new ListUnitDisplay(thisDisplayUnit);
+		listUnit.init();
+		listUnit.setSelected(true, true);
+		listUnit.x = canvas.width - listUnit.getDisplayWidth();
+		listUnit.y = unitInfoDisplay.y - listUnit.getDisplayHeight();
+		unitGroupDisplay.addChild(listUnit);
+		
+		// finally, draw outline around entire container
+		/*var outline = new createjs.Shape();
+		outline.alpha = 0.75;
+		outline.graphics.setStrokeStyle(3).beginStroke("#FF0000")
+				.moveTo(unitArmorDisplay.x, unitArmorDisplay.y + unitArmorDisplay.height - 3/2)
+				.lineTo(unitInfoDisplay.x, unitInfoDisplay.y)
+				.lineTo(listUnit.x, unitInfoDisplay.y)
+				.lineTo(listUnit.x, listUnit.y)
+				.lineTo(listUnit.x + listUnit.getDisplayWidth(), listUnit.y)
+				.lineTo(unitArmorDisplay.x + unitArmorDisplay.width, unitArmorDisplay.y + unitArmorDisplay.height)
+				.lineTo(unitArmorDisplay.x, unitArmorDisplay.y + unitArmorDisplay.height - 3/2)
+				.endStroke();
+		unitGroupDisplay.addChild(outline)*/
 		
 		// apply initial damage to this unit, if any
 		for(var n=0; n<unit.armor.length; n++) {
@@ -105,9 +157,12 @@ function initOtherUnitDisplay() {
  * @returns
  */
 function updateOtherUnitDisplay() {
-	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
+	if(unitDisplays == null) return;
+	
+	$.each(unitDisplays, function(unitId, unitArmorDisplay) {
 		var chkUnit = units[unitId];
 		if(!isPlayerUnit(chkUnit)) {
+			 // TODO: fix y position of unit display
 			unitArmorDisplay.x = canvas.width - unitArmorDisplay.width;
 			unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
 		}
@@ -120,11 +175,11 @@ function updateOtherUnitDisplay() {
  */
 function showOtherUnitDisplay(unit) {
 	if(isPlayerUnit(unit)) return;
-	
-	$.each(armorDisplays, function(unitId, unitArmorDisplay) {
+
+	$.each(unitDisplays, function(unitId, unitDisplay) {
 		var chkUnit = units[unitId];
 		if(!isPlayerUnit(chkUnit)){
-			unitArmorDisplay.visible = (unit == null || unit.id == unitId);
+			unitDisplay.visible = (unit != null && unit.id == unitId);
 		}
 	});
 }
@@ -138,6 +193,7 @@ function initPlayerUnitDisplay() {
 	// create the arrays that store the individual for unit displays
 	if(armorDisplays == null) armorDisplays = {};
 	if(heatDisplays == null) heatDisplays = {};
+	if(infoDisplays == null) infoDisplays = {};
 	
 	// initialize the containers which have each unit's displays grouped together inside
 	if(unitDisplays == null) unitDisplays = {};
@@ -166,7 +222,6 @@ function initPlayerUnitDisplay() {
 		unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
 		
 		unitGroupDisplay.addChild(unitArmorDisplay);
-		 
 		armorDisplays[unit.id] = unitArmorDisplay;
 		
 		// the heat display is directly above the armor display
@@ -177,11 +232,23 @@ function initPlayerUnitDisplay() {
 		unitHeatDisplay.init();
 		
 		unitHeatDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
-		unitHeatDisplay.y = canvas.height - unitArmorDisplay.height - unitHeatDisplay.height;
+		unitHeatDisplay.y = unitArmorDisplay.y - unitHeatDisplay.height;
 		
 		unitGroupDisplay.addChild(unitHeatDisplay);
-		 
 		heatDisplays[unit.id] = unitHeatDisplay;
+		
+		// the info display is directly above the heat display
+		var unitInfoDisplay = new MechInfoDisplay(unit);
+		unitInfoDisplay.width = 250;
+		unitInfoDisplay.height = firstListUnit.getDisplayHeight();
+		unitInfoDisplay.init();
+		
+		unitInfoDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
+		unitInfoDisplay.y = unitHeatDisplay.y - unitInfoDisplay.height;
+		
+		unitGroupDisplay.addChild(unitInfoDisplay);
+		infoDisplays[unit.id] = unitInfoDisplay;
+		
 		
 		// apply initial damage to this unit, if any
 		for(var n=0; n<unit.armor.length; n++) {
@@ -208,6 +275,7 @@ function updatePlayerUnitDisplay() {
 	 $.each(unitDisplays, function(unitId, unitArmorDisplay) {
 		 var chkUnit = units[unitId];
 		 if(isPlayerUnit(chkUnit)) {
+			 // TODO: fix y position of unit display
 			 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
 		 }
 	 });
@@ -322,6 +390,7 @@ function applyUnitDamage(unit, index, isInternal) {
  */
 function initPlayerUnitListDisplay() {
 	if(unitListDisplay == null) {
+		// create container as background for the display
 		unitListDisplay = new createjs.Container();
 		overlay.addChild(unitListDisplay);
 		
@@ -330,16 +399,7 @@ function initPlayerUnitListDisplay() {
 	
 	$.each(playerUnits, function(index, unit) {
 		var thisDisplayUnit = unit.getUnitDisplay();
-		var image = null;
-		if(thisDisplayUnit.getImage() != null) {
-			image = thisDisplayUnit.getImage();
-		}
-		else{
-			var imgStr = thisDisplayUnit.getImageString();
-			image = queue.getResult(imgStr);
-		}
 		
-		// create container as background for the display
 		var listUnit = new ListUnitDisplay(thisDisplayUnit);
 		listUnit.init();
 		listUnit.x = 1;
@@ -465,6 +525,11 @@ function setPlayerTarget(unit) {
 			.addEventListener("change", function() {
 				update = true;
 			});
+}
+function setPlayerTargetLineVisible(visible) {
+	if(targetLine != null) {
+		targetLine.visible = visible;
+	}
 }
 
 /**

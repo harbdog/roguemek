@@ -35,13 +35,22 @@ c.init = function() {
 	this.setSelected(isTurnUnit(this.unit));
 }
 
-c.setSelected = function(selected) {
+c.setSelected = function(selected, isOtherUnit) {
 	this.uncache();
 	this.background.graphics.clear();
 	
-	// TODO: allow customization of the player unit indicator color
-	if(selected) {
-		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0").beginFill("#404040")
+	// TODO: allow customization of the player/enemy unit indicator color
+	if(selected && isOtherUnit){
+		this.background.graphics.beginFill("#404040")
+				.drawRect(0, 0, this.image.width, this.image.height)
+				.endFill().setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#FF0000")
+				.moveTo(0, this.image.height)
+				.lineTo(0, 0)
+				.lineTo(this.image.width, 0)
+				.endStroke();
+	}
+	else if(selected) {
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#3399FF").beginFill("#404040")
 				.moveTo(this.image.width, this.image.height)
 				.lineTo(0, this.image.height)
 				.lineTo(0, 0)
@@ -49,7 +58,7 @@ c.setSelected = function(selected) {
 				.endStroke();
 	}
 	else{
-		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "round").beginStroke("#C0C0C0")
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke("#C0C0C0")
 				.drawRect(0, 0, this.image.width, this.image.height);
 	}
 	

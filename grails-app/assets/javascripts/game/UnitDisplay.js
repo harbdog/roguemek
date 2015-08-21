@@ -143,7 +143,7 @@ c.setControlsVisible = function(visible) {
 	this.showForwardControl(visible);
 	this.showBackwardControl(visible);*/
 }
-c.animateUpdateDisplay = function(coords, heading) {
+c.animateUpdateDisplay = function(coords, heading, callFunction) {
 	var newX = this.getUpdatedDisplayX(coords);
 	var newY = this.getUpdatedDisplayY(coords);
 	var actualRot = this.getUpdatedDisplayRotation(heading);
@@ -164,6 +164,10 @@ c.animateUpdateDisplay = function(coords, heading) {
 			// put the actual angle in after animated so it doesn't rotate the long way at a different angle
 			this.rotation = actualRot;
 			update = true;
+			
+			if(callFunction) {
+				callFunction();
+			}
 		})
 		.addEventListener("change", function() {
 			update = true;
