@@ -50,9 +50,10 @@ c.setSelected = function(selected, isOtherUnit) {
 				.endStroke();
 	}
 	else if(selected) {
-		this.background.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#3399FF").beginFill("#404040")
-				.moveTo(this.image.width, this.image.height)
-				.lineTo(0, this.image.height)
+		this.background.graphics.beginFill("#404040")
+				.drawRect(0, 0, this.image.width, this.image.height)
+				.endFill().setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#3399FF")
+				.moveTo(0, this.image.height)
 				.lineTo(0, 0)
 				.lineTo(this.image.width, 0)
 				.endStroke();

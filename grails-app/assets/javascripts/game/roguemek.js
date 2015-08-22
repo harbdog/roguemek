@@ -59,12 +59,12 @@ var hexMap, units;
 // Keep track of which units belong to the player
 var playerUnits;
 
-// Keep track of targets and weapons for each unit belonging to the player
-var unitTargets, unitWeapons;
+// Keep track of targets for each unit belonging to the player
+var unitTargets;
 
 // Keep track of which unit's turn it currently is
 var turnUnit;
-var selectedWeapons = [];//TESTING
+var selectedWeapons = [];
 
 // Keep track of when actions are ready to be performed during the player turn
 var playerActionReady = true;
@@ -203,7 +203,6 @@ function loadGameElements() {
 		  hexMap = [];
 		  
 		  playerUnits = [];
-		  unitWeapons = {};
 		  unitTargets = {};
 		  
 		  numCols = data.board.numCols;
@@ -282,7 +281,6 @@ function loadGameElements() {
 		  
 		  
 		  // load any additional client side images
-		  manifest.push({id:"target", src:"assets/ui/target.png"});
 		  manifest.push({id:"other_turn", src:"assets/ui/other_turn.png"});
 		  
 		  manifest.push({id:ACTION_ROTATE_CW, src:"assets/ui/rotatecw.png"});
