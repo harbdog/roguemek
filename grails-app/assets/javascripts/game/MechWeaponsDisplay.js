@@ -73,6 +73,7 @@ c.update = function() {
 		this.height = 0;
 		for(var index=0; index<totalWeapons; index++) {
 			var weaponDisplay = this.weapons[index];
+			weaponDisplay.update();
 			
 			weaponDisplay.x = Math.floor(index/weaponRows) * weaponDisplay.width;
 			weaponDisplay.y = (index % weaponRows) * weaponDisplay.height;

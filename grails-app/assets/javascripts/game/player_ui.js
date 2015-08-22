@@ -632,89 +632,19 @@ function initPlayerWeaponsDisplay() {
  * @returns
  */
 function getPlayerWeaponById(id) {
-	/*for(var i=0; i<playerWeapons.length; i++) {
-		var chkWeapon = playerWeapons[i];
-		if(chkWeapon.id == id){
-			return chkWeapon;
-		}
-	}*/
+	if(isPlayerUnit(turnUnit) && turnUnit.weapons[id] != null) {
+		return turnUnit.weapons[id];
+	}
 	
 	return null;
 }
 
 function updateWeaponsDisplay() {
-	// TODO: update weapons display
-	
-	/*var weapons = playerUnit.weapons;
-	playerWeapons = [];
-	
-	// TESTING
-	var testingStr = "";
-	
-	var i = 1;
-	$.each(weapons, function(key, w) {
-		playerWeapons[i-1] = w;
-		
-		var weaponNum = i;
-		if(weaponNum == 10){
-			weaponNum = 0
-		}
-		else if(weaponNum > 10){
-			// TODO: support > 10 weapons?
-			return;
-		}
-		
-		var locationStr = getLocationText(w.location);
-		
-		// TODO: if the weapon is destroyed/damaged, add class "disabled"
-		var weaponClassStr = "weapon";
-		
-		// show actual calculated TO-HIT
-		var toHitAsPercent = "  --";
-		if(w.toHit != null) {
-			toHitAsPercent = w.toHit+"%";
-		}
-		
-		var weaponInfo = w.shortName;
-		if(w.ammo) {
-			// show total remaining ammo
-			var ammoRemaining = 0;
-			$.each(w.ammo, function(key, ammoObj) {
-				ammoRemaining += ammoObj.ammoRemaining;
-			});
-			weaponInfo += "["+ammoRemaining+"]";
-			
-			if(ammoRemaining <= 0) {
-				weaponClassStr += " disabled";
-			}
-		}
-		
-		var weaponStr = "<div class='"+weaponClassStr+"' id='"+w.id+"'>" +
-							"<div class='weaponNumber'>"+weaponNum+"</div>" +
-							"<div class='weaponLocation'>"+locationStr+"</div>" +
-							"<div class='weaponIcon' id='"+w.weaponType+"'>"+"</div>" +
-							"<div class='weaponInfo'>"+weaponInfo+"</div>" +
-							"<div class='weaponHit'>"+toHitAsPercent+"</div>" +
-						"</div>";
-		
-		testingStr += weaponStr;
-		i++;
-	});
-	
-	// update the initial cooldown display for each weapon
-	updateWeaponsCooldown();*/
-	
-	/*$(".weapon").click(function() {
-		// TODO: move to events.js
-		if(playerUnit == turnUnit 
-				&& !$(this).hasClass("cooldown") 
-				&& !$(this).hasClass("disabled")){
-			// only allow weapons to be selected that aren't on cooldown
-			// TODO: only allow weapons to be selected that have >0% chance to hit
-			$(this).toggleClass("selected");
-			updateSelectedWeapons();
-		}
-	});*/
+	// update weapons display
+	if(isPlayerUnit(turnUnit)){
+		var unitWeaponsDisplay = weaponsDisplays[turnUnit.id];
+		unitWeaponsDisplay.update();
+	}
 	
 	/*var actionStr;
 	if(playerUnit.id == turnUnit.id) {
@@ -813,31 +743,12 @@ function deselectWeapons() {
  * @param weapon
  */
 function resetWeaponsToHit() {
-	// TODO: reset the to hit value displayed for displayed weapons
-	/*$.each(playerWeapons, function(key, w) {
-		w.toHit = null;
-	});*/
-}
-
-/**
- * Updates the player weapons' cooldown display as needed
- */
-function updateWeaponsCooldown() {
-	// TODO: update cooldown displayed for each weapon
-	/*$.each(playerWeapons, function(key, w) {
-		if(w.cooldown > 0) {
-			var cooldownAsPercent = ""+100 * w.cooldown/w.cycle+"% 100%";
-			
-			$("#"+w.id).addClass("cooldown").css({"background-size":cooldownAsPercent});
-			$("#"+w.id+" .weaponNumber").addClass("disabled");
-		}
-		else{
-			$("#"+w.id).removeClass("cooldown");
-			
-			// TODO: if a weapon is destroyed or out of ammo, do not remove its disabled state
-			$("#"+w.id+" .weaponNumber").removeClass("disabled");
-		}
-	});*/
+	// reset the to hit value displayed for displayed weapons
+	if(isPlayerUnit(turnUnit)) {
+		$.each(turnUnit.weapons, function(key, w) {
+			w.toHit = null;
+		});
+	}
 }
 
 /**

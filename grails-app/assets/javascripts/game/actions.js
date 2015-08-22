@@ -23,9 +23,9 @@ function target(playerTarget) {
 			var t = units[data.target];
 			
 			// TODO: move clearing previous toHit for each weapon to its own method
-			/*$.each(playerUnit.weapons, function(key, w) {
+			$.each(turnUnit.weapons, function(key, w) {
 				w.toHit = null;
-			});*/
+			});
 			
 			// update the cooldown status of the weapons fired
 			$.each(data.weaponData, function(key, wData) {
@@ -332,7 +332,7 @@ function pollUpdate(updates) {
 					setActionPoints(thisUnit.apRemaining);
 					setJumpPoints(thisUnit.jpRemaining);
 					updateHeatDisplay(thisUnit);
-					updateWeaponsCooldown();
+					updateWeaponsDisplay();
 				}
 				else if(unitMoved){
 					thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
@@ -341,9 +341,28 @@ function pollUpdate(updates) {
 			else if(data.turnUnit != null) {
 				
 				var prevTurnUnit = turnUnit;
+				
+				if(isPlayerUnit(prevTurnUnit)) {
+					// clear toHit of weapons before next turn unit begins
+					resetWeaponsToHit();
+					updateWeaponsDisplay();
+				}
+				
 				turnUnit = units[data.turnUnit];
 				
 				if(isPlayerUnit(turnUnit)) {
+					if(data.weaponData != null) {
+						$.each(data.weaponData, function(k, wData) {
+							var id = wData.weaponId;
+							var cooldown = wData.weaponCooldown;
+							
+							var weapon = getPlayerWeaponById(id);
+							if(weapon != null) {
+								weapon.cooldown = cooldown;
+							}
+						});
+					}
+					
 					turnUnit.heat = data.heat;
 					turnUnit.heatDiss = data.heatDiss;
 				}
@@ -372,11 +391,15 @@ function pollUpdate(updates) {
 						// update player unit displays to prepare for its new turn
 						updateHeatDisplay(turnUnit);
 						showPlayerUnitDisplay(turnUnit);
+						updateWeaponsDisplay();
 						
 						if(newTurnTarget != null) {
 							newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
 						}
 						setPlayerTarget(newTurnTarget);
+						
+						// re-acquire the target
+						target(newTurnTarget);
 					}
 					else {
 						showOtherUnitDisplay(turnUnit);
@@ -386,8 +409,8 @@ function pollUpdate(updates) {
 				updatePlayerUnitListDisplay();
 				
 				update = true;
-				
-				// TODO: used to determine if the player turn just ended
+
+
 				/*var playerTurnEnded = (playerUnit.id == turnUnit.id);
 				
 				turnUnit = units[data.turnUnit];

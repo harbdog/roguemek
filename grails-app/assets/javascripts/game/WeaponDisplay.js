@@ -59,17 +59,18 @@ c.init = function() {
 	// add weapon name label (and ammo, if applicable)
 	var weaponStr = this.weapon.shortName;
 	if(this.weapon.ammo) {
-		// TODO: get actual ammo count
-		weaponStr += "[1000]";
+		// the update method will get the actual ammo count
+		weaponStr += "[----]";
 	}
-	
 	this.nameLabel = new createjs.Text(weaponStr, "14px Consolas", "#FFFFFF");
 	this.nameLabel.x = typeImage.x + image.width;
 	this.nameLabel.y = 5;
 	this.addChild(this.nameLabel);
 	
+	// the update method will show actual calculated TO-HIT 
+	var toHitAsPercent = "  --";
 	// add weapon % to hit label to the far right
-	this.toHitLabel = new createjs.Text("100%", "14px Consolas", "#FFFFFF");
+	this.toHitLabel = new createjs.Text(toHitAsPercent, "14px Consolas", "#FFFFFF");
 	this.toHitLabel.x = this.width - this.toHitLabel.getMeasuredWidth() - 5;
 	this.toHitLabel.y = 5;	
 	this.addChild(this.toHitLabel);
@@ -86,8 +87,38 @@ c.update = function() {
 	this.uncache();
 	this.background.graphics.clear();
 	
-	/*this.background.graphics.setStrokeStyle(BORDER_WIDTH/2, "square").beginStroke("#C0C0C0")
-			.drawRect(BORDER_WIDTH, BORDER_WIDTH, this.width-BORDER_WIDTH*2, this.height-BORDER_WIDTH*2).endStroke();*/
+	// update background as cooldown
+	if(this.weapon.cooldown > 0){
+		console.log(this.weapon.shortName+" = "+this.weapon.cooldown);
+		
+		var cooldownAsPercent = this.weapon.cooldown/this.weapon.cycle;
+		this.background.graphics.beginFill("#3399FF")
+			.drawRect(WeaponDisplay.MAX_NUMBER_LABEL_WIDTH, BORDER_WIDTH, cooldownAsPercent * (this.width-WeaponDisplay.MAX_NUMBER_LABEL_WIDTH-BORDER_WIDTH*2), this.height-BORDER_WIDTH*2).endStroke();
+	}
+	
+	// update weapon name and ammo
+	var weaponInfo = this.weapon.shortName;
+	if(this.weapon.ammo) {
+		// show total remaining ammo
+		var ammoRemaining = 0;
+		$.each(this.weapon.ammo, function(key, ammoObj) {
+			ammoRemaining += ammoObj.ammoRemaining;
+		});
+		weaponInfo += "["+ammoRemaining+"]";
+		
+		if(ammoRemaining <= 0) {
+			// TODO: disable when when out of ammo
+		}
+	}
+	this.nameLabel.text = weaponInfo
+	
+	// update to Hit percent
+	var toHitAsPercent = "  --";
+	if(this.weapon.toHit != null) {
+		toHitAsPercent = this.weapon.toHit+"%";
+	}
+	this.toHitLabel.text = toHitAsPercent;
+	this.toHitLabel.x = this.width - this.toHitLabel.getMeasuredWidth() - 5;
 	
 	this.doCache();
 }
