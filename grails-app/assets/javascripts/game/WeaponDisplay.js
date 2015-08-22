@@ -21,10 +21,6 @@ function WeaponDisplay(index, weapon) {
 }
 var c = createjs.extend(WeaponDisplay, createjs.Container);
 
-// static variables
-WeaponDisplay.DEFAULT_WIDTH = DEFAULT_WIDTH;
-WeaponDisplay.DEFAULT_HEIGHT = DEFAULT_HEIGHT;
-
 c.init = function() {
 	this.background = new createjs.Shape();
 	this.addChild(this.background);
