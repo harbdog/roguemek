@@ -858,6 +858,17 @@ function addMessageUpdate(message) {
 }
 
 /**
+ * switches the hex board between isometric and flat
+ */
+function toggleIsometricDisplay() {
+	useIsometric = !useIsometric;
+	updateHexDisplayObjects();
+	updateUnitDisplayObjects();
+	updateTargetPosition();
+	update = true;
+}
+
+/**
  * Gets the display X,Y coordinates of an object moving a number of pixels at the given angle
  * @returns Point
  */

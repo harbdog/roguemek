@@ -128,10 +128,7 @@ function handleKeyPress(key) {
 	}
 	else if(key == "`"){
 		// toggle isometric view
-		useIsometric = !useIsometric;
-		updateHexDisplayObjects();
-		updateUnitDisplayObjects();
-		update = true;
+		toggleIsometricDisplay();
 	}
 	else if(key == "home"){
 		// enter fullscreen mode
