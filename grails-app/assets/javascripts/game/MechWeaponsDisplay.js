@@ -24,7 +24,6 @@ var c = createjs.extend(MechWeaponsDisplay, createjs.Container);
 c.init = function() {
 	this.background = new createjs.Shape();
 	this.background.alpha = 0.75;
-	this.addChild(this.background);
 	
 	// TODO: allow custom UI colors
 	var weaponsArray = this.weapons;
@@ -33,10 +32,25 @@ c.init = function() {
 	var index = 0;
 	$.each(this.unit.weapons, function(weaponId, weapon) {
 		var weaponDisplay = new WeaponDisplay(index, weapon);
-		weaponsArray.push(weaponDisplay);
+		weaponDisplay.init();
 		
+		weaponsArray.push(weaponDisplay);
 		index ++;
 	});
+	
+	this.update();
+}
+
+c.update = function() {
+	this.removeAllChildren();
+	this.uncache();
+	this.background.graphics.clear();
+	
+	this.background.graphics.beginFill("#404040")
+			.drawRect(0, 0, this.width, this.height)
+			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
+			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
+	this.addChild(this.background);
 	
 	// determine positions based on number of weapons
 	var totalWeapons = this.weapons.length;
@@ -44,9 +58,10 @@ c.init = function() {
 	var weaponColumns = 1;
 	var weaponRows = MAX_WEAPON_ROWS;
 	if(totalWeapons > MAX_WEAPON_ROWS) {
-		// TODO: only allow >1 columns if the canvas width can fit it with the rest of the UI
-		var maxWeaponColumns = Math.floor((canvas.width - unitDisplayBounds.x - unitDisplayBounds.width - targetDisplayBounds.width) / WeaponDisplay.DEFAULT_WIDTH);
-		console.log("maxWeaponColumns="+maxWeaponColumns);
+		// only allow >1 columns if the canvas width can fit it with the rest of the UI
+		var maxWeaponColumns = 
+			Math.floor((canvas.width - unitDisplayBounds.x - unitDisplayBounds.width - targetDisplayBounds.width) 
+							/ WeaponDisplay.DEFAULT_WIDTH);
 		
 		weaponColumns = Math.ceil(totalWeapons / MAX_WEAPON_ROWS);
 		if(weaponColumns > maxWeaponColumns) {
@@ -58,15 +73,13 @@ c.init = function() {
 	
 	this.width = 0;
 	this.height = 0;
-	for(index=0; index<totalWeapons; index++) {
+	for(var index=0; index<totalWeapons; index++) {
 		var weaponDisplay = this.weapons[index];
-		weaponDisplay.init();
 		
 		weaponDisplay.x = Math.floor(index/weaponRows) * weaponDisplay.width;
 		weaponDisplay.y = (index % weaponRows) * weaponDisplay.height;
 		
 		this.addChild(weaponDisplay);
-		
 		
 		// update container width/height as each element is added
 		if(weaponDisplay.x + weaponDisplay.width > this.width) {
@@ -76,18 +89,6 @@ c.init = function() {
 			this.height = weaponDisplay.y + weaponDisplay.height;
 		}
 	}
-	
-	this.update();
-}
-
-c.update = function() {
-	this.uncache();
-	this.background.graphics.clear();
-	
-	this.background.graphics.beginFill("#404040")
-			.drawRect(0, 0, this.width, this.height)
-			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
-			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 	
 	this.doCache();
 }

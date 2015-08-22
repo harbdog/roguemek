@@ -84,19 +84,28 @@ function initOtherUnitDisplay() {
 		if(isPlayerUnit(unit)) return;
 		var unitGroupDisplay = unitDisplays[unit.id];
 		
-		// other unit armor displays are on the right side of the window 
-		var unitArmorDisplay = new MechArmorDisplay();
-		unitArmorDisplay.width = targetDisplayWidth;
-		unitArmorDisplay.height = 50;
-		unitArmorDisplay.init();
+		// the other unit icon is at the top of the display
+		var thisDisplayUnit = unit.getUnitDisplay();
+		var listUnit = new ListUnitDisplay(thisDisplayUnit);
+		listUnit.init();
+		listUnit.setSelected(true, true);
+		listUnit.x = targetDisplayWidth - listUnit.getDisplayWidth();
+		listUnit.y = 0;
+		unitGroupDisplay.addChild(listUnit);
 		
-		unitArmorDisplay.x = canvas.width - unitArmorDisplay.width;
-		unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+		// the info display is directly below the unit icon
+		var unitInfoDisplay = new MechInfoDisplay(unit);
+		unitInfoDisplay.width = targetDisplayWidth;
+		unitInfoDisplay.height = 50;
+		unitInfoDisplay.init();
 		
-		unitGroupDisplay.addChild(unitArmorDisplay);
-		armorDisplays[unit.id] = unitArmorDisplay;
+		unitInfoDisplay.x = 0;
+		unitInfoDisplay.y = listUnit.y + listUnit.getDisplayHeight();
 		
-		// the weapons display is directly above the armor display
+		unitGroupDisplay.addChild(unitInfoDisplay);
+		infoDisplays[unit.id] = unitInfoDisplay;
+		
+		// the weapons display is directly below the info display
 		var unitWeaponsDisplay = new createjs.Shape();
 		unitWeaponsDisplay.width = targetDisplayWidth;
 		unitWeaponsDisplay.height = 100;
@@ -110,37 +119,33 @@ function initOtherUnitDisplay() {
 				.moveTo(0, unitWeaponsDisplay.height)
 				.lineTo(unitWeaponsDisplay.width, unitWeaponsDisplay.height).endStroke();
 		
-		unitWeaponsDisplay.x = unitArmorDisplay.x;
-		unitWeaponsDisplay.y = unitArmorDisplay.y - unitWeaponsDisplay.height;
+		unitWeaponsDisplay.x = 0;
+		unitWeaponsDisplay.y = unitInfoDisplay.y + unitInfoDisplay.height;
 		
 		unitGroupDisplay.addChild(unitWeaponsDisplay);
 		
-		// the info display is directly above the weapons display
-		var unitInfoDisplay = new MechInfoDisplay(unit);
-		unitInfoDisplay.width = targetDisplayWidth;
-		unitInfoDisplay.height = 50;
-		unitInfoDisplay.init();
+		// the other unit armor displays is directly below its weapons display
+		var unitArmorDisplay = new MechArmorDisplay();
+		unitArmorDisplay.width = targetDisplayWidth;
+		unitArmorDisplay.height = 50;
+		unitArmorDisplay.init();
 		
-		unitInfoDisplay.x = unitWeaponsDisplay.x;
-		unitInfoDisplay.y = unitWeaponsDisplay.y - unitInfoDisplay.height;
+		unitArmorDisplay.x = 0;
+		unitArmorDisplay.y = unitWeaponsDisplay.y + unitWeaponsDisplay.height;
 		
-		unitGroupDisplay.addChild(unitInfoDisplay);
-		infoDisplays[unit.id] = unitInfoDisplay;
-		
-		// the other unit icon is directly above the info display
-		var thisDisplayUnit = unit.getUnitDisplay();
-		var listUnit = new ListUnitDisplay(thisDisplayUnit);
-		listUnit.init();
-		listUnit.setSelected(true, true);
-		listUnit.x = canvas.width - listUnit.getDisplayWidth();
-		listUnit.y = unitInfoDisplay.y - listUnit.getDisplayHeight();
-		unitGroupDisplay.addChild(listUnit);
+		unitGroupDisplay.addChild(unitArmorDisplay);
+		armorDisplays[unit.id] = unitArmorDisplay;
 		
 		// set calculated bounds of the unit display
 		if(targetDisplayBounds == null) {
-			targetDisplayBounds = new createjs.Rectangle(unitInfoDisplay.x, listUnit.y,
-					targetDisplayWidth, unitArmorDisplay.height + unitWeaponsDisplay.height + unitInfoDisplay.height + listUnit.getDisplayHeight());
+			var totalHeight = unitArmorDisplay.height + unitWeaponsDisplay.height + unitInfoDisplay.height + listUnit.getDisplayHeight();
+			targetDisplayBounds = new createjs.Rectangle(
+					canvas.width - targetDisplayWidth, canvas.height - totalHeight,
+					targetDisplayWidth, totalHeight);
 		}
+		
+		unitGroupDisplay.x = targetDisplayBounds.x;
+		unitGroupDisplay.y = targetDisplayBounds.y;
 		
 		// apply initial damage to this unit, if any
 		for(var n=0; n<unit.armor.length; n++) {
@@ -159,12 +164,15 @@ function initOtherUnitDisplay() {
 function updateOtherUnitDisplay() {
 	if(unitDisplays == null) return;
 	
-	$.each(unitDisplays, function(unitId, unitArmorDisplay) {
-		var chkUnit = units[unitId];
-		if(!isPlayerUnit(chkUnit)) {
-			 // TODO: fix y position of unit display
-			unitArmorDisplay.x = canvas.width - unitArmorDisplay.width;
-			unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+	$.each(unitDisplays, function(unitId, unitGroupDisplay) {
+		var thisUnit = units[unitId];
+		if(!isPlayerUnit(thisUnit)) {
+			// fix x, y position of the target unit display
+			targetDisplayBounds.x = canvas.width - targetDisplayBounds.width;
+			targetDisplayBounds.y = canvas.height - targetDisplayBounds.height;
+			
+			unitGroupDisplay.x = targetDisplayBounds.x;
+			unitGroupDisplay.y = targetDisplayBounds.y;
 		}
 	});
 }
@@ -211,49 +219,54 @@ function initPlayerUnitDisplay() {
 		var unit = listUnit.unit;
 		var unitGroupDisplay = unitDisplays[unit.id];
 		
-		// the armor display is to the right of the unit list display
-		var unitArmorDisplay = new MechArmorDisplay();
+		// the info display is at the top of the display
+		var unitInfoDisplay = new MechInfoDisplay(unit);
+		unitInfoDisplay.width = unitDisplayWidth;
+		unitInfoDisplay.height = firstListUnit.getDisplayHeight();
+		unitInfoDisplay.init();
 		
-		unitArmorDisplay.width = unitDisplayWidth;
-		unitArmorDisplay.height = firstListUnit.getDisplayHeight() * 2;
-		unitArmorDisplay.init();
+		unitInfoDisplay.x = 0;
+		unitInfoDisplay.y = 0;
 		
-		unitArmorDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
-		unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+		unitGroupDisplay.addChild(unitInfoDisplay);
+		infoDisplays[unit.id] = unitInfoDisplay;
 		
-		unitGroupDisplay.addChild(unitArmorDisplay);
-		armorDisplays[unit.id] = unitArmorDisplay;
-		
-		// the heat display is directly above the armor display
+		// the heat display is directly below the info display
 		var unitHeatDisplay = new MechHeatDisplay();
 		
 		unitHeatDisplay.width = unitDisplayWidth;
 		unitHeatDisplay.height = firstListUnit.getDisplayHeight();
 		unitHeatDisplay.init();
 		
-		unitHeatDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
-		unitHeatDisplay.y = unitArmorDisplay.y - unitHeatDisplay.height;
+		unitHeatDisplay.x = 0;
+		unitHeatDisplay.y = unitInfoDisplay.y + unitInfoDisplay.height;
 		
 		unitGroupDisplay.addChild(unitHeatDisplay);
 		heatDisplays[unit.id] = unitHeatDisplay;
 		
-		// the info display is directly above the heat display
-		var unitInfoDisplay = new MechInfoDisplay(unit);
-		unitInfoDisplay.width = unitDisplayWidth;
-		unitInfoDisplay.height = firstListUnit.getDisplayHeight();
-		unitInfoDisplay.init();
+		// the armor display is directly below the heat display
+		var unitArmorDisplay = new MechArmorDisplay();
 		
-		unitInfoDisplay.x = firstListUnit.x + firstListUnit.getDisplayWidth();
-		unitInfoDisplay.y = unitHeatDisplay.y - unitInfoDisplay.height;
+		unitArmorDisplay.width = unitDisplayWidth;
+		unitArmorDisplay.height = firstListUnit.getDisplayHeight() * 2;
+		unitArmorDisplay.init();
 		
-		unitGroupDisplay.addChild(unitInfoDisplay);
-		infoDisplays[unit.id] = unitInfoDisplay;
+		unitArmorDisplay.x = 0;
+		unitArmorDisplay.y = unitHeatDisplay.y + unitHeatDisplay.height;
+		
+		unitGroupDisplay.addChild(unitArmorDisplay);
+		armorDisplays[unit.id] = unitArmorDisplay;
 		
 		// set calculated bounds of the unit display
 		if(unitDisplayBounds == null) {
-			unitDisplayBounds = new createjs.Rectangle(unitInfoDisplay.x, unitInfoDisplay.y,
-					unitDisplayWidth, unitArmorDisplay.height + unitHeatDisplay.height + unitInfoDisplay.height);
+			var totalHeight = unitArmorDisplay.height + unitHeatDisplay.height + unitInfoDisplay.height;
+			unitDisplayBounds = new createjs.Rectangle(
+					firstListUnit.x + firstListUnit.getDisplayWidth(), canvas.height - totalHeight,
+					unitDisplayWidth, totalHeight);
 		}
+		
+		unitGroupDisplay.x = unitDisplayBounds.x;
+		unitGroupDisplay.y = unitDisplayBounds.y;
 		
 		// apply initial damage to this unit, if any
 		for(var n=0; n<unit.armor.length; n++) {
@@ -275,11 +288,17 @@ function initPlayerUnitDisplay() {
 function updatePlayerUnitDisplay() {
 	if(unitDisplays == null) return;
 	
-	 $.each(unitDisplays, function(unitId, unitArmorDisplay) {
-		 var chkUnit = units[unitId];
-		 if(isPlayerUnit(chkUnit)) {
-			 // TODO: fix y position of unit display
-			 unitArmorDisplay.y = canvas.height - unitArmorDisplay.height;
+	 $.each(unitDisplays, function(unitId, unitGroupDisplay) {
+		 var thisUnit = units[unitId];
+		 if(isPlayerUnit(thisUnit)) {
+			 // fix y position of unit display
+			 unitDisplayBounds.y = canvas.height - unitDisplayBounds.height
+			 unitGroupDisplay.y = unitDisplayBounds.y;
+			 
+			 // update y position and size of weapons display 
+			 var unitWeaponsDisplay = weaponsDisplays[unitId];
+			 unitWeaponsDisplay.update();
+			 unitWeaponsDisplay.y = canvas.height - unitWeaponsDisplay.height;
 		 }
 	 });
 }
