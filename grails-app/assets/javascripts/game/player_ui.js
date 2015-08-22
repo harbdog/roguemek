@@ -222,7 +222,7 @@ function initPlayerUnitDisplay() {
 		// the info display is at the top of the display
 		var unitInfoDisplay = new MechInfoDisplay(unit);
 		unitInfoDisplay.width = unitDisplayWidth;
-		unitInfoDisplay.height = firstListUnit.getDisplayHeight();
+		unitInfoDisplay.height = firstListUnit.getDisplayHeight() * 1.5;
 		unitInfoDisplay.init();
 		
 		unitInfoDisplay.x = 0;

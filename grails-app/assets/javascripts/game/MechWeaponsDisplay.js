@@ -80,8 +80,8 @@ c.update = function() {
 			this.addChild(weaponDisplay);
 			
 			// update container width/height as each element is added
-			if(weaponDisplay.x + weaponDisplay.width > this.width) {
-				this.width = weaponDisplay.x + weaponDisplay.width;
+			if(weaponDisplay.x + weaponDisplay.width + BORDER_WIDTH/2 > this.width) {
+				this.width = weaponDisplay.x + weaponDisplay.width + BORDER_WIDTH/2;
 			}
 			if(weaponDisplay.y + weaponDisplay.height > this.height) {
 				this.height = weaponDisplay.y + weaponDisplay.height;

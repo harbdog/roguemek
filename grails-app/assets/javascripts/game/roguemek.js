@@ -289,8 +289,8 @@ function loadGameElements() {
 		  manifest.push({id:ACTION_BACKWARD, src:"assets/ui/backward.png"});
 		  
 		  manifest.push({id:"laser", src:"assets/ui/laser.png"});
-		  manifest.push({id:"ballistics", src:"assets/ui/ballistics.png"});
-		  manifest.push({id:"missiles", src:"assets/ui/missiles.png"});
+		  manifest.push({id:"ballistic", src:"assets/ui/ballistics.png"});
+		  manifest.push({id:"missile", src:"assets/ui/missiles.png"});
 		  
 		  queue.loadManifest(manifest);
 	  });
