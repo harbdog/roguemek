@@ -691,6 +691,21 @@ function getUnitWeaponById(id) {
 function getSelectedWeapons() {
 	return selectedWeapons;
 }
+function getSelectedWeaponsIndices() {
+	var selectedIndices = [];
+	if(!isPlayerUnitTurn()) return selectedIndices;
+	
+	var index = 0;
+	$.each(turnUnit.weapons, function(key, weapon) {
+		if( $.inArray(weapon, selectedWeapons) != -1) {
+			selectedIndices.push(index);
+		}
+		
+		index++;
+	});
+	
+	return selectedIndices;
+}
 function clearSelectedWeapons() {
 	selectedWeapons = [];
 }

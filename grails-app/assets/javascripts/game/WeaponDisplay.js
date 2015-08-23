@@ -64,7 +64,7 @@ c.init = function() {
 		weaponStr += "[----]";
 	}
 	this.nameLabel = new createjs.Text(weaponStr, "14px Consolas", "#FFFFFF");
-	this.nameLabel.x = typeImage.x + image.width;
+	this.nameLabel.x = 5+ typeImage.x + image.width;
 	this.nameLabel.y = 5;
 	this.addChild(this.nameLabel);
 	

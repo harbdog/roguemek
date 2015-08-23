@@ -471,33 +471,10 @@ function setPlayerTarget(unit) {
 	showOtherUnitDisplay(unit);
 	
 	// show target bracket on top of the target
-	var scale = 0.8 * hexScale;
 	var unitDisplay = unit.getUnitDisplay();
 	
-	if(targetBracket == null) {
-		targetBracket = new createjs.Shape();
-		targetBracket.visible = false;
-		targetBracket.graphics.setStrokeStyle(5, "square").beginStroke("#FF0000")
-				.moveTo(0, 0).lineTo(hexWidth/6, 0)
-				.moveTo(0, 0).lineTo(0, hexHeight/6)
-				
-				.moveTo(hexWidth, 0).lineTo(hexWidth-hexWidth/6, 0)
-				.moveTo(hexWidth, 0).lineTo(hexWidth, hexHeight/6)
-				
-				.moveTo(0, hexHeight).lineTo(hexWidth/6, hexHeight)
-				.moveTo(0, hexHeight).lineTo(0, hexHeight-hexHeight/6)
-				
-				.moveTo(hexWidth, hexHeight).lineTo(hexWidth-hexWidth/6, hexHeight)
-				.moveTo(hexWidth, hexHeight).lineTo(hexWidth, hexHeight-hexHeight/6);
-		
-		targetBracket.scaleX = scale;
-		targetBracket.scaleY = scale;
-		stage.addChild(targetBracket);
-	}
-	
-	createjs.Tween.removeTweens(targetBracket);
-	var targetX = unitDisplay.x - scale*hexWidth/2;
-	var targetY = unitDisplay.y - scale*hexHeight/2;
+	var targetX = unitDisplay.x - hexWidth/2;
+	var targetY = unitDisplay.y - hexHeight/2;
 	
 	// create dashed line from player unit to target bracket
 	if(targetLine == null) {
@@ -523,6 +500,20 @@ function setPlayerTarget(unit) {
 			.addEventListener("change", function() {
 				update = true;
 			});	
+	
+	// create bracket
+	if(targetBracket == null) {
+		targetBracket = new TargetBracket();
+		targetBracket.init();
+		
+		targetBracket.visible = false;
+		
+		stage.addChild(targetBracket);
+	}
+	else{
+		createjs.Tween.removeTweens(targetBracket);
+		targetBracket.update();
+	}
 	
 	if(targetBracket.visible) {
 		// animate move the bracket to the new location
@@ -670,6 +661,13 @@ function updateSelectedWeapons() {
 	// update weapons displays to show as selected or not selected to fire
 	var unitWeaponsDisplay = weaponsDisplays[turnUnit.id];
 	unitWeaponsDisplay.setSelectedWeapons(weaponsPreparedToFire);
+	
+	// update weapon indices to show as selected on the target bracket
+	if(targetBracket != null) {
+		var selectedIndices = getSelectedWeaponsIndices();
+		targetBracket.setSelectedWeaponIndices(selectedIndices);
+		targetBracket.update();
+	}
 	
 	// update heat gen that will occur from firing currently selected weapons
 	$.each(weaponsPreparedToFire, function(index, weapon) {
