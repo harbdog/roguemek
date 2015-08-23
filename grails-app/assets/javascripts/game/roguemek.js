@@ -695,7 +695,8 @@ function clearSelectedWeapons() {
 	selectedWeapons = [];
 }
 function addSelectedWeapon(weapon) {
-	if(weapon != null && weapon.cooldown == 0) {
+	if(weapon != null && weapon.cooldown == 0
+			&& weapon.toHit != null && weapon.toHit > 0) {
 		var selectedIndex = $.inArray(weapon, selectedWeapons);
 		if(selectedIndex == -1) {
 			// weapon not currently selected
