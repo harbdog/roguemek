@@ -124,6 +124,15 @@ class BattleUnit {
 		return entity.toByteArray()
 	}
 	
+	/**
+	 * Gets all weapons currently equipped (must be overridden by BattleUnit subclasses)
+	 * @return Array of BattleWeapon objects
+	 */
+	public BattleWeapon[] getWeapons() {
+		def weapons = []
+		return weapons
+	}
+	
 	@Override
 	public String toString() {
 		return "Unit piloted by "+pilot?.toString()

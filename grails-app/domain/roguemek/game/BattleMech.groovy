@@ -238,6 +238,7 @@ class BattleMech extends BattleUnit {
 	 * Gets all weapons currently equipped
 	 * @return Array of BattleWeapon objects
 	 */
+	@Override
 	public BattleWeapon[] getWeapons() {
 		def weapons = []
 		for(String equipId in crits) {

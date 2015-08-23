@@ -126,7 +126,6 @@ class GameControllerService {
 		ArrayList weapons = new ArrayList()
 		for(id in params.list('weapon_ids[]')) {
 			BattleWeapon w = BattleWeapon.get(id)
-			log.info("Firing "+w+" @ "+target)
 			
 			weapons.add(w)
 		}

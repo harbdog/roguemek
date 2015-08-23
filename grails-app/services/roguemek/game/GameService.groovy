@@ -975,9 +975,15 @@ class GameService {
 			target: target.id
 		]
 		
+		def unitWeapons = unit.getWeapons()
+		
 		int totalHeat = 0
 		
 		for(BattleWeapon weapon in weapons) {
+			// make sure the weapon is attached to the unit that is firing
+			if(!unitWeapons.contains(weapon)) continue
+			
+			// make sure the weapon is not on cooldown still
 			if(weapon.cooldown > 0) continue
 			
 			String messageCode
@@ -1007,9 +1013,21 @@ class GameService {
 				}
 				
 				if(ammoRemaining < 0) {
-					// TODO: skip this weapon fire since no ammo remaining before firing, provide messaging just to the weapon owner
+					// TODO: provide messaging just to the weapon owner and skip this weapon fire since no ammo remaining
 					continue
 				}
+			}
+			
+			// TODO: determine base toHit% based on Pilot skills
+			double toHit = 90.0
+			def modifiers = WeaponModifier.getToHitModifiers(game, unit, weapon, target)
+			for(WeaponModifier mod in modifiers) {
+				toHit -= mod.getValue()
+			}
+			
+			if(toHit <= 0) {
+				// If the weapon cannot hit, do not bother firing it
+				continue
 			}
 			
 			// store data about this weapon fire results
@@ -1026,13 +1044,6 @@ class GameService {
 			// set the weapon on cooldown
 			weapon.cooldown = weapon.getCycle()
 			thisWeaponFire.weaponCooldown = weapon.cooldown
-			
-			// TODO: determine base toHit% based on Pilot skills
-			double toHit = 90.0
-			def modifiers = WeaponModifier.getToHitModifiers(game, unit, weapon, target)
-			for(WeaponModifier mod in modifiers) {
-				toHit -= mod.getValue()
-			}
 			
 			boolean weaponHit = false
 			if(toHit >= 100) {
