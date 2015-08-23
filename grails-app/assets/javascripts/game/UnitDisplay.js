@@ -137,12 +137,6 @@ c.setOtherTurnVisible = function(visible) {
 		this.removeChild(this.otherTurn);
 	}
 }
-c.setControlsVisible = function(visible) {
-	/*this.showRotateControlCW(visible);
-	this.showRotateControlCCW(visible);
-	this.showForwardControl(visible);
-	this.showBackwardControl(visible);*/
-}
 c.animateUpdateDisplay = function(coords, heading, callFunction) {
 	var newX = this.getUpdatedDisplayX(coords);
 	var newY = this.getUpdatedDisplayY(coords);

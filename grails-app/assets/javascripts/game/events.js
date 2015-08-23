@@ -57,7 +57,7 @@ function handleKeyPress(key) {
 	if(weaponFired >= 0){
 
 		// TESTING: weapons fire, see console
-		if(isPlayerUnit(turnUnit)) {
+		if(isPlayerUnitTurn()) {
 			var weapon, index = 0;
 			for(var id in turnUnit.weapons) {
 				if(weaponFired == index) {
@@ -71,43 +71,28 @@ function handleKeyPress(key) {
 			if(weapon != null) {
 				var selectedIndex = $.inArray(weapon, selectedWeapons);
 				if(selectedIndex == -1) {
-					console.log("fired "+weaponFired+": "+weapon);
-					selectedWeapons.push(weapon);
+					addSelectedWeapon(weapon);
 				}
 				else {
-					console.log("deselected "+weaponFired+": "+weapon);
-					delete selectedWeapons[selectedIndex];
+					removeSelectedWeapon(weapon);
 				}
-			}
-		}
-		
-		// TODO: Toggle the weapon UI for firing		
-		/*if(playerWeapons[weaponFired] != null) {
-			var thisWeapon = playerWeapons[weaponFired];
-			
-			// TODO: create method to handle toggling weapons and if they actually can be fired before toggling
-			// TODO: handle firing weapons only from current player turn unit using isPlayerUnitTurn()
-			if(playerUnit == turnUnit 
-					&& !$('#'+thisWeapon.id).hasClass("cooldown") 
-					&& !$('#'+thisWeapon.id).hasClass("disabled")){
-				// only allow weapons to be selected that aren't on cooldown
-				$('#'+thisWeapon.id).toggleClass("selected");
 				
+				// update the selected weapons on the UI and their heat that would be generated
 				updateSelectedWeapons();
 			}
-		}*/
+		}
 	}
 	else if(key == "." || key == "space" || key == "enter"){
 		// Skip the remainder of the turn
-		// TODO: OR fire any selected weapons
-		//var selectedWeapons = getSelectedWeapons();
-		
-		if(selectedWeapons.length == 0){
+		// OR fire any selected weapons
+		var weaponsToFire = getSelectedWeapons();
+		if(weaponsToFire.length == 0){
 			skip();
 		}
 		else{
-			fire_weapons(selectedWeapons);
-			selectedWeapons = [];
+			fire_weapons(weaponsToFire);
+			
+			clearSelectedWeapons();
 		}
 	}
 	else if(key == "a" || key == "left"){
@@ -335,6 +320,8 @@ function handleHexClick(event) {
 	
 	console.log("clicked "+x+","+y+": "+hex);
 	
+	// TODO: show hex information in target display
+	
 	/*//TESTING the clicking based movement on adjacent hexes
 	if(!playerUnit.coords.equals(hex.coords)){
 		var adjacents = playerUnit.coords.getAdjacentCoords();
@@ -398,10 +385,29 @@ function handleUnitClick(event) {
 	}
 }
 
-function handleTargetCloseClick(event) {
-	createjs.Tween.get(weaponsContainer).to({alpha: 0}, 250);
-	createjs.Tween.get(targetContainer).to({alpha: 0}, 250);
-	createjs.Tween.get(targetBracket).to({alpha: 0}, 250);
+function handleWeaponClick(event) {
+	var x = event.stageX;
+	var y = event.stageY;
+	var unitWeaponDisplay = event.target;
+	
+	console.log("clicked "+unitWeaponDisplay); 
+	
+	if(isPlayerUnitTurn()) {
+		var weapon = unitWeaponDisplay.weapon;
+		
+		if(weapon != null) {
+			var selectedIndex = $.inArray(weapon, selectedWeapons);
+			if(selectedIndex == -1) {
+				addSelectedWeapon(weapon);
+			}
+			else {
+				removeSelectedWeapon(weapon);
+			}
+			
+			// update the selected weapons on the UI and their heat that would be generated
+			updateSelectedWeapons();
+		}
+	}
 }
 
 //Using jQuery add the event handlers after the DOM is loaded

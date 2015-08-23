@@ -16,6 +16,7 @@ function WeaponDisplay(index, weapon) {
 	
 	this.index = index;
 	this.weapon = weapon;
+	this.selected = false;
 	
 	this.background = null;
 	this.nameLabel = null;
@@ -75,26 +76,26 @@ c.init = function() {
 	this.toHitLabel.y = 5;	
 	this.addChild(this.toHitLabel);
 	
-	
-	// finally, add the background shape
+	// add the background shape
 	this.background = new createjs.Shape();
 	this.addChildAt(this.background, 0);
+	
+	// create hit area (it never needs to be added to display)
+	var hit = new createjs.Shape();
+	hit.graphics.beginFill("#000000").drawRect(0, 0, this.width, this.height).endStroke();
+	this.hitArea = hit;
+	
+	// add listener
+	this.on("click", handleWeaponClick);
+	this.mouseChildren = false;
 	
 	this.update();
 }
 
 c.update = function() {
 	this.uncache();
-	this.background.graphics.clear();
 	
-	// update background as cooldown
-	if(this.weapon.cooldown > 0){
-		console.log(this.weapon.shortName+" = "+this.weapon.cooldown);
-		
-		var cooldownAsPercent = this.weapon.cooldown/this.weapon.cycle;
-		this.background.graphics.beginFill("#3399FF")
-			.drawRect(WeaponDisplay.MAX_NUMBER_LABEL_WIDTH, BORDER_WIDTH, cooldownAsPercent * (this.width-WeaponDisplay.MAX_NUMBER_LABEL_WIDTH-BORDER_WIDTH*2), this.height-BORDER_WIDTH*2).endStroke();
-	}
+	this.drawSelected();
 	
 	// update weapon name and ammo
 	var weaponInfo = this.weapon.shortName;
@@ -123,8 +124,43 @@ c.update = function() {
 	this.doCache();
 }
 
+c.drawSelected = function() {
+	this.background.graphics.clear();
+	
+	if(this.weapon.cooldown > 0){
+		// update background as cooldown
+		var cooldownAsPercent = this.weapon.cooldown/this.weapon.cycle;
+		this.background.graphics.beginFill("#3399FF")
+				.drawRect(WeaponDisplay.MAX_NUMBER_LABEL_WIDTH, BORDER_WIDTH, 
+					cooldownAsPercent * (this.width-WeaponDisplay.MAX_NUMBER_LABEL_WIDTH), this.height-BORDER_WIDTH*2).endStroke();
+	}
+	else if(this.selected) {
+		// update background as selected to fire
+		this.background.graphics.beginFill("#FF0000")
+				.drawRect(WeaponDisplay.MAX_NUMBER_LABEL_WIDTH, BORDER_WIDTH, 
+					this.width-WeaponDisplay.MAX_NUMBER_LABEL_WIDTH, this.height-BORDER_WIDTH*2).endStroke();
+	}
+}
+
+c.isSelected = function() {
+	return this.selected;
+}
+c.setSelected = function(selected) {
+	this.uncache();
+	
+	this.selected = selected;
+	this.drawSelected();
+	
+	this.doCache();
+}
+
+
 c.doCache = function() {
 	this.cache(0,0, this.width,this.height);
+}
+
+c.toString = function() {
+	return "[WeaponDisplay@"+this.x+","+this.y+": "+this.weapon+"]";
 }
 
 WeaponDisplay.getWeaponTypeImage = function(weapon) {

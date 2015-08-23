@@ -86,10 +86,10 @@ c.update = function() {
 c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 	if(heat == null) return;
 	
+	this.uncache();
+	
 	if(heatGen == null) heatGen = "0.0";
 	if(heatDiss == null) heatDiss = "0.0";
-	
-	this.uncache();
 	
 	this.heatLabel.text = heat;
 	this.heatLabel.x = this.staticHeatLabel.x + this.staticHeatLabel.getMeasuredWidth()/2 - this.heatLabel.getMeasuredWidth()/2;

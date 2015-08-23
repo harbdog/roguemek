@@ -78,21 +78,16 @@ function move(forward) {
 		// update heat display
 		updateHeatDisplay(thisUnit);
 		
+		// update selected weapons display that also updates the heat display
+		updateSelectedWeapons();
+		
 		// hide the target line before starting the animated move
 		setPlayerTargetLineVisible(false);
 		
-		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading(), updateTargetPosition);
+		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading(),  performUnitPositionUpdates);
 		
 		//playerUnit.displayUnit.setControlsVisible(true);
 	});
-}
-
-function updateTargetPosition() {
-	// update line to target
-	var unitTarget = getUnitTarget(turnUnit);
-	if(unitTarget != null) {
-		setPlayerTarget(unitTarget);
-	}
 }
 
 function rotate(rotation) {
@@ -123,8 +118,11 @@ function rotate(rotation) {
 		
 		// update heat display
 		updateHeatDisplay(thisUnit);
+		
+		// update selected weapons display that also updates the heat display
+		updateSelectedWeapons();
 		  
-		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
+		thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading(), performUnitPositionUpdates);
 		//playerUnit.displayUnit.setControlsVisible(true);
 	});
 }
@@ -208,7 +206,7 @@ function fire_weapons(weapons) {
 		updateTargetDisplay();
 		
 		// Toggle off all selected weapons
-		deselectWeapons();
+		updateSelectedWeapons();
 	});
 }
 
@@ -326,13 +324,16 @@ function pollUpdate(updates) {
 				}
 				
 				if(isPlayerUnit(thisUnit)) {
-					thisUnit.heat = data.heat;
-					thisUnit.heatDiss = data.heatDiss;
+					if(data.heat) thisUnit.heat = data.heat;
+					if(data.heatDiss) thisUnit.heatDiss = data.heatDiss;
 					
 					setActionPoints(thisUnit.apRemaining);
 					setJumpPoints(thisUnit.jpRemaining);
 					updateHeatDisplay(thisUnit);
 					updateWeaponsDisplay();
+					
+					// update selected weapons display that also updates the heat display
+					updateSelectedWeapons();
 				}
 				else if(unitMoved){
 					thisUnit.displayUnit.animateUpdateDisplay(thisUnit.getHexLocation(), thisUnit.getHeading());
@@ -343,14 +344,18 @@ function pollUpdate(updates) {
 				var prevTurnUnit = turnUnit;
 				
 				if(isPlayerUnit(prevTurnUnit)) {
-					// clear toHit of weapons before next turn unit begins
+					// clear selection and toHit of weapons before next turn unit begins
+					clearSelectedWeapons();
 					resetWeaponsToHit();
 					updateWeaponsDisplay();
+					
+					// update selected weapons display that also updates the heat display
+					updateSelectedWeapons();
 				}
 				
 				turnUnit = units[data.turnUnit];
 				
-				if(isPlayerUnit(turnUnit)) {
+				if(isPlayerUnitTurn()) {
 					if(data.weaponData != null) {
 						$.each(data.weaponData, function(k, wData) {
 							var id = wData.weaponId;
@@ -363,8 +368,8 @@ function pollUpdate(updates) {
 						});
 					}
 					
-					turnUnit.heat = data.heat;
-					turnUnit.heatDiss = data.heatDiss;
+					if(data.heat) turnUnit.heat = data.heat;
+					if(data.heatDiss) turnUnit.heatDiss = data.heatDiss;
 				}
 				
 				var prevTurnTarget = getUnitTarget(prevTurnUnit);
@@ -372,7 +377,7 @@ function pollUpdate(updates) {
 				
 				if(prevTurnUnit != null && prevTurnUnit.id != turnUnit.id) {
 					if(isPlayerUnit(prevTurnUnit)) {
-						if(!isPlayerUnit(turnUnit)) {
+						if(!isPlayerUnitTurn()) {
 							setPlayerTarget(null);
 						}
 						
@@ -387,11 +392,14 @@ function pollUpdate(updates) {
 					prevUnitDisplay.updateUnitIndicator();
 					turnUnitDisplay.updateUnitIndicator();
 					
-					if(isPlayerUnit(turnUnit)) {
+					if(isPlayerUnitTurn()) {
 						// update player unit displays to prepare for its new turn
 						updateHeatDisplay(turnUnit);
 						showPlayerUnitDisplay(turnUnit);
 						updateWeaponsDisplay();
+						
+						// update selected weapons display that also updates the heat display
+						updateSelectedWeapons();
 						
 						if(newTurnTarget != null) {
 							newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
@@ -409,65 +417,6 @@ function pollUpdate(updates) {
 				updatePlayerUnitListDisplay();
 				
 				update = true;
-
-
-				/*var playerTurnEnded = (playerUnit.id == turnUnit.id);
-				
-				turnUnit = units[data.turnUnit];
-				
-				if(data.apRemaining != null){
-					turnUnit.apRemaining = data.apRemaining;
-				}
-				if(data.jpRemaining != null){
-					turnUnit.jpRemaining = data.jpRemaining;
-				}
-				
-				if(playerUnit.id == turnUnit.id){
-					if(data.weaponData != null) {
-						$.each(data.weaponData, function(k, wData) {
-							var id = wData.weaponId;
-							var cooldown = wData.weaponCooldown;
-							
-							var weapon = getPlayerWeaponById(id);
-							if(weapon != null) {
-								weapon.cooldown = cooldown;
-							}
-						});
-					}
-					
-					turnUnit.heat = data.heat;
-					turnUnit.heatDiss = data.heatDiss;
-					
-					// update UI for the new player turn
-					// TODO: move these out to a method that can also be used at init
-					setActionPoints(turnUnit.apRemaining);
-					setJumpPoints(turnUnit.jpRemaining);
-					setHeatDisplay(turnUnit.heat, false, turnUnit.heatDiss);
-					//playerUnit.displayUnit.setControlsVisible(true);
-					
-					// update the weapons cooldown for the player weapons
-					updateWeaponsCooldown();
-					
-					// re-acquire the target
-					target();
-				
-					$('.action_end').removeClass("hidden");
-					$('.action_wait').addClass("hidden");
-				}
-				else{
-					// indicate non-player unit turn starting
-					turnUnit.displayUnit.setOtherTurnVisible(true);
-					
-					$('.action_fire').addClass("hidden");
-					$('.action_end').addClass("hidden");
-					$('.action_wait').removeClass("hidden");
-				}
-				
-				if(playerTurnEnded) {
-					// clear toHit of weapons
-					resetWeaponsToHit();
-					updateWeaponsDisplay();
-				}*/
 			}
 		});
 	});

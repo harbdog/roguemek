@@ -323,14 +323,13 @@ function showPlayerUnitDisplay(unit) {
 	});
 }
 
-function updateHeatDisplay(unit) {
+function updateHeatDisplay(unit, addedGenHeat) {
 	if(unit == null) return;
+	if(addedGenHeat == null) addedGenHeat = 0;
 	
-	// TODO: update unit heat, heat generation, heat dissipation
+	// update unit heat, heat generation, heat dissipation
 	var unitHeatDisplay = heatDisplays[unit.id];
-	unitHeatDisplay.setDisplayedHeat(unit.heat, 0, unit.heatDiss);
-	
-	// TODO: Heat meter with indicators of heat that weapons will generate and where the heat penalties are
+	unitHeatDisplay.setDisplayedHeat(unit.heat, addedGenHeat, unit.heatDiss);
 }
 
 /**
@@ -559,6 +558,24 @@ function setPlayerTargetLineVisible(visible) {
 	}
 }
 
+function updateTargetPosition() {
+	// update line to target
+	var unitTarget = getUnitTarget(turnUnit);
+	if(unitTarget != null) {
+		setPlayerTarget(unitTarget);
+	}
+}
+
+/**
+ * Intended to be called back from Tweens when the unit position has finished animating updates
+ */
+function performUnitPositionUpdates() {
+	updateTargetPosition();
+	
+	// re-acquire the target
+	target(getUnitTarget(turnUnit));
+}
+
 /**
  * Intended to be called back from Tweens when the object is ready to remove itself from the stage after animation is completed
  */
@@ -632,7 +649,7 @@ function initPlayerWeaponsDisplay() {
  * @returns
  */
 function getPlayerWeaponById(id) {
-	if(isPlayerUnit(turnUnit) && turnUnit.weapons[id] != null) {
+	if(isPlayerUnitTurn() && turnUnit.weapons[id] != null) {
 		return turnUnit.weapons[id];
 	}
 	
@@ -641,101 +658,34 @@ function getPlayerWeaponById(id) {
 
 function updateWeaponsDisplay() {
 	// update weapons display
-	if(isPlayerUnit(turnUnit)){
+	if(isPlayerUnitTurn()){
 		var unitWeaponsDisplay = weaponsDisplays[turnUnit.id];
 		unitWeaponsDisplay.update();
 	}
-	
-	/*var actionStr;
-	if(playerUnit.id == turnUnit.id) {
-		// TESTING (button will eventually need to switch between 'action_fire' and 'action_end' based on whether weapons are selected to fire)
-		actionStr = "<div class='action_fire hidden'>Fire</div>"+
-					"<div class='action_end'>End<br/>Turn</div>"+
-					"<div class='action_wait hidden'>Wait</div>";
-	}
-	else {
-		actionStr = "<div class='action_fire hidden'>Fire</div>"+
-					"<div class='action_end hidden'>End<br/>Turn</div>"+
-					"<div class='action_wait'>Wait</div>";
-	}*/
-	
-	
-	/*$(".action_fire").click(function() {
-		// TODO: combine to a single method that is also called by the key press equivalent
-		var selectedWeapons = getSelectedWeapons();
-		fire_weapons(selectedWeapons);
-	});*/
-	
-	/*$(".action_end").click(function() {
-		skip();
-	});*/
 }
 
 function updateSelectedWeapons() {
-	// TODO: use this method to store selected weapons in an array then update the UI to reflect
-	// instead of directly using the "selected" class to store that info
-	var hasSelected = false;
+	if(!isPlayerUnitTurn()) return;
 	
+	// use this method to update the UI based on selected weapons
 	var weaponHeatTotal = 0
+	var weaponsPreparedToFire = getSelectedWeapons();
+	var hasWeaponsSelected = (weaponsPreparedToFire.length > 0);
 	
-	// TODO: store selected weapons
+	// update weapons displays to show as selected or not selected to fire
+	var unitWeaponsDisplay = weaponsDisplays[turnUnit.id];
+	unitWeaponsDisplay.setSelectedWeapons(weaponsPreparedToFire);
 	
-	/*$.each(playerWeapons, function(key, w) {
-		if($("#"+w.id).hasClass("selected")) {
-			hasSelected = true;
-			
-			weaponHeatTotal += w.heat;
+	// update heat gen that will occur from firing currently selected weapons
+	$.each(weaponsPreparedToFire, function(index, weapon) {
+		if(weapon != null) {
+			weaponHeatTotal += weapon.heat;
 		}
 	});
 	
-	if(hasSelected) {
-		$('.action_fire').removeClass("hidden");
-		$('.action_end').addClass("hidden");
-		
-		setHeatDisplay(playerUnit.heat, weaponHeatTotal, false);
-	}
-	else{
-		$('.action_fire').addClass("hidden");
-		$('.action_end').removeClass("hidden");
-		
-		setHeatDisplay(playerUnit.heat, false, false);
-	}*/
-}
-
-/**
- * Gets an array of the player weapons that have been selected on the UI to fire
- * @returns {Array}
- */
-function getSelectedWeapons() {
-	//var selectedWeapons = [];
+	updateHeatDisplay(turnUnit, weaponHeatTotal);
 	
-	// TODO: determine weapons that are selected to fire
-	/*$.each(playerWeapons, function(key, w) {
-		if($("#"+w.id).hasClass("selected")) {
-			selectedWeapons.push(w);
-		}
-	});*/
-	
-	return selectedWeapons;
-}
-
-/**
- * Deselects any currently selected players weapons on the UI
- */
-function deselectWeapons() {
-	var hasSelected = false;
-	// TODO: deselect all weapons currently selected
-	/*$.each(playerWeapons, function(key, w) {
-		if($("#"+w.id).hasClass("selected")) {
-			hasSelected = true;
-			$('#'+w.id).toggleClass("selected");
-		}
-	});
-	
-	if(hasSelected) {
-		$('.action_fire').addClass("hidden");
-		$('.action_end').removeClass("hidden");
-	}*/
+	update = true;
 }
 
 /**
@@ -744,7 +694,7 @@ function deselectWeapons() {
  */
 function resetWeaponsToHit() {
 	// reset the to hit value displayed for displayed weapons
-	if(isPlayerUnit(turnUnit)) {
+	if(isPlayerUnitTurn()) {
 		$.each(turnUnit.weapons, function(key, w) {
 			w.toHit = null;
 		});
@@ -758,60 +708,6 @@ function updateTargetDisplay() {
 	//TODO: update the target display 
 	// if(playerTarget == null) return;
 	return;
-	
-	var targetDisplayUnit = playerTarget.displayUnit;
-	
-	// TESTING
-	console.log(targetDisplayUnit.toString());
-	
-	var testingStr = "";
-	
-	// TODO: HTAL graph display
-	// TODO: HTAL paper doll display
-	
-	var armor = playerTarget.armor;
-	var internals = playerTarget.internals;
-	var line1 = "         "+"HD:"+armor[HEAD]+"("+internals[HEAD]+")";
-	var line2 = "LA:"+armor[LEFT_ARM]+"("+internals[LEFT_ARM]+")" +"          "+ "RA:"+armor[RIGHT_ARM]+"("+internals[RIGHT_ARM]+")";
-	var line3 = "LT:"+armor[LEFT_TORSO]+"("+internals[LEFT_TORSO]+")" +" "+ "CT:"+armor[CENTER_TORSO]+"("+internals[CENTER_TORSO]+")" +" "+ "RT:"+armor[RIGHT_TORSO]+"("+internals[RIGHT_TORSO]+")";
-	var line4 = "LTR:"+armor[LEFT_REAR] +"    "+ "CTR:"+armor[CENTER_REAR] +"    "+ "RTR:"+armor[RIGHT_REAR];
-	var line5 = "LL:"+armor[LEFT_LEG]+"("+internals[LEFT_LEG]+")" +"          "+ "RL:"+armor[RIGHT_LEG]+"("+internals[RIGHT_LEG]+")";
-	testingStr += 
-			"<p><pre>"+line1+"</pre></p>" +
-			"<p><pre>"+line2+"</pre></p>" +
-			"<p><pre>"+line3+"</pre></p>" +
-			"<p><pre>"+line4+"</pre></p>" +
-			"<p><pre>"+line5+"</pre></p>" + "<br/>";
-	
-	var i = 1;
-	$.each(playerTarget.weapons, function(key, w) {
-		var locationStr = getLocationText(w.location);
-		testingStr += locationStr+"-"+w.shortName + "<br/>";
-	});
-	
-	// TODO: show the target info display
-	
-	/*targetContainer.alpha = 0;
-	targetContainer.x = targetDisplayUnit.x + hexWidth/3;
-	targetContainer.y = targetDisplayUnit.y - hexHeight/2;
-	targetDisplay.htmlElement.innerHTML = testingStr;
-	stage.addChild(targetContainer);
-	
-	//create the target bracket over the target image
-	targetBracket.alpha = 0;
-	targetBracket.x = targetDisplayUnit.x;
-	targetBracket.y = targetDisplayUnit.y;
-	stage.addChild(targetBracket);
-	
-	createjs.Tween.get(targetContainer).to({alpha: 1}, 500);
-	createjs.Tween.get(targetBracket).to({alpha: 1}, 500);*/
-	
-	/*// Just played around with Timeline a bit
-	var bracketTween = new createjs.Tween(targetBracket);
-	var timeline = new createjs.Timeline(null, null, {loop: true});
-	timeline.addTween(bracketTween.to({alpha: 1}, 500));
-	timeline.addTween(bracketTween.to({alpha: 0}, 1000));
-	*/
 }
 
 /**

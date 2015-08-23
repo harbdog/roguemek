@@ -99,6 +99,17 @@ c.update = function() {
 	this.doCache();
 }
 
+c.setSelectedWeapons = function(weaponsArray) {
+	this.uncache();
+	
+	$.each(this.weapons, function(index, unitWeaponDisplay) {
+		var selected = (weaponsArray != null && $.inArray(unitWeaponDisplay.weapon, weaponsArray) != -1);
+		unitWeaponDisplay.setSelected(selected);
+	});
+	
+	this.doCache();
+}
+
 c.doCache = function() {
 	this.cache(0,0, this.width,this.height);
 }

@@ -254,7 +254,7 @@ function loadGameElements() {
 				  unitInstance.crits = thisUnit.crits;
 				  unitInstance.weapons = initUnitWeapons(thisUnit);
 
-				  // only add mouse event listener for non-player unit
+				  // add mouse event listener
 				  unitDisplay.on("click", handleUnitClick);
 				  unitDisplay.mouseChildren = false;
 				  
@@ -682,6 +682,37 @@ function getUnitWeaponById(id) {
 	});
 	
 	return foundWeapon;
+}
+
+/**
+ * Gets an array of the player weapons that have been selected on the UI to fire
+ * @returns {Array}
+ */
+function getSelectedWeapons() {
+	return selectedWeapons;
+}
+function clearSelectedWeapons() {
+	selectedWeapons = [];
+}
+function addSelectedWeapon(weapon) {
+	if(weapon != null && weapon.cooldown == 0) {
+		var selectedIndex = $.inArray(weapon, selectedWeapons);
+		if(selectedIndex == -1) {
+			// weapon not currently selected
+			selectedWeapons.push(weapon);
+		}
+	}
+}
+function removeSelectedWeapon(weapon) {
+	if(weapon != null) {
+		var selectedIndex = $.inArray(weapon, selectedWeapons);
+		if(selectedIndex == -1) {
+			// weapon not currently selected
+		}
+		else {
+			delete selectedWeapons[selectedIndex];
+		}
+	}
 }
 
 /**
