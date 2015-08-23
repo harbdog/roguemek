@@ -30,12 +30,12 @@ var elevationHeight = defElevationHeight * hexScale;
 var showLevels = true;
 
 var messagingDisplay;
-var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays;
+var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;
 
 var unitDisplayWidth = 250;
 var unitDisplayBounds;
 var targetDisplayWidth = 200;
-var targetDisplayBounds;
+var targetDisplayBounds = {};
 
 var targetBracket, targetLine;
 
@@ -79,6 +79,8 @@ function updatePlayerUI() {
 function initOtherUnitDisplay() {
 	if(unitDisplays == null) return;
 	
+	if(weaponsListDisplay == null) weaponsListDisplay = {};
+	
 	var firstListUnit = unitListDisplayArray[0];
 	$.each(units, function(id, unit) {
 		if(isPlayerUnit(unit)) return;
@@ -103,26 +105,18 @@ function initOtherUnitDisplay() {
 		unitInfoDisplay.y = listUnit.y + listUnit.getDisplayHeight();
 		
 		unitGroupDisplay.addChild(unitInfoDisplay);
-		infoDisplays[unit.id] = unitInfoDisplay;
+		infoDisplays[id] = unitInfoDisplay;
 		
 		// the weapons display is directly below the info display
-		var unitWeaponsDisplay = new createjs.Shape();
-		unitWeaponsDisplay.width = targetDisplayWidth;
-		unitWeaponsDisplay.height = 100;
-		//unitWeaponsDisplay.init();
+		var unitWeaponsListDisplay = new WeaponsListDisplay(unit);
+		unitWeaponsListDisplay.width = targetDisplayWidth;
+		unitWeaponsListDisplay.init();
 		
-		// TODO: create as new class for containing weapons list for the unit
-		unitWeaponsDisplay.alpha = 0.75;
-		unitWeaponsDisplay.graphics.beginFill("#404040")
-				.drawRect(0, 0, unitWeaponsDisplay.width, unitWeaponsDisplay.height)
-				.setStrokeStyle(3/2, "round").beginStroke("#C0C0C0")
-				.moveTo(0, unitWeaponsDisplay.height)
-				.lineTo(unitWeaponsDisplay.width, unitWeaponsDisplay.height).endStroke();
+		unitWeaponsListDisplay.x = 0;
+		unitWeaponsListDisplay.y = unitInfoDisplay.y + unitInfoDisplay.height;
 		
-		unitWeaponsDisplay.x = 0;
-		unitWeaponsDisplay.y = unitInfoDisplay.y + unitInfoDisplay.height;
-		
-		unitGroupDisplay.addChild(unitWeaponsDisplay);
+		unitGroupDisplay.addChild(unitWeaponsListDisplay);
+		weaponsListDisplay[id] = unitWeaponsListDisplay
 		
 		// the other unit armor displays is directly below its weapons display
 		var unitArmorDisplay = new MechArmorDisplay();
@@ -131,21 +125,20 @@ function initOtherUnitDisplay() {
 		unitArmorDisplay.init();
 		
 		unitArmorDisplay.x = 0;
-		unitArmorDisplay.y = unitWeaponsDisplay.y + unitWeaponsDisplay.height;
+		unitArmorDisplay.y = unitWeaponsListDisplay.y + unitWeaponsListDisplay.height;
 		
 		unitGroupDisplay.addChild(unitArmorDisplay);
-		armorDisplays[unit.id] = unitArmorDisplay;
+		armorDisplays[id] = unitArmorDisplay;
 		
 		// set calculated bounds of the unit display
-		if(targetDisplayBounds == null) {
-			var totalHeight = unitArmorDisplay.height + unitWeaponsDisplay.height + unitInfoDisplay.height + listUnit.getDisplayHeight();
-			targetDisplayBounds = new createjs.Rectangle(
-					canvas.width - targetDisplayWidth, canvas.height - totalHeight,
-					targetDisplayWidth, totalHeight);
-		}
+		var totalHeight = unitArmorDisplay.height + unitWeaponsListDisplay.height + unitInfoDisplay.height + listUnit.getDisplayHeight();
+		var thisDisplayBounds = new createjs.Rectangle(
+				canvas.width - targetDisplayWidth, canvas.height - totalHeight,
+				targetDisplayWidth, totalHeight);
+		targetDisplayBounds[id] = thisDisplayBounds;
 		
-		unitGroupDisplay.x = targetDisplayBounds.x;
-		unitGroupDisplay.y = targetDisplayBounds.y;
+		unitGroupDisplay.x = thisDisplayBounds.x;
+		unitGroupDisplay.y = thisDisplayBounds.y;
 		
 		// apply initial damage to this unit, if any
 		for(var n=0; n<unit.armor.length; n++) {
@@ -168,11 +161,13 @@ function updateOtherUnitDisplay() {
 		var thisUnit = units[unitId];
 		if(!isPlayerUnit(thisUnit)) {
 			// fix x, y position of the target unit display
-			targetDisplayBounds.x = canvas.width - targetDisplayBounds.width;
-			targetDisplayBounds.y = canvas.height - targetDisplayBounds.height;
+			var thisDisplayBounds = targetDisplayBounds[unitId];
 			
-			unitGroupDisplay.x = targetDisplayBounds.x;
-			unitGroupDisplay.y = targetDisplayBounds.y;
+			thisDisplayBounds.x = canvas.width - thisDisplayBounds.width;
+			thisDisplayBounds.y = canvas.height - thisDisplayBounds.height;
+			
+			unitGroupDisplay.x = thisDisplayBounds.x;
+			unitGroupDisplay.y = thisDisplayBounds.y;
 		}
 	});
 }
