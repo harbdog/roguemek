@@ -21,6 +21,7 @@ function MechHeatDisplay() {
 	this.heatLabel = null;
 	this.staticGenDissLabel = null;
 	this.heatGenDissLabel = null;
+	this.heatResultLine = null;
 }
 var c = createjs.extend(MechHeatDisplay, createjs.Container);
 
@@ -68,6 +69,10 @@ c.init = function() {
 	this.heatGenDissLabel.y = this.staticGenDissLabel.y + this.staticGenDissLabel.getMeasuredHeight()*1.5;
 	this.addChild(this.heatGenDissLabel);
 	
+	// draw heat result line
+	this.heatResultLine = new createjs.Shape();
+	this.addChildAt(this.heatResultLine, 0);
+	
 	this.update();
 }
 
@@ -91,19 +96,34 @@ c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 	if(heatGen == null) heatGen = "0.0";
 	if(heatDiss == null) heatDiss = "0.0";
 	
+	// update the heat label
 	this.heatLabel.text = heat;
 	this.heatLabel.x = this.staticHeatLabel.x + this.staticHeatLabel.getMeasuredWidth()/2 - this.heatLabel.getMeasuredWidth()/2;
 	if(this.heatLabel.x < this.staticHeatLabel.x) {
 		this.heatLabel.x = this.staticHeatLabel.x;
 	}
 	
+	// update the heat gen/diss label
 	this.heatGenDissLabel.text = "+"+heatGen+"/"+"-"+heatDiss;
 	this.heatGenDissLabel.x = this.staticGenDissLabel.x + this.staticGenDissLabel.getMeasuredWidth()/2 -this.heatGenDissLabel.getMeasuredWidth()/2 ;
 	
+	// update the heat bar and its mask
 	this.staticHeatBar.alpha = 0.5 + 0.5 * heat/30;
 	
 	this.heatMask.graphics.clear();
 	this.heatMask.graphics.drawRect(0, 0, this.width * (heat / 30), this.height);
+	
+	// draw the end of turn heat gen/diss result line
+	var heatResultColor = "#FFFFFF";
+	if(heatGen < heatDiss) {
+		heatResultColor = "#3399FF";
+	}
+	else if(heatGen > heatDiss) {
+		heatResultColor = "#FF0000";
+	}
+	this.heatResultLine.graphics.clear();
+	this.heatResultLine.graphics.beginFill(heatResultColor)
+			.drawRect(0, 0, this.width * ((heat +heatGen -heatDiss) / 30), this.height);
 	
 	this.doCache();
 }
