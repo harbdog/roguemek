@@ -1,5 +1,5 @@
 /**
- * Class for displaying mech armor remaining/total values
+ * Class for displaying an individual weapon for selection
  */
 (function() {
 "use strict";

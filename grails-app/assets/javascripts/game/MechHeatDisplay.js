@@ -1,5 +1,5 @@
 /**
- * Class for displaying mech armor remaining/total values
+ * Class for displaying a mech's heat, heat generation, and heat dissipation
  */
 (function() {
 "use strict";
