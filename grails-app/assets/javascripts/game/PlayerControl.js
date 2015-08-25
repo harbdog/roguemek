@@ -134,17 +134,10 @@ c.init = function() {
 		this.addChild(this.label);
 	}
 	else if(PlayerControl.TYPE_CENTER == this.type) {
-		this.width = 3*hexWidth/4;
-		this.height = 3*hexHeight/4;
 		
 		this.control = new createjs.Shape();
 		this.control.graphics.beginFill(color)
-				.moveTo(0, this.height/2).lineTo(this.width/4, 0)
-				.lineTo(3*this.width/4, 0)
-				.lineTo(this.width, this.height/2)
-				.lineTo(3*this.width/4, this.height)
-				.lineTo(this.width/4, this.height)
-				.lineTo(0, this.height/2).endFill();
+				.drawCircle(this.width/2, this.height/2, 2*this.width/5).endFill();
 		
 		// give the control a glow
 		var glowColor = shadeColor(color, 0.75);
@@ -153,7 +146,7 @@ c.init = function() {
 		this.addChild(this.control);
 		
 		// show label on top of the control for the AP cost
-		this.label = new createjs.Text("1 AP", "16px Consolas", "#FFFFFF");
+		this.label = new createjs.Text("AP 1", "16px Consolas", "#FFFFFF");
 		this.label.x = (this.width - this.label.getMeasuredWidth()) / 2;
 		this.label.y = (this.height - this.label.getMeasuredHeight()*1.5) / 2;
 		
@@ -162,11 +155,10 @@ c.init = function() {
 	else if(PlayerControl.TYPE_JUMP == this.type) {
 		this.control = new createjs.Shape();
 		this.control.graphics.beginFill(color)
-				.drawPolyStar(this.width/2, this.height/2, this.width/3, 4, 0.6, -90)
 				.moveTo(0, this.height/2).lineTo(this.width/2, 0)
 				.lineTo(this.width, this.height/2)
 				.lineTo(this.width, this.height)
-				.lineTo(this.width/2, this.height/4)
+				.lineTo(this.width/2, this.height/2)
 				.lineTo(0, this.height)
 				.lineTo(0, this.height/2).endFill();
 				
@@ -177,7 +169,7 @@ c.init = function() {
 		this.addChild(this.control);
 		
 		// show label on top of the control for the AP cost
-		this.label = new createjs.Text("1 JP", "16px Consolas", "#FFFFFF");
+		this.label = new createjs.Text("JP 1", "16px Consolas", "#FFFFFF");
 		this.label.x = (this.width - this.label.getMeasuredWidth()) / 2;
 		this.label.y = this.label.getMeasuredHeight();
 		
