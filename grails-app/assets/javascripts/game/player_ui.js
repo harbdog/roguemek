@@ -37,7 +37,7 @@ var unitDisplayBounds;
 var targetDisplayWidth = 200;
 var targetDisplayBounds = {};
 
-var targetBracket, targetLine;
+var unitControls, targetBracket, targetLine;
 
 var apDisplaying, jpDisplaying;
 
@@ -53,6 +53,9 @@ function initPlayerUI() {
 	
 	// create the player unit displays
 	initPlayerUnitDisplay();
+	
+	// create the player unit controls
+	initPlayerUnitControls();
 	
 	// create other unit displays
 	initOtherUnitDisplay();
@@ -318,6 +321,33 @@ function showPlayerUnitDisplay(unit) {
 	});
 }
 
+/**
+ * Initializes each unit's touch controls
+ */
+function initPlayerUnitControls() {
+	if(unitDisplays == null) return;
+	if(unitControls == null) unitControls = {};
+	
+	$.each(unitDisplays, function(unitId, unitDisplay) {
+		var unit = units[unitId];
+		if(!isPlayerUnit(unit)) return;
+		
+		var controlDisplay = new PlayerControlsDisplay(unit);
+		controlDisplay.visible = isTurnUnit(unit);//TODO: false;//let showPlayerUnitControls method handle it
+		controlDisplay.init();
+		
+		controlDisplay.x = unitDisplay.x;
+		controlDisplay.y = unitDisplay.y - controlDisplay.height;
+		
+		overlay.addChild(controlDisplay);
+	});
+}
+
+/**
+ * Updates the heat display for the unit showing the given amount of added heat generated
+ * @param unit
+ * @param addedGenHeat
+ */
 function updateHeatDisplay(unit, addedGenHeat) {
 	if(unit == null) return;
 	if(addedGenHeat == null) addedGenHeat = 0;
