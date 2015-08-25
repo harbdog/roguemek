@@ -396,6 +396,7 @@ function pollUpdate(updates) {
 						// update player unit displays to prepare for its new turn
 						updateHeatDisplay(turnUnit);
 						showPlayerUnitDisplay(turnUnit);
+						showPlayerUnitControls(turnUnit);
 						updateWeaponsDisplay();
 						
 						// update selected weapons display that also updates the heat display
@@ -411,6 +412,7 @@ function pollUpdate(updates) {
 					}
 					else {
 						showOtherUnitDisplay(turnUnit);
+						showPlayerUnitControls(null);
 					}
 				}
 				

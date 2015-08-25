@@ -63,7 +63,13 @@ function initPlayerUI() {
 	// create the player unit weapons displays
 	initPlayerWeaponsDisplay();
 	
-	showPlayerUnitDisplay(turnUnit);
+	if(isPlayerUnitTurn()) {
+		showPlayerUnitDisplay(turnUnit);
+		showPlayerUnitControls(turnUnit);
+	}
+	else {
+		showPlayerUnitDisplay(playerUnits[0]);
+	}
 }
 
 // updates the sizings/positions of the UI overlays on the canvas
@@ -74,6 +80,8 @@ function updatePlayerUI() {
 	
 	updatePlayerUnitDisplay();
 	updateOtherUnitDisplay();
+	
+	updatePlayerUnitControls();
 }
 
 /**
@@ -333,13 +341,45 @@ function initPlayerUnitControls() {
 		if(!isPlayerUnit(unit)) return;
 		
 		var controlDisplay = new PlayerControlsDisplay(unit);
-		controlDisplay.visible = isTurnUnit(unit);//TODO: false;//let showPlayerUnitControls method handle it
+		controlDisplay.visible = false;
 		controlDisplay.init();
 		
 		controlDisplay.x = unitDisplay.x;
 		controlDisplay.y = unitDisplay.y - controlDisplay.height;
 		
 		overlay.addChild(controlDisplay);
+		unitControls[unitId] = controlDisplay;
+	});
+}
+
+/**
+ * Update each unit's touch controls size/position in the event of a window resize 
+ */
+function updatePlayerUnitControls() {
+	if(unitControls == null) return;
+	
+	$.each(unitDisplays, function(unitId, unitDisplay) {
+		var unit = units[unitId];
+		if(!isPlayerUnit(unit)) return;
+		
+		var controlDisplay = unitControls[unitId];
+		controlDisplay.update();
+		
+		controlDisplay.x = unitDisplay.x;
+		controlDisplay.y = unitDisplay.y - controlDisplay.height;
+	});
+}
+
+/**
+ * Ensures that only the given player unit shows its controls, others are hidden
+ * @param unit
+ */
+function showPlayerUnitControls(unit) {
+	if(unitControls == null) return;
+	
+	$.each(unitControls, function(unitId, controlDisplay) {
+		var visible = (unit != null && unit.id == unitId);
+		controlDisplay.visible = visible;
 	});
 }
 
