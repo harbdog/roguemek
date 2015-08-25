@@ -54,11 +54,18 @@ c.update = function() {
 		var weaponRows = MAX_WEAPON_ROWS;
 		
 		var firstWeaponDisplay = this.weapons[0];
+		var firstTargetDisplayWidth = 0;
+		if(targetDisplayBounds != null > 0) {
+			var targetDisplayBoundsKeys = Object.keys(targetDisplayBounds);
+			if(targetDisplayBoundsKeys.length > 0) {
+				firstTargetDisplayWidth = targetDisplayBounds[Object.keys(targetDisplayBounds)[0]].width;
+			}
+		}
 		
 		if(totalWeapons > MAX_WEAPON_ROWS) {
 			// only allow >1 columns if the canvas width can fit it with the rest of the UI
 			var maxWeaponColumns = 
-				Math.floor((canvas.width - unitDisplayBounds.x - unitDisplayBounds.width - targetDisplayBounds.width) 
+				Math.floor((canvas.width - unitDisplayBounds.x - unitDisplayBounds.width - firstTargetDisplayWidth) 
 								/ firstWeaponDisplay.width);
 			
 			weaponColumns = Math.ceil(totalWeapons / MAX_WEAPON_ROWS);
