@@ -247,10 +247,7 @@ function handleComplete(event) {
 	
 	// TODO: Initialize current selected/player turn unit AP display
 	/*setActionPoints(playerUnit.apRemaining);
-	setJumpPoints(playerUnit.jpRemaining);
-	setHeatDisplay(playerUnit.heat);
-	setArmorDisplay(playerUnit.armor, playerUnit.internals);
-	updateWeaponsDisplay();*/
+	setJumpPoints(playerUnit.jpRemaining);*/
 	
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");
@@ -290,29 +287,61 @@ function handleComplete(event) {
 }
 
 /**
- * Handles control input from the user
+ * Handles touch controls action
  * @param event
- * @param action
  */
-function handleControls(action) {
-	if(ACTION_ROTATE_CW == action) {
-		// rotate Heading CW
-		rotate(true);
-	}
-	else if(ACTION_ROTATE_CCW == action) {
-		// rotate Heading CCW
-		rotate(false);
-	}
-	else if(ACTION_FORWARD == action) {
-		// move forward
-		move(true);
-	}
-	else if(ACTION_BACKWARD == action) {
-		// move backward
-		move(false);
+function handleControls(event) {
+	var x = event.stageX;
+	var y = event.stageY;
+	var control = event.target;
+	
+	console.log("clicked "+x+","+y+": "+control);
+	
+	switch(control.type) {
+		case PlayerControl.TYPE_BACKWARD:
+			// move backward
+			move(false);
+			break;
+			
+		case PlayerControl.TYPE_FORWARD:
+			// move forward
+			move(true);
+			break;
+			
+		case PlayerControl.TYPE_LEFT:
+			// turn left/CCW
+			rotate(false);
+			break;
+			
+		case PlayerControl.TYPE_RIGHT:
+			// turn right/CW
+			rotate(true);
+			break;
+			
+		case PlayerControl.TYPE_CENTER:
+			// Skip the remainder of the turn
+			// OR fire any selected weapons
+			var weaponsToFire = getSelectedWeapons();
+			if(weaponsToFire.length == 0){
+				skip();
+			}
+			else{
+				fire_weapons(weaponsToFire);
+				
+				clearSelectedWeapons();
+			}
+			break;
+			
+		case PlayerControl.TYPE_JUMP:
+			// TODO: implement jumping
+			break;
 	}
 }
 
+/**
+ * Handles hex clicking action
+ * @param event
+ */
 function handleHexClick(event) {
 	var x = event.stageX;
 	var y = event.stageY;

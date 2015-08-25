@@ -32,32 +32,50 @@ c.init = function() {
 	this.backward = new PlayerControl(PlayerControl.TYPE_BACKWARD);
 	this.backward.init();
 	this.addChild(this.backward);
+	// add mouse event listener
+	this.backward.on("click", handleControls);
+	this.backward.mouseChildren = false;
 	
 	// create the button that rotates the unit left (counter-clockwise)
 	this.left = new PlayerControl(PlayerControl.TYPE_LEFT);
 	this.left.init();
 	this.addChild(this.left);
+	// add mouse event listener
+	this.left.on("click", handleControls);
+	this.left.mouseChildren = false;
 	
 	// create the button that rotates the unit right (clockwise)
 	this.right = new PlayerControl(PlayerControl.TYPE_RIGHT);
 	this.right.init();
 	this.addChild(this.right);
+	// add mouse event listener
+	this.right.on("click", handleControls);
+	this.right.mouseChildren = false;
 	
 	// create the central button that shows AP and ends the turn or fires weapons
 	this.center = new PlayerControl(PlayerControl.TYPE_CENTER);
 	this.center.init();
 	this.addChild(this.center);
+	// add mouse event listener
+	this.center.on("click", handleControls);
+	this.center.mouseChildren = false;
 	
 	// create the button that moves the unit forward
 	this.forward = new PlayerControl(PlayerControl.TYPE_FORWARD);
 	this.forward.init();
 	this.addChild(this.forward);
+	// add mouse event listener
+	this.forward.on("click", handleControls);
+	this.forward.mouseChildren = false;
 	
 	// create the button that moves the unit forward
 	// TODO: only if the unit has jump jets!
 	this.jump = new PlayerControl(PlayerControl.TYPE_JUMP);
 	this.jump.init();
 	this.addChild(this.jump);
+	// add mouse event listener
+	this.jump.on("click", handleControls);
+	this.jump.mouseChildren = false;
 	
 	// update the container height based on all of the components that were added
 	this.height = this.backward.height + this.left.height + this.center.height + this.forward.height + this.jump.height;

@@ -176,11 +176,20 @@ c.init = function() {
 		this.addChild(this.label);
 	}
 	
+	// create hit area (it never needs to be added to display)
+	var hit = new createjs.Shape();
+	hit.graphics.beginFill("#000000").drawRect(0, 0, this.width, this.height).endStroke();
+	this.hitArea = hit;
+	
 	this.update();
 }
 
 c.update = function() {
 	// TODO: anything to update?
+}
+
+c.toString = function() {
+	return "[Control@"+this.x+","+this.y+": "+this.type+"]";
 }
 
 window.PlayerControl = createjs.promote(PlayerControl, "Container");
