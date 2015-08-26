@@ -39,8 +39,6 @@ var targetDisplayBounds = {};
 
 var unitControls, targetBracket, targetLine;
 
-var apDisplaying, jpDisplaying;
-
 //initialize canvas based UI overlay
 function initPlayerUI() {
 	// create the messaging area
@@ -648,28 +646,22 @@ function callDoCache() {
 	}
 }
 
-function setActionPoints(apRemaining) {
-	apDisplaying = apRemaining;
+function updateUnitActionPoints(unit) {
+	if(unit == null) return;
 	
-	if(apRemaining == 0){
-		// TODO: hide the END button when out of AP
+	var controlDisplay = unitControls[unit.id];
+	if(controlDisplay != null) {
+		controlDisplay.setActionPoints(unit.apRemaining);
 	}
-
-	updateUnitStatsDisplay();
 }
 
-function setJumpPoints(jpRemaining) {
-	jpDisplaying = jpRemaining;
+function updateUnitJumpPoints(unit) {
+	if(unit == null) return;
 	
-	if(jpRemaining == null) {
-		// TODO: null means no jump jets, hide the JP display and JUMP Button
+	var controlDisplay = unitControls[unit.id];
+	if(controlDisplay != null) {
+		controlDisplay.setJumpPoints(unit.jpRemaining);
 	}
-	
-	updateUnitStatsDisplay();
-}
-
-function updateUnitStatsDisplay() {
-	// TODO: update AP and JP display
 }
 
 

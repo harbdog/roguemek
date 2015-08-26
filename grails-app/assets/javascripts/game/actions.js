@@ -327,8 +327,10 @@ function pollUpdate(updates) {
 					if(data.heat) thisUnit.heat = data.heat;
 					if(data.heatDiss) thisUnit.heatDiss = data.heatDiss;
 					
-					setActionPoints(thisUnit.apRemaining);
-					setJumpPoints(thisUnit.jpRemaining);
+					
+					updateUnitActionPoints(thisUnit);
+					updateUnitJumpPoints(thisUnit);
+					
 					updateHeatDisplay(thisUnit);
 					updateWeaponsDisplay();
 					
@@ -370,6 +372,8 @@ function pollUpdate(updates) {
 					
 					if(data.heat) turnUnit.heat = data.heat;
 					if(data.heatDiss) turnUnit.heatDiss = data.heatDiss;
+					if(data.apRemaining) turnUnit.apRemaining = data.apRemaining;
+					if(data.jpRemaining) turnUnit.jpRemaining = data.jpRemaining;
 				}
 				
 				var prevTurnTarget = getUnitTarget(prevTurnUnit);
@@ -394,6 +398,9 @@ function pollUpdate(updates) {
 					
 					if(isPlayerUnitTurn()) {
 						// update player unit displays to prepare for its new turn
+						updateUnitActionPoints(turnUnit);
+						updateUnitJumpPoints(turnUnit);
+						
 						updateHeatDisplay(turnUnit);
 						showPlayerUnitDisplay(turnUnit);
 						showPlayerUnitControls(turnUnit);

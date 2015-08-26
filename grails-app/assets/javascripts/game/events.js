@@ -236,6 +236,8 @@ function handleProgress(event) {
 function handleComplete(event) {
 	stage.removeChild(progress);
 	
+	//rootStage.enableMouseOver(10);
+	
 	// Initialize the hex map display objects
 	initHexMapDisplay();
 	
@@ -244,10 +246,6 @@ function handleComplete(event) {
 	
 	// Initialize the player UI
 	initPlayerUI();
-	
-	// TODO: Initialize current selected/player turn unit AP display
-	/*setActionPoints(playerUnit.apRemaining);
-	setJumpPoints(playerUnit.jpRemaining);*/
 	
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");

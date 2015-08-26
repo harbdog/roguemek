@@ -81,6 +81,9 @@ c.init = function() {
 	this.height = this.backward.height + this.left.height + this.center.height + this.forward.height + this.jump.height;
 	
 	this.update();
+	
+	this.setActionPoints(this.unit.apRemaining);
+	this.setJumpPoints(this.unit.jpRemaining);
 }
 
 c.update = function() {
@@ -113,6 +116,20 @@ c.update = function() {
 	}
 	
 	this.doCache();
+}
+
+c.setActionPoints = function(ap) {
+	this.center.setPoints("AP "+ap);
+	
+	this.update();
+}
+
+c.setJumpPoints = function(jp) {
+	if(this.jump != null) {
+		this.jump.setPoints("JP "+jp);
+	}
+	
+	this.update();
 }
 
 c.doCache = function() {
