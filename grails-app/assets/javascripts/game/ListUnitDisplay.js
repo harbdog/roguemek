@@ -14,8 +14,8 @@ function ListUnitDisplay(unitDisplay) {
 	this.image = unitDisplay.getImage();
 	
 	this.background = null;
+	this.armorBar = null;
 	this.scale = 0.5;
-	this.BORDER_WIDTH = BORDER_WIDTH;
 }
 var c = createjs.extend(ListUnitDisplay, createjs.Container);
 
@@ -32,7 +32,66 @@ c.init = function() {
 	var unitImg = new createjs.Bitmap(this.image);
 	this.addChild(unitImg);
 	
+	// create armor bar with total percent of armor/internals remaining
+	this.armorBar = new createjs.Shape();
+	this.armorBar.x = 0;
+	this.armorBar.y = 0;
+	this.addChild(this.armorBar);
+	
 	this.setSelected(isTurnUnit(this.unit));
+	this.updateArmorBar(false);
+}
+
+c.updateArmorBar = function(doAnimate) {
+	if(this.unit == null || this.unit.initialArmor == null) return;
+	
+	this.uncache();
+	this.armorBar.graphics.clear();
+	
+	var currentArmor = 0;
+	var totalArmor = 0;
+	
+	for(var index=0; index<this.unit.initialArmor.length; index++){
+		var initialArmor = this.unit.initialArmor[index];
+		var thisArmor = this.unit.armor[index];
+		
+		currentArmor += thisArmor;
+		totalArmor += initialArmor;
+	}
+	
+	for(var index=0; index<this.unit.initialInternals.length; index++){
+		var initialInternal = this.unit.initialInternals[index];
+		var thisInternal = this.unit.internals[index];
+		
+		currentArmor += thisInternal;
+		totalArmor += initialInternal;
+	}
+	
+	var percentArmor = (currentArmor/totalArmor);
+	
+	// blend color as percent goes down
+	var barColor = blendColors("#FF0000", "#3399FF", percentArmor);
+	this.armorBar.graphics.beginFill(barColor)
+			.drawRect(this.image.width/8, 10*this.image.height/12, percentArmor * (6*this.image.width/8), this.image.height/8)
+			.endFill()
+			.setStrokeStyle(1, "round").beginStroke("#C0C0C0")
+			.drawRect(this.image.width/8, 10*this.image.height/12, 6*this.image.width/8, this.image.height/8)
+			.endStroke();
+	
+	createjs.Tween.removeTweens(this);
+	if(doAnimate && percentArmor > 0 && percentArmor < 1) {
+		createjs.Tween.get(this)
+				.to({alpha: 0.5}, 250)
+				.to({alpha: 1.0}, 250)
+				.to({alpha: 0.5}, 250)
+				.to({alpha: 1.0}, 250)
+				.to({alpha: 0.5}, 250)
+				.to({alpha: 1.0}, 250)
+				.call(callDoCache, null, this)
+				.addEventListener("change", function() {
+					update = true;
+				});
+	}
 }
 
 c.setSelected = function(selected, isOtherUnit) {

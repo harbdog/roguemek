@@ -29,6 +29,10 @@ var elevationHeight = defElevationHeight * hexScale;
 //variable to show level (elevation/depth/etc.)
 var showLevels = true;
 
+var rootStage, stage, overlay, canvas;
+var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray;
+var fpsDisplay;
+
 var messagingDisplay;
 var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;
 
@@ -103,6 +107,7 @@ function initOtherUnitDisplay() {
 		listUnit.x = targetDisplayWidth - listUnit.getDisplayWidth();
 		listUnit.y = 0;
 		unitGroupDisplay.addChild(listUnit);
+		unitListDisplayArray.push(listUnit);
 		
 		// the info display is directly below the unit icon
 		var unitInfoDisplay = new MechInfoDisplay(unit);
@@ -471,6 +476,11 @@ function applyUnitDamage(unit, index, isInternal) {
 		}
 		
 		unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue);
+		
+		var listUnit = getPlayerUnitListDisplay(unit);
+		if(listUnit != null) {
+			listUnit.updateArmorBar(true);
+		}
 	}
 }
 
@@ -506,13 +516,32 @@ function updatePlayerUnitListDisplay() {
 	if(unitListDisplayArray == null) return;
 	
 	$.each(unitListDisplayArray, function(index, listUnit) {
-		// update the position in case the resize was called
-		listUnit.x = 1;
-		listUnit.y = canvas.height - (index+1) * listUnit.getDisplayHeight();
-		
-		// update the selected status in case its the unit's turn
-		listUnit.setSelected(isTurnUnit(listUnit.unit));
+		if(isPlayerUnit(listUnit.unit)) {
+			// update the position in case the resize was called
+			listUnit.x = 1;
+			listUnit.y = canvas.height - (index+1) * listUnit.getDisplayHeight();
+			
+			// update the selected status in case its the unit's turn
+			listUnit.setSelected(isTurnUnit(listUnit.unit));
+		}
 	});
+}
+
+/**
+ * Gets the player unit display belonging to the given unit
+ */
+function getPlayerUnitListDisplay(unit) {
+	if(unit == null || unitListDisplayArray == null) return null;
+	
+	for(var index=0; index<unitListDisplayArray.length; index++) {
+		var listUnit = unitListDisplayArray[index];
+		
+		if(listUnit.unit.id == unit.id) {
+			return listUnit;
+		}
+	}
+	
+	return null;
 }
 
 /**

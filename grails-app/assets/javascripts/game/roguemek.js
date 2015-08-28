@@ -50,10 +50,7 @@ var ACTION_FORWARD = "forward";
 var ACTION_BACKWARD = "backward";
 
 // Global variables used throughout the game
-var rootStage, stage, overlay, canvas;
-var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray;
 var queue, progress;
-var fpsDisplay;
 var hexMap, units;
 
 // Keep track of which units belong to the player
