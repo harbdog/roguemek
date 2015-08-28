@@ -168,10 +168,11 @@ function fire_weapons(weapons) {
 			var numArmorHits = data.armorHit.length;
 			for(var i=0; i<numArmorHits; i++) {
 				var armorRemains = data.armorHit[i];
-				if(armorRemains != null) {
+				if(armorRemains != null
+						&& t.armor[i] != armorRemains) {
 					t.armor[i] = armorRemains;
 					
-					applyUnitDamage(t, i, false);
+					applyUnitDamage(t, i, false, true);
 				}
 			}
 		}
@@ -181,10 +182,11 @@ function fire_weapons(weapons) {
 			var numInternalsHits = data.internalsHit.length;
 			for(var i=0; i<numInternalsHits; i++) {
 				var internalsRemains = data.internalsHit[i];
-				if(internalsRemains != null) {
+				if(internalsRemains != null
+						&& t.internals[i] != internalsRemains) {
 					t.internals[i] = internalsRemains;
 					
-					applyUnitDamage(t, i, true);
+					applyUnitDamage(t, i, true, true);
 				}
 			}
 		}
@@ -289,10 +291,11 @@ function pollUpdate(updates) {
 					var numArmorHits = data.armorHit.length;
 					for(var i=0; i<numArmorHits; i++) {
 						var armorRemains = data.armorHit[i];
-						if(armorRemains != null) {
+						if(armorRemains != null 
+								&& tgtUnit.armor[i] != armorRemains) {
 							tgtUnit.armor[i] = armorRemains;
 							
-							applyUnitDamage(tgtUnit, i, false);
+							applyUnitDamage(tgtUnit, i, false, true);
 						}
 					}
 				}
@@ -302,24 +305,12 @@ function pollUpdate(updates) {
 					var numInternalsHits = data.internalsHit.length;
 					for(var i=0; i<numInternalsHits; i++) {
 						var internalsRemains = data.internalsHit[i];
-						if(internalsRemains != null) {
+						if(internalsRemains != null 
+								&& tgtUnit.internals[i] != internalsRemains) {
 							tgtUnit.internals[i] = internalsRemains;
 							
-							applyUnitDamage(tgtUnit, i, true);
+							applyUnitDamage(tgtUnit, i, true, true);
 						}
-					}
-				}
-				
-				if(tgtUnit != null) {
-					if(isPlayerUnit(tgtUnit)
-							&& (data.armorHit || data.internalsHit)) {
-						// update player armor/internals after being hit
-						//setArmorDisplay(tgtUnit.armor, tgtUnit.internals);
-					}
-					else if(!isPlayerUnit(tgtUnit)
-							&& (data.armorHit || data.internalsHit)) {
-						// update target armor/internals after being hit
-						//updateTargetDisplay();
 					}
 				}
 				

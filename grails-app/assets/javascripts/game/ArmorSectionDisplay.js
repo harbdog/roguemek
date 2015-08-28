@@ -59,8 +59,8 @@ c.init = function(text, startIndex) {
 	this.barBounds[1] = bounds2;
 	this.addChildAt(bar2, 1);
 	
-	this.setDisplayedPercent(0, 100);
-	this.setDisplayedPercent(1, 100);
+	this.setDisplayedPercent(0, 100, false);
+	this.setDisplayedPercent(1, 100, false);
 	
 	// third bar, if there is one, is full height for rear armor
 	if(text.length > 2) {

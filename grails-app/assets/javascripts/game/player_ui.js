@@ -156,10 +156,10 @@ function initOtherUnitDisplay() {
 		
 		// apply initial damage to this unit, if any
 		for(var n=0; n<unit.armor.length; n++) {
-			applyUnitDamage(unit, n, false, true);
+			applyUnitDamage(unit, n, false, false);
 		}
 		for(var n=0; n<unit.internals.length; n++) {
-			applyUnitDamage(unit, n, true, true);
+			applyUnitDamage(unit, n, true, false);
 		}
 	});
 }
@@ -279,10 +279,10 @@ function initPlayerUnitDisplay() {
 		
 		// apply initial damage to this unit, if any
 		for(var n=0; n<unit.armor.length; n++) {
-			applyUnitDamage(unit, n, false, true);
+			applyUnitDamage(unit, n, false, false);
 		}
 		for(var n=0; n<unit.internals.length; n++) {
-			applyUnitDamage(unit, n, true, true);
+			applyUnitDamage(unit, n, true, false);
 		}
 		
 		// apply initial heat
@@ -406,7 +406,7 @@ function updateHeatDisplay(unit, addedGenHeat) {
  * @param isInternal
  * @param index
  */
-function applyUnitDamage(unit, index, isInternal) {
+function applyUnitDamage(unit, index, isInternal, doAnimate) {
 	if(unit == null || index < 0) return;
 	
 	var value, initialValue;
@@ -475,11 +475,11 @@ function applyUnitDamage(unit, index, isInternal) {
 			subIndex = 2;
 		}
 		
-		unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue);
-		
+		unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue, doAnimate);
+
 		var listUnit = getPlayerUnitListDisplay(unit);
 		if(listUnit != null) {
-			listUnit.updateArmorBar(true);
+			listUnit.updateArmorBar(doAnimate);
 		}
 	}
 }

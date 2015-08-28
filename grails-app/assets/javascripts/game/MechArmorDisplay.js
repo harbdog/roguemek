@@ -73,13 +73,13 @@ c.createSection = function(text, startIndex) {
 	return section;
 }
 
-c.setSectionPercent = function(section, index, percent, doCache) {
+c.setSectionPercent = function(section, index, percent, doAnimate) {
 	if(section == null) return;
 	this.uncache();
 	
-	var doAnimate = true;
-	if(doCache) {
-		doAnimate = false;
+	var doCache = true;
+	if(doAnimate) {
+		doCache = false;
 	}
 	section.setDisplayedPercent(index, percent, doAnimate);
 	
