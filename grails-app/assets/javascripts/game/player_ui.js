@@ -786,15 +786,6 @@ function resetWeaponsToHit() {
 }
 
 /**
- * Updates the target info display
- */
-function updateTargetDisplay() {
-	//TODO: update the target display 
-	// if(playerTarget == null) return;
-	return;
-}
-
-/**
  * Adds the given message to the end of the message display and scrolls to the bottom for it
  * @param message
  */

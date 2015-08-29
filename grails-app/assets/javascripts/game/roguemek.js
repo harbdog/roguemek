@@ -622,6 +622,11 @@ function getUnitTarget(unit) {
 	return unitTargets[unit.id];
 }
 
+function getUnit(unitId) {
+	if(unitId == null) return null;
+	return units[unitId];
+}
+
 // returns full name of the hit location index
 function getLocationName(index){
 	var locText = "";
@@ -792,4 +797,231 @@ function poll() {
         pollUpdate(data.updates);
         
     }, dataType: "json", complete: poll, timeout: 30000 });
+}
+
+/**
+ * Handle all game and unit updates resulting from server actions
+ * @param data
+ */
+function updateGameData(data) {
+	if(data.message) {
+		// display the message to the player
+		var t = new Date(data.time);
+		addMessageUpdate("["+t.toLocaleTimeString()+"] "+data.message);
+	}
+	
+	if(data.unit && data.turnUnit){
+		return;
+	}
+	else if(data.turnUnit) {
+		// presence of turnUnit indicates the unit is starting a new turn
+		data.unit = data.turnUnit;
+	}
+	
+	// keep track of previous turn unit in the event it changes turns
+	var prevTurnUnit = turnUnit;
+	if(data.turnUnit){
+		if(isPlayerUnit(prevTurnUnit)) {
+			// clear selection and toHit of weapons before next turn unit begins
+			clearSelectedWeapons();
+			resetWeaponsToHit();
+			updateWeaponsDisplay();
+			
+			// update selected weapons display that also updates the heat display
+			updateSelectedWeapons();
+		}
+		
+		turnUnit = getUnit(data.turnUnit);
+		
+		updatePlayerUnitListDisplay();
+	}
+	
+	// determine what units are being referenced
+	var u = getUnit(data.unit);
+	var t = getUnit(data.target);
+	
+	var isPlayerU = isPlayerUnit(u);
+	var isPlayerT = isPlayerUnit(t);
+	
+	var prevTurnTarget = getUnitTarget(prevTurnUnit);
+	var newTurnTarget = getUnitTarget(turnUnit);
+	
+	// determine what UI areas need to be updated
+	var updatePosition = false;
+	var updateWeapons = false;
+	
+	
+	// update to position
+	if(data.x && data.y){
+		updatePosition = true;
+		u.setHexLocation(data.x, data.y);
+	}
+	
+	// update to heading
+	if(data.heading){
+		updatePosition = true;
+		u.heading = data.heading;
+	}
+	
+	if(data.apRemaining) {
+		u.apRemaining = data.apRemaining;
+		
+		if(isPlayerU) updateUnitActionPoints(u);
+	}
+	
+	if(data.jpRemaining) {
+		u.jpRemaining = data.jpRemaining;
+		
+		if(isPlayerU) updateUnitJumpPoints(u);
+	}
+	
+	// update armor values of the target
+	if(data.armorHit) {
+		var numArmorHits = data.armorHit.length;
+		for(var i=0; i<numArmorHits; i++) {
+			var armorRemains = data.armorHit[i];
+			if(armorRemains != null
+					&& t.armor[i] != armorRemains) {
+				t.armor[i] = armorRemains;
+				
+				applyUnitDamage(t, i, false, true);
+			}
+		}
+	}
+	
+	// update internal values of the target
+	if(data.internalsHit) {
+		var numInternalsHits = data.internalsHit.length;
+		for(var i=0; i<numInternalsHits; i++) {
+			var internalsRemains = data.internalsHit[i];
+			if(internalsRemains != null
+					&& t.internals[i] != internalsRemains) {
+				t.internals[i] = internalsRemains;
+				
+				applyUnitDamage(t, i, true, true);
+			}
+		}
+	}
+	
+	// update ammo remaining
+	if(data.ammoRemaining) {
+		$.each(data.ammoRemaining, function(ammoId, ammoRemaining) {
+			var ammoObj = getCritObjectById(u, ammoId);
+			ammoObj.ammoRemaining = ammoRemaining;
+		});
+	}
+	
+	if(data.weaponData){
+		updateWeapons = true;
+		
+		// TODO: move clearing previous toHit for each weapon to its own method
+		$.each(turnUnit.weapons, function(key, w) {
+			w.toHit = null;
+		});
+		
+		// update the cooldown status of the weapons fired
+		$.each(data.weaponData, function(key, wData) {
+			var id = wData.weaponId;
+			
+			var weapon = getPlayerWeaponById(id);
+			if(weapon != null){
+				if(wData.toHit) weapon.toHit = wData.toHit;
+				if(wData.weaponCooldown) weapon.cooldown = wData.weaponCooldown;
+			}
+		});
+		
+		updateWeaponsDisplay();
+	}
+	
+	if(data.weaponFire){
+		updateWeapons = true;
+		
+		// update result of weapons fire from another unit
+		var wData = data.weaponFire;
+		
+		var id = wData.weaponId;
+		var hit = wData.weaponHit;
+		var hitLocations = wData.weaponHitLocations;
+		var cooldown = wData.weaponCooldown;
+		
+		var weapon = getUnitWeaponById(id);
+		if(weapon != null){
+			
+			weapon.cooldown = cooldown;
+			
+			// TODO: show floating miss/hit numbers
+			animateWeaponFire(u, weapon, t, hitLocations);
+			
+		}
+		else{
+			console.log("Weapon null? Weapon ID:"+id);
+		}
+	}
+	
+	if(data.heat) {
+		u.heat = data.heat;
+		
+		if(data.heatDiss) {
+			u.heatDiss = data.heatDiss;
+		}
+		
+		// update heat display
+		updateHeatDisplay(u);
+	}
+	
+	if(updatePosition) {
+		// hide the target line before starting the animated move
+		setPlayerTargetLineVisible(false);
+		
+		if(isPlayerU) {
+			u.displayUnit.animateUpdateDisplay(u.getHexLocation(), u.getHeading(), performUnitPositionUpdates);
+		}
+		else {
+			u.displayUnit.animateUpdateDisplay(u.getHexLocation(), u.getHeading());
+		}
+	}
+	
+	if(updateWeapons) {
+		// Update selected weapons
+		updateSelectedWeapons();
+	}
+	
+	// do some final UI updates from turn changes
+	if(prevTurnUnit != null && prevTurnUnit.id != turnUnit.id) {
+		if(isPlayerUnit(prevTurnUnit)) {
+			if(!isPlayerUnitTurn()) {
+				setPlayerTarget(null);
+			}
+			
+			if(prevTurnTarget != null) {
+				prevTurnTarget.getUnitDisplay().setUnitIndicatorVisible(true);
+			}
+		}
+		
+		var prevUnitDisplay = prevTurnUnit.getUnitDisplay();
+		var turnUnitDisplay = turnUnit.getUnitDisplay();
+		
+		prevUnitDisplay.updateUnitIndicator();
+		turnUnitDisplay.updateUnitIndicator();
+		
+		if(isPlayerUnitTurn()) {
+			// update player unit displays to prepare for its new turn
+			showPlayerUnitDisplay(turnUnit);
+			showPlayerUnitControls(turnUnit);
+			
+			if(newTurnTarget != null) {
+				newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
+			}
+			setPlayerTarget(newTurnTarget);
+			
+			// re-acquire the target
+			target(newTurnTarget);
+		}
+		else {
+			showOtherUnitDisplay(turnUnit);
+			showPlayerUnitControls(null);
+		}
+	}
+	
+	update = true;
 }
