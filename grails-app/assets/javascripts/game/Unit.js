@@ -13,12 +13,18 @@ function Unit(id, hexX, hexY, heading, displayUnit) {
 var u = Unit.prototype;
 
 u.setHexLocation = function(hexX, hexY) {
+	var locationChanged = false;
+	
 	if(this.coords == null){
 		this.coords = new Coords(hexX, hexY);
+		locationChanged = true;
 	}
-	else{
+	else if(this.xCoords() != hexX || this.yCoords() != hexY){
 		this.coords.setLocation(hexX, hexY);
+		locationChanged = true;
 	}
+	
+	return locationChanged;
 }
 u.getHexLocation = function() {
 	return this.coords;

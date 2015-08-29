@@ -392,7 +392,7 @@ function showPlayerUnitControls(unit) {
  * @param addedGenHeat
  */
 function updateHeatDisplay(unit, addedGenHeat) {
-	if(unit == null) return;
+	if(unit == null || !isPlayerUnit(unit)) return;
 	if(addedGenHeat == null) addedGenHeat = 0;
 	
 	// update unit heat, heat generation, heat dissipation
@@ -733,10 +733,10 @@ function getPlayerWeaponById(id) {
 	return null;
 }
 
-function updateWeaponsDisplay() {
+function updateWeaponsDisplay(unit) {
 	// update weapons display
-	if(isPlayerUnitTurn()){
-		var unitWeaponsDisplay = weaponsDisplays[turnUnit.id];
+	if(isPlayerUnit(unit)){
+		var unitWeaponsDisplay = weaponsDisplays[unit.id];
 		unitWeaponsDisplay.update();
 	}
 }
@@ -776,10 +776,10 @@ function updateSelectedWeapons() {
  * Resets the toHit value for all player weapons
  * @param weapon
  */
-function resetWeaponsToHit() {
+function resetWeaponsToHit(unit) {
 	// reset the to hit value displayed for displayed weapons
-	if(isPlayerUnitTurn()) {
-		$.each(turnUnit.weapons, function(key, w) {
+	if(isPlayerUnit(unit)) {
+		$.each(unit.weapons, function(key, w) {
 			w.toHit = null;
 		});
 	}
