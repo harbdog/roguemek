@@ -124,14 +124,20 @@ class GameController {
 	 * @render JSON object containing updates to relay back to the client
 	 */
 	def poll() {
+		// occasionally the client will poll just to determine response time
+		def isPing = params.ping;
+		if(isPing){
+			def gameResponse = [ping: "pong"]
+			log.debug("Pinged by user: "+currentUser())
+			render gameResponse as JSON
+			return;
+		}
+		
 		User user = currentUser()
 		if(user == null) return
 		
 		Game game = Game.get(session.game)
 		if(game == null) return
-		
-		// Give a slight delay before polling to give a small amount of time for an update to actually occur
-		Thread.sleep(250)
 
 		def pollResponse = gameControllerService.performPoll(game, user)
 		def gameResponse = [date: pollResponse.date]

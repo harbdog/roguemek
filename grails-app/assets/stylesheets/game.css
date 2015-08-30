@@ -42,6 +42,10 @@ div #fpsDiv.active{
 	color: #66FF99;
 }
 
+div #pingDiv {
+	color: #66FF99;
+}
+
 #canvasDiv {
 	position: absolute;
 	left: 0px;
@@ -53,6 +57,14 @@ div #fpsDiv.active{
 }
 
 #fpsDiv {
+	top: 0px;
+	right: 0px;
+	color: #FFFFFF;
+	font-family: UbuntuMono;
+	font-size: 12px;
+}
+
+#pingDiv {
 	top: 0px;
 	right: 0px;
 	color: #FFFFFF;

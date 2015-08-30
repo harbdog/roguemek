@@ -20,7 +20,7 @@ class GameControllerService {
 		int tries = 0
 		
 		while(true) {
-			if(tries >= 50) {
+			if(tries >= 40) {
 				// give up and respond with no data after so many tries otherwise
 				// the client will assume the worst and start a new poll thread
 				break

@@ -32,6 +32,16 @@ function tick(event) {
 	}
 }
 
+function pingResponse(data) {
+	console.log(data);
+	var pong = new Date().getTime();
+	var milliseconds = pong - lastPing;
+	
+	if(pingDisplay != null) {
+		pingDisplay.htmlElement.innerHTML = milliseconds + " ms";
+	}
+}
+
 function handleKeyPress(key) {
 	if(!playerActionReady){
 		// TODO: alternate actions if pressed when player turns but between being ready for another action
@@ -251,8 +261,15 @@ function handleComplete(event) {
 	var fpsDiv = document.getElementById("fpsDiv");
 	fpsDisplay = new createjs.DOMElement(fpsDiv);
 	fpsDisplay.x = -rootStage.x - 10;
-    fpsDisplay.y = -rootStage.y + 100 ;
+    fpsDisplay.y = -rootStage.y + 80 ;
     overlay.addChild(fpsDisplay);
+    
+    // Initialize ping display
+	var pingDiv = document.getElementById("pingDiv");
+	pingDisplay = new createjs.DOMElement(pingDiv);
+	pingDisplay.x = -rootStage.x - 10;
+	pingDisplay.y = -rootStage.y + 100 ;
+    overlay.addChild(pingDisplay);
     
     // only show the fullscreen button on mobile devices browsers
     if( fullScreenApi.supportsFullScreen
@@ -276,6 +293,9 @@ function handleComplete(event) {
 		fsButton.on("click", goFullScreen);
 		fsButton.mouseChildren = false;
     }
+    
+    // begin long polling for game updates during play, starting with a ping
+	ping();
     
     // resize the canvas and adjust the board to the canvas on first load
 	resize_canvas();

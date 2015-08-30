@@ -10,6 +10,7 @@
 	<body id="body">
 		
 		<div id="canvasDiv">
+			<div id="pingDiv"></div>
 			<div id="fpsDiv"></div>
 			
 			<canvas id="canvas">

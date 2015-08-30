@@ -72,6 +72,7 @@ var stageInitDragMoveY = null;
 
 // Enables certain development functions only when run locally
 var devMode = (document.location.hostname == "localhost");
+var lastPing = 0;
 
 /**
  * Gets the game ready to play
@@ -132,9 +133,6 @@ function initGame(){
 	// load the board, units and their images
 	loadGameElements();
 	
-	// begin long polling for game updates during play
-	poll();
-		
 	// TODO: make target FPS a customizable value
 	createjs.Ticker.on("tick", tick);
 	createjs.Ticker.setFPS(60);
@@ -798,13 +796,50 @@ function getCritObjectById(unit, critId) {
  * Long polling to retrieve updates from the game asynchronously
  */
 function poll() {
-    $.ajax({ url: "game/poll", success: function(data){
+    $.getJSON("game/poll", null)
+	.fail(function(jqxhr, textStatus, error) {
+		var err = textStatus + ", " + error;
+		console.log( "Request Failed: " + err );
+	})
+	.done(function(data){
     	
     	// call the method that updates the client based on the polled return data
     	console.log("polled date: "+data.date);
         pollUpdate(data.updates);
         
-    }, dataType: "json", complete: poll, timeout: 30000 });
+    })
+	.always(function() {
+		var testPingTime = new Date().getTime();
+		var milliseconds = testPingTime - lastPing;
+		
+		if(milliseconds >= 10000) {
+			// ping once in a while
+			ping();
+		}
+		else{
+			// poll again!
+			poll();
+		}
+	});
+}
+
+/**
+ * Occasionally perform a ping poll to determine response time
+ */
+function ping() {
+	lastPing = new Date().getTime();
+	$.getJSON("game/poll", {
+		ping: "true"
+	})
+	.fail(function(jqxhr, textStatus, error) {
+		var err = textStatus + ", " + error;
+		console.log( "Request Failed: " + err );
+	})
+	.done(pingResponse)
+	.always(function() {
+		// go back to polling, ping again some time later
+		poll();
+	});
 }
 
 /**
