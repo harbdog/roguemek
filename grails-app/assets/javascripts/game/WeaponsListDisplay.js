@@ -35,7 +35,7 @@ c.init = function() {
 	// add each weapon text to the container
 	var index = 0;
 	$.each(this.unit.weapons, function(id, weapon) {
-		var weaponDisplay = new createjs.Text("---", "12px Consolas", "#FFFFFF");
+		var weaponDisplay = new createjs.Text("---", "12px UbuntuMono", "#FFFFFF");
 		weaponDisplay.id = weapon.id;
 		
 		weaponsArray.push(weaponDisplay);

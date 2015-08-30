@@ -747,7 +747,7 @@ function updateSelectedWeapons() {
 	// use this method to update the UI based on selected weapons
 	var weaponHeatTotal = 0
 	var weaponsPreparedToFire = getSelectedWeapons();
-	var hasWeaponsSelected = (weaponsPreparedToFire.length > 0);
+	var hasWeaponsSelected = false;
 	
 	// update weapons displays to show as selected or not selected to fire
 	var unitWeaponsDisplay = weaponsDisplays[turnUnit.id];
@@ -764,10 +764,19 @@ function updateSelectedWeapons() {
 	$.each(weaponsPreparedToFire, function(index, weapon) {
 		if(weapon != null) {
 			weaponHeatTotal += weapon.heat;
+			
+			hasWeaponsSelected = true;
 		}
 	});
 	
+	// update the heat graph
 	updateHeatDisplay(turnUnit, weaponHeatTotal);
+	
+	// update the center control button to show as END/FIRE buttons based on if any weapons are selected
+	var controlDisplay = unitControls[turnUnit.id];
+	if(controlDisplay != null) {
+		controlDisplay.drawCenterAsFireButton(hasWeaponsSelected);
+	}
 	
 	update = true;
 }

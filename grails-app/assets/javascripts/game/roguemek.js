@@ -78,6 +78,11 @@ var devMode = (document.location.hostname == "localhost");
  */
 function initGame(){
 	
+	document.oncontextmenu = function(e){
+		// return false is needed to prevent the right click menu from appearing on the page while the game is playing
+		return false;
+	};
+	
 	// Create the EaselJS stage
 	rootStage = new createjs.Stage("canvas");
 	canvas = rootStage.canvas;

@@ -24,13 +24,13 @@ function WeaponDisplay(index, weapon) {
 }
 var c = createjs.extend(WeaponDisplay, createjs.Container);
 
-WeaponDisplay.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "16px Consolas", "#FFFFFF").getMeasuredWidth();
+WeaponDisplay.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "16px UbuntuMono", "#FFFFFF").getMeasuredWidth();
 
 c.init = function() {
 	// TODO: allow custom UI colors
 	
 	// add weapon number label
-	var numLabel = new createjs.Text((this.index+1).toString(), "16px Consolas", "#000000");
+	var numLabel = new createjs.Text((this.index+1).toString(), "16px UbuntuMono", "#000000");
 	numLabel.x = (WeaponDisplay.MAX_NUMBER_LABEL_WIDTH - numLabel.getMeasuredWidth())/2;
 	numLabel.y = BORDER_WIDTH;
 	this.addChild(numLabel);
@@ -45,8 +45,8 @@ c.init = function() {
 	
 	// add weapon location label
 	var locationStr = getLocationText(this.weapon.location);
-	var locationLabel = new createjs.Text(locationStr, "14px Consolas", "#FFFFFF");
-	locationLabel.x = 5 + numLabel.x + numLabel.getMeasuredWidth();
+	var locationLabel = new createjs.Text(locationStr, "14px UbuntuMono", "#FFFFFF");
+	locationLabel.x = 5 + numLabel.x + numLabel.getMeasuredWidth() + BORDER_WIDTH;
 	locationLabel.y = 5;
 	this.addChild(locationLabel);
 	
@@ -63,7 +63,7 @@ c.init = function() {
 		// the update method will get the actual ammo count
 		weaponStr += "[----]";
 	}
-	this.nameLabel = new createjs.Text(weaponStr, "14px Consolas", "#FFFFFF");
+	this.nameLabel = new createjs.Text(weaponStr, "14px UbuntuMono", "#FFFFFF");
 	this.nameLabel.x = 5+ typeImage.x + image.width;
 	this.nameLabel.y = 5;
 	this.addChild(this.nameLabel);
@@ -71,7 +71,7 @@ c.init = function() {
 	// the update method will show actual calculated TO-HIT 
 	var toHitAsPercent = "  --";
 	// add weapon % to hit label to the far right
-	this.toHitLabel = new createjs.Text(toHitAsPercent, "14px Consolas", "#FFFFFF");
+	this.toHitLabel = new createjs.Text(toHitAsPercent, "14px UbuntuMono", "#FFFFFF");
 	this.toHitLabel.x = this.width - this.toHitLabel.getMeasuredWidth() - 5;
 	this.toHitLabel.y = 5;	
 	this.addChild(this.toHitLabel);

@@ -268,7 +268,7 @@ function handleComplete(event) {
 		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 100,25);
 		fsButton.addChild(fsBackground);
 		
-		var fsText = new createjs.Text("Go Fullscreen", "12px Consolas", "white");
+		var fsText = new createjs.Text("Go Fullscreen", "12px UbuntuMono", "white");
 		fsText.x = (100 - fsText.getMeasuredWidth())/2;
 		fsText.y = (20 - fsText.getMeasuredHeight())/2;
 		fsButton.addChild(fsText);

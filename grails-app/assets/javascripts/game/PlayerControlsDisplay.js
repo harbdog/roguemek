@@ -132,6 +132,16 @@ c.setJumpPoints = function(jp) {
 	this.update();
 }
 
+c.drawCenterAsFireButton = function(drawAsFire) {
+	if(this.center == null) return;
+	
+	this.uncache;
+	
+	this.center.drawCenterAsFireButton(drawAsFire);
+	
+	this.doCache();
+}
+
 c.doCache = function() {
 	this.cache(0,0, this.width,this.height);
 }

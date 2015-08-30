@@ -76,10 +76,10 @@ c.drawLevel = function() {
 		
 		// draw elevation level
 		if(this.getHex().getElevation() != 0) {
-			var levelObj = new createjs.Text("LEVEL "+this.getHex().getElevation(), "10px Arial", "black");
+			var levelObj = new createjs.Text("LEVEL "+this.getHex().getElevation(), "11px UbuntuMono", "black");
 			
 			levelObj.x = (hexWidth - levelObj.getMeasuredWidth()) / 2;
-			levelObj.y = hexHeight - levelObj.getMeasuredHeight() - 1;
+			levelObj.y = hexHeight - levelObj.getMeasuredHeight()-5;
 			
 			this.levelChild = this.addChild(levelObj);
 			return;
@@ -88,10 +88,10 @@ c.drawLevel = function() {
 		// OR draw water depth level
 		var chkWaterTerrain = this.getHex().getTerrain(Terrain.WATER);
 		if(chkWaterTerrain != null && chkWaterTerrain.getLevel() > 0) {
-			var levelObj = new createjs.Text("DEPTH "+chkWaterTerrain.getLevel(), "10px Arial", "black");
+			var levelObj = new createjs.Text("DEPTH "+chkWaterTerrain.getLevel(), "11px UbuntuMono", "black");
 			
 			levelObj.x = (hexWidth - levelObj.getMeasuredWidth()) / 2;
-			levelObj.y = hexHeight - levelObj.getMeasuredHeight() - 1;
+			levelObj.y = hexHeight - levelObj.getMeasuredHeight()-5;
 			
 			this.levelChild = this.addChild(levelObj);
 			return;

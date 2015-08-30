@@ -48,23 +48,23 @@ c.init = function() {
 	this.addChild(this.staticHeatBar);
 	
 	// draw static and dynamic heat labels
-	this.staticHeatLabel = new createjs.Text("Heat", "11px Consolas", "#FFFFFF");
+	this.staticHeatLabel = new createjs.Text("Heat", "11px UbuntuMono", "#FFFFFF");
 	this.staticHeatLabel.x = 5;
 	this.staticHeatLabel.y = 0;
 	this.addChild(this.staticHeatLabel);
 	
-	this.heatLabel = new createjs.Text("-", "16px Consolas", "#FFFFFF");
+	this.heatLabel = new createjs.Text("-", "16px UbuntuMono", "#FFFFFF");
 	//this.heatLabel.x = this.staticHeatLabel.x + this.staticHeatLabel.getMeasuredWidth()/2 - this.heatLabel.getMeasuredWidth()/2;
 	this.heatLabel.y = this.staticHeatLabel.x/2 + this.staticHeatLabel.getMeasuredHeight();
 	this.addChild(this.heatLabel);
 	
 	// draw static and dynamic heat gen/diss labels
-	this.staticGenDissLabel = new createjs.Text("GEN/DISS", "10px Consolas", "#FFFFFF");
+	this.staticGenDissLabel = new createjs.Text("GEN/DISS", "10px UbuntuMono", "#FFFFFF");
 	this.staticGenDissLabel.x = this.staticHeatLabel.x*2 + this.width/3 - this.staticGenDissLabel.getMeasuredWidth()/2;
 	this.staticGenDissLabel.y = 0;
 	this.addChild(this.staticGenDissLabel);
 	
-	this.heatGenDissLabel = new createjs.Text("+ / -", "10px Consolas", "#FFFFFF");
+	this.heatGenDissLabel = new createjs.Text("+ / -", "10px UbuntuMono", "#FFFFFF");
 	//this.heatGenDissLabel.x = this.staticGenDissLabel.x + this.staticGenDissLabel.getMeasuredWidth()/2 -this.heatGenDissLabel.getMeasuredWidth()/2 ;
 	this.heatGenDissLabel.y = this.staticGenDissLabel.y + this.staticGenDissLabel.getMeasuredHeight()*1.5;
 	this.addChild(this.heatGenDissLabel);

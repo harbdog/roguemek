@@ -24,7 +24,7 @@ var c = createjs.extend(ArmorSectionDisplay, createjs.Container);
 
 c.init = function(text, startIndex) {
 	// TODO: allow custom UI colors
-	var label = new createjs.Text(text, "11px Consolas", "#FFFFFF");
+	var label = new createjs.Text(text, "11px UbuntuMono", "#FFFFFF");
 	label.x = (text.length * this.width - label.getMeasuredWidth())/2;
 	label.y = this.height - label.getMeasuredHeight()*2;
 	this.addChild(label);

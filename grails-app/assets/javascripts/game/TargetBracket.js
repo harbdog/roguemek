@@ -18,7 +18,7 @@ function TargetBracket() {
 }
 var c = createjs.extend(TargetBracket, createjs.Container);
 
-TargetBracket.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "11px Consolas", "#FFFFFF").getMeasuredWidth();
+TargetBracket.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "11px UbuntuMono", "#FFFFFF").getMeasuredWidth();
 
 c.init = function() {
 	this.background = new createjs.Shape();
@@ -70,7 +70,7 @@ c.update = function() {
 		for(var i=0; i<totalWeapons; i++) {
 			var weaponIndex = this.weaponIndices[i];
 			if(weaponIndex != null){
-				var weaponIndexDisplay = new createjs.Text((weaponIndex+1), "11px Consolas", "#FFFFFF");
+				var weaponIndexDisplay = new createjs.Text((weaponIndex+1), "11px UbuntuMono", "#FFFFFF");
 				var measuredWidth = weaponIndexDisplay.getMeasuredWidth();
 				var measuredHeight = weaponIndexDisplay.getMeasuredHeight()*2;
 				

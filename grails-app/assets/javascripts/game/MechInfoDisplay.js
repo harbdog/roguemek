@@ -28,12 +28,12 @@ c.init = function() {
 	// TODO: allow custom UI colors
 	
 	// create static unit labels for mech name/chassis, and pilot
-	var staticUnitLabel = new createjs.Text(this.unit.name +" " + this.unit.chassisVariant, "14px Consolas", "#FFFFFF");
+	var staticUnitLabel = new createjs.Text(this.unit.name +" " + this.unit.chassisVariant, "14px UbuntuMono", "#FFFFFF");
 	staticUnitLabel.x = 5;
 	staticUnitLabel.y = 0;
 	this.addChild(staticUnitLabel);
 	
-	var staticPilotLabel = new createjs.Text(this.unit.callsign, "12px Consolas", "#FFFFFF");
+	var staticPilotLabel = new createjs.Text(this.unit.callsign, "12px UbuntuMono", "#FFFFFF");
 	staticPilotLabel.x = 5;
 	staticPilotLabel.y = staticUnitLabel.y + staticUnitLabel.getMeasuredHeight() * 2;
 	this.addChild(staticPilotLabel);

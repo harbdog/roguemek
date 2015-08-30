@@ -12,6 +12,11 @@
 *= require_self
 */
 
+@font-face {
+	font-family: 'UbuntuMono';
+	src: url('images/UbuntuMono.ttf');
+}
+
 body {
   -webkit-user-select: none;
      -moz-user-select: -moz-none;
@@ -51,6 +56,8 @@ div #fpsDiv.active{
 	top: 0px;
 	right: 0px;
 	color: #FFFFFF;
+	font-family: UbuntuMono;
+	font-size: 12px;
 }
 
 #messagingArea {
@@ -63,5 +70,6 @@ div #fpsDiv.active{
 	border: none;
 	border-bottom: 1px solid #FFFFFF;
 	border-left: 1px solid #FFFFFF;
-	font-family: Consolas;
+	font-family: UbuntuMono;
+	font-size: 14px;
 }
