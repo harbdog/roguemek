@@ -32,9 +32,14 @@ class GameControllerService {
 			if(updates != null && !updates.isEmpty()) {
 				lastUpdate = new Date(updates.last().getTime())
 				
-				Pilot p = Pilot.get(pilot.id)
-				p.lastUpdate = lastUpdate
-				p.save flush: true
+				try{
+					Pilot p = Pilot.get(pilot.id)
+					p.lastUpdate = lastUpdate
+					p.save flush: true
+				} catch(Exception e) {
+					// StaleObjectStateException can occur when page is refreshed 
+					return [terminated: true]
+				}
 				
 				return [date: lastUpdate, messageUpdates: updates]
 			}

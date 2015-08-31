@@ -803,9 +803,14 @@ function poll() {
 	})
 	.done(function(data){
     	
-    	// call the method that updates the client based on the polled return data
-    	console.log("polled date: "+data.date);
-        pollUpdate(data.updates);
+		if(data.terminated) {
+			console.log("poll terminated, starting over");
+		}
+		else if(data.date) {
+			// call the method that updates the client based on the polled return data
+	    	console.log("polled date: "+data.date);
+	        pollUpdate(data.updates);
+		}
         
     })
 	.always(function() {
