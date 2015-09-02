@@ -23,6 +23,9 @@ function UnitDisplay(id, imageArr, imageStr, rgb) {
 	
 	this.indicator = null;
 	this.header = null;
+	
+	this.unitImage = null;
+	this.alphaUnitImage = null;
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
 
@@ -97,6 +100,7 @@ c.update = function() {
 	this.updateUnitIndicator();
 }
 
+// TODO: move this method to being called internally with an init method
 c.drawImage = function(image, scale) {
 	// load the unit image as a Bitmap
 	this.unitImage = new createjs.Bitmap(image);
@@ -108,6 +112,27 @@ c.drawImage = function(image, scale) {
 	this.unitImage.regY = image.height/2;
 	
 	this.addChild(this.unitImage);
+}
+
+c.drawAlphaImage = function(visible) {
+	if(this.alphaUnitImage == null) {
+		this.alphaUnitImage = new createjs.Bitmap(this.image);
+		this.addChild(this.alphaUnitImage);
+	}
+	
+	this.alphaUnitImage.visible = visible;
+	this.unitImage.visible = !visible;
+	
+	//load the unit image again and apply alpha color filter
+	this.alphaUnitImage.filters = [
+	    new createjs.ColorFilter(0,0,0,0.5, 
+	    						 0,0,0,0)
+	];
+	this.alphaUnitImage.scaleX = this.unitImage.scaleX;
+	this.alphaUnitImage.scaleY = this.unitImage.scaleY;
+	this.alphaUnitImage.regX = this.unitImage.regX;
+	this.alphaUnitImage.regY = this.unitImage.regY;
+	this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
 }
 
 c.getUpdatedDisplayX = function(coords) {

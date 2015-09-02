@@ -15,6 +15,7 @@ class GameMessage implements Comparable{
 	Object[] messageArgs
 	def data
 	
+	// TODO: move GameMessages to the database
 	// Map used to store date[gameId]=[messages,...] for polling responses
 	private static concurrentUpdates = new ConcurrentHashMap(16, 0.75, 16)
 	private static int timeToKeepMessages = 5000	// in milliseconds
