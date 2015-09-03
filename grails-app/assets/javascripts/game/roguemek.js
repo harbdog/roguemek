@@ -234,10 +234,9 @@ function loadGameElements() {
 		  // create each unit display
 		  $.each(data.units, function(index, thisUnit) {
 			  if(thisUnit != null){
-				  // TODO: separate Unit and UnitDisplay init behavior like the new Hex and HexDisplay object models
-				  var unitDisplay = new UnitDisplay(thisUnit.unit, thisUnit.image, thisUnit.imageFile, thisUnit.rgb);
-				  var unitInstance = new Unit(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading, unitDisplay);
-				  unitDisplay.setUnit(unitInstance);
+				  var unitInstance = new Unit(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading);
+				  unitInstance.image = thisUnit.image;
+				  unitInstance.imageFile = thisUnit.imageFile;
 				  unitInstance.apRemaining = thisUnit.apRemaining;
 				  unitInstance.jpRemaining = thisUnit.jpRemaining;
 				  unitInstance.heat = thisUnit.heat;
@@ -253,10 +252,6 @@ function loadGameElements() {
 				  
 				  unitInstance.crits = thisUnit.crits;
 				  unitInstance.weapons = initUnitWeapons(thisUnit);
-
-				  // add mouse event listener
-				  unitDisplay.on("click", handleUnitClick);
-				  unitDisplay.mouseChildren = false;
 				  
 				  if(data.turnUnit == thisUnit.unit){
 					  turnUnit = unitInstance;
@@ -461,51 +456,15 @@ function initUnitsDisplay() {
 	if(units == null){return;}
 	
 	$.each(units, function(index, thisUnit) {
-		// TODO: scale differently based on mech tonnage/weight class also?
-		var scale = 0.8 * hexScale;
+		var displayUnit = new UnitDisplay(thisUnit);
+		thisUnit.setUnitDisplay(displayUnit);
+		displayUnit.init();
 		
-		var thisDisplayUnit = thisUnit.displayUnit;
-		thisDisplayUnit.removeAllChildren();
+		stage.addChild(displayUnit);
 		
-		var image = null;
-		var rgb = null;
-		if(thisDisplayUnit.getImage() != null) {
-			image = thisDisplayUnit.getImage();
-		}
-		else{
-			var imgStr = thisDisplayUnit.getImageString();
-			image = queue.getResult(imgStr);
-			rgb = thisDisplayUnit.rgb;
-		}
-		
-		thisDisplayUnit.drawImage(image, scale);
-		
-		if(rgb != null) {
-			// load the unit image again and apply alpha color filter
-			var unitAlphaImg = new createjs.Bitmap(image);
-			unitAlphaImg.filters = [
-		        new createjs.ColorFilter(0,0,0,0.5, 
-		        						 rgb[0],rgb[1],rgb[2],0)
-		    ];
-			unitAlphaImg.scaleX = unitImg.scaleX;
-			unitAlphaImg.scaleY = unitImg.scaleY;
-			unitAlphaImg.regX = unitImg.regX;
-			unitAlphaImg.regY = unitImg.regY;
-			unitAlphaImg.cache(0, 0, image.width, image.height);
-			thisDisplayUnit.addChild(unitAlphaImg);
-		}
-		
-		/*if(playerUnit.id == thisUnit.id && playerUnit.id == turnUnit.id) {
-			// TODO: move these out to a method that can also be used at init
-			thisDisplayUnit.setControlsVisible(true);
-		}
-		else if(thisUnit.id == turnUnit.id) {
-			thisDisplayUnit.setOtherTurnVisible(true);
-		}*/
-		
-		stage.addChild(thisDisplayUnit);
-		
-		// TODO: cache thisDisplayUnit, being aware that it will not be updated unless recached when new things are drawn on it
+		// add mouse event listener
+		displayUnit.on("click", handleUnitClick);
+		displayUnit.mouseChildren = false;
 	});
 	
 	updateUnitDisplayObjects();

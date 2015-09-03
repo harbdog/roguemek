@@ -4,13 +4,13 @@
 (function() {
 "use strict";
 
-function UnitDisplay(id, imageArr, imageStr, rgb) {
+function UnitDisplay(unit) {
 	this.Container_constructor();
 	
-	this.id = id;
-	this.imageStr = imageStr;
-	this.rgb = rgb;
+	this.unit = unit;
+	this.id = unit.id;
 	
+	var imageArr = this.unit.image;
 	if(imageArr != null) {
 		// render the Image from the byte array
 		var base64 = _arrayBufferToBase64(imageArr);
@@ -29,31 +29,14 @@ function UnitDisplay(id, imageArr, imageStr, rgb) {
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
 
-c.setUnit = function(unit) {
-	this.unit = unit;
+c.init = function() {
+	// TODO: scale differently based on mech tonnage/weight class also?
+	var scale = 0.8 * hexScale;
+	
+	this.removeAllChildren();
+	
+	this.drawImage(this.image, scale);
 }
-c.getUnit = function() {
-	return this.unit;
-}
-
-c.getImageString = function() {
-	return this.imageStr;
-}
-
-c.getImage = function() {
-	return this.image;
-}
-
-//http://stackoverflow.com/a/9458996/128597
-function _arrayBufferToBase64(buffer) {
-    var binary = '';
-    var bytes = new Uint8Array(buffer);
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-};
 
 c.update = function() {
 	this.uncache();
@@ -98,6 +81,14 @@ c.update = function() {
 	this.hitArea = hit;
 	
 	this.updateUnitIndicator();
+}
+
+c.getUnit = function() {
+	return this.unit;
+}
+
+c.getImage = function() {
+	return this.image;
 }
 
 // TODO: move this method to being called internally with an init method

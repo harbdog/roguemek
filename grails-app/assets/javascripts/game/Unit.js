@@ -4,11 +4,10 @@
 (function() {
 "use strict";
 
-function Unit(id, hexX, hexY, heading, displayUnit) {
+function Unit(id, hexX, hexY, heading) {
 	this.id = id;
 	this.setHexLocation(hexX, hexY);
 	this.heading = heading;
-	this.displayUnit = displayUnit;
 }
 var u = Unit.prototype;
 
@@ -37,6 +36,9 @@ u.xCoords = function() {
 }
 u.yCoords = function() {
 	return this.coords.y;
+}
+u.setUnitDisplay = function(displayUnit) {
+	this.displayUnit = displayUnit;
 }
 u.getUnitDisplay = function() {
 	return this.displayUnit;
