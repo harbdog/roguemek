@@ -28,6 +28,9 @@ u.setHexLocation = function(hexX, hexY) {
 u.getHexLocation = function() {
 	return this.coords;
 }
+u.getHex = function() {
+	return getHex(this.coords);
+}
 u.getHeading = function() {
 	return this.heading;
 }

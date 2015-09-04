@@ -35,7 +35,7 @@ c.init = function() {
 	
 	this.removeAllChildren();
 	
-	this.drawImage(this.image, scale);
+	this.drawImage(scale);
 }
 
 c.update = function() {
@@ -45,7 +45,6 @@ c.update = function() {
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	
-	
 	// draw heading indicator
 	if(this.header == null) {
 		this.header = new createjs.Shape();
@@ -54,6 +53,7 @@ c.update = function() {
 		this.addChildAt(this.header, 0);
 	}
 	this.header.graphics.clear();
+	
 	// TODO: allow customization of the unit heading color
 	var color = null;
 	if(isPlayerUnit(this.unit)) {
@@ -83,6 +83,50 @@ c.update = function() {
 	this.updateUnitIndicator();
 }
 
+/**
+ * Updates the display of the unit only if its position requires a change in display
+ */
+c.positionUpdate = function() {
+	if(this.unit == null) return;
+	this.uncache();
+	this.unitImage.uncache();
+	if(this.alphaUnitImage != null) this.alphaUnitImage.uncache();
+	
+	var hex = this.unit.getHex();
+	
+	var showUnitImage = false;
+	var showAlphaImage = false;
+	
+	var chkWaterTerrain = hex.getTerrain(Terrain.WATER);
+	if(chkWaterTerrain != null && chkWaterTerrain.getLevel() >= 2) {
+		// hide unit image and show alpha image instead to appear as fully submerged in water
+		this.drawAlphaImage();
+		
+		showAlphaImage = true;
+	}
+	else{
+		showUnitImage = true;
+	}
+	
+	if(this.unitImage != null) {
+		this.unitImage.visible = showUnitImage;
+		if(showUnitImage) {
+			this.unitImage.cache(0, 0, this.image.width, this.image.height);
+		}
+	}
+	
+	if(this.alphaUnitImage != null) {
+		this.alphaUnitImage.visible = showAlphaImage;
+		if(showAlphaImage) {
+			this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
+		}
+	}
+	
+	if(!isTurnUnit(this.unit)) {
+		this.doCache();
+	}
+}
+
 c.getUnit = function() {
 	return this.unit;
 }
@@ -91,34 +135,33 @@ c.getImage = function() {
 	return this.image;
 }
 
-// TODO: move this method to being called internally with an init method
-c.drawImage = function(image, scale) {
-	// load the unit image as a Bitmap
-	this.unitImage = new createjs.Bitmap(image);
+c.drawImage = function(scale) {
+	if(this.unitImage == null) {
+		// load the unit image as a Bitmap
+		this.unitImage = new createjs.Bitmap(this.image);
+		this.addChild(this.unitImage);
+	}
+	
 	// make the unit image just a bit smaller since it currently is same size as the hex
 	this.unitImage.scaleX = scale;
 	this.unitImage.scaleY = scale;
 	// adjust the rotation around its own center (which also adjusts its x/y reference point)
-	this.unitImage.regX = image.width/2;
-	this.unitImage.regY = image.height/2;
-	
-	this.addChild(this.unitImage);
+	this.unitImage.regX = this.image.width/2;
+	this.unitImage.regY = this.image.height/2;
+	this.unitImage.cache(0, 0, this.image.width, this.image.height);
 }
 
-c.drawAlphaImage = function(visible) {
+c.drawAlphaImage = function() {
 	if(this.alphaUnitImage == null) {
 		this.alphaUnitImage = new createjs.Bitmap(this.image);
+		//load the unit image again and apply alpha color filter
+		this.alphaUnitImage.filters = [
+		    new createjs.ColorFilter(0,0,0,0.5, 
+		    						 0,0,0,0)
+		];
 		this.addChild(this.alphaUnitImage);
 	}
 	
-	this.alphaUnitImage.visible = visible;
-	this.unitImage.visible = !visible;
-	
-	//load the unit image again and apply alpha color filter
-	this.alphaUnitImage.filters = [
-	    new createjs.ColorFilter(0,0,0,0.5, 
-	    						 0,0,0,0)
-	];
 	this.alphaUnitImage.scaleX = this.unitImage.scaleX;
 	this.alphaUnitImage.scaleY = this.unitImage.scaleY;
 	this.alphaUnitImage.regX = this.unitImage.regX;
@@ -196,6 +239,7 @@ c.animateUpdateDisplay = function(coords, heading, callFunction) {
 		newRot = 360;
 	}
 	
+	var self = this;
 	createjs.Tween.get(this)
 		.to({x: newX, y: newY, rotation: newRot}, 250)
 		.call(function() {
@@ -204,7 +248,7 @@ c.animateUpdateDisplay = function(coords, heading, callFunction) {
 			update = true;
 			
 			if(callFunction) {
-				callFunction();
+				callFunction(self);
 			}
 		})
 		.addEventListener("change", function() {

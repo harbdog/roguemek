@@ -652,10 +652,12 @@ function updateTargetPosition() {
 /**
  * Intended to be called back from Tweens when the unit position has finished animating updates
  */
-function performUnitPositionUpdates() {
-	updateTargetPosition();
+function performUnitPositionUpdates(unitDisplay) {
+	// update the unit display based on it new hex
+	unitDisplay.positionUpdate();
 	
-	// re-acquire the target
+	// update and re-acquire the target for the turn unit (whether its the same or another unit)
+	updateTargetPosition();
 	target(getUnitTarget(turnUnit));
 }
 

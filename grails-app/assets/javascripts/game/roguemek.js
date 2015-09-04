@@ -480,6 +480,7 @@ function updateUnitDisplayObjects() {
 		var displayUnit = thisUnit.getUnitDisplay();
 		if(displayUnit != null) {
 			displayUnit.update();
+			displayUnit.positionUpdate();
 		}
 	});
 }
@@ -590,6 +591,21 @@ function getUnitTarget(unit) {
 function getUnit(unitId) {
 	if(unitId == null) return null;
 	return units[unitId];
+}
+
+/**
+ * Gets the Hex object at the given Coords object
+ * @param coords
+ */
+function getHex(coords) {
+	if(coords == null || coords.x == null || coords.y == null) return null;
+	
+	var hexRow = hexMap[coords.y];
+	if(hexRow != null){
+		return hexRow[coords.x];
+	}
+	
+	return null;
 }
 
 // returns full name of the hit location index
