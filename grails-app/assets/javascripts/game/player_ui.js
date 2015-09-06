@@ -691,7 +691,7 @@ function updateUnitMovePoints(unit) {
 	
 	var controlDisplay = unitControls[unit.id];
 	if(controlDisplay != null) {
-		controlDisplay.setMoveActionPoints(unit.forwardAP, unit.backwardAP);
+		controlDisplay.setMoveActionPoints(unit.forwardAP, unit.backwardAP, unit.jumping);
 	}
 }
 

@@ -696,6 +696,23 @@ class GameService {
 		if(unit.apRemaining == 0 || (jumping && unit.jpRemaining == 0)) return
 		else if(unit != game.getTurnUnit()) return
 		
+		// TODO: TESTING: Instead, store combat status directly on the unit as a new field?
+		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
+		
+		// prevent unit from jumping and walking/running in the same turn
+		if(jumping) {
+			if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
+				// unit was not standing still or already jumping, deny the jump
+				return new GameMessage("game.you.cannot.jump.moving", null, null)
+			}
+		}
+		else{
+			if(prevUnitStatus == CombatStatus.UNIT_JUMPING) {
+				// unit was jumping, deny the move
+				return new GameMessage("game.you.cannot.move.jumping", null, null)
+			}
+		}
+		
 		int moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
 		Coords unitCoords = unit.getLocation()
 		
@@ -742,15 +759,15 @@ class GameService {
 			return new GameMessage("game.you.cannot.move.direction", null, null)
 		}
 		
-		// TODO: TESTING: Instead, store combat status directly on the unit as a new field
-		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
-		
 		// When ready to move, set the new location of the unit and consume AP
 		unit.apRemaining -= apRequired
 		unit.apMoved ++
+		
+		boolean initiatedJumping = false
 		if(jumping) {
 			if(unit.jpMoved < 0) {
 				unit.jpMoved = 0
+				initiatedJumping = true
 			}
 			unit.jpRemaining -= apRequired
 			unit.jpMoved ++
@@ -780,11 +797,15 @@ class GameService {
 			heatGen = (2 / game.turnsPerRound)
 		}
 		else if(unitStatus == CombatStatus.UNIT_JUMPING) {
-			heatGen = (1 / game.turnsPerRound)
+			// add heat for JUMPING, the initial jump is 3 heat, then after 3 jumps more heat is generated
+			if(unit.jpMoved > 3) {
+				heatGen = (1 / game.turnsPerRound)
+			}
+			else if(initiatedJumping){
+				heatGen = (3 / game.turnsPerRound)
+			}
 		}
-		else {
-			// TODO: add heat for JUMPING
-		}
+
 		unit.heat += heatGen
 		
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
@@ -806,6 +827,9 @@ class GameService {
 			x: unit.x,
 			y: unit.y,
 			apRemaining: unit.apRemaining,
+			apMoved: unit.apMoved,
+			jpRemaining: unit.jpRemaining,
+			jpMoved: unit.jpMoved,
 			heat: unit.heat,
 			moveAP: moveAP
 		]
@@ -835,14 +859,33 @@ class GameService {
 		if(unit.apRemaining == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
-		// TODO: TESTING: Instead, store combat status directly on the unit as a new field
+		// TODO: TESTING: Instead, store combat status directly on the unit as a new field?
 		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
+		
+		// prevent unit from jumping and walking/running in the same turn
+		if(jumping) {
+			if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
+				// unit was not standing still or already jumping, deny the jump
+				return new GameMessage("game.you.cannot.jump.moving", null, null)
+			}
+		}
+		else{
+			if(prevUnitStatus == CombatStatus.UNIT_JUMPING) {
+				// unit was jumping, deny the move
+				return new GameMessage("game.you.cannot.move.jumping", null, null)
+			}
+		}
+		
+		double heatGen = 0
 		
 		if(jumping) {
 			// rotation while jumping does not cost any AP or build additional heat
 			// but if not yet jump it needs to indicate by setting JP moved to 0
 			if(unit.jpMoved < 0) {
 				unit.jpMoved = 0
+				
+				// minimum of 3 heat generated when jump jets are engaged
+				heatGen = (3 / game.turnsPerRound)
 			}
 		}
 		else {
@@ -852,7 +895,7 @@ class GameService {
 			
 			// If changing movement status to WALKING or RUNNING, add the appropriate heat
 			CombatStatus unitStatus = getUnitCombatStatus(game, unit)
-			double heatGen = 0
+			
 			if(unitStatus == CombatStatus.UNIT_WALKING
 					&& prevUnitStatus != CombatStatus.UNIT_WALKING) {
 				// Add 1 heat per round for starting to walk
@@ -869,8 +912,9 @@ class GameService {
 				// Add 2 heat per round for going straight to run
 				heatGen = (2 / game.turnsPerRound)
 			}
-			unit.heat += heatGen
 		}
+		
+		unit.heat += heatGen
 		
 		// When ready to rotate, set the new location of the unit
 		unit.setHeading(newHeading);
@@ -893,12 +937,18 @@ class GameService {
 			unit: unit.id,
 			heading: unit.heading,
 			apRemaining: unit.apRemaining,
+			apMoved: unit.apMoved,
+			jpRemaining: unit.jpRemaining,
+			jpMoved: unit.jpMoved,
 			heat: unit.heat,
 			moveAP: moveAP
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.heading]
-		Date update = GameMessage.addMessageUpdate(game, "game.unit.rotated", messageArgs, data)
+		Date update = GameMessage.addMessageUpdate(
+				game, 
+				jumping ? "game.unit.jump.rotated" : "game.unit.rotated", 
+				messageArgs, data)
 		
 		if(unit.apRemaining == 0) {
 			// automatically end the unit's turn if it has run out of AP
@@ -1039,8 +1089,6 @@ class GameService {
 			unit: unit.id,
 			moveAP: moveAP
 		]
-		
-		log.info("jumping: "+jumping+", data: "+data)
 		
 		return data
 	}

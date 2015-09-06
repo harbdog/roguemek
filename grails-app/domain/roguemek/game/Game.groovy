@@ -75,11 +75,11 @@ class Game {
 	 * @return
 	 */
 	public BattleUnit[] getUnitsAt(int x, int y) {
-		BattleUnit[] foundUnits = []
+		def foundUnits = []
 		int i = 0
 		for(BattleUnit thisUnit in units) {
 			if(thisUnit.x == x && thisUnit.y == y) {
-				foundUnits[i++] = thisUnit
+				foundUnits.add(thisUnit)
 			}
 		}
 		

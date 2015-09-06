@@ -91,7 +91,7 @@ c.init = function() {
 	this.update();
 	
 	this.setActionPoints(this.unit.apRemaining);
-	this.setMoveActionPoints(this.unit.forwardAP, this.unit.backwardAP)
+	this.setMoveActionPoints(this.unit.forwardAP, this.unit.backwardAP, this.unit.jumping);
 	this.setJumpPoints(this.unit.jpRemaining);
 }
 
@@ -127,9 +127,20 @@ c.update = function() {
 	this.doCache();
 }
 
-c.setMoveActionPoints = function(forwardAP, backwardAP) {
+c.setMoveActionPoints = function(forwardAP, backwardAP, jumping) {
 	if(forwardAP) this.forward.setPoints(forwardAP);
 	if(backwardAP) this.backward.setPoints(backwardAP);
+	
+	if(jumping) {
+		// set rotate controls to 0 AP
+		this.left.setPoints(0);
+		this.right.setPoints(0);
+	}
+	else {
+		// set rotate controls to 1 AP
+		this.left.setPoints(1);
+		this.right.setPoints(1);
+	}
 	
 	this.update();
 }
