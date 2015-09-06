@@ -206,10 +206,10 @@ class WeaponModifier {
 		def fromLocationMods = getToHitModifiersFromLocation(game, srcUnit.getLocation(), tgtUnit)
 		toHitMods = (toHitMods << fromLocationMods).flatten()
 		
-		//log.info("Modifiers for "+weapon.toString()+" from "+srcUnit.toString() + " at "+tgtUnit.toString())
-		//for(WeaponModifier modifier in toHitMods) {
-			//log.info("  "+modifier.type+": "+modifier.value)
-		//}
+		log.info("Modifiers for "+weapon.toString()+" from "+srcUnit.toString() + " at "+tgtUnit.toString())
+		for(WeaponModifier modifier in toHitMods) {
+			log.info("  "+modifier.type+": "+modifier.value)
+		}
 		
 		return toHitMods
 	}
@@ -248,9 +248,9 @@ class WeaponModifier {
 			}
 		}
 		else if(tgtMoveStatus == GameService.CombatStatus.UNIT_JUMPING){
-			// jumping is normally from # of hexes moved + 1 additional
-			// but since AP movement is based on running, speed from jumping will be halved then +1 additional will be counted
-			toHitMods.push(new WeaponModifier(Modifier.TARGET_JUMPING, Math.floor(tgtSpeed/2) + 1) * STANDARD_MODIFIER)
+			// +1 will be added for each hex jumped since AP movement is less per turn than standard BT
+			// and then + 1 additional from the act of jumping
+			toHitMods.push(new WeaponModifier(Modifier.TARGET_JUMPING, (tgtSpeed + 1) * STANDARD_MODIFIER))
 		}
 		else if(tgtSpeed > 0){
 			// +1 will be added for each hex moved since AP movement is less per turn than standard BT

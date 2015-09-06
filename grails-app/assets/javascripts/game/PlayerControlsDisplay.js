@@ -28,10 +28,14 @@ c.init = function() {
 	
 	// TODO: allow custom UI colors
 	
+	// update the container height based on all of the components that are added
+	this.height = 0;
+	
 	// create the button that moves the unit backward
 	this.backward = new PlayerControl(PlayerControl.TYPE_BACKWARD);
 	this.backward.init();
 	this.addChild(this.backward);
+	this.height += this.backward.height;
 	// add mouse event listener
 	this.backward.on("click", handleControls);
 	this.backward.mouseChildren = false;
@@ -40,6 +44,7 @@ c.init = function() {
 	this.left = new PlayerControl(PlayerControl.TYPE_LEFT);
 	this.left.init();
 	this.addChild(this.left);
+	this.height += this.left.height;
 	// add mouse event listener
 	this.left.on("click", handleControls);
 	this.left.mouseChildren = false;
@@ -48,6 +53,7 @@ c.init = function() {
 	this.right = new PlayerControl(PlayerControl.TYPE_RIGHT);
 	this.right.init();
 	this.addChild(this.right);
+	this.height += this.right.height;
 	// add mouse event listener
 	this.right.on("click", handleControls);
 	this.right.mouseChildren = false;
@@ -56,6 +62,7 @@ c.init = function() {
 	this.center = new PlayerControl(PlayerControl.TYPE_CENTER);
 	this.center.init();
 	this.addChild(this.center);
+	this.height += this.center.height;
 	// add mouse event listener
 	this.center.on("click", handleControls);
 	this.center.mouseChildren = false;
@@ -64,21 +71,22 @@ c.init = function() {
 	this.forward = new PlayerControl(PlayerControl.TYPE_FORWARD);
 	this.forward.init();
 	this.addChild(this.forward);
+	this.height += this.forward.height;
 	// add mouse event listener
 	this.forward.on("click", handleControls);
 	this.forward.mouseChildren = false;
 	
 	// create the button that moves the unit forward
-	// TODO: only if the unit has jump jets!
-	this.jump = new PlayerControl(PlayerControl.TYPE_JUMP);
-	this.jump.init();
-	this.addChild(this.jump);
-	// add mouse event listener
-	this.jump.on("click", handleControls);
-	this.jump.mouseChildren = false;
-	
-	// update the container height based on all of the components that were added
-	this.height = this.backward.height + this.left.height + this.center.height + this.forward.height + this.jump.height;
+	if(this.unit.jumpJets > 0) {
+		// only shows if the unit has jump jets
+		this.jump = new PlayerControl(PlayerControl.TYPE_JUMP);
+		this.jump.init();
+		this.addChild(this.jump);
+		this.height += this.jump.height;
+		// add mouse event listener
+		this.jump.on("click", handleControls);
+		this.jump.mouseChildren = false;
+	}
 	
 	this.update();
 	

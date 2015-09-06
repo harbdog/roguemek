@@ -107,19 +107,27 @@ function handleKeyPress(key) {
 	}
 	else if(key == "a" || key == "left"){
 		// turn left/CCW
-		rotate(false);
+		rotate(false, turnUnit.jumping);
 	}
 	else if(key == "d" || key == "right"){
 		// turn right/CW
-		rotate(true);
+		rotate(true, turnUnit.jumping);
 	}
 	else if(key == "w" || key == "up"){
 		// move forward
-		move(true);
+		move(true, turnUnit.jumping);
 	}
 	else if(key == "s" || key == "down"){
 		// move backward
-		move(false);
+		move(false, turnUnit.jumping);
+	}
+	else if(key == "j"){
+		// toggle jump jets
+		if(isPlayerUnitTurn()) {
+			turnUnit.jumping = !turnUnit.jumping;
+			console.log("jumping: "+turnUnit.jumping);
+			jump(turnUnit.jumping);
+		}
 	}
 	else if(key == "`"){
 		// toggle isometric view
@@ -309,6 +317,8 @@ function handleComplete(event) {
  * @param event
  */
 function handleControls(event) {
+	if(!isPlayerUnitTurn()) return;
+	
 	var x = event.stageX;
 	var y = event.stageY;
 	var control = event.target;
@@ -318,22 +328,22 @@ function handleControls(event) {
 	switch(control.type) {
 		case PlayerControl.TYPE_BACKWARD:
 			// move backward
-			move(false);
+			move(false, turnUnit.jumping);
 			break;
 			
 		case PlayerControl.TYPE_FORWARD:
 			// move forward
-			move(true);
+			move(true, turnUnit.jumping);
 			break;
 			
 		case PlayerControl.TYPE_LEFT:
 			// turn left/CCW
-			rotate(false);
+			rotate(false, turnUnit.jumping);
 			break;
 			
 		case PlayerControl.TYPE_RIGHT:
 			// turn right/CW
-			rotate(true);
+			rotate(true, turnUnit.jumping);
 			break;
 			
 		case PlayerControl.TYPE_CENTER:
@@ -351,7 +361,12 @@ function handleControls(event) {
 			break;
 			
 		case PlayerControl.TYPE_JUMP:
-			// TODO: implement jumping
+			// toggle jumping
+			turnUnit.jumping = !turnUnit.jumping;
+			console.log("jumping: "+turnUnit.jumping);
+			jump(turnUnit.jumping);
+			
+			// TODO: update jumping indicator UI
 			break;
 	}
 }

@@ -58,6 +58,7 @@ class Mech extends Unit {
 	
 	public static final LEGS = [LEFT_LEG, RIGHT_LEG];
 	public static final ARMS = [LEFT_ARM, RIGHT_ARM];
+	public static final TORSOS = [LEFT_TORSO, CENTER_TORSO, RIGHT_TORSO]
 	
 	// hit locations based on rolls in the order 2,3,4,5,6,7,8,9,10,11,12
 	public static final FRONT_HIT_LOCATIONS	= [CENTER_TORSO, RIGHT_ARM, RIGHT_ARM, RIGHT_LEG, RIGHT_TORSO, CENTER_TORSO, LEFT_TORSO, LEFT_LEG, LEFT_ARM, LEFT_ARM, HEAD];

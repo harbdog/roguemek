@@ -32,6 +32,7 @@ class BattleUnit {
 	Double heat = 0
 	
 	Integer apMoved = 0
+	Integer jpMoved = 0
 	Integer hexesMoved = 0
 	Integer damageTaken = 0
 	Boolean shutdown = false

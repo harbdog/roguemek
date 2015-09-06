@@ -105,6 +105,16 @@ class GameControllerService {
 	}
 	
 	/**
+	 * Request from the client to begin or end jump movement
+	 * @return
+	 */
+	private def jump(Game game, Pilot pilot, BattleUnit unit, Map params) {
+		boolean jumping = params.boolean('jumping')
+		
+		return gameService.toggleJumping(game, unit, jumping)
+	}
+	
+	/**
 	 * Request from the client to rotate the unit CW/CCW
 	 * @return
 	 */

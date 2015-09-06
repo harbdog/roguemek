@@ -683,6 +683,14 @@ function updateUnitActionPoints(unit) {
 	var controlDisplay = unitControls[unit.id];
 	if(controlDisplay != null) {
 		controlDisplay.setActionPoints(unit.apRemaining);
+	}
+}
+
+function updateUnitMovePoints(unit) {
+	if(unit == null) return;
+	
+	var controlDisplay = unitControls[unit.id];
+	if(controlDisplay != null) {
 		controlDisplay.setMoveActionPoints(unit.forwardAP, unit.backwardAP);
 	}
 }

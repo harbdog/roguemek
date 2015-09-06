@@ -239,6 +239,8 @@ function loadGameElements() {
 				  unitInstance.imageFile = thisUnit.imageFile;
 				  unitInstance.apRemaining = thisUnit.apRemaining;
 				  unitInstance.jpRemaining = thisUnit.jpRemaining;
+				  unitInstance.jumpJets = thisUnit.jumpJets;
+				  unitInstance.jumping = thisUnit.jumping;
 				  unitInstance.heat = thisUnit.heat;
 				  unitInstance.heatDiss = thisUnit.heatDiss;
 				  unitInstance.callsign = thisUnit.callsign;
@@ -895,6 +897,8 @@ function updateGameData(data) {
 	if(data.moveAP != null) {
 		u.forwardAP = data.moveAP.forward;
 		u.backwardAP = data.moveAP.backward;
+		
+		if(isPlayerU) updateUnitMovePoints(u);
 	}
 	
 	if(data.apRemaining != null) {
@@ -907,6 +911,12 @@ function updateGameData(data) {
 		u.jpRemaining = data.jpRemaining;
 		
 		if(isPlayerU) updateUnitJumpPoints(u);
+	}
+	
+	if(data.jumping != null) {
+		u.jumping = data.jumping;
+		
+		// TODO: if isPlayerU update jumping indicator UI
 	}
 	
 	// update armor values of the target

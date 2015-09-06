@@ -207,6 +207,7 @@ class GameService {
 		
 		// reset ap/hexes moved for the new turn
 		unit.apMoved = 0
+		unit.jpMoved = -1	// initializes at -1 since rotation costs 0 JP
 		unit.hexesMoved = 0
 		
 		// reset damage taken for the new turn
@@ -343,9 +344,82 @@ class GameService {
 			jp = maxJP;
 		}*/
 		
-		// TODO: generate actual jumpPoints based on functioning jump jets
+		// generate actual jumpPoints based on functioning jump jets
 		int jp = 0
+		
+		if(unit instanceof BattleMech) {
+			// calculate reductions based on heat/crit status
+			int jumpMPReduce = getReduceJumpMP(game, unit);
+			int jumpMPThisTurn = unit.mech.jumpMP - jumpMPReduce
+			
+			if(jumpMPThisTurn <= 0) {
+				return 0
+			}
+			
+			jp = Math.floor(jumpMPThisTurn / 2) + (jumpMPThisTurn % 2)
+		}
+		
 		return jp
+	}
+	
+	/**
+	 * Returns the amount of movement points to reduce from the mech's speed due to heat effects, leg damage, etc
+	 * @param unit
+	 * @return
+	 */
+	private int getReduceJumpMP(Game game, BattleUnit unit){
+		int reduce = 0;
+		
+		if(unit instanceof BattleMech) {
+			Mech mech = unit.mech
+			
+			Hex currentHex = game.getHexAt(unit.getLocation())
+			int currentWaterLevel = currentHex.getTerrainLevel(Terrain.WATER)
+			
+			if(currentWaterLevel >= 2) {
+				// a unit fully submerged in water cannot jump
+				reduce = mech.jumpMP
+			}
+			else {
+				// reductions for jump jet damage or depth 1 water for leg jets
+				int jetsDisabled = 0;
+
+				for(int legIndex in Mech.LEGS){
+					BattleEquipment[] sectionCrits = unit.getCritSection(legIndex)
+					// Check legs for hip/actuator hits
+					for(BattleEquipment thisCrit in sectionCrits) {
+						if(!thisCrit.isActive() 
+								|| currentWaterLevel == 1) {
+							if(MechMTF.MTF_CRIT_JUMPJET == thisCrit.getName()){
+								jetsDisabled ++
+							}
+						}
+					}
+				}
+				
+				for(int torsoIndex in Mech.TORSOS){
+					BattleEquipment[] sectionCrits = unit.getCritSection(torsoIndex)
+					// Check legs for hip/actuator hits
+					for(BattleEquipment thisCrit in sectionCrits) {
+						if(!thisCrit.isActive()) {
+							if(MechMTF.MTF_CRIT_JUMPJET == thisCrit.getName()){
+								jetsDisabled ++
+							}
+						}
+					}
+				}
+				
+				if(jetsDisabled > 0) {
+					reduce = jetsDisabled 
+				}
+			}
+			
+			if(reduce > mech.jumpMP) {
+				reduce = mech.jumpMP
+			}
+		}
+		
+		return reduce;
 	}
 	
 	/**
@@ -438,6 +512,8 @@ class GameService {
 				status: String.valueOf(u.status),
 				apRemaining: u.apRemaining,
 				jpRemaining: u.jpRemaining,
+				jumpJets: u.mech?.jumpMP,
+				jumping: (u.jpMoved >= 0),
 				heat: u.heat,
 				heatDiss: heatDiss,
 				armor: armor,
@@ -591,11 +667,15 @@ class GameService {
 		}
 		
 		// calculate the amount of AP required to move
-		int apRequired = getHexRequiredAP(game, unitCoords, moveCoords)
+		int apRequired = jumping ? getHexRequiredJP(game, unitCoords, moveCoords) 
+								 : getHexRequiredAP(game, unitCoords, moveCoords)
 		
-		if(apRequired > unit.apRemaining && apRequired > unit.actionPoints
-				&& unit.apMoved == 0
-				&& apRequired == unit.actionPoints + 1) {
+		if(jumping) {
+			// no AP modifiers needed when jumping
+		}
+		else if(apRequired > unit.apRemaining && apRequired > unit.actionPoints
+					&& unit.apMoved == 0
+					&& apRequired == unit.actionPoints + 1) {
 			// if a mech wants to move to a location that requires more than its max AP
 			// lets allow it, but make it require the full amount of AP for the turn and only up to one additional AP
 			apRequired = unit.actionPoints
@@ -613,7 +693,7 @@ class GameService {
 	 * @return
 	 */
 	public def move(Game game, BattleUnit unit, boolean forward, boolean jumping) {
-		if(unit.apRemaining == 0) return
+		if(unit.apRemaining == 0 || (jumping && unit.jpRemaining == 0)) return
 		else if(unit != game.getTurnUnit()) return
 		
 		int moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
@@ -635,9 +715,13 @@ class GameService {
 		}
 		
 		// calculate the amount of AP required to move
-		int apRequired = getHexRequiredAP(game, unitCoords, moveCoords)
+		int apRequired = jumping ? getHexRequiredJP(game, unitCoords, moveCoords) 
+								 : getHexRequiredAP(game, unitCoords, moveCoords)
 		
-		if(apRequired > unit.apRemaining && apRequired > unit.actionPoints 
+		if(jumping) {
+			// no AP modifiers needed when jumping
+		}
+		else if(apRequired > unit.apRemaining && apRequired > unit.actionPoints 
 				&& unit.apMoved == 0
 				&& apRequired == unit.actionPoints + 1) {
 			// if a mech wants to move to a location that requires more than its max AP
@@ -650,6 +734,10 @@ class GameService {
 			Object[] messageArgs = [apRequired]
 			return new GameMessage("game.you.cannot.move.ap", messageArgs, null)
 		}
+		else if(jumping && unit.jpRemaining < apRequired) {
+			Object[] messageArgs = [apRequired]
+			return new GameMessage("game.you.cannot.move.jp", messageArgs, null)
+		}
 		else if (apRequired < 0) {
 			return new GameMessage("game.you.cannot.move.direction", null, null)
 		}
@@ -660,6 +748,14 @@ class GameService {
 		// When ready to move, set the new location of the unit and consume AP
 		unit.apRemaining -= apRequired
 		unit.apMoved ++
+		if(jumping) {
+			if(unit.jpMoved < 0) {
+				unit.jpMoved = 0
+			}
+			unit.jpRemaining -= apRequired
+			unit.jpMoved ++
+		}
+		
 		unit.hexesMoved ++
 		unit.x = moveCoords.x
 		unit.y = moveCoords.y
@@ -682,6 +778,9 @@ class GameService {
 				&& prevUnitStatus != CombatStatus.UNIT_RUNNING) {
 			// Add 2 heat per round for going straight to run
 			heatGen = (2 / game.turnsPerRound)
+		}
+		else if(unitStatus == CombatStatus.UNIT_JUMPING) {
+			heatGen = (1 / game.turnsPerRound)
 		}
 		else {
 			// TODO: add heat for JUMPING
@@ -712,7 +811,10 @@ class GameService {
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.x, unit.y]
-		Date update = GameMessage.addMessageUpdate(game, "game.unit.moved", messageArgs, data)
+		Date update = GameMessage.addMessageUpdate(
+				game, 
+				jumping ? "game.unit.jumped" : "game.unit.moved", 
+				messageArgs, data)
 		
 		if(unit.apRemaining == 0) {
 			// automatically end the unit's turn if it has run out of AP
@@ -736,30 +838,39 @@ class GameService {
 		// TODO: TESTING: Instead, store combat status directly on the unit as a new field
 		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
 		
-		// use an actionPoint and register one apMoved
-		unit.apRemaining -= 1
-		unit.apMoved ++
-		
-		// If changing movement status to WALKING or RUNNING, add the appropriate heat
-		CombatStatus unitStatus = getUnitCombatStatus(game, unit)
-		double heatGen = 0
-		if(unitStatus == CombatStatus.UNIT_WALKING
-				&& prevUnitStatus != CombatStatus.UNIT_WALKING) {
-			// Add 1 heat per round for starting to walk
-			heatGen = (1 / game.turnsPerRound)
+		if(jumping) {
+			// rotation while jumping does not cost any AP or build additional heat
+			// but if not yet jump it needs to indicate by setting JP moved to 0
+			if(unit.jpMoved < 0) {
+				unit.jpMoved = 0
+			}
 		}
-		else if(unitStatus == CombatStatus.UNIT_RUNNING
-				&& prevUnitStatus == CombatStatus.UNIT_WALKING) {
-			// Add 1 heat per round for going from walk to run
-			heatGen = (1 / game.turnsPerRound)
+		else {
+			// use an actionPoint and register one apMoved
+			unit.apRemaining -= 1
+			unit.apMoved ++
+			
+			// If changing movement status to WALKING or RUNNING, add the appropriate heat
+			CombatStatus unitStatus = getUnitCombatStatus(game, unit)
+			double heatGen = 0
+			if(unitStatus == CombatStatus.UNIT_WALKING
+					&& prevUnitStatus != CombatStatus.UNIT_WALKING) {
+				// Add 1 heat per round for starting to walk
+				heatGen = (1 / game.turnsPerRound)
+			}
+			else if(unitStatus == CombatStatus.UNIT_RUNNING
+					&& prevUnitStatus == CombatStatus.UNIT_WALKING) {
+				// Add 1 heat per round for going from walk to run
+				heatGen = (1 / game.turnsPerRound)
+			}
+			else if(unitStatus == CombatStatus.UNIT_RUNNING
+					&& prevUnitStatus != CombatStatus.UNIT_WALKING
+					&& prevUnitStatus != CombatStatus.UNIT_RUNNING) {
+				// Add 2 heat per round for going straight to run
+				heatGen = (2 / game.turnsPerRound)
+			}
+			unit.heat += heatGen
 		}
-		else if(unitStatus == CombatStatus.UNIT_RUNNING
-				&& prevUnitStatus != CombatStatus.UNIT_WALKING
-				&& prevUnitStatus != CombatStatus.UNIT_RUNNING) {
-			// Add 2 heat per round for going straight to run
-			heatGen = (2 / game.turnsPerRound)
-		}
-		unit.heat += heatGen
 		
 		// When ready to rotate, set the new location of the unit
 		unit.setHeading(newHeading);
@@ -900,6 +1011,38 @@ class GameService {
 		}
 		
 		return newXY;
+	}
+	
+	/**
+	 * Toggles the jumping mode of the unit, mainly to give back information about what jumping costs
+	 * @param game
+	 * @param unit
+	 * @param jumping
+	 * @return
+	 */
+	public def toggleJumping(Game game, BattleUnit unit, boolean jumping) {
+		if(unit.apRemaining == 0 || (jumping && unit.jpRemaining == 0)) return
+		else if(unit != game.getTurnUnit()) return
+		
+		def moveAP = null
+		if(unit.apRemaining > 0) {
+			def forwardAP = this.getMoveAP(game, unit, true, jumping)
+			def backwardAP = this.getMoveAP(game, unit, false, jumping)
+			
+			moveAP = [
+				forward: forwardAP,
+				backward: backwardAP
+			]
+		}
+		
+		def data = [
+			unit: unit.id,
+			moveAP: moveAP
+		]
+		
+		log.info("jumping: "+jumping+", data: "+data)
+		
+		return data
 	}
 	
 	/**
@@ -1513,7 +1656,36 @@ class GameService {
 	}
 	
 	/**
-	 * checks to see if the location being moved to can be done with respect to elevation and impedence
+	 * Checks to see if the location being jumped to can be performed with respect to elevation
+	 * @param game
+	 * @param currentCoords
+	 * @param newCoords
+	 * @return the JP required (-1 if not possible)
+	 */
+	private int getHexRequiredJP(Game game, Coords currentCoords, Coords newCoords) {
+		int jpRequired = 1
+		
+		Hex currentHex = game.board?.getHexAt(currentCoords.x, currentCoords.y)
+		Hex newHex = game.board?.getHexAt(newCoords.x, newCoords.y)
+		
+		if(currentHex == null || newHex == null) {
+			return -1
+		}
+		
+		int currentElevation = currentHex.elevation
+		int newElevation = newHex.elevation
+		
+		int elevDiff = Math.abs(newElevation - currentElevation)
+		
+		if(elevDiff > 1) {
+			jpRequired += (elevDiff - 1)
+		}
+		
+		return jpRequired
+	}
+	
+	/**
+	 * checks to see if the location being moved to can be done with respect to elevation and impedance
 	 * also the currentXY needs to be adjacent, otherwise it will not mean much
 	 * @param game
 	 * @param currentCoords
@@ -1649,9 +1821,11 @@ class GameService {
 		if(unit.apMoved == 0){
 			return CombatStatus.UNIT_STANDING
 		}
-		//else if(isJumping){
-		//	return MECH_JUMPING;
-		//}
+		else if(unit.jpMoved >= 0){
+			// since rotation doesn't use JP, it initializes at -1 to indicate the unit has not jumped
+			// and sets to zero when a jump rotate is performed
+			return CombatStatus.UNIT_JUMPING
+		}
 		else if(unit.apRemaining < (unit.apMoved * 1/3)){
 			// Running is defined as when your mech is moving at greater than or 
 			// equal to 66% of your AP for the turn (33% remaining AP)

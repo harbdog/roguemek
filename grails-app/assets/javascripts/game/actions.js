@@ -35,29 +35,30 @@ function target(playerTarget) {
 	});
 }
 
-function move(forward) {
-	//playerUnit.displayUnit.setControlsVisible(false);
-	
+function jump(jumping) {
 	handleActionJSON({
-		perform: "move",
-		forward: forward,
-		jumping: false
+		perform: "jump",
+		jumping: jumping
 	});
 }
 
-function rotate(rotation) {
-	//playerUnit.displayUnit.setControlsVisible(false);
-	
+function move(forward, jumping) {
+	handleActionJSON({
+		perform: "move",
+		forward: forward,
+		jumping: jumping
+	});
+}
+
+function rotate(rotation, jumping) {
 	handleActionJSON({
 		perform: "rotate",
 		rotation: rotation,
-		jumping: false
+		jumping: jumping
 	});
 }
 
 function skip() {
-	//playerUnit.displayUnit.setControlsVisible(false);
-	//turnUnit.displayUnit.setOtherTurnVisible(false);
 	handleActionJSON({
 		perform: "skip"
 	});
