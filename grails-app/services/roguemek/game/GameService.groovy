@@ -191,6 +191,18 @@ class GameService {
 			unit.jumpPoints = getUnitJP(game, unit)
 			unit.jpRemaining = unit.jumpPoints
 			data.jpRemaining = unit.jpRemaining
+			
+			def moveAP = null
+			if(unit.apRemaining > 0) {
+				def forwardAP = this.getMoveAP(game, unit, true, false)
+				def backwardAP = this.getMoveAP(game, unit, false, false)
+				
+				moveAP = [
+					forward: forwardAP,
+					backward: backwardAP
+				]
+			}
+			data.moveAP = moveAP
 		}
 		
 		// reset ap/hexes moved for the new turn
@@ -549,7 +561,52 @@ class GameService {
 	}
 	
 	/**
+	 * Determines amount of AP for movement to be relayed to client
+	 * @param game
+	 * @param unit
+	 * @param forward
+	 * @param jumping
+	 * @return
+	 */
+	public def getMoveAP(Game game, BattleUnit unit, boolean forward, boolean jumping) {
+		if(unit.apRemaining == 0) return 0
+		else if(unit != game.getTurnUnit()) return 0
+		
+		int moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
+		Coords unitCoords = unit.getLocation()
+		
+		// check to see if the new hex can be moved into
+		Coords moveCoords = GameService.getForwardCoords(game, unitCoords, moveHeading)
+		
+		def notMoving = (moveCoords.equals(unitCoords))
+		if(notMoving) {
+			return 0
+		}
+		
+		// check to see if there is another unit already in the coords
+		def unitObstacles = game.getUnitsAt(moveCoords.x, moveCoords.y)
+		if(unitObstacles.length > 0) {
+			// TODO: Charging/DFA if a unit is present at the new coords
+			return 0
+		}
+		
+		// calculate the amount of AP required to move
+		int apRequired = getHexRequiredAP(game, unitCoords, moveCoords)
+		
+		if(apRequired > unit.apRemaining && apRequired > unit.actionPoints
+				&& unit.apMoved == 0
+				&& apRequired == unit.actionPoints + 1) {
+			// if a mech wants to move to a location that requires more than its max AP
+			// lets allow it, but make it require the full amount of AP for the turn and only up to one additional AP
+			apRequired = unit.actionPoints
+		}
+		
+		return apRequired
+	}
+	
+	/**
 	 * Moves the unit in a forward/backward direction
+	 * @param game
 	 * @param unit
 	 * @param forward
 	 * @param jumping
@@ -634,12 +691,24 @@ class GameService {
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
+		def moveAP = null
+		if(unit.apRemaining > 0) {
+			def forwardAP = this.getMoveAP(game, unit, true, jumping)
+			def backwardAP = this.getMoveAP(game, unit, false, jumping)
+			
+			moveAP = [
+				forward: forwardAP,
+				backward: backwardAP
+			]
+		}
+		
 		def data = [
 			unit: unit.id,
 			x: unit.x,
 			y: unit.y,
 			apRemaining: unit.apRemaining,
-			heat: unit.heat
+			heat: unit.heat,
+			moveAP: moveAP
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.x, unit.y]
@@ -698,11 +767,23 @@ class GameService {
 		// deepValidate needs to be false otherwise it thinks a subclass like BattleMech is missing its requirements
 		unit.save flush: true, deepValidate: false
 		
+		def moveAP = null
+		if(unit.apRemaining > 0) {
+			def forwardAP = this.getMoveAP(game, unit, true, jumping)
+			def backwardAP = this.getMoveAP(game, unit, false, jumping)
+			
+			moveAP = [
+				forward: forwardAP,
+				backward: backwardAP
+			]
+		}
+		
 		def data = [
 			unit: unit.id,
 			heading: unit.heading,
 			apRemaining: unit.apRemaining,
-			heat: unit.heat
+			heat: unit.heat,
+			moveAP: moveAP
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.heading]

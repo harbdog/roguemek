@@ -257,6 +257,11 @@ function loadGameElements() {
 					  turnUnit = unitInstance;
 				  }
 				  
+				  if(data.moveAP != null) {
+					  unitInstance.forwardAP = data.moveAP.forward;
+					  unitInstance.backwardAP = data.moveAP.backward;
+				  }
+				  
 				  // add to unit list
 				  units[thisUnit.unit] = unitInstance;
 				  
@@ -885,6 +890,11 @@ function updateGameData(data) {
 	if(data.heading != null && u.heading != data.heading){
 		u.heading = data.heading;
 		updatePosition = true;
+	}
+	
+	if(data.moveAP != null) {
+		u.forwardAP = data.moveAP.forward;
+		u.backwardAP = data.moveAP.backward;
 	}
 	
 	if(data.apRemaining != null) {

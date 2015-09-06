@@ -83,6 +83,7 @@ c.init = function() {
 	this.update();
 	
 	this.setActionPoints(this.unit.apRemaining);
+	this.setMoveActionPoints(this.unit.forwardAP, this.unit.backwardAP)
 	this.setJumpPoints(this.unit.jpRemaining);
 }
 
@@ -116,6 +117,13 @@ c.update = function() {
 	}
 	
 	this.doCache();
+}
+
+c.setMoveActionPoints = function(forwardAP, backwardAP) {
+	if(forwardAP) this.forward.setPoints(forwardAP);
+	if(backwardAP) this.backward.setPoints(backwardAP);
+	
+	this.update();
 }
 
 c.setActionPoints = function(ap) {

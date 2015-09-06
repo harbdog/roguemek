@@ -84,11 +84,23 @@ class GameController {
 		
 		BattleUnit turnUnit = g.getTurnUnit()
 		
+		def moveAP = null
+		if(playerUnits.contains(turnUnit?.id)) {
+			def forwardAP = gameService.getMoveAP(g, turnUnit, true, false)
+			def backwardAP = gameService.getMoveAP(g, turnUnit, false, false)
+			
+			moveAP = [
+				forward: forwardAP,
+				backward: backwardAP
+			]
+		}
+		
 		def elements = [
 			board: gameService.getHexMapRender(g),
 			units: gameService.getUnitsRender(g),
 			playerUnits: playerUnits,
-			turnUnit: turnUnit.id
+			turnUnit: turnUnit.id,
+			moveAP: moveAP
 		]
 		
 		render elements as JSON
