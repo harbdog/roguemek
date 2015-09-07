@@ -1071,7 +1071,7 @@ class GameService {
 	 * @return
 	 */
 	public def toggleJumping(Game game, BattleUnit unit, boolean jumping) {
-		if(unit.apRemaining == 0 || (jumping && unit.jpRemaining == 0)) return
+		if(unit.apRemaining == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
 		def moveAP = null
