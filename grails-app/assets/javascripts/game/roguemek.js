@@ -882,6 +882,8 @@ function updateGameData(data) {
 	var updatePosition = false;
 	var updateWeapons = false;
 	
+	// make sure any active controls are reset
+	setControlActive(null, false);
 	
 	// update to position
 	if(data.x != null && data.y != null){

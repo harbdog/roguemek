@@ -111,6 +111,7 @@ c.init = function() {
 }
 
 c.setPoints = function(points) {
+	if(points < 0) points = "-";
 	this.label.text = points;
 }
 
@@ -120,7 +121,7 @@ c.drawButtonAsActive = function(active) {
 	var borderColor = "#3399FF";
 	
 	if(active) {
-		color = "#3399FF";
+		color = borderColor;
 		borderColor = "#FFFFFF";
 	}
 	
@@ -171,7 +172,7 @@ c.drawButtonAsActive = function(active) {
 				.lineTo(0, 0).endFill();
 	}
 	else if(PlayerControl.TYPE_CENTER == this.type) {
-		this.drawCenterAsFireButton(active);
+		this.drawCenterAsFireButton(this.drawAsFire, active);
 	}
 	else if(PlayerControl.TYPE_JUMP == this.type) {
 		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
@@ -186,19 +187,26 @@ c.drawButtonAsActive = function(active) {
 	}
 }
 
-c.drawCenterAsFireButton = function(drawAsFire) {
+c.drawCenterAsFireButton = function(drawAsFire, active) {
 	if(this.type != PlayerControl.TYPE_CENTER) return;
+	if(drawAsFire == null) drawAsFire = false;
+	this.drawAsFire = drawAsFire;
 	
 	// TODO: allow custom UI colors
 	var color = "#404040";
-	var borderColor = "#3399FF";
+	var borderColor = this.drawAsFire ? "#FF0000" : "#3399FF";
+	
+	if(active) {
+		color = borderColor;
+		borderColor = "#FFFFFF";
+	}
 	
 	if(drawAsFire){
 		this.control.graphics.clear();
 		this.control.graphics.beginFill(color)
 				.drawRect(0, 0, this.width, this.height).endFill();
 		
-		this.control.graphics.setStrokeStyle(BORDER_WIDTH*2, "square").beginStroke("#FF0000")
+		this.control.graphics.setStrokeStyle(BORDER_WIDTH*2, "square").beginStroke(borderColor)
 				.moveTo(0, 0).lineTo(this.width/6, 0)
 				.moveTo(0, 0).lineTo(0, this.height/6)
 				

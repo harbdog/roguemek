@@ -704,14 +704,17 @@ function updateUnitJumpPoints(unit) {
 	}
 }
 
-function setControlActive(control, active) {
-	if(control != null) {
-		activeControl = control;
+function setControlActive(controlType, active) {
+	if(!isPlayerUnitTurn()) return;
+	var playerControls = unitControls[turnUnit.id];
+	
+	if(controlType == null && activeControl != null) {
+		controlType = activeControl.type;
 	}
 	
-	if(activeControl == null) return;
+	if(controlType == null) return;
 	
-	activeControl.drawButtonAsActive(active);
+	var control = playerControls.drawButtonAsActive(controlType, active);
 	
 	if(active) {
 		activeControl = control;

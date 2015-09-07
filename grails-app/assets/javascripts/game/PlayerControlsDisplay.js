@@ -168,9 +168,41 @@ c.drawCenterAsFireButton = function(drawAsFire) {
 	
 	this.uncache;
 	
-	this.center.drawCenterAsFireButton(drawAsFire);
+	this.center.drawCenterAsFireButton(drawAsFire, false);
 	
 	this.doCache();
+}
+
+c.drawButtonAsActive = function(controlType, active) {
+	this.uncache();
+	
+	var control = null;
+	if(PlayerControl.TYPE_BACKWARD == controlType) {
+		control = this.backward;
+	}
+	else if(PlayerControl.TYPE_FORWARD == controlType) {
+		control = this.forward;
+	}
+	else if(PlayerControl.TYPE_LEFT == controlType) {
+		control = this.left;
+	}
+	else if(PlayerControl.TYPE_RIGHT == controlType) {
+		control = this.right;
+	}
+	else if(PlayerControl.TYPE_CENTER == controlType) {
+		control = this.center;
+	}
+	else if(PlayerControl.TYPE_JUMP == controlType) {
+		control = this.jump;
+	}
+	
+	if(control != null) {
+		control.drawButtonAsActive(active);
+	}
+	
+	this.doCache();
+	
+	return control;
 }
 
 c.doCache = function() {

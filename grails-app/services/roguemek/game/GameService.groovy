@@ -189,7 +189,18 @@ class GameService {
 			data.apRemaining = unit.apRemaining
 			
 			unit.jumpPoints = getUnitJP(game, unit)
-			unit.jpRemaining = unit.jumpPoints
+			if(game.gameTurn == 0) {
+				// intitialize jump jets to full amount on the first turn of the game
+				unit.jpRemaining = unit.jumpPoints
+			}
+			else if(unit.jpRemaining < unit.jumpPoints) {
+				// units only regenerate 1 JP per turn
+				unit.jpRemaining ++
+			}
+			else if(unit.jpRemaining > unit.jumpPoints) {
+				// units can only have as many JP as they are allowed based on battle conditions
+				unit.jpRemaining = unit.jumpPoints
+			}
 			data.jpRemaining = unit.jpRemaining
 			
 			def moveAP = null

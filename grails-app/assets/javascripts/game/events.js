@@ -95,6 +95,8 @@ function handleKeyPress(key) {
 	else if(key == "." || key == "space" || key == "enter"){
 		// Skip the remainder of the turn
 		// OR fire any selected weapons
+		setControlActive(PlayerControl.TYPE_CENTER, true);
+		
 		var weaponsToFire = getSelectedWeapons();
 		if(weaponsToFire.length == 0){
 			skip();
@@ -107,25 +109,29 @@ function handleKeyPress(key) {
 	}
 	else if(key == "a" || key == "left"){
 		// turn left/CCW
+		setControlActive(PlayerControl.TYPE_LEFT, true);
 		rotate(false, turnUnit.jumping);
 	}
 	else if(key == "d" || key == "right"){
 		// turn right/CW
+		setControlActive(PlayerControl.TYPE_RIGHT, true);
 		rotate(true, turnUnit.jumping);
 	}
 	else if(key == "w" || key == "up"){
 		// move forward
+		setControlActive(PlayerControl.TYPE_FORWARD, true);
 		move(true, turnUnit.jumping);
 	}
 	else if(key == "s" || key == "down"){
 		// move backward
+		setControlActive(PlayerControl.TYPE_BACKWARD, true);
 		move(false, turnUnit.jumping);
 	}
 	else if(key == "j"){
 		// toggle jump jets
 		if(isPlayerUnitTurn()) {
+			setControlActive(PlayerControl.TYPE_JUMP, true);
 			turnUnit.jumping = !turnUnit.jumping;
-			console.log("jumping: "+turnUnit.jumping);
 			jump(turnUnit.jumping);
 		}
 	}
@@ -324,7 +330,7 @@ function handleControls(event) {
 	var control = event.target;
 	
 	console.log("clicked "+x+","+y+": "+control);
-	setControlActive(control, true);
+	setControlActive(control.type, true);
 	
 	switch(control.type) {
 		case PlayerControl.TYPE_BACKWARD:
