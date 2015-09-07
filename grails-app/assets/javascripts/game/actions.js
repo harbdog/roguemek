@@ -16,6 +16,7 @@ function handleActionJSON(inputMap) {
 		.done(updateGameData)
 		.always(function() {
 			playerActionReady = true;
+			setControlActive(null, false);
 		});
 	}
 	else {

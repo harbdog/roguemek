@@ -324,6 +324,7 @@ function handleControls(event) {
 	var control = event.target;
 	
 	console.log("clicked "+x+","+y+": "+control);
+	setControlActive(control, true);
 	
 	switch(control.type) {
 		case PlayerControl.TYPE_BACKWARD:
@@ -363,10 +364,8 @@ function handleControls(event) {
 		case PlayerControl.TYPE_JUMP:
 			// toggle jumping
 			turnUnit.jumping = !turnUnit.jumping;
-			console.log("jumping: "+turnUnit.jumping);
 			jump(turnUnit.jumping);
 			
-			// TODO: update jumping indicator UI
 			break;
 	}
 }

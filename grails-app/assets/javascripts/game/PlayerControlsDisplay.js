@@ -143,7 +143,7 @@ c.setMoveActionPoints = function(forwardAP, backwardAP, jumping) {
 	}
 	
 	if(this.jump != null) {
-		this.jump.drawJumpAsActive(jumping)
+		this.jump.drawButtonAsActive(jumping);
 	}
 	
 	this.update();

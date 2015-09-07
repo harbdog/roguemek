@@ -41,7 +41,7 @@ var unitDisplayBounds;
 var targetDisplayWidth = 200;
 var targetDisplayBounds = {};
 
-var unitControls, targetBracket, targetLine;
+var activeControl, unitControls, targetBracket, targetLine;
 
 //initialize canvas based UI overlay
 function initPlayerUI() {
@@ -701,6 +701,23 @@ function updateUnitJumpPoints(unit) {
 	var controlDisplay = unitControls[unit.id];
 	if(controlDisplay != null) {
 		controlDisplay.setJumpPoints(unit.jpRemaining);
+	}
+}
+
+function setControlActive(control, active) {
+	if(control != null) {
+		activeControl = control;
+	}
+	
+	if(activeControl == null) return;
+	
+	activeControl.drawButtonAsActive(active);
+	
+	if(active) {
+		activeControl = control;
+	}
+	else {
+		activeControl = null;
 	}
 }
 

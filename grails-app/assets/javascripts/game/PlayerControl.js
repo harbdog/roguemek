@@ -36,17 +36,6 @@ c.init = function() {
 	
 	if(PlayerControl.TYPE_BACKWARD == this.type) {
 		this.control = new createjs.Shape();
-		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
-				.moveTo(0, 0).lineTo(this.width/4, 0)
-				.lineTo(this.width/4, this.height/4)
-				.lineTo(3*this.width/4, this.height/4)
-				.lineTo(3*this.width/4, 0)
-				.lineTo(this.width, 0)
-				.lineTo(this.width, this.height/2)
-				.lineTo(this.width/2, 7*this.height/8)
-				.lineTo(0, this.height/2)
-				.lineTo(0, 0).endFill();
-		
 		this.addChild(this.control);
 		
 		// show label on top of the control for the AP cost
@@ -58,17 +47,6 @@ c.init = function() {
 	}
 	else if(PlayerControl.TYPE_FORWARD == this.type) {
 		this.control = new createjs.Shape();
-		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
-				.moveTo(0, this.height/2).lineTo(this.width/2, this.height/8)
-				.lineTo(this.width, this.height/2)
-				.lineTo(this.width, this.height)
-				.lineTo(3*this.width/4, this.height)
-				.lineTo(3*this.width/4, 3*this.height/4)
-				.lineTo(this.width/4, 3*this.height/4)
-				.lineTo(this.width/4, this.height)
-				.lineTo(0, this.height)
-				.lineTo(0, this.height/2).endFill();
-		
 		this.addChild(this.control);
 		
 		// show label on top of the control for the AP cost
@@ -80,15 +58,6 @@ c.init = function() {
 	}
 	else if(PlayerControl.TYPE_LEFT == this.type) {
 		this.control = new createjs.Shape();
-		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
-				.moveTo(1*this.width/8, this.height/2).lineTo(this.width/2, 0)
-				.lineTo(this.width, 0)
-				.lineTo(this.width, this.height/4)
-				.lineTo(3*this.width/4, this.height/4)
-				.lineTo(3*this.width/4, this.height)
-				.lineTo(this.width/2, this.height)
-				.lineTo(1*this.width/8, this.height/2).endFill();
-		
 		this.addChild(this.control);
 		
 		// show label on top of the control for the AP cost
@@ -100,15 +69,6 @@ c.init = function() {
 	}
 	else if(PlayerControl.TYPE_RIGHT == this.type) {
 		this.control = new createjs.Shape();
-		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
-				.moveTo(0, 0).lineTo(this.width/2, 0)
-				.lineTo(7*this.width/8, this.height/2)
-				.lineTo(this.width/2, this.height)
-				.lineTo(this.width/4, this.height)
-				.lineTo(this.width/4, this.height/4)
-				.lineTo(0, this.height/4)
-				.lineTo(0, 0).endFill();
-		
 		this.addChild(this.control);
 		
 		// show label on top of the control for the AP cost
@@ -125,8 +85,6 @@ c.init = function() {
 		// show label on top of the control for the AP cost
 		this.label = new createjs.Text("AP 1", "16px UbuntuMono", "#FFFFFF");
 		this.addChild(this.label);
-		
-		this.drawCenterAsFireButton(false);
 	}
 	else if(PlayerControl.TYPE_JUMP == this.type) {
 		this.control = new createjs.Shape();
@@ -138,9 +96,9 @@ c.init = function() {
 		this.label.y = this.label.getMeasuredHeight();
 		
 		this.addChild(this.label);
-		
-		this.drawJumpAsActive(false);
 	}
+	
+	this.drawButtonAsActive(false);
 	
 	this.control.alpha = 0.75;
 	
@@ -156,28 +114,76 @@ c.setPoints = function(points) {
 	this.label.text = points;
 }
 
-c.drawJumpAsActive = function(jumping) {
-	if(this.type != PlayerControl.TYPE_JUMP) return;
-	
+c.drawButtonAsActive = function(active) {
 	// TODO: allow custom UI colors
 	var color = "#404040";
 	var borderColor = "#3399FF";
 	
-	if(jumping) {
+	if(active) {
 		color = "#3399FF";
 		borderColor = "#FFFFFF";
 	}
 	
 	this.control.graphics.clear();
-	this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
-			.moveTo(0, this.height/2).lineTo(this.width/2, 0)
-			.lineTo(this.width, this.height/2)
-			.lineTo(this.width, this.height)
-			.lineTo(3*this.width/4, 3*this.height/5)
-			.lineTo(this.width/2, 4*this.height/5)
-			.lineTo(this.width/4, 3*this.height/5)
-			.lineTo(0, this.height)
-			.lineTo(0, this.height/2).endFill();
+	
+	if(PlayerControl.TYPE_BACKWARD == this.type) {
+		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
+				.moveTo(0, 0).lineTo(this.width/4, 0)
+				.lineTo(this.width/4, this.height/4)
+				.lineTo(3*this.width/4, this.height/4)
+				.lineTo(3*this.width/4, 0)
+				.lineTo(this.width, 0)
+				.lineTo(this.width, this.height/2)
+				.lineTo(this.width/2, 7*this.height/8)
+				.lineTo(0, this.height/2)
+				.lineTo(0, 0).endFill();
+	}
+	else if(PlayerControl.TYPE_FORWARD == this.type) {
+		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
+				.moveTo(0, this.height/2).lineTo(this.width/2, this.height/8)
+				.lineTo(this.width, this.height/2)
+				.lineTo(this.width, this.height)
+				.lineTo(3*this.width/4, this.height)
+				.lineTo(3*this.width/4, 3*this.height/4)
+				.lineTo(this.width/4, 3*this.height/4)
+				.lineTo(this.width/4, this.height)
+				.lineTo(0, this.height)
+				.lineTo(0, this.height/2).endFill();
+	}
+	else if(PlayerControl.TYPE_LEFT == this.type) {
+		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
+				.moveTo(1*this.width/8, this.height/2).lineTo(this.width/2, 0)
+				.lineTo(this.width, 0)
+				.lineTo(this.width, this.height/4)
+				.lineTo(3*this.width/4, this.height/4)
+				.lineTo(3*this.width/4, this.height)
+				.lineTo(this.width/2, this.height)
+				.lineTo(1*this.width/8, this.height/2).endFill();
+	}
+	else if(PlayerControl.TYPE_RIGHT == this.type) {
+		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
+				.moveTo(0, 0).lineTo(this.width/2, 0)
+				.lineTo(7*this.width/8, this.height/2)
+				.lineTo(this.width/2, this.height)
+				.lineTo(this.width/4, this.height)
+				.lineTo(this.width/4, this.height/4)
+				.lineTo(0, this.height/4)
+				.lineTo(0, 0).endFill();
+	}
+	else if(PlayerControl.TYPE_CENTER == this.type) {
+		this.drawCenterAsFireButton(active);
+	}
+	else if(PlayerControl.TYPE_JUMP == this.type) {
+		this.control.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(borderColor).beginFill(color)
+				.moveTo(0, this.height/2).lineTo(this.width/2, 0)
+				.lineTo(this.width, this.height/2)
+				.lineTo(this.width, this.height)
+				.lineTo(3*this.width/4, 3*this.height/5)
+				.lineTo(this.width/2, 4*this.height/5)
+				.lineTo(this.width/4, 3*this.height/5)
+				.lineTo(0, this.height)
+				.lineTo(0, this.height/2).endFill();
+	}
 }
 
 c.drawCenterAsFireButton = function(drawAsFire) {
