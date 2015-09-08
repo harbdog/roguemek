@@ -21,11 +21,14 @@ function UnitDisplay(unit) {
 		this.image = img;
 	}
 	
+	this.rotateContainer = null;
 	this.indicator = null;
 	this.header = null;
 	
 	this.unitImage = null;
 	this.alphaUnitImage = null;
+	
+	this.jumpShadowImage = null;
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
 
@@ -35,6 +38,10 @@ c.init = function() {
 	
 	this.removeAllChildren();
 	
+	// add container which will handle any objects that need rotation
+	this.rotateContainer = new createjs.Container();
+	this.addChild(this.rotateContainer);
+	
 	this.drawImage(scale);
 }
 
@@ -43,14 +50,14 @@ c.update = function() {
 	
 	this.x = this.getUpdatedDisplayX(this.unit.coords);
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
-	this.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
+	this.rotateContainer.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	
 	// draw heading indicator
 	if(this.header == null) {
 		this.header = new createjs.Shape();
 		this.header.x = 0;
 		this.header.y = 0;
-		this.addChildAt(this.header, 0);
+		this.rotateContainer.addChildAt(this.header, 0);
 	}
 	this.header.graphics.clear();
 	
@@ -96,6 +103,7 @@ c.positionUpdate = function() {
 	
 	var showUnitImage = false;
 	var showAlphaImage = false;
+	var showJumpShadow = false;
 	
 	var chkWaterTerrain = hex.getTerrain(Terrain.WATER);
 	if(chkWaterTerrain != null && chkWaterTerrain.getLevel() >= 2) {
@@ -103,6 +111,12 @@ c.positionUpdate = function() {
 		this.drawAlphaImage();
 		
 		showAlphaImage = true;
+	}
+	else if(this.unit.jumping) {
+		this.drawJumpImage();
+		
+		showUnitImage = true;
+		showJumpShadow = true;
 	}
 	else{
 		showUnitImage = true;
@@ -119,6 +133,13 @@ c.positionUpdate = function() {
 		this.alphaUnitImage.visible = showAlphaImage;
 		if(showAlphaImage) {
 			this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
+		}
+	}
+	
+	if(this.jumpShadowImage != null) {
+		this.jumpShadowImage.visible = showJumpShadow;
+		if(showJumpShadow) {
+			this.jumpShadowImage.cache(0, 0, this.image.width, this.image.height);
 		}
 	}
 	
@@ -139,7 +160,7 @@ c.drawImage = function(scale) {
 	if(this.unitImage == null) {
 		// load the unit image as a Bitmap
 		this.unitImage = new createjs.Bitmap(this.image);
-		this.addChild(this.unitImage);
+		this.rotateContainer.addChild(this.unitImage);
 	}
 	
 	// make the unit image just a bit smaller since it currently is same size as the hex
@@ -159,7 +180,7 @@ c.drawAlphaImage = function() {
 		    new createjs.ColorFilter(0,0,0,0.5, 
 		    						 0,0,0,0)
 		];
-		this.addChild(this.alphaUnitImage);
+		this.rotateContainer.addChild(this.alphaUnitImage);
 	}
 	
 	this.alphaUnitImage.scaleX = this.unitImage.scaleX;
@@ -167,6 +188,26 @@ c.drawAlphaImage = function() {
 	this.alphaUnitImage.regX = this.unitImage.regX;
 	this.alphaUnitImage.regY = this.unitImage.regY;
 	this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
+}
+
+c.drawJumpImage = function() {
+	if(this.jumpShadowImage == null) {
+		this.jumpShadowImage = new createjs.Bitmap(this.image);
+		//load the unit image again and apply alpha color filter
+		this.jumpShadowImage.filters = [
+		    new createjs.ColorFilter(0,0,0,0.5, 
+		    						 0,0,0,0)
+		];
+		this.addChildAt(this.jumpShadowImage, 0);
+	}
+	
+	this.jumpShadowImage.y = 10;
+	this.jumpShadowImage.scaleX = this.unitImage.scaleX;
+	this.jumpShadowImage.scaleY = this.unitImage.scaleY;
+	this.jumpShadowImage.regX = this.unitImage.regX;
+	this.jumpShadowImage.regY = this.unitImage.regY;
+	this.jumpShadowImage.rotation = this.rotateContainer.rotation;
+	this.jumpShadowImage.cache(0, 0, this.image.width, this.image.height);
 }
 
 c.getUpdatedDisplayX = function(coords) {
@@ -201,55 +242,42 @@ c.getUpdatedDisplayY = function(coords) {
 c.getUpdatedDisplayRotation = function(heading) {
 	return HEADING_ANGLE[heading];
 }
-c.setOtherTurnVisible = function(visible) {
-	if(visible) {
-		if(this.forwardControl == null) {
-			this.otherTurn = new createjs.Container();
-			
-			var otherImg = queue.getResult("other_turn");
-			var otherTurnImg = new createjs.Bitmap(otherImg);
-			this.otherTurn.x = (hexWidth/2) - (otherImg.width/2);
-			this.otherTurn.y = -(otherImg.height/2);
-			this.otherTurn.alpha = 0;
-			
-			this.otherTurn.addChild(otherTurnImg);
-		}
-		
-		this.addChild(this.otherTurn);
-		
-		createjs.Tween.get(this.otherTurn).to({alpha: 0.75}, 250);
-	}
-	else if(this.otherTurn != null) {
-		createjs.Tween.get(this.otherTurn).to({alpha: 0}, 250);
-		this.removeChild(this.otherTurn);
-	}
-}
 c.animateUpdateDisplay = function(coords, heading, callFunction) {
 	var newX = this.getUpdatedDisplayX(coords);
 	var newY = this.getUpdatedDisplayY(coords);
 	var actualRot = this.getUpdatedDisplayRotation(heading);
 	
 	var newRot = actualRot;
-	if(this.rotation == HEADING_ANGLE[HEADING_N] && newRot == HEADING_ANGLE[HEADING_NW]) {
+	if(this.rotateContainer.rotation == HEADING_ANGLE[HEADING_N] && newRot == HEADING_ANGLE[HEADING_NW]) {
 		// fixes the issue where it tries to rotate the long way to go from N to NW (0->300)
 		newRot = -60;
 	}
-	else if(this.rotation == HEADING_ANGLE[HEADING_NW] && newRot == HEADING_ANGLE[HEADING_N]) {
+	else if(this.rotateContainer.rotation == HEADING_ANGLE[HEADING_NW] && newRot == HEADING_ANGLE[HEADING_N]) {
 		// fixes the issue where it tries to rotate the long way to go from NW to N (300->0)
 		newRot = 360;
 	}
 	
 	var self = this;
 	createjs.Tween.get(this)
-		.to({x: newX, y: newY, rotation: newRot}, 250)
+		.to({x: newX, y: newY}, 250)
 		.call(function() {
-			// put the actual angle in after animated so it doesn't rotate the long way at a different angle
-			this.rotation = actualRot;
+			// updating the UnitDisplay position only, since the rotation belongs to a container inside
 			update = true;
 			
 			if(callFunction) {
 				callFunction(self);
 			}
+		})
+		.addEventListener("change", function() {
+			update = true;
+		});
+	
+	createjs.Tween.get(this.rotateContainer)
+		.to({rotation: newRot}, 250)
+		.call(function() {
+			// put the actual angle in after animated so it doesn't rotate the long way at a different angle
+			this.rotation = actualRot;
+			update = true;
 		})
 		.addEventListener("change", function() {
 			update = true;
@@ -270,7 +298,7 @@ c.updateUnitIndicator = function() {
 	
 	if(this.indicator != null) {
 		createjs.Tween.removeTweens(this.indicator);
-		this.removeChild(this.indicator);
+		this.rotateContainer.removeChild(this.indicator);
 	}
 	
 	if(isTurnUnit(this.unit)) {
@@ -296,7 +324,7 @@ c.updateUnitIndicator = function() {
 		var glowColor = shadeColor(color, 0.75);
 		this.indicator.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
 		
-		this.addChildAt(this.indicator, 1);
+		this.rotateContainer.addChildAt(this.indicator, 1);
 		
 		this.doCache();
 	}
@@ -320,7 +348,7 @@ c.showTurnDisplay = function(show) {
 	var glowColor = shadeColor(color, 0.75);
 	this.indicator.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
 	
-	this.addChildAt(this.indicator, 1);
+	this.rotateContainer.addChildAt(this.indicator, 1);
 	
 	createjs.Tween.get(this.indicator, { loop: true})
 		.to({alpha: 0.75, scaleX: 2.5, scaleY: 2.5}, 750)
