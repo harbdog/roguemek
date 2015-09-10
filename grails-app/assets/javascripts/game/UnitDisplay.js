@@ -4,6 +4,8 @@
 (function() {
 "use strict";
 
+var cacheUnits = false;
+
 function UnitDisplay(unit) {
 	this.Container_constructor();
 	
@@ -26,9 +28,9 @@ function UnitDisplay(unit) {
 	this.header = null;
 	
 	this.unitImage = null;
-	this.alphaUnitImage = null;
+	this.shadowUnitImage = null;
 	
-	this.jumpShadowImage = null;
+	this.alphaUnitImage = null;
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
 
@@ -43,6 +45,7 @@ c.init = function() {
 	this.addChild(this.rotateContainer);
 	
 	this.drawImage(scale);
+	this.drawShadowImage();
 }
 
 c.update = function() {
@@ -51,6 +54,7 @@ c.update = function() {
 	this.x = this.getUpdatedDisplayX(this.unit.coords);
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotateContainer.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
+	this.shadowUnitImage.rotation = this.rotateContainer.rotation;
 	
 	// draw heading indicator
 	if(this.header == null) {
@@ -113,8 +117,6 @@ c.positionUpdate = function() {
 		showAlphaImage = true;
 	}
 	else if(this.unit.jumping) {
-		this.drawJumpImage();
-		
 		showUnitImage = true;
 		showJumpShadow = true;
 	}
@@ -129,6 +131,23 @@ c.positionUpdate = function() {
 		}
 	}
 	
+	if(this.shadowUnitImage != null) {
+		this.shadowUnitImage.visible = showUnitImage;
+		if(showUnitImage) {
+			this.shadowUnitImage.cache(0, 0, this.image.width, this.image.height);
+		}
+		
+		if(showJumpShadow) {
+			// show the shadow and unit image in different locations to convey being above ground
+			this.rotateContainer.y = -hexHeight/4;
+			this.shadowUnitImage.y = hexHeight/8;
+		}
+		else{
+			this.rotateContainer.y = 0;
+			this.shadowUnitImage.y = 3;
+		}
+	}
+	
 	if(this.alphaUnitImage != null) {
 		this.alphaUnitImage.visible = showAlphaImage;
 		if(showAlphaImage) {
@@ -136,12 +155,7 @@ c.positionUpdate = function() {
 		}
 	}
 	
-	if(this.jumpShadowImage != null) {
-		this.jumpShadowImage.visible = showJumpShadow;
-		if(showJumpShadow) {
-			this.jumpShadowImage.cache(0, 0, this.image.width, this.image.height);
-		}
-	}
+	
 	
 	if(!isTurnUnit(this.unit)) {
 		this.doCache();
@@ -172,6 +186,26 @@ c.drawImage = function(scale) {
 	this.unitImage.cache(0, 0, this.image.width, this.image.height);
 }
 
+c.drawShadowImage = function() {
+	if(this.shadowUnitImage == null) {
+		this.shadowUnitImage = new createjs.Bitmap(this.image);
+		//load the unit image again and apply alpha color filter
+		this.shadowUnitImage.filters = [
+		    new createjs.ColorFilter(0,0,0,0.5, 
+		    						 0,0,0,0)
+		];
+		this.addChildAt(this.shadowUnitImage, 0);
+	}
+	
+	this.shadowUnitImage.alpha = 0.75;
+	this.shadowUnitImage.scaleX = this.unitImage.scaleX;
+	this.shadowUnitImage.scaleY = this.unitImage.scaleY;
+	this.shadowUnitImage.regX = this.unitImage.regX;
+	this.shadowUnitImage.regY = this.unitImage.regY;
+	this.shadowUnitImage.rotation = this.rotateContainer.rotation;
+	this.shadowUnitImage.cache(0, 0, this.image.width, this.image.height);
+}
+
 c.drawAlphaImage = function() {
 	if(this.alphaUnitImage == null) {
 		this.alphaUnitImage = new createjs.Bitmap(this.image);
@@ -188,26 +222,6 @@ c.drawAlphaImage = function() {
 	this.alphaUnitImage.regX = this.unitImage.regX;
 	this.alphaUnitImage.regY = this.unitImage.regY;
 	this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
-}
-
-c.drawJumpImage = function() {
-	if(this.jumpShadowImage == null) {
-		this.jumpShadowImage = new createjs.Bitmap(this.image);
-		//load the unit image again and apply alpha color filter
-		this.jumpShadowImage.filters = [
-		    new createjs.ColorFilter(0,0,0,0.5, 
-		    						 0,0,0,0)
-		];
-		this.addChildAt(this.jumpShadowImage, 0);
-	}
-	
-	this.jumpShadowImage.y = 10;
-	this.jumpShadowImage.scaleX = this.unitImage.scaleX;
-	this.jumpShadowImage.scaleY = this.unitImage.scaleY;
-	this.jumpShadowImage.regX = this.unitImage.regX;
-	this.jumpShadowImage.regY = this.unitImage.regY;
-	this.jumpShadowImage.rotation = this.rotateContainer.rotation;
-	this.jumpShadowImage.cache(0, 0, this.image.width, this.image.height);
 }
 
 c.getUpdatedDisplayX = function(coords) {
@@ -257,9 +271,12 @@ c.animateUpdateDisplay = function(coords, heading, callFunction) {
 		newRot = 360;
 	}
 	
+	// use consistent animation time across the Tweens
+	var aTime = 250;
+	
 	var self = this;
 	createjs.Tween.get(this)
-		.to({x: newX, y: newY}, 250)
+		.to({x: newX, y: newY}, aTime)
 		.call(function() {
 			// updating the UnitDisplay position only, since the rotation belongs to a container inside
 			update = true;
@@ -273,7 +290,7 @@ c.animateUpdateDisplay = function(coords, heading, callFunction) {
 		});
 	
 	createjs.Tween.get(this.rotateContainer)
-		.to({rotation: newRot}, 250)
+		.to({rotation: newRot}, aTime)
 		.call(function() {
 			// put the actual angle in after animated so it doesn't rotate the long way at a different angle
 			this.rotation = actualRot;
@@ -282,6 +299,20 @@ c.animateUpdateDisplay = function(coords, heading, callFunction) {
 		.addEventListener("change", function() {
 			update = true;
 		});
+	
+	if(this.shadowUnitImage != null 
+			&& this.shadowUnitImage.visible) {
+		createjs.Tween.get(this.shadowUnitImage)
+		.to({rotation: newRot}, aTime)
+		.call(function() {
+			// put the actual angle in after animated so it doesn't rotate the long way at a different angle
+			this.rotation = actualRot;
+			update = true;
+		})
+		.addEventListener("change", function() {
+			update = true;
+		});
+	}
 }
 
 c.setUnitIndicatorVisible = function(visible) {
@@ -359,7 +390,7 @@ c.showTurnDisplay = function(show) {
 }
 
 c.doCache = function() {
-	this.cache(-hexWidth/2-5,-hexHeight/2-5, hexWidth+5,hexHeight+5);
+	if(cacheUnits) this.cache(-hexWidth/2-5,-hexHeight/2-5, hexWidth+5,hexHeight+5);
 }
 
 c.toString = function() {
