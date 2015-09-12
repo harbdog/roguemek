@@ -36,10 +36,12 @@ function target(playerTarget) {
 }
 
 function jump(jumping) {
-	handleActionJSON({
-		perform: "jump",
-		jumping: jumping
-	});
+	if(isPlayerUnitTurn() && turnUnit.jumpJets > 0) {
+		handleActionJSON({
+			perform: "jump",
+			jumping: jumping
+		});
+	}
 }
 
 function move(forward, jumping) {

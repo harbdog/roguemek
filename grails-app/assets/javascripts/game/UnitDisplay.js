@@ -4,6 +4,7 @@
 (function() {
 "use strict";
 
+// TODO: add option for turning caching on for better framerate on slower devices
 var cacheUnits = false;
 
 function UnitDisplay(unit) {
@@ -31,6 +32,8 @@ function UnitDisplay(unit) {
 	this.shadowUnitImage = null;
 	
 	this.alphaUnitImage = null;
+	
+	this.jumpJetSprite = null;
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
 
@@ -46,6 +49,11 @@ c.init = function() {
 	
 	this.drawImage(scale);
 	this.drawShadowImage();
+	
+	if(this.unit.jumpJets > 0) {
+		// only load jump jet sprite if the unit has jump jets
+		this.loadJumpJets();
+	}
 }
 
 c.update = function() {
@@ -108,17 +116,20 @@ c.positionUpdate = function() {
 	var showUnitImage = false;
 	var showAlphaImage = false;
 	var showJumpShadow = false;
+	var showJumpJets = false;
 	
 	var chkWaterTerrain = hex.getTerrain(Terrain.WATER);
-	if(chkWaterTerrain != null && chkWaterTerrain.getLevel() >= 2) {
+	
+	if(this.unit.jumping) {
+		showUnitImage = true;
+		showJumpShadow = true;
+		showJumpJets = true;
+	}
+	else if(chkWaterTerrain != null && chkWaterTerrain.getLevel() >= 2) {
 		// hide unit image and show alpha image instead to appear as fully submerged in water
 		this.drawAlphaImage();
 		
 		showAlphaImage = true;
-	}
-	else if(this.unit.jumping) {
-		showUnitImage = true;
-		showJumpShadow = true;
 	}
 	else{
 		showUnitImage = true;
@@ -141,10 +152,12 @@ c.positionUpdate = function() {
 			// show the shadow and unit image in different locations to convey being above ground
 			this.rotateContainer.y = -hexHeight/4;
 			this.shadowUnitImage.y = hexHeight/8;
+			this.shadowUnitImage.scaleX = this.shadowUnitImage.scaleY = this.unitImage.scaleX * 0.75;
 		}
 		else{
 			this.rotateContainer.y = 0;
 			this.shadowUnitImage.y = 3;
+			this.shadowUnitImage.scaleX = this.shadowUnitImage.scaleY = this.unitImage.scaleX * 1.0;
 		}
 	}
 	
@@ -155,7 +168,10 @@ c.positionUpdate = function() {
 		}
 	}
 	
-	
+	if(this.jumpJetSprite != null) {
+		this.jumpJetSprite.visible = showJumpJets;
+		this.jumpJetSprite.paused = !showJumpJets;
+	}
 	
 	if(!isTurnUnit(this.unit)) {
 		this.doCache();
@@ -222,6 +238,23 @@ c.drawAlphaImage = function() {
 	this.alphaUnitImage.regX = this.unitImage.regX;
 	this.alphaUnitImage.regY = this.unitImage.regY;
 	this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
+}
+
+c.loadJumpJets = function() {
+	var spriteSheet = new createjs.SpriteSheet({
+		framerate: 10,
+		"images": [queue.getResult("jumpjet")],
+		"frames": {"regX": 57, "regY": 0, "width": 114, "height": 160, "count": 7},
+		"animations": {
+			jet: [0, 6, "jet", 1.0]
+		}
+	});
+	this.jumpJetSprite = new createjs.Sprite(spriteSheet, "jet");
+	this.jumpJetSprite.visible = false;
+	this.jumpJetSprite.scaleX = this.jumpJetSprite.scaleY = 25/114;
+	this.jumpJetSprite.x = 0;
+	this.jumpJetSprite.y = -hexHeight/4;
+	this.addChildAt(this.jumpJetSprite, 1);
 }
 
 c.getUpdatedDisplayX = function(coords) {

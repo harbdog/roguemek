@@ -1085,6 +1085,10 @@ class GameService {
 		if(unit.apRemaining == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
+		if(jumping && unit.jpRemaining == 0) {
+			jumping = false
+		}
+		
 		def moveAP = null
 		if(unit.apRemaining > 0) {
 			def forwardAP = this.getMoveAP(game, unit, true, jumping)
@@ -1098,7 +1102,8 @@ class GameService {
 		
 		def data = [
 			unit: unit.id,
-			moveAP: moveAP
+			moveAP: moveAP,
+			jumping: jumping
 		]
 		
 		return data
