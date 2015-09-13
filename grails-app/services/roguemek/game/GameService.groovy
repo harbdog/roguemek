@@ -841,6 +841,7 @@ class GameService {
 			apMoved: unit.apMoved,
 			jpRemaining: unit.jpRemaining,
 			jpMoved: unit.jpMoved,
+			jumping: jumping,
 			heat: unit.heat,
 			moveAP: moveAP
 		]
@@ -951,6 +952,7 @@ class GameService {
 			apMoved: unit.apMoved,
 			jpRemaining: unit.jpRemaining,
 			jpMoved: unit.jpMoved,
+			jumping: jumping,
 			heat: unit.heat,
 			moveAP: moveAP
 		]
@@ -1085,7 +1087,7 @@ class GameService {
 		if(unit.apRemaining == 0) return
 		else if(unit != game.getTurnUnit()) return
 		
-		if(jumping && unit.jpRemaining == 0) {
+		if(jumping && unit.jumpPoints == 0) {
 			jumping = false
 		}
 		
@@ -1882,13 +1884,14 @@ class GameService {
 			return CombatStatus.UNIT_PRONE
 		}
 		
-		if(unit.apMoved == 0){
-			return CombatStatus.UNIT_STANDING
-		}
-		else if(unit.jpMoved >= 0){
+		
+		if(unit.jpMoved >= 0){
 			// since rotation doesn't use JP, it initializes at -1 to indicate the unit has not jumped
 			// and sets to zero when a jump rotate is performed
 			return CombatStatus.UNIT_JUMPING
+		}
+		else if(unit.apMoved == 0){
+			return CombatStatus.UNIT_STANDING
 		}
 		else if(unit.apRemaining < (unit.apMoved * 1/3)){
 			// Running is defined as when your mech is moving at greater than or 
