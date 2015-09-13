@@ -653,6 +653,9 @@ function updateTargetPosition() {
  * Intended to be called back from Tweens when the unit position has finished animating updates
  */
 function performUnitPositionUpdates(unitDisplay) {
+	// reset movement/rotation controls that became active
+	resetControls();
+	
 	// update the unit display based on it new hex
 	unitDisplay.positionUpdate();
 	
@@ -722,6 +725,20 @@ function setControlActive(controlType, active) {
 	else {
 		activeControl = null;
 	}
+}
+
+function resetControls() {
+	if(!isPlayerUnitTurn()) return;
+	activeControl = null;
+	
+	var playerControls = unitControls[turnUnit.id];
+	
+	playerControls.drawButtonAsActive(PlayerControl.TYPE_BACKWARD, false);
+	playerControls.drawButtonAsActive(PlayerControl.TYPE_FORWARD, false);
+	playerControls.drawButtonAsActive(PlayerControl.TYPE_LEFT, false);
+	playerControls.drawButtonAsActive(PlayerControl.TYPE_RIGHT, false);
+	playerControls.drawButtonAsActive(PlayerControl.TYPE_CENTER, false);
+	playerControls.drawButtonAsActive(PlayerControl.TYPE_JUMP, turnUnit.jumping);
 }
 
 

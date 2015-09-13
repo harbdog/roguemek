@@ -834,6 +834,10 @@ function updateGameData(data) {
 		// display the message to the player
 		var t = new Date(data.time);
 		addMessageUpdate("["+t.toLocaleTimeString()+"] "+data.message);
+		
+		if(data.unit == null) {
+			resetControls();
+		}
 	}
 	
 	if(data.unit && data.turnUnit){
@@ -877,11 +881,6 @@ function updateGameData(data) {
 	// determine what UI areas need to be updated
 	var updatePosition = false;
 	var updateWeapons = false;
-	
-	// make sure any active controls are reset, except the jump control
-	// TODO: make the turn and move controls not be inactive until after the animated move is finished
-	setControlActive(null, false);
-	if(u != null) setControlActive(PlayerControl.TYPE_JUMP, u.jumping);
 	
 	// update to position
 	if(data.x != null && data.y != null){
