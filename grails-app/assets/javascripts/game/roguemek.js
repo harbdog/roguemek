@@ -834,10 +834,6 @@ function updateGameData(data) {
 		// display the message to the player
 		var t = new Date(data.time);
 		addMessageUpdate("["+t.toLocaleTimeString()+"] "+data.message);
-		
-		if(data.unit == null) {
-			resetControls();
-		}
 	}
 	
 	if(data.unit && data.turnUnit){
@@ -846,6 +842,9 @@ function updateGameData(data) {
 	else if(data.turnUnit) {
 		// presence of turnUnit indicates the unit is starting a new turn
 		data.unit = data.turnUnit;
+	}
+	else if(data.unit == null) {
+		resetControls();
 	}
 	
 	// keep track of previous turn unit in the event it changes turns
