@@ -113,6 +113,8 @@ c.positionUpdate = function() {
 	
 	var hex = this.unit.getHex();
 	
+	var aTime = 250;
+	
 	var showUnitImage = false;
 	var showAlphaImage = false;
 	var showJumpShadow = false;
@@ -137,40 +139,85 @@ c.positionUpdate = function() {
 	
 	if(this.unitImage != null) {
 		this.unitImage.visible = showUnitImage;
-		if(showUnitImage) {
-			this.unitImage.cache(0, 0, this.image.width, this.image.height);
-		}
 	}
 	
 	if(this.shadowUnitImage != null) {
 		this.shadowUnitImage.visible = showUnitImage;
-		if(showUnitImage) {
-			this.shadowUnitImage.cache(0, 0, this.image.width, this.image.height);
-		}
 		
-		if(showJumpShadow) {
-			// show the shadow and unit image in different locations to convey being above ground
-			this.rotateContainer.y = -hexHeight/4;
-			this.shadowUnitImage.y = hexHeight/8;
-			this.shadowUnitImage.scaleX = this.shadowUnitImage.scaleY = this.unitImage.scaleX * 0.75;
-		}
-		else{
-			this.rotateContainer.y = 0;
-			this.shadowUnitImage.y = 3;
-			this.shadowUnitImage.scaleX = this.shadowUnitImage.scaleY = this.unitImage.scaleX * 1.0;
+		if(showUnitImage) {
+			if(showJumpShadow) {
+				// show the shadow and unit image in different locations to convey being above ground
+				var rotateContainerY = -hexHeight/4;
+				var shadowUnitImageY = hexHeight/8;
+				
+				if(this.rotateContainer.y != rotateContainerY){
+					createjs.Tween.get(this.rotateContainer)
+							.to({y: rotateContainerY}, aTime)
+							.call(function() {
+								update = true;
+							})
+							.addEventListener("change", function() {
+								update = true;
+							});
+					
+					createjs.Tween.get(this.shadowUnitImage)
+							.to({y: shadowUnitImageY, scaleX: this.unitImage.scaleX * 0.75, scaleY: this.unitImage.scaleY * 0.75}, aTime)
+							.call(function() {
+								update = true;
+							})
+							.addEventListener("change", function() {
+								update = true;
+							});
+				}
+			}
+			else{
+				var rotateContainerY = 0;
+				var shadowUnitImageY = 3;
+				
+				if(this.rotateContainer.y != rotateContainerY){
+					createjs.Tween.get(this.rotateContainer)
+							.to({y: rotateContainerY}, aTime)
+							.call(function() {
+								update = true;
+							})
+							.addEventListener("change", function() {
+								update = true;
+							});
+			
+					createjs.Tween.get(this.shadowUnitImage)
+							.to({y: shadowUnitImageY, scaleX: this.unitImage.scaleX * 1.0, scaleY: this.unitImage.scaleY * 1.0}, aTime)
+							.call(function() {
+								update = true;
+							})
+							.addEventListener("change", function() {
+								update = true;
+							});
+				}
+			}
 		}
 	}
 	
 	if(this.alphaUnitImage != null) {
 		this.alphaUnitImage.visible = showAlphaImage;
-		if(showAlphaImage) {
-			this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
-		}
 	}
 	
 	if(this.jumpJetSprite != null) {
-		this.jumpJetSprite.visible = showJumpJets;
+		
 		this.jumpJetSprite.paused = !showJumpJets;
+		
+		var toAlpha = showJumpJets ? 1.0 : 0;
+		
+		if(this.jumpJetSprite.alpha != toAlpha) {
+			// animate the jump jets becoming visible or not visible
+			createjs.Tween.get(this.jumpJetSprite)
+					.to({alpha: toAlpha}, aTime)
+					.call(function() {
+						update = true;
+					})
+					.addEventListener("change", function() {
+						update = true;
+					});
+		}
 	}
 	
 	if(!isTurnUnit(this.unit)) {
@@ -250,11 +297,12 @@ c.loadJumpJets = function() {
 		}
 	});
 	this.jumpJetSprite = new createjs.Sprite(spriteSheet, "jet");
-	this.jumpJetSprite.visible = false;
+	this.jumpJetSprite.alpha = 0;
 	this.jumpJetSprite.scaleX = this.jumpJetSprite.scaleY = 25/114;
 	this.jumpJetSprite.x = 0;
 	this.jumpJetSprite.y = -hexHeight/4;
 	this.addChildAt(this.jumpJetSprite, 1);
+	// do not cache animated sprites
 }
 
 c.getUpdatedDisplayX = function(coords) {

@@ -878,8 +878,10 @@ function updateGameData(data) {
 	var updatePosition = false;
 	var updateWeapons = false;
 	
-	// make sure any active controls are reset
+	// make sure any active controls are reset, except the jump control
+	// TODO: make the turn and move controls not be inactive until after the animated move is finished
 	setControlActive(null, false);
+	if(u != null) setControlActive(PlayerControl.TYPE_JUMP, u.jumping);
 	
 	// update to position
 	if(data.x != null && data.y != null){
@@ -915,6 +917,7 @@ function updateGameData(data) {
 		u.jumping = data.jumping;
 		
 		u.getUnitDisplay().positionUpdate();
+		setControlActive(PlayerControl.TYPE_JUMP, u.jumping);
 	}
 	
 	// update armor values of the target

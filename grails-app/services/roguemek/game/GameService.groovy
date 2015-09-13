@@ -1091,6 +1091,32 @@ class GameService {
 			jumping = false
 		}
 		
+		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
+		
+		// prevent unit from jumping and walking/running in the same turn
+		if(jumping) {
+			if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
+				// unit was not standing still or already jumping, deny enabling jumping
+				def data = [
+					unit: unit.id,
+					jumping: false,
+					message: new GameMessage("game.you.cannot.jump.moving", null, null)
+				]
+				return data
+			}
+		}
+		else{
+			if(prevUnitStatus == CombatStatus.UNIT_JUMPING) {
+				// unit was jumping, deny disabling jumping
+				def data = [
+					unit: unit.id,
+					jumping: true,
+					message: new GameMessage("game.you.cannot.move.jumping", null, null)
+				]
+				return data
+			}
+		}
+		
 		def moveAP = null
 		if(unit.apRemaining > 0) {
 			def forwardAP = this.getMoveAP(game, unit, true, jumping)

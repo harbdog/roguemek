@@ -127,6 +127,12 @@ class GameController {
 				data: result.data
 			]
 		}
+		else if(result != null && result.message instanceof GameMessage) {
+			// allow for a message embedded in a normal result for certain uses
+			result.time = result.message.time
+			result.data = result.message.data
+			result.message = message(code: result.message.messageCode, args: result.message.messageArgs)
+		}
 		
 		render result as JSON
 	}
