@@ -704,8 +704,16 @@ class GameService {
 	 * @return
 	 */
 	public def move(Game game, BattleUnit unit, boolean forward, boolean jumping) {
-		if(unit.apRemaining == 0 || (jumping && unit.jpRemaining == 0)) return
-		else if(unit != game.getTurnUnit()) return
+		if(unit != game.getTurnUnit()) return
+		
+		if(unit.apRemaining == 0) {
+			// not enough action points to move
+			return new GameMessage("game.you.cannot.move.ap.zero", null, null)
+		}
+		else if(jumping && unit.jpRemaining == 0) {
+			// not enough jump points to jump
+			return new GameMessage("game.you.cannot.move.jp.zero", null, null)
+		}
 		
 		// TODO: TESTING: Instead, store combat status directly on the unit as a new field?
 		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
@@ -852,8 +860,9 @@ class GameService {
 				jumping ? "game.unit.jumped" : "game.unit.moved", 
 				messageArgs, data)
 		
-		if(unit.apRemaining == 0) {
-			// automatically end the unit's turn if it has run out of AP
+		if(unit.apRemaining == 0
+				&& !jumping) {
+			// automatically end the unit's turn if it has run out of AP if it was not jumping
 			this.initializeNextTurn(game)
 		}
 		
@@ -868,8 +877,13 @@ class GameService {
 	 * @return
 	 */
 	public def rotateHeading(Game game, BattleUnit unit, int newHeading, boolean jumping){
-		if(unit.apRemaining == 0) return
-		else if(unit != game.getTurnUnit()) return
+		if(unit != game.getTurnUnit()) return
+		
+		if(unit.apRemaining == 0
+				&& !jumping) {
+			// no action points to rotate with (but allow jump rotation)
+			return new GameMessage("game.you.cannot.move.ap.zero", null, null)
+		}
 		
 		// TODO: TESTING: Instead, store combat status directly on the unit as a new field?
 		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
@@ -963,8 +977,9 @@ class GameService {
 				jumping ? "game.unit.jump.rotated" : "game.unit.rotated", 
 				messageArgs, data)
 		
-		if(unit.apRemaining == 0) {
-			// automatically end the unit's turn if it has run out of AP
+		if(unit.apRemaining == 0
+				&& !jumping) {
+			// automatically end the unit's turn if it has run out of AP when not jumping
 			this.initializeNextTurn(game)
 		}
 		
@@ -1283,8 +1298,12 @@ class GameService {
 	 * @return
 	 */
 	public def fireWeaponsAtUnit(Game game, BattleUnit unit, ArrayList weapons, BattleUnit target) {
-		if(unit.apRemaining == 0) return
-		else if(unit != game.getTurnUnit()) return
+		if(unit != game.getTurnUnit()) return
+		
+		if(unit.apRemaining == 0) {
+			// not enough action points to fire
+			return new GameMessage("game.you.cannot.fire.ap.zero", null, null)
+		}
 		
 		def data = [
 			unit: unit.id,
