@@ -591,48 +591,64 @@ function handleMouseWheel(evt) {
 	
 	if(allowMouseWheelZoom === false) return;
 	
+	// TODO: allow animations to be turned off
+	var doAnimate = true;
+	
 	// need to handle different browsers differently based on event and property type defined when mouse scroll is used
 	if (!evt) evt = event;
 	var direction = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1;
 	
-	var mouseX = evt.clientX;
-	var mouseY = evt.clientY;
+	var mouseX = evt.clientX - stage.x;
+	var mouseY = evt.clientY - stage.y;
 	
 	var oldScale = stage.scaleX;
-	var newScale = stage.scaleX + (direction * 0.05);
+	var newScale = stage.scaleX + (direction * 0.1);
 	
 	if(newScale > 0 && newScale <= 5) {
-		stage.scaleX = newScale;
-		stage.scaleY = newScale;
-		
 		console.log("scale="+newScale);
 		
-		// Keep the board from going off the window too much
-	    keepBoardInWindow();
-		
-		// update visible hexes
-	    updateHexMapDisplay();
-	    
-	    update = true;
+		if(doAnimate) {
+			var aTime = 250;
+			createjs.Tween.removeTweens(stage);
+			createjs.Tween.get(stage)
+					.to({scaleX: newScale, scaleY: newScale}, aTime, createjs.Ease.quadOut)
+					.call(function() {
+						update = true;
+						
+						// Keep the board from going off the window too much
+					    keepBoardInWindow();
+						
+						// update visible hexes
+					    updateHexMapDisplay();
+					})
+					.addEventListener("change", function() {
+						update = true;
+						
+						// Keep the board from going off the window too much
+					    keepBoardInWindow();
+						
+						// update visible hexes
+					    updateHexMapDisplay();
+					});
+		}
+		else{
+			stage.scaleX = newScale;
+			stage.scaleY = newScale;
+			
+			// Keep the board from going off the window too much
+		    keepBoardInWindow();
+			
+			// update visible hexes
+		    updateHexMapDisplay();
+		    
+		    update = true;
+		}
 	}
 }
 
 function keepBoardInWindow() {
-	var scaledHexWidth = hexWidth * stage.scaleX;
-    var scaledHexHeight = hexHeight * stage.scaleY;
-    
-    // Keep the board from going off the window too much
-    if(stage.x < -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width){
-    	stage.x = -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width;
-    }
-    if(stage.x > 10) {
-    	stage.x = 10;
-    }
-    
-    if(stage.y < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height){
-    	stage.y = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height;
-    }
-    if(stage.y > 10 + (isometricPadding * stage.scaleY)) {
-    	stage.y = 10 + (isometricPadding * stage.scaleY);
-    }
+	var inPoint = getBoardPointInWindow(new Point(stage.x, stage.y));
+	
+	stage.x = inPoint.x;
+	stage.y = inPoint.y;
 }

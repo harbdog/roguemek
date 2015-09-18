@@ -72,6 +72,8 @@ function initPlayerUI() {
 	else {
 		showPlayerUnitDisplay(playerUnits[0]);
 	}
+	
+	centerDisplayOnHexAt(turnUnit.getHexLocation());
 }
 
 // updates the sizings/positions of the UI overlays on the canvas
@@ -859,6 +861,82 @@ function toggleIsometricDisplay() {
 	updateUnitDisplayObjects();
 	updateTargetPosition();
 	update = true;
+}
+
+/**
+ * Shifts the view of the board display so the given hex at X,Y coordinates is centered on
+ * @param hexX
+ * @param hexY
+ */
+function centerDisplayOnHexAt(hexCoords, doAnimate) {
+	if(hexCoords == null || hexCoords.x == null || hexCoords.y == null) return;
+	
+	var scaledHexWidth = hexWidth * stage.scaleX;
+    var scaledHexHeight = hexHeight * stage.scaleY;
+	
+	// adjust the x,y of the board to shift it in the correct direction and amount
+    var boardX = -((hexCoords.x+1) * (3 * scaledHexWidth / 4)) + canvas.width/2;
+	var boardY = -((hexCoords.y+1) * scaledHexHeight) + canvas.height/2;
+	
+	// Keep the board from going off the window too much
+	var boardPoint = getBoardPointInWindow(new Point(boardX, boardY));
+	
+	if(doAnimate) {
+		var aTime = 500;
+		createjs.Tween.removeTweens(stage);
+		createjs.Tween.get(stage)
+				.to({x: boardPoint.x, y: boardPoint.y}, aTime, createjs.Ease.cubicOut)
+				.call(function() {
+					update = true;
+				})
+				.addEventListener("change", function() {
+					// update visible hexes
+				    updateHexMapDisplay();
+				    
+				    update = true;
+				});
+	}
+	else{
+		stage.x = boardPoint.x;
+		stage.y = boardPoint.y;
+		
+		// update visible hexes
+	    updateHexMapDisplay();
+	    
+	    update = true;
+	}
+}
+
+/**
+ * Gets an XY point for the board stage that will not make the board go off screen too much
+ * @param boardPoint
+ * @returns
+ */
+function getBoardPointInWindow(boardPoint) {
+	if(boardPoint == null || boardPoint.x == null || boardPoint.y == null) return boardPoint;
+	
+	var inX = boardPoint.x;
+	var inY = boardPoint.y;
+	
+	var scaledHexWidth = hexWidth * stage.scaleX;
+    var scaledHexHeight = hexHeight * stage.scaleY;
+    
+    // Keep the board from going off the window too much
+    if(inX < -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width){
+    	inX = -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width;
+    }
+    if(inX > 10) {
+    	inX = 10;
+    }
+    
+    if(inY < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height){
+    	inY = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height;
+    }
+    if(inY > 10 + (isometricPadding * stage.scaleY)) {
+    	inY = 10 + (isometricPadding * stage.scaleY);
+    }
+    
+    return new Point(inX, inY);
 }
 
 /**

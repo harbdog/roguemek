@@ -1064,6 +1064,8 @@ function updateGameData(data) {
 			showOtherUnitDisplay(turnUnit);
 			showPlayerUnitControls(null);
 		}
+		
+		centerDisplayOnHexAt(turnUnit.getHexLocation(), true);
 	}
 	
 	update = true;
