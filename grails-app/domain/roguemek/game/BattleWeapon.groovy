@@ -6,9 +6,11 @@ package roguemek.game
 class BattleWeapon extends BattleEquipment {
 
 	Integer cooldown = 0
+	Integer actualDamage
 	
     static constraints = {
 		cooldown nullable:false, min: 0
+		actualDamage nullable: true
     }
 	
 	public String getName() {
@@ -20,6 +22,8 @@ class BattleWeapon extends BattleEquipment {
 	}
 	
 	public int getDamage() {
+		if(this.actualDamage != null) return actualDamage
+		
 		return this.equipment.damage
 	}
 	
@@ -29,6 +33,10 @@ class BattleWeapon extends BattleEquipment {
 	
 	public int getCycle() {
 		return this.equipment.cycle
+	}
+	
+	public int getClusterHits() {
+		return this.equipment.clusterHits
 	}
 	
 	public int getProjectiles() {
@@ -58,6 +66,26 @@ class BattleWeapon extends BattleEquipment {
 	public boolean isLRM() {
 		// TODO: come up with a better way to determine if a weapon is an LRM type
 		return this.getShortName().startsWith("LRM")
+	}
+	
+	public boolean isPunch() {
+		// TODO: come up with a better way to determine if a weapon is a Punch
+		return this.getShortName().startsWith("PUNCH")
+	}
+	
+	public boolean isKick() {
+		// TODO: come up with a better way to determine if a weapon is a Kick
+		return this.getShortName().startsWith("KICK")
+	}
+	
+	public boolean isCharge() {
+		// TODO: come up with a better way to determine if a weapon is a Charge
+		return this.getShortName().startsWith("CHARG")
+	}
+	
+	public boolean isDFA() {
+		// TODO: come up with a better way to determine if a weapon is a DFA
+		return this.getShortName().startsWith("DFA")
 	}
 	
 	public def getAmmoTypes() {

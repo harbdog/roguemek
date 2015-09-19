@@ -9,6 +9,7 @@ class Weapon extends Equipment {
 	Integer heat
 	Integer cycle
 	
+	Integer clusterHits
 	Integer projectiles
 	static hasMany = [ammoTypes:Ammo]
 	
@@ -29,6 +30,7 @@ class Weapon extends Equipment {
 		heat min: 0
 		cycle min: 1
 		
+		clusterHits min: 1
 		projectiles min: 1
 		
 		minRange min: 0

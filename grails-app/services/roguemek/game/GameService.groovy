@@ -1418,15 +1418,12 @@ class GameService {
 				}
 				
 				// handle weapons with cluster hit locations
-				boolean isLRM = weapon.isLRM()
+				int clusterHits = weapon.getClusterHits()
 				
-				int groupAdd = 1
-				if(isLRM) groupAdd = 5
-				
-				for(int i=0; i<numHits; i+= groupAdd) {
+				for(int i=0; i<numHits; i+= clusterHits) {
 					// determine amount of damage for this grouping
-					int numThisGroup = groupAdd;
-					if(isLRM && groupAdd + i >= numHits){
+					int numThisGroup = clusterHits;
+					if(clusterHits > 1 && clusterHits + i >= numHits){
 						numThisGroup = numHits - i;
 					}
 					
@@ -1461,8 +1458,8 @@ class GameService {
 							else {
 								// append the message arguments of the hit result
 								locationStr += ","+Mech.getLocationText(hitLocation)
-								if(isLRM) {
-									// only append the damage for LRM due to different damage by grouping
+								if(clusterHits > 1) {
+									// only append the damage for cluster hit weapons due to different damage by grouping
 									damageByLocationStr += ","+String.valueOf(actualDamage)
 								}
 							}

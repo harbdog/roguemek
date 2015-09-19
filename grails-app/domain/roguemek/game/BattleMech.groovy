@@ -14,8 +14,11 @@ class BattleMech extends BattleUnit {
 	Integer[] internals
 	
 	List crits
-	static hasMany = [crits: String]
 	
+	// Storing physical attacks as their own weapon objects
+	List physical
+	
+	static hasMany = [crits: String, physical: String]
 	
     static constraints = {
 		mech nullable: false
@@ -24,6 +27,7 @@ class BattleMech extends BattleUnit {
 		internals size: 8..8
 		
 		crits size: Mech.NUM_CRITS..Mech.NUM_CRITS
+		physical size: 3..4		// Punch, Kick, and Charge, then DFA only if it has jump jets
     }
 	
 	def beforeValidate() {
@@ -99,6 +103,39 @@ class BattleMech extends BattleUnit {
 					
 					bEquip.discard()
 				}
+			}
+			
+			// Determine physical weapons and their specific base damage for the mech
+			def hasJumpMP = (mech.jumpMP > 0)
+			def physicalWeapons = []
+			
+			BattleWeapon punch = new BattleWeapon([ownerPilot: pilot, equipment: Equipment.findByName("Punch"), location: null])
+			punch.actualDamage = Math.ceil(mech.mass / 10)
+			punch.save flush:true
+			physicalWeapons.add(punch)
+			
+			BattleWeapon kick = new BattleWeapon([ownerPilot: pilot, equipment: Equipment.findByName("Kick"), location: null])
+			kick.actualDamage = Math.ceil(mech.mass / 5)
+			kick.save flush:true
+			physicalWeapons.add(kick)
+			
+			BattleWeapon charge = new BattleWeapon([ownerPilot: pilot, equipment: Equipment.findByName("Charge"), location: null])
+			charge.actualDamage = Math.ceil(mech.mass / 10)
+			charge.save flush:true
+			physicalWeapons.add(charge)
+			
+			if(hasJumpMP) {
+				BattleWeapon dfa = new BattleWeapon([ownerPilot: pilot, equipment: Equipment.findByName("Death From Above"), location: null])
+				dfa.actualDamage = Math.ceil(3 * mech.mass / 10)
+				dfa.save flush:true
+				physicalWeapons.add(dfa)
+			}
+			
+			physical = new String[physicalWeapons.size()]
+			def i = 0
+			for(BattleWeapon p in physicalWeapons) {
+				physical[i++] = p.id
+				p.discard()
 			}
 		}
 	}

@@ -28,7 +28,7 @@ class BattleEquipment {
 		ownerPilot nullable: false
 		equipment nullable: false
 		
-		location inList: Mech.ALL_LOCATIONS
+		location nullable: true, inList: Mech.ALL_LOCATIONS
 		criticalHits nullable: false
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED, STATUS_DAMAGED]
     }

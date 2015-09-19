@@ -40,7 +40,7 @@ class Equipment {
 		year range: 0..3132
 		
 		mass min: 0.0D
-		crits min: 1
+		crits min: 0
 		cbills min: 0L
 		battleValue min: 0
     }
