@@ -253,6 +253,7 @@ function loadGameElements() {
 				  unitInstance.initialInternals = thisUnit.initialInternals;
 				  
 				  unitInstance.crits = thisUnit.crits;
+				  unitInstance.physical = thisUnit.physical;
 				  unitInstance.weapons = initUnitWeapons(thisUnit);
 				  
 				  if(data.turnUnit == thisUnit.unit){
@@ -287,6 +288,7 @@ function loadGameElements() {
 		  manifest.push({id:"laser", src:"assets/ui/laser.png"});
 		  manifest.push({id:"ballistic", src:"assets/ui/ballistics.png"});
 		  manifest.push({id:"missile", src:"assets/ui/missiles.png"});
+		  manifest.push({id:"melee", src:"assets/ui/melee.png"});
 		  
 		  manifest.push({id:"jumpjet", src:"assets/ui/jumpjet_sprite.png"});
 		  
@@ -302,6 +304,15 @@ function initUnitWeapons(unit) {
 	if(unit == null || unit.crits == null) return null;
 	
 	var weapons = {};
+	
+	$.each(unit.physical, function(index, c) {
+		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
+			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, 
+								c.damage, c.projectiles, c.heat, c.cycle, c.cooldown, 
+								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
+			weapons[c.id] = w;
+		}
+	});
 	
 	$.each(unit.crits, function(index, c) {
 		if(c.type == TYPE_WEAPON && weapons[c.id] == null){

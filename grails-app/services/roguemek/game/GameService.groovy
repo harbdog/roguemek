@@ -471,6 +471,7 @@ class GameService {
 			def chassisVariant = null
 			def crits = null
 			def heatDiss = 0
+			def physical = null
 			
 			if(u instanceof BattleMech) {
 				Mech m = u.mech
@@ -508,6 +509,8 @@ class GameService {
 				
 				crits = getCritsRender(u)
 				
+				physical = getPhysicalAttacksRender(u)
+				
 				heatDiss = getHeatDissipation(game, u)
 			}
 			
@@ -532,6 +535,7 @@ class GameService {
 				internals: internals,
 				initialInternals: initialInternals,
 				crits: crits,
+				physical: physical,
 				imageFile: u.imageFile,
 				image: u.image,
 				rgb: [u.rgb[0], u.rgb[1], u.rgb[2]]
@@ -558,6 +562,23 @@ class GameService {
 		}
 		
 		return critsRender
+	}
+	
+	/**
+	 * Gets each phsyical attack weapon into a form that can be turned into JSON for the client
+	 * @return
+	 */
+	public def getPhysicalAttacksRender(BattleUnit u) {
+		if(u == null) return null
+		
+		def physicalRender = []
+		if(u instanceof BattleMech) {
+			for(int i=0; i<u.physical.size(); i++) {
+				physicalRender[i] = getEquipmentRender(u, BattleEquipment.get(u.physical[i]))
+			}
+		}
+		
+		return physicalRender
 	}
 	
 	/**

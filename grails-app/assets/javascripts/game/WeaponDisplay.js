@@ -176,6 +176,9 @@ WeaponDisplay.getWeaponTypeImage = function(weapon) {
 	else if("Missile" == weaponType) {
 		return queue.getResult("missile");
 	}
+	else if("Physical" == weapon.weaponType) {
+		return queue.getResult("melee");
+	}
 	
 	return null;
 }
