@@ -119,6 +119,33 @@ class WeaponModifier {
 			}
 		}
 		
+		if(weapon.isPhysical()){
+			Coords srcLocation = srcUnit.getLocation()
+			Coords tgtLocation = tgtUnit.getLocation()
+			
+			def srcHex = game.getHexAt(srcLocation)
+			def tgtHex = game.getHexAt(tgtLocation)
+			def elevationDiff = srcHex.elevation - tgtHex.elevation
+			
+			if(Math.abs(elevationDiff) > 1){
+				// melee weapons can not hit mechs at more than 1 elevation difference
+				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				return toHitMods
+			}
+			else if(weapon.isKick()
+					&& elevationDiff == -1){
+				// kicks can not hit mechs at a higher elevation
+				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				return toHitMods
+			}
+			else if(weapon.isPunch()
+					&& elevationDiff == 1){
+				// punches can not hit mechs at a lower elevation
+				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				return toHitMods
+			}
+		}
+		
 		int range = GameService.getRange(srcUnit.getLocation(), tgtUnit.getLocation())
 		
 		int rangeModifier = -1
@@ -151,6 +178,7 @@ class WeaponModifier {
 		if(rangeModifier == -1){
 			// TODO: weapon is outside of long range, use maximum range rules? For now just return as auto miss
 			toHitMods.push(new WeaponModifier(Modifier.MAX_RANGE, AUTO_MISS))
+			return toHitMods
 		}
 		
 		

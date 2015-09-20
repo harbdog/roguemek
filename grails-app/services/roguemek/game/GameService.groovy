@@ -1223,6 +1223,8 @@ class GameService {
 				}
 				
 				// TODO: determine base toHit% based on Pilot skills
+				// TODO: base melee to hit is from piloting skill
+				//toHit = srcMech.getPilot().getPiloting();
 				double toHit = 90.0
 				def modifiers = WeaponModifier.getToHitModifiers(game, unit, w, target)
 				for(WeaponModifier mod in modifiers) {
@@ -1384,6 +1386,8 @@ class GameService {
 			}
 			
 			// TODO: determine base toHit% based on Pilot skills
+			// TODO: base melee to hit is from piloting skill
+			//toHit = srcMech.getPilot().getPiloting();
 			double toHit = 90.0
 			def modifiers = WeaponModifier.getToHitModifiers(game, unit, weapon, target)
 			for(WeaponModifier mod in modifiers) {
@@ -1572,31 +1576,29 @@ class GameService {
 		// if(tgtUnit instanceof BattleMech)...
 		def unitLocations = Mech.FRONT_HIT_LOCATIONS
 		
-		// TODO: Melee weapon hit locations
-		/*def isHatchet = (weapon instanceof WeaponHatchet);
-		def isPunch = (weapon instanceof WeaponPunch);
-		def isKick = (weapon instanceof WeaponKick);*/
+		// Melee weapons have different hit locations
+		def isHatchet = weapon.isHatchet()
+		def isPunch = weapon.isPunch()
+		def isKick = weapon.isKick()
 		
 		Coords srcLocation = srcUnit.getLocation()
 		Coords tgtLocation = tgtUnit.getLocation()
 		
 		// account for punch/kick/hatchet hit location when target is different elevation
 		def srcHex = game.getHexAt(srcLocation)
-		def tgtHex = game.getHexAt(tgtLocation);
+		def tgtHex = game.getHexAt(tgtLocation)
 		def elevationDiff = srcHex.elevation - tgtHex.elevation
 		
 		// use punch locations for punching at same elevation, or when above target by one elevation level for kick/hatchet
-		boolean usePunchLocations = false
-		/*def usePunchLocations = ((isPunch && elevationDiff == 0)
+		boolean usePunchLocations = ((isPunch && elevationDiff == 0)
 				|| (isKick && elevationDiff == 1)
-				|| (isHatchet && elevationDiff == 1));*/
+				|| (isHatchet && elevationDiff == 1))
 		
 		
 		// use kick locations for kicking at same elevation, or when below target by one elevation level for punch/hatchet
-		boolean useKickLocations = false
-		/*def useKickLocations = ((isKick && elevationDiff == 0)
+		boolean useKickLocations = ((isKick && elevationDiff == 0)
 				|| (isPunch && elevationDiff == -1)
-				|| (isHatchet && elevationDiff == -1));*/
+				|| (isHatchet && elevationDiff == -1))
 		
 		
 		// find out if the target has partial cover as it could effect the resulting hit location
