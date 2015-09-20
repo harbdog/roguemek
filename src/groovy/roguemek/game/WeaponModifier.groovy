@@ -94,15 +94,17 @@ class WeaponModifier {
 			}
 		}
 		else if(relDirection == GameService.RelativeDirection.LEFT) {
-			// only left arm weapons are allowed to hit (maybe also allow left torso?)
-			if(weapon.location != Mech.LEFT_ARM) {
+			// only left arm weapons are allowed to hit (including punching)
+			if(weapon.location != Mech.LEFT_ARM
+					&& !weapon.isPunch()) {
 				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 				return toHitMods
 			}
 		}
 		else if(relDirection == GameService.RelativeDirection.RIGHT) {
-			// only right arm weapons are allowed to hit
-			if(weapon.location != Mech.RIGHT_ARM) {
+			// only right arm weapons are allowed to hit (including punching)
+			if(weapon.location != Mech.RIGHT_ARM 
+					&& !weapon.isPunch()) {
 				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 				return toHitMods
 			}
@@ -152,19 +154,19 @@ class WeaponModifier {
 		}
 		
 		
-		// TODO: Physical attack modifiers
-		/*if(weapon instanceof WeaponKick){
+		// Physical attack modifiers
+		if(weapon.isKick()){
 			// kicking has a -2 base modifier
-			var kickModifier = -2;
+			def kickModifier = -2 * STANDARD_MODIFIER;
 			
-			toHitMods.push(new Modifier(Modifier.KICK, kickModifier));
+			toHitMods.push(new WeaponModifier(Modifier.KICK, kickModifier));
 		}
-		else if(weapon instanceof WeaponHatchet){
+		else if(weapon.isHatchet()){
 			// hatchets have a -1 base modifier
-			var hatchetModifier = -1;
+			def hatchetModifier = -1 * STANDARD_MODIFIER;
 	
-			toHitMods.push(new Modifier(Modifier.HATCHET, hatchetModifier));
-		}*/
+			toHitMods.push(new WeaponModifier(Modifier.HATCHET, hatchetModifier));
+		}
 		
 		
 		int minRange = weapon.getMinRange()
@@ -289,11 +291,15 @@ class WeaponModifier {
 			}
 		}
 		
+		// TODO: any penalties for all melee attacks go here
+		if(weapon.isPunch()) {
+			// TODO: punching gets +1 for no hand actuator or +2 for no arm actuator
+		}
+		else if(weapon.isKick()) {
+			// TODO: kicking is not allowed if a hip is destroyed
+		}
+		
 		//reductions for arm damage, sensor damage, etc
-		//if(isMeleeWeapon()){
-			// TODO: any penalties for all melee attacks go here
-		//}
-		// else
 		if(unit instanceof BattleMech) {
 			// any penalties for all weapon attacks go here
 			

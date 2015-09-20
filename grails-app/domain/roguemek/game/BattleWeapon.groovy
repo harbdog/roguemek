@@ -68,6 +68,15 @@ class BattleWeapon extends BattleEquipment {
 		return this.getShortName().startsWith("LRM")
 	}
 	
+	public boolean isPhysical() {
+		return this.equipment.weaponType?.equals("Physical")
+	}
+	
+	public boolean isHatchet() {
+		// TODO: come up with a better way to determine if a weapon is a Hatchet
+		return this.getShortName().startsWith("HATCHET")
+	}
+	
 	public boolean isPunch() {
 		// TODO: come up with a better way to determine if a weapon is a Punch
 		return this.getShortName().startsWith("PUNCH")
@@ -80,7 +89,7 @@ class BattleWeapon extends BattleEquipment {
 	
 	public boolean isCharge() {
 		// TODO: come up with a better way to determine if a weapon is a Charge
-		return this.getShortName().startsWith("CHARG")
+		return this.getShortName().startsWith("CHARGE")
 	}
 	
 	public boolean isDFA() {

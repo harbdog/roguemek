@@ -124,6 +124,15 @@ class GameService {
 				}
 			}
 			
+			for(String equipId in unit.physical) {
+				BattleEquipment equip = BattleEquipment.get(equipId)
+				
+				// update all physical attacks' cooldown value if on cooldown
+				if(equip instanceof BattleWeapon && equip.cooldown > 0) {
+					weaponsToCooldown[equipId] = equip
+				}
+			}
+			
 			if(weaponsToCooldown.size() > 0) {
 				data.weaponData = []
 				
@@ -1400,6 +1409,17 @@ class GameService {
 			// set the weapon on cooldown
 			weapon.cooldown = weapon.getCycle()
 			thisWeaponFire.weaponCooldown = weapon.cooldown
+			
+			if(weapon.isPhysical()) {
+				// apply cooldown to all other physical weapons
+				for(String equipId in unit.physical) {
+					BattleWeapon e = BattleWeapon.get(equipId)
+					if(e != null) {
+						e.cooldown = e.getCycle()
+						e.save flush:true
+					}
+				}
+			}
 			
 			boolean weaponHit = false
 			if(toHit >= 100) {

@@ -278,6 +278,15 @@ class BattleMech extends BattleUnit {
 	@Override
 	public BattleWeapon[] getWeapons() {
 		def weapons = []
+		
+		for(String equipId in physical) {
+			if(equipId == null) continue
+			BattleEquipment e = BattleEquipment.read(equipId)
+			if(e instanceof BattleWeapon && !weapons.contains(e)) {
+				weapons.add(e)
+			}
+		}
+		
 		for(String equipId in crits) {
 			if(equipId == null) continue
 			BattleEquipment e = BattleEquipment.read(equipId)

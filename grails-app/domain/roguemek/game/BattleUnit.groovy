@@ -130,7 +130,7 @@ class BattleUnit {
 	 * @return Array of BattleWeapon objects
 	 */
 	public BattleWeapon[] getWeapons() {
-		return BattleWeapon[]
+		return new BattleWeapon[0]
 	}
 	
 	@Override
