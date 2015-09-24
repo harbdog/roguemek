@@ -119,33 +119,6 @@ class WeaponModifier {
 			}
 		}
 		
-		if(weapon.isPhysical()){
-			Coords srcLocation = srcUnit.getLocation()
-			Coords tgtLocation = tgtUnit.getLocation()
-			
-			def srcHex = game.getHexAt(srcLocation)
-			def tgtHex = game.getHexAt(tgtLocation)
-			def elevationDiff = srcHex.elevation - tgtHex.elevation
-			
-			if(Math.abs(elevationDiff) > 1){
-				// melee weapons can not hit mechs at more than 1 elevation difference
-				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
-				return toHitMods
-			}
-			else if(weapon.isKick()
-					&& elevationDiff == -1){
-				// kicks can not hit mechs at a higher elevation
-				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
-				return toHitMods
-			}
-			else if(weapon.isPunch()
-					&& elevationDiff == 1){
-				// punches can not hit mechs at a lower elevation
-				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
-				return toHitMods
-			}
-		}
-		
 		int range = GameService.getRange(srcUnit.getLocation(), tgtUnit.getLocation())
 		
 		int rangeModifier = -1
@@ -174,28 +147,108 @@ class WeaponModifier {
 			}
 		}
 		
-		
 		if(rangeModifier == -1){
 			// TODO: weapon is outside of long range, use maximum range rules? For now just return as auto miss
 			toHitMods.push(new WeaponModifier(Modifier.MAX_RANGE, AUTO_MISS))
 			return toHitMods
 		}
 		
-		
-		// Physical attack modifiers
-		if(weapon.isKick()){
-			// kicking has a -2 base modifier
-			def kickModifier = -2 * STANDARD_MODIFIER;
+		if(weapon.isPhysical()){
+			Coords srcLocation = srcUnit.getLocation()
+			Coords tgtLocation = tgtUnit.getLocation()
 			
-			toHitMods.push(new WeaponModifier(Modifier.KICK, kickModifier));
-		}
-		else if(weapon.isHatchet()){
-			// hatchets have a -1 base modifier
-			def hatchetModifier = -1 * STANDARD_MODIFIER;
-	
-			toHitMods.push(new WeaponModifier(Modifier.HATCHET, hatchetModifier));
-		}
+			def srcHex = game.getHexAt(srcLocation)
+			def tgtHex = game.getHexAt(tgtLocation)
+			def elevationDiff = srcHex.elevation - tgtHex.elevation
+			
+			// Physical attack modifiers
+			if(weapon.isKick()){
+				if(Math.abs(elevationDiff) > 1) {
+					// melee attacks can not hit mechs at more than 1 elevation difference
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+				else if(elevationDiff == -1) {
+					// kicks can not hit mechs at a higher elevation
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+				
+				// kicking has a -2 base modifier
+				def kickModifier = -2 * STANDARD_MODIFIER;
+				
+				toHitMods.push(new WeaponModifier(Modifier.KICK, kickModifier));
+			}
+			else if(weapon.isPunch()) {
+				if(Math.abs(elevationDiff) > 1) {
+					// melee attacks can not hit mechs at more than 1 elevation difference
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+				else if(elevationDiff == 1) {
+					// punches can not hit mechs at a lower elevation
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+			}
+			else if(weapon.isHatchet()){
+				if(Math.abs(elevationDiff) > 1) {
+					// melee attacks can not hit mechs at more than 1 elevation difference
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+				
+				// hatchets have a -1 base modifier
+				def hatchetModifier = -1 * STANDARD_MODIFIER;
 		
+				toHitMods.push(new WeaponModifier(Modifier.HATCHET, hatchetModifier));
+			}
+			else if(weapon.isCharge()){
+				Coords forwardCoords = GameService.getForwardCoords(game, srcLocation, srcUnit.heading)
+				if(!forwardCoords.equals(tgtLocation)) {
+					// A mech being Charged must be directly in front of the attacker
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+				
+				// TODO: make sure the unit was not already jumping this turn
+				
+				// A charging mech must have enough AP to enter the target's hex
+				int apRequired = GameService.getHexRequiredAP(game, srcLocation, tgtLocation)
+				if(apRequired > srcUnit.apRemaining) {
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+				
+				log.info("I have enough AP to charge: "+apRequired)
+				
+				// TODO: Charging has a base modifier of the difference between the piloting skill of the target and source
+			}
+			else if(weapon.isDFA()){
+				Coords forwardCoords = GameService.getForwardCoords(game, srcLocation, srcUnit.heading)
+				if(!forwardCoords.equals(tgtLocation)) {
+					// A mech being DFA'd must be directly in front of the attacker
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+				
+				// TODO: make sure the unit was not already walking/running this turn
+				
+				// A mech performing DFA must have enough AP and JP to enter the target's hex
+				int apRequired = 1
+				int jpRequired = GameService.getHexRequiredJP(game, srcLocation, tgtLocation)
+				if(apRequired > srcUnit.apRemaining
+						|| jpRequired > srcUnit.jpRemaining) {
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
+				
+				log.info("I have enough JP to DFA: "+jpRequired)
+						
+				// TODO: DFA has a base modifier of the difference between the piloting skill of the target and source
+				// TODO: DFA also has a +3 to-hit against infantry
+			}
+		}
 		
 		int minRange = weapon.getMinRange()
 		if(minRange != null && minRange > 0 && range <= minRange){

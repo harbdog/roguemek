@@ -685,7 +685,7 @@ class GameService {
 	 * @param jumping
 	 * @return
 	 */
-	public def getMoveAP(Game game, BattleUnit unit, boolean forward, boolean jumping) {
+	public static def getMoveAP(Game game, BattleUnit unit, boolean forward, boolean jumping) {
 		if(unit.apRemaining == 0) return 0
 		else if(unit != game.getTurnUnit()) return 0
 		
@@ -734,6 +734,18 @@ class GameService {
 	 * @return
 	 */
 	public def move(Game game, BattleUnit unit, boolean forward, boolean jumping) {
+		return move(game, unit, forward, jumping, false)
+	}
+	/**
+	 * Moves the unit in a forward/backward direction
+	 * @param game
+	 * @param unit
+	 * @param forward
+	 * @param jumping
+	 * @param isAutomatic, is only set true if the move is the result of another action and is being performed automatically on its behalf (e.g. charging, DFA)
+	 * @return
+	 */
+	public def move(Game game, BattleUnit unit, boolean forward, boolean jumping, boolean isAutomatic) {
 		if(unit != game.getTurnUnit()) return
 		
 		if(unit.apRemaining == 0) {
@@ -776,7 +788,6 @@ class GameService {
 		// check to see if there is another unit already in the coords
 		def unitObstacles = game.getUnitsAt(moveCoords.x, moveCoords.y)
 		if(unitObstacles.length > 0) {
-			// TODO: Charging/DFA if a unit is present at the new coords
 			return new GameMessage("game.you.cannot.move.unit", null, null)
 		}
 		
@@ -861,7 +872,9 @@ class GameService {
 		unit.save flush: true, deepValidate: false
 		
 		def moveAP = null
-		if(unit.apRemaining > 0) {
+		if(unit.apRemaining > 0
+				&& !isAutomatic) {
+			// generate the forward and backward AP amounts for the UI to display
 			def forwardAP = this.getMoveAP(game, unit, true, jumping)
 			def backwardAP = this.getMoveAP(game, unit, false, jumping)
 			
@@ -891,7 +904,8 @@ class GameService {
 				messageArgs, data)
 		
 		if(unit.apRemaining == 0
-				&& !jumping) {
+				&& !jumping
+				&& !isAutomatic) {
 			// automatically end the unit's turn if it has run out of AP if it was not jumping
 			this.initializeNextTurn(game)
 		}
@@ -1119,6 +1133,64 @@ class GameService {
 		}
 		
 		return newXY;
+	}
+	
+	/**
+	 * Handles displacement for any unit being displaced
+	 * @param game
+	 * @param unit
+	 * @param jumping
+	 * @return
+	 */
+	public static Coords handleDisplacement(Game game, BattleUnit unit, int displaceHeading){
+		
+		Coords unitLocation = unit.getLocation()
+		Coords displacedLocation = getForwardCoords(game, unitLocation, displaceHeading)
+		
+		Hex origHex = game.getHexAt(unitLocation)
+		Hex displacedHex = game.getHexAt(displacedLocation)
+		
+		if(!displacedLocation.equals(unitLocation) 
+				&& displacedHex != null 
+				&& origHex.elevation + 1 >= displacedHex.elevation){
+				
+			// looking for a mech present at the new location in case this triggers a domino effect
+			def obstacles = game.getUnitsAt(displacedLocation.x, displacedLocation.y)
+			
+			for(BattleUnit unitObstacle in obstacles) {
+				if(unitObstacle != null){
+					def obstacleDisplacedLocation = handleDisplacement(game, unitObstacle, displaceHeading)
+					
+					if(obstacleDisplacedLocation == null){
+						// mech obstacle couldn't displace, so neither will this unit
+						displacedLocation = null
+					}
+					else{
+						// TODO: handle potentially being force displacement from accidental falls from above (>1 elevation level above)
+					}
+					
+					// TODO: mech obstacle must make a pilot skill roll to avoid falling from domino effect
+					//doPilotSkillRoll(mechObstacle)
+				}
+			}
+		}
+		else{
+			// unit cannot be displaced
+			displacedLocation = null
+		}
+		
+		if(displacedLocation != null){
+			// unit displaced to new location
+			unit.x = displacedLocation.x
+			unit.y = displacedLocation.y
+			
+			unit.save flush:true
+			
+			//def gm = new GameMessage(mech, false, (playerMech == mech) ? "You have been displaced." : mech.chassis+" has been displaced.", SEV_HIGH)
+			//messages.push(gm)
+		}
+		
+		return displacedLocation
 	}
 	
 	/**
@@ -1512,6 +1584,30 @@ class GameService {
 					}
 				}
 				
+				if(weapon.isPhysical()) {
+					if(weapon.isCharge()
+							|| weapon.isDFA()) {
+							
+						// displace the target unit and move the attacking unit into its hex
+						Coords targetLocation = target.getLocation()
+						Coords displacedLocation = handleDisplacement(game, target, unit.heading)
+						
+						if(displacedLocation != null) {
+							// attacker advances into the new hex
+							
+							// TODO: create new method which is similar to move() but more appropriate for Charge/DFA needs
+							def moveData = move(game, unit, true, weapon.isDFA(), true)
+							
+							// TODO: do something with the returned move() data?
+						}
+						else {
+							// no displacement occurs, attacker stays put
+						}
+						
+						// TODO: attacker also takes damage after a Charge/DFA attack
+					}
+				}
+				
 				if(locationStr == null || damageByLocationStr == null) {
 					// a hit can still be a miss if legs are rolled with partial cover
 					weaponHit = false
@@ -1522,6 +1618,53 @@ class GameService {
 					messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName(), damageByLocationStr, locationStr]
 				}
 			}
+			else if(weapon.isPhysical()) {
+				if(weapon.isKick()) {
+					// kick missed, perform a piloting skill roll
+				}
+				else if(weapon.isCharge()) {
+					// charge missed, displace to another location
+					Coords unitLocation = unit.getLocation()
+					Hex origHex = game.getHexAt(unitLocation)
+					
+					int headingLeft = getRotateHeadingCCW(unit.heading)
+					Coords displacedLeft = getForwardCoords(unitLocation, headingLeft)
+					
+					int headingRight = getRotateHeadingCW(unit.heading)
+					Coords displacedRight = getForwardCoords(unitLocation, headingRight)
+					
+					// handle if the new displaced location cannot be entered, or if an existing unit is in that location
+					int displacedHeading = null
+					if(displacedLeft.equals(unitLocation)){
+						// left is not possible, use right
+						displacedHeading = headingRight
+					}
+					else if(displacedRight.equals(unitLocation)){
+						// right is not possible, use left
+						displacedHeading = headingLeft
+					}
+					else{
+						// randomly pick left or right
+						boolean coinToss = (Roll.randomInt(2, 1) == 1)
+						if(coinToss){
+							displacedHeading = headingLeft
+						}
+						else{
+							displacedHeading = headingRight
+						}
+					}
+					
+					Coords displacedLocation = handleDisplacement(game, unit, displacedHeading)
+					
+					
+					// TODO: add message about displacement here, or in handleDisplacement method
+				}
+				else if(weapon.isDFA()) {
+					// TODO: DFA attack missed, the attacker falls automatically at its current position and takes falling damage
+				}
+			}
+			
+			// TODO: if a charging or DFA'ing mech takes damage before its next turn after performing the charge/DFA, it must make a piloting skill roll
 			
 			if(!weaponHit) {
 				// set the message of the missed result
@@ -1813,7 +1956,7 @@ class GameService {
 	 * @param newCoords
 	 * @return the JP required (-1 if not possible)
 	 */
-	private int getHexRequiredJP(Game game, Coords currentCoords, Coords newCoords) {
+	public static int getHexRequiredJP(Game game, Coords currentCoords, Coords newCoords) {
 		int jpRequired = 1
 		
 		Hex currentHex = game.board?.getHexAt(currentCoords.x, currentCoords.y)
@@ -1843,7 +1986,7 @@ class GameService {
 	 * @param newCoords
 	 * @return the AP required (-1 if not possible)
 	 */
-	private int getHexRequiredAP(Game game, Coords currentCoords, Coords newCoords) {
+	public static int getHexRequiredAP(Game game, Coords currentCoords, Coords newCoords) {
 		int apRequired = 1
 		
 		Hex currentHex = game.board?.getHexAt(currentCoords.x, currentCoords.y)
