@@ -105,7 +105,7 @@ c.update = function() {
 /**
  * Updates the display of the unit only if its position requires a change in display
  */
-c.positionUpdate = function() {
+c.positionUpdate = function(callFunction) {
 	if(this.unit == null) return;
 	this.uncache();
 	this.unitImage.uncache();
@@ -218,6 +218,14 @@ c.positionUpdate = function() {
 						update = true;
 					});
 		}
+	}
+	
+	if(callFunction) {
+		var self = this;
+		
+		setTimeout(function() {
+			callFunction(self);
+		}, aTime);
 	}
 	
 	if(!isTurnUnit(this.unit)) {

@@ -925,8 +925,13 @@ function updateGameData(data) {
 	if(data.jumping != null) {
 		u.jumping = data.jumping;
 		
-		u.getUnitDisplay().positionUpdate();
-		setControlActive(PlayerControl.TYPE_JUMP, u.jumping);
+		if(isPlayerU) {
+			u.getUnitDisplay().positionUpdate(performUnitPositionUpdates);
+			setControlActive(PlayerControl.TYPE_JUMP, u.jumping);
+		}
+		else{
+			u.getUnitDisplay().positionUpdate();
+		}
 	}
 	
 	// update armor values of the target

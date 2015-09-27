@@ -211,6 +211,7 @@ class GameService {
 				unit.jpRemaining = unit.jumpPoints
 			}
 			data.jpRemaining = unit.jpRemaining
+			data.jumping = false
 			
 			def moveAP = null
 			if(unit.apRemaining > 0) {
@@ -1221,6 +1222,12 @@ class GameService {
 				]
 				return data
 			}
+			
+			if(unit.jpMoved < 0) {
+				// set indicator for jumping
+				unit.jpMoved = 0
+				unit.save flush: true, deepValidate: false
+			}
 		}
 		else{
 			if(prevUnitStatus == CombatStatus.UNIT_JUMPING) {
@@ -1248,6 +1255,7 @@ class GameService {
 		def data = [
 			unit: unit.id,
 			moveAP: moveAP,
+			jpMoved: unit.jpMoved,
 			jumping: jumping
 		]
 		

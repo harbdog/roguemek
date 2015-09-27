@@ -153,6 +153,8 @@ class WeaponModifier {
 			return toHitMods
 		}
 		
+		GameService.CombatStatus srcMoveStatus = GameService.getUnitCombatStatus(game, srcUnit)
+		
 		if(weapon.isPhysical()){
 			Coords srcLocation = srcUnit.getLocation()
 			Coords tgtLocation = tgtUnit.getLocation()
@@ -211,7 +213,11 @@ class WeaponModifier {
 					return toHitMods
 				}
 				
-				// TODO: make sure the unit was not already jumping this turn
+				if(srcMoveStatus == GameService.CombatStatus.UNIT_JUMPING){
+					// the unit can not already be jumping this turn
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
 				
 				// A charging mech must have enough AP to enter the target's hex
 				int apRequired = GameService.getHexRequiredAP(game, srcLocation, tgtLocation)
@@ -219,8 +225,6 @@ class WeaponModifier {
 					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 					return toHitMods
 				}
-				
-				log.info("I have enough AP to charge: "+apRequired)
 				
 				// TODO: Charging has a base modifier of the difference between the piloting skill of the target and source
 			}
@@ -232,7 +236,11 @@ class WeaponModifier {
 					return toHitMods
 				}
 				
-				// TODO: make sure the unit was not already walking/running this turn
+				if(srcMoveStatus != GameService.CombatStatus.UNIT_JUMPING){
+					// the unit must already be jumping to DFA
+					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+					return toHitMods
+				}
 				
 				// A mech performing DFA must have enough AP and JP to enter the target's hex
 				int apRequired = 1
@@ -242,8 +250,6 @@ class WeaponModifier {
 					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 					return toHitMods
 				}
-				
-				log.info("I have enough JP to DFA: "+jpRequired)
 						
 				// TODO: DFA has a base modifier of the difference between the piloting skill of the target and source
 				// TODO: DFA also has a +3 to-hit against infantry
@@ -263,8 +269,6 @@ class WeaponModifier {
 		toHitMods = (toHitMods << penaltyModifiers).flatten()
 		
 		// add movement modifiers from source
-		GameService.CombatStatus srcMoveStatus = GameService.getUnitCombatStatus(game, srcUnit)
-		
 		if(srcMoveStatus == GameService.CombatStatus.UNIT_STANDING){
 			// no source modifier for standing
 		}
