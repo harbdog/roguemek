@@ -1621,7 +1621,32 @@ class GameService {
 							// no displacement occurs, attacker stays put
 						}
 						
-						// TODO: attacker also takes damage after a Charge/DFA attack
+						// attacker also takes damage after a Charge/DFA attack
+						int attackerDamage = 0
+						def selfHitLocations = null
+						if(weapon.isCharge()) {
+							// charging unit takes 1 point of damage for every 10 tons the defending unit weighs
+							attackerDamage = (target instanceof BattleMech) ? Math.ceil(target.mech.mass / 10) : 0
+							selfHitLocations = Mech.FRONT_HIT_LOCATIONS
+						}
+						else if(weapon.isDFA()) {
+							// attacking unit takes 1 point of damage for every 5 tons the attacking unit weighs to the legs
+							attackerDamage = (unit instanceof BattleMech) ? Math.ceil(unit.mech.mass / 5) : 0
+							selfHitLocations = Mech.FRONT_KICK_LOCATIONS
+						}
+						
+						if(attackerDamage > 0 && selfHitLocations != null) {
+							def selfData = selfDamage(attackerDamage, unit, selfHitLocations)
+							
+							String selfAttackerDamage = String.valueOf(selfData.damage)
+							String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
+							
+							Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, weapon.getShortName(), selfLocationStr]
+							Date update = GameMessage.addMessageUpdate(
+									game,
+									"game.unit.damage.self",
+									selfMessageArgs, selfData)
+						}
 					}
 				}
 				
@@ -1637,7 +1662,7 @@ class GameService {
 			}
 			else if(weapon.isPhysical()) {
 				if(weapon.isKick()) {
-					// kick missed, perform a piloting skill roll
+					// TODO: kick missed, perform a piloting skill roll
 				}
 				else if(weapon.isCharge()) {
 					// charge missed, displace to another location
@@ -1672,9 +1697,6 @@ class GameService {
 					}
 					
 					Coords displacedLocation = handleDisplacement(game, unit, displacedHeading)
-					
-					
-					// TODO: add message about displacement here, or in handleDisplacement method
 				}
 				else if(weapon.isDFA()) {
 					// TODO: DFA attack missed, the attacker falls automatically at its current position and takes falling damage
@@ -1740,6 +1762,8 @@ class GameService {
 		def isHatchet = weapon.isHatchet()
 		def isPunch = weapon.isPunch()
 		def isKick = weapon.isKick()
+		def isCharge = weapon.isCharge()
+		def isDFA = weapon.isDFA()
 		
 		Coords srcLocation = srcUnit.getLocation()
 		Coords tgtLocation = tgtUnit.getLocation()
@@ -1763,14 +1787,19 @@ class GameService {
 		
 		// find out if the target has partial cover as it could effect the resulting hit location
 		def targetHasCover = false;
-		def fromLocationMods = WeaponModifier.getToHitModifiersFromLocation(game, srcLocation, tgtUnit)
-		for(int i=0; i<fromLocationMods.size(); i++) {
-			def modifier = fromLocationMods[i]
-			if(modifier != null
-					&& modifier.getType() == WeaponModifier.Modifier.PARTIAL_COVER
-					&& modifier.getValue() > 0) {
-				
-				targetHasCover = true
+		if(isCharge || isDFA) {
+			// partial cover does not apply against charge or DFA attacks
+		}
+		else{
+			def fromLocationMods = WeaponModifier.getToHitModifiersFromLocation(game, srcLocation, tgtUnit)
+			for(int i=0; i<fromLocationMods.size(); i++) {
+				def modifier = fromLocationMods[i]
+				if(modifier != null
+						&& modifier.getType() == WeaponModifier.Modifier.PARTIAL_COVER
+						&& modifier.getValue() > 0) {
+					
+					targetHasCover = true
+				}
 			}
 		}
 		
@@ -1964,6 +1993,50 @@ class GameService {
 		else {
 			log.error("Who the hell did I hit?  Extra "+damage+" damage from location: "+hitLocation)
 		}
+	}
+	
+	/**
+	 * Applies self damage to a randomly chosen location from the given set of hitLocations, as a result of this unit falling, charging, or DFA'ing 
+	 * @param damage
+	 * @param unit
+	 * @param hitLocations
+	 * @return
+	 */
+	public def selfDamage(int damage, BattleUnit unit, def unitLocations) {
+		if(unit.isDestroyed()) return
+		
+		int hitLocation = -1
+		if(unitLocations.size() == 6) {
+			// punch and kick locations are 1d6 rolls
+			def dieResult = Roll.rollD6(1)
+			def resultLocation = dieResult - 1
+			
+			// normal locations array starts at where the 1 is rolled
+			hitLocation = unitLocations[resultLocation]
+		}
+		else {
+			def dieResult = Roll.rollD6(2)
+			def resultLocation = dieResult - 2
+			//debug.log("dieResult: "+dieResult);
+			
+			// normal locations array starts at where the 2 is rolled
+			hitLocation = unitLocations[resultLocation]
+		}
+		
+		applyDamage(damage, unit, hitLocation)
+		unit.save flush:true
+		
+		// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
+		def data = [
+			unit: unit.id,
+			target: unit.id,
+			damage: damage,
+			hitLocation: hitLocation,
+			armorHit: unit.armor,
+			internalsHit: unit.internals
+		]
+		
+		return data
 	}
 	
 	/**
