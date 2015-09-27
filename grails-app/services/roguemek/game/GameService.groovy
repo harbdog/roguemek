@@ -1187,8 +1187,17 @@ class GameService {
 			
 			unit.save flush:true
 			
-			//def gm = new GameMessage(mech, false, (playerMech == mech) ? "You have been displaced." : mech.chassis+" has been displaced.", SEV_HIGH)
-			//messages.push(gm)
+			def data = [
+				unit: unit.id,
+				x: unit.x,
+				y: unit.y
+			]
+			
+			Object[] messageArgs = [unit.toString(), unit.x, unit.y]
+			Date update = GameMessage.addMessageUpdate(
+					game,
+					"game.unit.displaced",
+					messageArgs, data)
 		}
 		
 		return displacedLocation
