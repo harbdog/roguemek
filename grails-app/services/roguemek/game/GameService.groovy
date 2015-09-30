@@ -1931,8 +1931,8 @@ class GameService {
 		}
 		
 		if(critChance) {
-			// TODO: send off to see what criticals might get hit
-			//applyCriticalHit(unit, critLocation);
+			// send off to see what criticals might get hit
+			applyCriticalHit(unit, critLocation);
 		}
 		
 		if(unit.internals[Mech.HEAD] == 0 || unit.internals[Mech.CENTER_TORSO] == 0) {
@@ -1960,18 +1960,14 @@ class GameService {
 		
 		if(unit.internals[Mech.LEFT_TORSO] == 0) {
 			// the LEFT_ARM and REAR needs to be gone if the torso is gone
-			unit.armor[Mech.LEFT_TORSO] = 0
-			unit.armor[Mech.LEFT_REAR] = 0
-			unit.armor[Mech.LEFT_ARM] = 0
-			unit.internals[Mech.LEFT_ARM] = 0
+			destroyLocation(unit, Mech.LEFT_TORSO)
+			destroyLocation(unit, Mech.LEFT_ARM)
 		}
 		
 		if(unit.internals[Mech.RIGHT_TORSO] == 0) {
 			// the RIGHT_ARM and REAR needs to be gone if the torso is gone
-			unit.armor[Mech.RIGHT_TORSO] = 0
-			unit.armor[Mech.RIGHT_REAR] = 0
-			unit.armor[Mech.RIGHT_ARM] = 0
-			unit.internals[Mech.RIGHT_ARM] = 0
+			destroyLocation(unit, Mech.RIGHT_TORSO)
+			destroyLocation(unit, Mech.RIGHT_ARM)
 		}
 		
 		// TODO: update any destroyed weapons in locations with no remaining internal armor
@@ -1992,6 +1988,73 @@ class GameService {
 		}
 		else {
 			log.error("Who the hell did I hit?  Extra "+damage+" damage from location: "+hitLocation)
+		}
+	}
+	
+	private void destroyLocation(BattleUnit unit, int hitLocation) {
+		if(unit instanceof BattleMech) {
+			unit.armor[hitLocation] = 0
+			unit.internals[hitLocation] = 0
+			
+			// also clear armor for rear torso locations
+			switch(hitLocation) {
+				case Mech.LEFT_TORSO:
+					unit.armor[Mech.LEFT_REAR] = 0
+					break
+					
+				case Mech.RIGHT_TORSO:
+					unit.armor[Mech.RIGHT_REAR] = 0
+					break
+					
+				case Mech.CENTER_TORSO:
+					unit.armor[Mech.CENTER_REAR] = 0
+					break
+				
+				default: break
+			}
+		}
+		else{
+			log.debug("BattleUnit instance "+unit+" unable to have location "+hitLocation+" destroyed")
+		}
+	}
+	
+	/**
+	 * Rolls to see if a critical hit will occur when the hitLocation has been damaged internally, and applies the result
+	 */
+	public def applyCriticalHit(BattleUnit unit, int hitLocation) {
+		if(unit.isDestroyed()) return
+		
+		def dieResult = Roll.rollD6(2)
+		def numHits = 0
+		
+		if(dieResult >= 12) {
+			// 3 critical hits, or Head/Limb blown off
+			numHits = 3
+			
+			if(hitLocation == Mech.HEAD || hitLocation == Mech.LEFT_ARM || hitLocation == Mech.RIGHT_ARM 
+					|| hitLocation == Mech.LEFT_LEG || hitLocation == Mech.RIGHT_LEG) {
+				// limb blown off!
+				destroyLocation(unit, hitLocation)
+				log.info("Location destroyed by critical hit: "+hitLocation)
+				return
+			}
+		}
+		else if(dieResult >= 10) {
+			// 2 critical hits
+			numHits = 2
+		}
+		else if(dieResult >= 8) {
+			// 1 critical hit
+			numHits = 1
+		}
+		else {
+			log.info("No critical hits on "+hitLocation)
+			return
+		}
+		
+		if(numHits > 0) {
+			// TODO: roll for each hit to see what component is destroyed/damaged
+			log.info("Critical hits on "+hitLocation+": "+numHits)
 		}
 	}
 	
