@@ -16,13 +16,15 @@ class BattleEquipment {
 	Equipment equipment
 	
 	Integer location
-	Byte[] criticalHits = []
+	Integer[] criticalHits = []
 	Character status = STATUS_ACTIVE
 	
 	// STATIC value mappings
 	static Character STATUS_ACTIVE = 'A'
 	static Character STATUS_DESTROYED = 'D'
 	static Character STATUS_DAMAGED = 'R'
+	
+	private static BattleEquipment emptyEquip
 	
     static constraints = {
 		ownerPilot nullable: false
@@ -32,11 +34,6 @@ class BattleEquipment {
 		criticalHits nullable: false
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED, STATUS_DAMAGED]
     }
-	
-	@Override
-	public String toString() {
-		return getName()
-	}
 	
 	public String getName() {
 		return equipment?.name
@@ -52,5 +49,22 @@ class BattleEquipment {
 	
 	public boolean isDestroyed() {
 		return status == STATUS_DESTROYED
+	}
+	
+	public boolean isEmpty() {
+		return Equipment.EMPTY.equals(this.equipment.name)
+	}
+	
+	public static BattleEquipment getEmpty() {
+		if(emptyEquip == null) {
+			Equipment e = Equipment.findByName(Equipment.EMPTY)
+			emptyEquip = (e != null) ? BattleEquipment.findByEquipment(e) : null
+		}
+		return emptyEquip
+	}
+	
+	@Override
+	public String toString() {
+		return getName()
 	}
 }

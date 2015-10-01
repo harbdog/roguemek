@@ -25,6 +25,8 @@ class Equipment {
 	public static final Character TECH_IS = 'I'
 	public static final Character TECH_CLAN = 'C'
 	
+	public static final String EMPTY = "-Empty-"
+	
 	static mapping = {
 		// All extending classes will get their own tables
 		tablePerHierarchy false
@@ -84,6 +86,10 @@ class Equipment {
 				map.aliases.add(it)
 			}
 		}
+	}
+	
+	public boolean isEmpty() {
+		return EMPTY.equals(this.name)
 	}
 	
 	@Override

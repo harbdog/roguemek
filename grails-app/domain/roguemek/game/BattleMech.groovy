@@ -81,17 +81,26 @@ class BattleMech extends BattleUnit {
 					BattleEquipment bEquip
 					def newEquipMap = [ownerPilot: pilot, equipment: thisEquip, location: location]
 					
-					if(thisEquip instanceof Weapon) {
+					if(thisEquip.isEmpty()) {
+						// if the equipment is just "-Empty-", reuse the same BattleEquipment object across all BattleUnits for it
+						bEquip = BattleEquipment.getEmpty()
+						if(bEquip == null) {
+							bEquip = new BattleEquipment(newEquipMap)
+							bEquip.save flush:true
+						}
+					}
+					else if(thisEquip instanceof Weapon) {
 						bEquip = new BattleWeapon(newEquipMap)
+						bEquip.save flush:true
 					}
 					else if(thisEquip instanceof Ammo) {
 						bEquip = new BattleAmmo(newEquipMap)
+						bEquip.save flush:true
 					}
 					else {
 						bEquip = new BattleEquipment(newEquipMap)
+						bEquip.save flush:true
 					}
-					
-					bEquip.save flush:true
 					
 					if(thisEquip.crits > 1) {
 						// this crit needs to continue to subsequent locations for the same item
