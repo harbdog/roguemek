@@ -16,7 +16,7 @@ class BattleEquipment {
 	Equipment equipment
 	
 	Integer location
-	Integer[] criticalHits = []
+	Boolean[] criticalHits = []
 	Character status = STATUS_ACTIVE
 	
 	// STATIC value mappings

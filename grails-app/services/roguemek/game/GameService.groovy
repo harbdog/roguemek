@@ -1580,7 +1580,7 @@ class GameService {
 						}
 						
 						if(target instanceof BattleMech) {
-							applyDamage(actualDamage, target, hitLocation)
+							applyDamage(game, actualDamage, target, hitLocation)
 							
 							thisWeaponFire.weaponHitLocations[hitLocation] += actualDamage
 							
@@ -1636,7 +1636,7 @@ class GameService {
 						}
 						
 						if(attackerDamage > 0 && selfHitLocations != null) {
-							def selfData = selfDamage(attackerDamage, unit, selfHitLocations)
+							def selfData = selfDamage(game, attackerDamage, unit, selfHitLocations)
 							
 							String selfAttackerDamage = String.valueOf(selfData.damage)
 							String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
@@ -1888,7 +1888,7 @@ class GameService {
 	}
 	
 	// apply damage to hit location starting with armor, then internal, then use damage redirect from there if needed
-	public def applyDamage(int damage, BattleUnit unit, int hitLocation) {
+	public def applyDamage(Game game, int damage, BattleUnit unit, int hitLocation) {
 		if(unit.isDestroyed()) {
 			return
 		}
@@ -1932,7 +1932,7 @@ class GameService {
 		
 		if(critChance) {
 			// send off to see what criticals might get hit
-			applyCriticalHit(unit, critLocation);
+			applyCriticalHit(game, unit, critLocation);
 		}
 		
 		if(unit.internals[Mech.HEAD] == 0 || unit.internals[Mech.CENTER_TORSO] == 0) {
@@ -1978,40 +1978,33 @@ class GameService {
 			return
 		}
 		else if(hitLocation == Mech.LEFT_ARM || hitLocation == Mech.LEFT_LEG || hitLocation == Mech.LEFT_REAR) {
-			return applyDamage(damage, unit, Mech.LEFT_TORSO)
+			return applyDamage(game, damage, unit, Mech.LEFT_TORSO)
 		}
 		else if(hitLocation == Mech.RIGHT_ARM || hitLocation == Mech.RIGHT_LEG || hitLocation == Mech.RIGHT_REAR) {
-			return applyDamage(damage, unit, Mech.RIGHT_TORSO)
+			return applyDamage(game, damage, unit, Mech.RIGHT_TORSO)
 		}
 		else if(hitLocation == Mech.LEFT_TORSO || hitLocation == Mech.RIGHT_TORSO) {
-			return applyDamage(damage, unit, Mech.CENTER_TORSO)
+			return applyDamage(game, damage, unit, Mech.CENTER_TORSO)
 		}
 		else {
 			log.error("Who the hell did I hit?  Extra "+damage+" damage from location: "+hitLocation)
 		}
 	}
 	
+	private boolean isLocationDestroyed(BattleUnit unit, int location) {
+		if(unit instanceof BattleMech) {
+			return (unit.internals[location] == 0)
+		}
+		else{
+			log.debug("BattleUnit instance "+unit+" unable to have location "+location)
+		}
+		
+		return false
+	}
+	
 	private void destroyLocation(BattleUnit unit, int hitLocation) {
 		if(unit instanceof BattleMech) {
-			unit.armor[hitLocation] = 0
 			unit.internals[hitLocation] = 0
-			
-			// also clear armor for rear torso locations
-			switch(hitLocation) {
-				case Mech.LEFT_TORSO:
-					unit.armor[Mech.LEFT_REAR] = 0
-					break
-					
-				case Mech.RIGHT_TORSO:
-					unit.armor[Mech.RIGHT_REAR] = 0
-					break
-					
-				case Mech.CENTER_TORSO:
-					unit.armor[Mech.CENTER_REAR] = 0
-					break
-				
-				default: break
-			}
 		}
 		else{
 			log.debug("BattleUnit instance "+unit+" unable to have location "+hitLocation+" destroyed")
@@ -2021,11 +2014,13 @@ class GameService {
 	/**
 	 * Rolls to see if a critical hit will occur when the hitLocation has been damaged internally, and applies the result
 	 */
-	public def applyCriticalHit(BattleUnit unit, int hitLocation) {
+	public def applyCriticalHit(Game game, BattleUnit unit, int hitLocation) {
 		if(unit.isDestroyed()) return
 		
 		def dieResult = Roll.rollD6(2)
 		def numHits = 0
+		
+		def locationStr = Mech.getLocationText(hitLocation)
 		
 		if(dieResult >= 12) {
 			// 3 critical hits, or Head/Limb blown off
@@ -2035,7 +2030,12 @@ class GameService {
 					|| hitLocation == Mech.LEFT_LEG || hitLocation == Mech.RIGHT_LEG) {
 				// limb blown off!
 				destroyLocation(unit, hitLocation)
-				log.info("Location destroyed by critical hit: "+hitLocation)
+				
+				// TODO: include data in the message for the lost limb
+				def data = []
+				Object[] messageArgs = [unit.toString(), locationStr]
+				Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
+				
 				return
 			}
 		}
@@ -2048,13 +2048,66 @@ class GameService {
 			numHits = 1
 		}
 		else {
-			log.info("No critical hits on "+hitLocation)
+			//log.info("No critical hits on "+hitLocation)
 			return
 		}
 		
-		if(numHits > 0) {
+		// determine number of critical spaces that can still be hit
+		def numCrits = 0
+		BattleEquipment[] critSection
+		
+		if(unit instanceof BattleMech) {
+			critSection = unit.getCritSection(hitLocation)
+		}
+		
+		if(critSection == null) {
+			log.error("No crit section "+hitLocation+" for unit "+unit)
+			return
+		}
+		else {
+			// TODO: generate array of indices that can be critted so the roll only needs to be based on those that remain
+			def critIndex = 0
+			String prevEquipId = ""
+			for(BattleEquipment thisEquip in critSection) {
+				if(prevEquipId.equals(thisEquip.id)) {
+					critIndex ++
+				}
+				else {
+					critIndex = 0
+					prevEquipId = thisEquip.id
+					
+					if(thisEquip.isActive()) {
+						// equipment is active and has no crit damage
+						numCrits ++
+					}
+					else if(thisEquip.isDamaged()) {
+						// equipment is damaged and may have some crits available to damage further
+						if(thisEquip.criticalHits.length > 0
+								&& thisEquip.criticalHits[critIndex] != true) {
+							numCrits ++
+							
+							log.info("Crit found for damaged equipment "+thisEquip.toString()+": "+critIndex)
+							
+							// TODO: handle crit hits for equipment that spans across more than one section
+						}
+					}
+				}
+			}
+		}
+		
+		log.info("Crits available to hit: "+numCrits)
+		
+		if(numCrits == 0) {
+			// TODO: apply critical hits to next location according to damage transfer
+			log.info("No Critical hits remain on "+hitLocation+" for unit "+unit)
+		}
+		else {
+			if(numHits > numCrits) {
+				numHits = numCrits
+			}
+			
 			// TODO: roll for each hit to see what component is destroyed/damaged
-			log.info("Critical hits on "+hitLocation+": "+numHits)
+			log.info("Critical hits on "+hitLocation+": "+numHits+" for unit "+unit)
 		}
 	}
 	
@@ -2065,7 +2118,7 @@ class GameService {
 	 * @param hitLocations
 	 * @return
 	 */
-	public def selfDamage(int damage, BattleUnit unit, def unitLocations) {
+	public def selfDamage(Game game, int damage, BattleUnit unit, def unitLocations) {
 		if(unit.isDestroyed()) return
 		
 		int hitLocation = -1
@@ -2086,7 +2139,7 @@ class GameService {
 			hitLocation = unitLocations[resultLocation]
 		}
 		
-		applyDamage(damage, unit, hitLocation)
+		applyDamage(game, damage, unit, hitLocation)
 		unit.save flush:true
 		
 		// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
