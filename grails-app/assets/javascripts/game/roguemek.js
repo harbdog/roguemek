@@ -318,7 +318,7 @@ function initUnitWeapons(unit) {
 		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
 			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, 
 								c.damage, c.projectiles, c.heat, c.cycle, c.cooldown, 
-								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
+								c.minRange, [c.shortRange, c.mediumRange, c.longRange], c.status);
 			weapons[c.id] = w;
 			
 			if(c.ammo) {
@@ -960,6 +960,24 @@ function updateGameData(data) {
 				applyUnitDamage(t, i, true, true);
 			}
 		}
+	}
+	
+	// update criticals hit on the target
+	if(data.criticalHit) {
+		var critHit = data.criticalHit;
+		console.log(critHit);
+		
+		var equipId = critHit.id;
+		var status = critHit.status;
+		
+		var equipObj = getCritObjectById(t, equipId);
+		var prevStatus = equipObj.status;
+		
+		equipObj.status = status;
+		
+		// TODO: update the UI with the info about the critical hit
+		console.log("Equipment "+equipId+" hit, prev status="+prevStatus+", new status="+status);
+		console.log(equipObj);
 	}
 	
 	// update ammo remaining

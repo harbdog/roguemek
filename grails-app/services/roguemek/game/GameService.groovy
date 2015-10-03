@@ -2037,7 +2037,7 @@ class GameService {
 					// limb blown off!
 					destroyLocation(unit, hitLocation)
 					
-					// TODO: include data in the message for the lost limb
+					// TODO: include data in the update for the lost limb
 					def data = [:]
 					Object[] messageArgs = [unit.toString(), locationStr]
 					Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
@@ -2181,8 +2181,10 @@ class GameService {
 				
 				critEquip.save flush:true
 				
-				// TODO: include data in the message for the damaged/destroyed equipment
-				def data = [:]
+				// include data in the message for the damaged/destroyed equipment
+				def criticalHitData = [id: critEquip.id, status: String.valueOf(critEquip.status)]
+				def data = [target: unit.id, criticalHit: criticalHitData]
+				
 				Object[] messageArgs = [unit.toString(), critEquip.toString(), locationStr]
 				Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.hit", messageArgs, data)
 				
