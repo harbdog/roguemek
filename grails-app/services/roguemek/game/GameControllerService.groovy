@@ -179,4 +179,50 @@ class GameControllerService {
 		
 		return gameService.targetUnitInfo(game, unit, target)
 	}
+	
+	/**
+	 * Developer use only 
+	 * Example usage, from javascript console:
+	 * 	   handleActionJSON({perform: "devDamageTarget", target_id: "402880e9502e0b1b01502e0b9459061d", hitLocation: 3, damage: 2});
+	 * @param game
+	 * @param pilot
+	 * @param unit
+	 * @param params
+	 * @return
+	 */
+	private def devDamageTarget(Game game, Pilot pilot, BattleUnit unit, Map params) {
+		String damage = params.damage
+		String hitLocation = params.hitLocation
+		String targetId = params.target_id
+		
+		BattleUnit target = BattleUnit.get(targetId)
+		if(target == null || damage == null || hitLocation == null) {
+			return
+		}
+		
+		return gameService.devDamageTarget(game, Integer.valueOf(damage), target, Integer.valueOf(hitLocation))
+	}
+	
+	/**
+	 * Developer use only
+	 * Example usage, from javascript console:
+	 * 	   handleActionJSON({perform: "devCritTarget", target_id: "402880e9502e0b1b01502e0b9459061d", hitLocation: 4, crits: 1});
+	 * @param game
+	 * @param pilot
+	 * @param unit
+	 * @param params
+	 * @return
+	 */
+	private def devCritTarget(Game game, Pilot pilot, BattleUnit unit, Map params) {
+		String crits = params.crits
+		String hitLocation = params.hitLocation
+		String targetId = params.target_id
+		
+		BattleUnit target = BattleUnit.get(targetId)
+		if(target == null || crits == null || hitLocation == null) {
+			return
+		}
+		
+		return gameService.devCritTarget(game, Integer.valueOf(crits), target, Integer.valueOf(hitLocation))
+	}
 }

@@ -177,7 +177,7 @@ class BootStrap {
 		else {
 			battleMech.save flush:true
 		
-			log.info('Initialized battle mech '+battleMech.mech.name)
+			log.info('Initialized battle mech '+battleMech.mech.name+" with ID="+battleMech.id)
 		}
 		
 		// and a 2nd mech for the admin pilot
@@ -191,7 +191,7 @@ class BootStrap {
 		else {
 			battleMechB.save flush:true
 		
-			log.info('Initialized battle mech '+battleMechB.mech.name)
+			log.info('Initialized battle mech '+battleMechB.mech.name+" with ID="+battleMechB.id)
 		}
 		
 		// and another BattleMech
@@ -203,13 +203,18 @@ class BootStrap {
 			}
 		}
 		else {
+			// TESTING ONLY
+			for(def i=0; i<battleMech2.armor.length; i++) {
+				battleMech2.armor[i] = 0
+			}
+			
 			battleMech2.save flush:true
 		
-			log.info('Initialized battle mech '+battleMech2.mech.name)
+			log.info('Initialized battle mech '+battleMech2.mech.name+" with ID="+battleMech2.id)
 		}
 		
 		// yet another BattleMech
-		def battleMech3 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Blackjack"), x: 5, y: 6, heading: 4, rgb: [0, 255, 0])
+		def battleMech3 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Blackjack"), x: 2, y: 3, heading: 4, rgb: [0, 255, 0])
 		if(!battleMech3.validate()) {
 			log.error("Errors with battle mech "+battleMech3.mech?.name+":\n")
 			battleMech3.errors.allErrors.each {
@@ -217,9 +222,14 @@ class BootStrap {
 			}
 		}
 		else {
+			// TESTING ONLY
+			for(def i=0; i<battleMech3.armor.length; i++) {
+				battleMech3.armor[i] = 0
+			}
+			
 			battleMech3.save flush:true
 		
-			log.info('Initialized battle mech '+battleMech3.mech.name)
+			log.info('Initialized battle mech '+battleMech3.mech.name+" with ID="+battleMech3.id)
 		}
 		
 		assert BattleMech.count() == 4

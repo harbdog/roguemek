@@ -2015,41 +2015,48 @@ class GameService {
 	 * Rolls to see if a critical hit will occur when the hitLocation has been damaged internally, and applies the result
 	 */
 	public def applyCriticalHit(Game game, BattleUnit unit, int hitLocation) {
+		return applyCriticalHit(game, unit, hitLocation, 0)
+	}
+	
+	/**
+	 * Rolls to see if a critical hit will occur when the hitLocation has been damaged internally, and applies the result
+	 */
+	public def applyCriticalHit(Game game, BattleUnit unit, int hitLocation, int numHits) {
 		if(unit.isDestroyed()) return
 		
 		def dieResult = Roll.rollD6(2)
-		def numHits = 0
-		
 		def locationStr = Mech.getLocationText(hitLocation)
 		
-		if(dieResult >= 12) {
-			// 3 critical hits, or Head/Limb blown off
-			numHits = 3
-			
-			if(hitLocation == Mech.HEAD || hitLocation == Mech.LEFT_ARM || hitLocation == Mech.RIGHT_ARM 
-					|| hitLocation == Mech.LEFT_LEG || hitLocation == Mech.RIGHT_LEG) {
-				// limb blown off!
-				destroyLocation(unit, hitLocation)
+		if(numHits == 0) {
+			if(dieResult >= 12) {
+				// 3 critical hits, or Head/Limb blown off
+				numHits = 3
 				
-				// TODO: include data in the message for the lost limb
-				def data = [:]
-				Object[] messageArgs = [unit.toString(), locationStr]
-				Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
-				
+				if(hitLocation == Mech.HEAD || hitLocation == Mech.LEFT_ARM || hitLocation == Mech.RIGHT_ARM 
+						|| hitLocation == Mech.LEFT_LEG || hitLocation == Mech.RIGHT_LEG) {
+					// limb blown off!
+					destroyLocation(unit, hitLocation)
+					
+					// TODO: include data in the message for the lost limb
+					def data = [:]
+					Object[] messageArgs = [unit.toString(), locationStr]
+					Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
+					
+					return
+				}
+			}
+			else if(dieResult >= 10) {
+				// 2 critical hits
+				numHits = 2
+			}
+			else if(dieResult >= 8) {
+				// 1 critical hit
+				numHits = 1
+			}
+			else {
+				//log.info("No critical hits on "+hitLocation)
 				return
 			}
-		}
-		else if(dieResult >= 10) {
-			// 2 critical hits
-			numHits = 2
-		}
-		else if(dieResult >= 8) {
-			// 1 critical hit
-			numHits = 1
-		}
-		else {
-			//log.info("No critical hits on "+hitLocation)
-			return
 		}
 		
 		// determine number of critical spaces that can still be hit
@@ -2557,6 +2564,88 @@ class GameService {
 		}
 		
 		return heading
+	}
+	
+	/**
+	 * Developer use only
+	 * @param game
+	 * @param damage
+	 * @param target
+	 * @param hitLocation
+	 * @return
+	 */
+	public def devDamageTarget(Game game, int damage, BattleUnit target, int hitLocation) {
+		if(!isRootUser()) return
+		
+		log.info("devDamage to "+target.toString()+" for "+damage+" in the "+hitLocation)
+		
+		applyDamage(game, damage, target, hitLocation)
+		
+		target.save flush:true
+		
+		def devWeaponFire = [weaponId: null]
+		def devWeaponData = [
+			unit: target.id,
+			target: target.id,
+			weaponFire: devWeaponFire,
+			armorHit: target.armor,
+			internalsHit: target.internals
+		]
+		
+		devWeaponFire.weaponHit = true
+		devWeaponFire.weaponHitLocations = []
+		devWeaponFire.weaponHitLocations[hitLocation] = damage
+		
+		def locationStr = Mech.getLocationText(hitLocation)
+		def damageByLocationStr = String.valueOf(damage)
+		
+		def devMessageCode = "game.weapon.hit"
+		Object[] devMessageArgs = ["DEV", target.getPilotCallsign(), "BFG", damageByLocationStr, locationStr]
+		
+		Date update = GameMessage.addMessageUpdate(game, devMessageCode, devMessageArgs, devWeaponData)
+		
+		return
+	}
+	
+	/**
+	 * Developer use only
+	 * @param game
+	 * @param crits
+	 * @param target
+	 * @param hitLocation
+	 * @return
+	 */
+	public def devCritTarget(Game game, int crits, BattleUnit target, int hitLocation) {
+		if(!isRootUser()) return
+		
+		log.info("devCrit to "+target.toString()+" for "+crits+" in the "+hitLocation)
+		
+		applyCriticalHit(game, target, hitLocation, crits)
+		
+		target.save flush:true
+		
+		def devWeaponFire = [weaponId: null]
+		def devWeaponData = [
+			unit: target.id,
+			target: target.id,
+			weaponFire: devWeaponFire,
+			armorHit: target.armor,
+			internalsHit: target.internals
+		]
+		
+		devWeaponFire.weaponHit = true
+		devWeaponFire.weaponHitLocations = []
+		devWeaponFire.weaponHitLocations[hitLocation] = 0
+		
+		def locationStr = Mech.getLocationText(hitLocation)
+		def damageByLocationStr = String.valueOf(0)
+		
+		def devMessageCode = "game.weapon.hit"
+		Object[] devMessageArgs = ["DEV", target.getPilotCallsign(), "CRIT", damageByLocationStr, locationStr]
+		
+		Date update = GameMessage.addMessageUpdate(game, devMessageCode, devMessageArgs, devWeaponData)
+		
+		return
 	}
 	
 	/**
