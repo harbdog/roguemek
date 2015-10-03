@@ -2032,7 +2032,7 @@ class GameService {
 				destroyLocation(unit, hitLocation)
 				
 				// TODO: include data in the message for the lost limb
-				def data = []
+				def data = [:]
 				Object[] messageArgs = [unit.toString(), locationStr]
 				Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
 				
@@ -2053,7 +2053,7 @@ class GameService {
 		}
 		
 		// determine number of critical spaces that can still be hit
-		def numCrits = 0
+		def availableCrits = [:]
 		BattleEquipment[] critSection
 		
 		if(unit instanceof BattleMech) {
@@ -2065,37 +2065,44 @@ class GameService {
 			return
 		}
 		else {
-			// TODO: generate array of indices that can be critted so the roll only needs to be based on those that remain
+			// generate array of indices that can be critted so the roll only needs to be based on those that remain
 			def critIndex = 0
 			String prevEquipId = ""
-			for(BattleEquipment thisEquip in critSection) {
+			
+			for(def i = 0; i < critSection.length; i ++){
+				BattleEquipment thisEquip = critSection[i]
+				
 				if(prevEquipId.equals(thisEquip.id)) {
 					critIndex ++
 				}
 				else {
 					critIndex = 0
 					prevEquipId = thisEquip.id
-					
-					if(thisEquip.isActive()) {
-						// equipment is active and has no crit damage
-						numCrits ++
-					}
-					else if(thisEquip.isDamaged()) {
-						// equipment is damaged and may have some crits available to damage further
-						if(thisEquip.criticalHits.length > 0
-								&& thisEquip.criticalHits[critIndex] != true) {
-							numCrits ++
-							
-							log.info("Crit found for damaged equipment "+thisEquip.toString()+": "+critIndex)
-							
-							// TODO: handle crit hits for equipment that spans across more than one section
-						}
+				}
+				
+				if(thisEquip.isEmpty()) {
+					continue
+				}
+				else if(thisEquip.isActive()) {
+					// equipment is active and has no crit damage
+					availableCrits.put(i, [thisEquip: thisEquip, critIndex: critIndex])
+					log.info("Crit found for active equipment "+thisEquip.toString()+": "+i)
+				}
+				else if(thisEquip.isDamaged()) {
+					// equipment is damaged and may have some crits available to damage further
+					if(thisEquip.criticalHits.length > 0
+							&& thisEquip.criticalHits[critIndex] != true) {
+						// TODO: handle equipment whose crits span more than one section
+						log.info("Crit found for damaged equipment "+thisEquip.toString()+": "+i)
+						availableCrits.put(i, [thisEquip: thisEquip, critIndex: critIndex])
 					}
 				}
 			}
 		}
 		
+		def numCrits = availableCrits.size()
 		log.info("Crits available to hit: "+numCrits)
+		log.info(availableCrits)
 		
 		if(numCrits == 0) {
 			// TODO: apply critical hits to next location according to damage transfer
@@ -2106,8 +2113,74 @@ class GameService {
 				numHits = numCrits
 			}
 			
-			// TODO: roll for each hit to see what component is destroyed/damaged
+			// roll for each hit to see what component is destroyed/damaged
 			log.info("Critical hits on "+hitLocation+": "+numHits+" for unit "+unit)
+			
+			def availableCritKeys = availableCrits.keySet().toArray()
+			def availableCritValues = availableCrits.values().toArray()
+			
+			log.info("availbleCritvalues="+availableCritValues)
+			
+			for(def n = 0; n < numHits; n++) {
+				def dieCrit = Roll.randomInt(numCrits, 1)
+				def critHitKey = availableCritKeys[dieCrit - 1]
+				def critHit = availableCritValues[dieCrit - 1]
+				
+				// remove key and regenerated the values/keys arrays
+				availableCrits.remove(critHitKey)
+				availableCritKeys = availableCrits.keySet().toArray()
+				availableCritValues = availableCrits.values().toArray()
+				
+				log.info("  critHitKey="+critHitKey+": "+critHit)
+				
+				BattleEquipment critEquip = critHit.thisEquip
+				def critIndex = critHit.critIndex
+				
+				def numEquipCrits = critEquip.getCrits()
+				
+				if(critEquip.isActive()) {
+					// apply destroyed or damaged status and create the criticalHits array to keep track of how many hits on the equipment
+					critEquip.status = (numEquipCrits == 1) ? BattleEquipment.STATUS_DESTROYED : BattleEquipment.STATUS_DAMAGED
+					
+					if(critEquip.status == BattleEquipment.STATUS_DAMAGED) {
+						critEquip.criticalHits = new Boolean[numEquipCrits]
+						for(def i=0; i < numEquipCrits; i++) {
+							critEquip.criticalHits[i] = (i == critIndex) ? true : false
+						}
+					}
+					
+					log.info("    Applied first critical hit to "+critEquip+" at "+critHitKey + " ("+critEquip.id+")")
+				}
+				else {
+					critEquip.criticalHits[critIndex] = true
+					
+					log.info("    Applied another critical hit to "+critEquip+" at "+critHitKey + " ("+critEquip.id+")")
+					
+					// check to see if all critical hits are filled, and if so set status as destroyed
+					boolean isDestroyed = true
+					for(def checkValue in critEquip.criticalHits) {
+						if(checkValue == false) {
+							isDestroyed = false
+							break
+						}
+					}
+					
+					if(isDestroyed) {
+						critEquip.status = BattleEquipment.STATUS_DESTROYED
+						
+						log.info("    Destroyed "+critEquip+"!!!")
+					}
+				}
+				
+				critEquip.save flush:true
+				
+				// TODO: include data in the message for the damaged/destroyed equipment
+				def data = [:]
+				Object[] messageArgs = [unit.toString(), critEquip.toString(), locationStr]
+				Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.hit", messageArgs, data)
+				
+				numCrits --
+			}
 		}
 	}
 	

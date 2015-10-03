@@ -20,9 +20,9 @@ class BattleEquipment {
 	Character status = STATUS_ACTIVE
 	
 	// STATIC value mappings
-	static Character STATUS_ACTIVE = 'A'
-	static Character STATUS_DESTROYED = 'D'
-	static Character STATUS_DAMAGED = 'R'
+	public static final Character STATUS_ACTIVE = 'A'
+	public static final Character STATUS_DESTROYED = 'D'
+	public static final Character STATUS_DAMAGED = 'R'
 	
 	private static BattleEquipment emptyEquip
 	
@@ -37,6 +37,10 @@ class BattleEquipment {
 	
 	public String getName() {
 		return equipment?.name
+	}
+	
+	public int getCrits() {
+		return equipment?.crits
 	}
 	
 	public boolean isActive() {
