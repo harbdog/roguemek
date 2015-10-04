@@ -10,6 +10,14 @@ import grails.transaction.Transactional
 class BattleMechController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+	
+	def displayImage() {
+		def bMech = BattleMech.findById(params.id)
+		byte[] imageInByte = bMech.image
+		response.contentType = 'image/png' // or the appropriate image content type
+		response.outputStream << imageInByte
+		response.outputStream.flush()
+	}
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)

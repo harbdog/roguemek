@@ -3,39 +3,35 @@
 	import="roguemek.model.Mech"
  %>
  
+ <% 
+	def mechInstance = battleMechInstance?.mech
+	def pilotInstance = battleMechInstance?.pilot
+ %>
+ 
  <g:set var="entityName" value="${message(code: 'battleMech.label', default: 'BattleMech')}" />
  
  <div id="show-battleMech" class="content scaffold-show" role="main">
-	<h1><g:message code="default.show.label" args="[entityName]" /></h1>
+ 	<div class="header">
+ 		<h1>
+	 		<g:if test="${battleMechInstance?.image}">
+				<!-- show stored byte array as an image on the page -->
+				<img align="middle" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': battleMechInstance.id])}"/>
+			</g:if>
+			
+			${mechInstance?.name +" "+ mechInstance?.chassis+"-"+mechInstance?.variant}
+		</h1>
+	</div>
+	
 	<g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
 	</g:if>
 	<ol class="property-list battleMech">
 	
-		<% 
-			def mechInstance = battleMechInstance?.mech
-			def pilotInstance = battleMechInstance?.pilot
-		 %>
-	
-		<g:if test="${mechInstance}">
-		<li class="fieldcontain">
-			<span id="mech-label" class="property-label"><g:message code="battleMech.mech.label" default="Mech" /></span>
-			
-				<span class="property-value" aria-labelledby="mech-label"><g:link mapping="mechDetails" params='[chassis:"${mechInstance?.chassis}", variant:"${mechInstance?.variant}"]'>${mechInstance?.name +" "+ mechInstance?.chassis+"-"+mechInstance?.variant}</g:link></span>
-			
-				<g:if test="${battleMechInstance?.image}">
-					<!-- TODO: show stored byte array as an image on the page -->
-					<!-- <span class="property-value" aria-labelledby="mech-label"><asset:image src="${battleMechInstance?.image}"/></span> -->
-				</g:if>
-			
-		</li>
-		</g:if>
-	
 		<g:if test="${pilotInstance}">
 		<li class="fieldcontain">
 			<span id="pilot-label" class="property-label"><g:message code="battleMech.pilot.label" default="Pilot" /></span>
 			
-				<span class="property-value" aria-labelledby="pilot-label"><g:link controller="pilot" action="show" id="${pilotInstance?.id}">${pilotInstance?.firstName +" \""+pilotInstance?.ownerUser?.callsign+"\" "+pilotInstance?.lastName}</g:link></span>
+				<span class="property-value" aria-labelledby="pilot-label">${pilotInstance?.firstName +" \""+pilotInstance?.ownerUser?.callsign+"\" "+pilotInstance?.lastName}</span>
 			
 		</li>
 		</g:if>

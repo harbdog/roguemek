@@ -30,6 +30,10 @@ body {
     color: #FFFFFF;
 }
 
+h1 {
+	color: #FFFFFF;
+}
+
 div.hidden {
 	display: none;
 }

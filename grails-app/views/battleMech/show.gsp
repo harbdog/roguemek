@@ -35,12 +35,15 @@
 				<li class="fieldcontain">
 					<span id="mech-label" class="property-label"><g:message code="battleMech.mech.label" default="Mech" /></span>
 					
-						<span class="property-value" aria-labelledby="mech-label"><g:link mapping="mechDetails" params='[chassis:"${mechInstance?.chassis}", variant:"${mechInstance?.variant}"]'>${mechInstance?.name +" "+ mechInstance?.chassis+"-"+mechInstance?.variant}</g:link></span>
-					
-						<g:if test="${battleMechInstance?.image}">
-							<!-- TODO: show stored byte array as an image on the page -->
-							<!-- <span class="property-value" aria-labelledby="mech-label"><asset:image src="${battleMechInstance?.image}"/></span> -->
-						</g:if>
+						<span class="property-value" aria-labelledby="mech-label">
+							<g:link mapping="mechDetails" params='[chassis:"${mechInstance?.chassis}", variant:"${mechInstance?.variant}"]'>${mechInstance?.name +" "+ mechInstance?.chassis+"-"+mechInstance?.variant}</g:link>
+						</span>
+						<span class="property-value" aria-labelledby="mech-label">
+							<g:if test="${battleMechInstance?.image}">
+								<!-- show stored byte array as an image on the page -->
+								<img align="middle" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': battleMechInstance.id])}"/>
+							</g:if>
+						</span>
 					
 				</li>
 				</g:if>
