@@ -285,6 +285,23 @@ function handleComplete(event) {
 	pingDisplay.y = -rootStage.y + 100 ;
     overlay.addChild(pingDisplay);
     
+    // Initialize dialog display
+    dialogDisplay = $("#dialogDiv").dialog({
+    	autoOpen: false,
+    	modal: true,
+    	width: 3*canvas.width/4,
+    	height: 3*canvas.height/4,
+    	position: {my: "top", at: "bottom", of: $("#messagingArea")},
+		show: {
+			effect: "blind",
+			duration: 500
+		},
+		hide: {
+			effect: "blind",
+			duration: 250
+		}
+    });
+    
     // only show the fullscreen button on mobile devices browsers
     if( fullScreenApi.supportsFullScreen
     		&& (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)

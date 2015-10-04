@@ -84,6 +84,11 @@ function initGame(){
 		return false;
 	};
 	
+	// only use async ajax
+	$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+        options.async = true;
+    });
+	
 	// Create the EaselJS stage
 	rootStage = new createjs.Stage("canvas");
 	canvas = rootStage.canvas;

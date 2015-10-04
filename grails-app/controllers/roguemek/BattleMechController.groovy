@@ -19,6 +19,10 @@ class BattleMechController {
     def show(BattleMech battleMechInstance) {
         respond battleMechInstance
     }
+	
+	def battleInfo(BattleMech battleMechInstance) {
+		respond battleMechInstance
+	}
 
     def create() {
         respond new BattleMech(params)

@@ -38,6 +38,13 @@ c.init = function() {
 	staticPilotLabel.y = staticUnitLabel.y + staticUnitLabel.getMeasuredHeight() * 2;
 	this.addChild(staticPilotLabel);
 	
+	var unitId = this.unit.id;
+	this.on("click", function() {
+		dialogDisplay.load("battleMech/battleInfo/"+unitId, function() {
+	    	dialogDisplay.dialog("open");
+	    });
+	});
+	
 	this.update();
 }
 
@@ -49,6 +56,10 @@ c.update = function() {
 			.drawRect(0, 0, this.width, this.height)
 			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
 			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
+	
+	var hit = new createjs.Shape();
+	hit.graphics.beginFill("#000000").drawRect(0, 0, this.width, this.height).endStroke();
+	this.hitArea = hit;
 	
 	this.doCache();
 }

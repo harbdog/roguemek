@@ -31,7 +31,7 @@ var showLevels = true;
 
 var rootStage, stage, overlay, canvas;
 var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray;
-var fpsDisplay, pingDisplay;
+var fpsDisplay, pingDisplay, dialogDisplay;
 
 var messagingDisplay;
 var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;

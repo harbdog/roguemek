@@ -12,6 +12,7 @@
 		<div id="canvasDiv">
 			<div id="pingDiv"></div>
 			<div id="fpsDiv"></div>
+			<div id="dialogDiv"></div>
 			
 			<canvas id="canvas">
 		        <g:message code="page.browser.not.supported" />
