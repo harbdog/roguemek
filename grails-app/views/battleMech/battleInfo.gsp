@@ -124,7 +124,12 @@
 					<h1>Head: ${battleMechInstance?.armor?.getAt(Mech.HEAD)}(${battleMechInstance?.internals?.getAt(Mech.HEAD)})</h1>
 				</span>
 				<g:each in="${battleMechInstance?.getCritSection(Mech.HEAD)}" status="i" var="critEquip">
-					<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					<g:if test="${critEquip.isActive()}">
+						<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:if>
+					<g:else>
+						<span class="property-value destroyed" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:else>
 				</g:each>
 				<br/>
 				
@@ -132,7 +137,12 @@
 					<h1>Left Arm: ${battleMechInstance?.armor?.getAt(Mech.LEFT_ARM)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_ARM)})</h1>
 				</span>
 				<g:each in="${battleMechInstance?.getCritSection(Mech.LEFT_ARM)}" status="i" var="critEquip">
-					<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					<g:if test="${critEquip.isActive()}">
+						<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:if>
+					<g:else>
+						<span class="property-value destroyed" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:else>
 				</g:each>
 				<br/>
 				
@@ -140,7 +150,12 @@
 					<h1>Right Arm: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_ARM)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_ARM)})</h1>
 				</span>
 				<g:each in="${battleMechInstance?.getCritSection(Mech.RIGHT_ARM)}" status="i" var="critEquip">
-					<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					<g:if test="${critEquip.isActive()}">
+						<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:if>
+					<g:else>
+						<span class="property-value destroyed" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:else>
 				</g:each>
 				<br/>
 				
@@ -148,7 +163,12 @@
 					<h1>Left Torso: ${battleMechInstance?.armor?.getAt(Mech.LEFT_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.LEFT_REAR)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_TORSO)})</h1>
 				</span>
 				<g:each in="${battleMechInstance?.getCritSection(Mech.LEFT_TORSO)}" status="i" var="critEquip">
-					<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					<g:if test="${critEquip.isActive()}">
+						<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:if>
+					<g:else>
+						<span class="property-value destroyed" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:else>
 				</g:each>
 				<br/>
 				
@@ -156,7 +176,12 @@
 					<h1>Right Torso: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.RIGHT_REAR)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_TORSO)})</h1>
 				</span>
 				<g:each in="${battleMechInstance?.getCritSection(Mech.RIGHT_TORSO)}" status="i" var="critEquip">
-					<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					<g:if test="${critEquip.isActive()}">
+						<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:if>
+					<g:else>
+						<span class="property-value destroyed" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:else>
 				</g:each>
 				<br/>
 				
@@ -164,7 +189,12 @@
 					<h1>Center Torso: ${battleMechInstance?.armor?.getAt(Mech.CENTER_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.CENTER_REAR)}(${battleMechInstance?.internals?.getAt(Mech.CENTER_TORSO)})</h1>
 				</span>
 				<g:each in="${battleMechInstance?.getCritSection(Mech.CENTER_TORSO)}" status="i" var="critEquip">
-					<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					<g:if test="${critEquip.isActive()}">
+						<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:if>
+					<g:else>
+						<span class="property-value destroyed" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:else>
 				</g:each>
 				<br/>
 				
@@ -172,7 +202,12 @@
 					<h1>Left Leg: ${battleMechInstance?.armor?.getAt(Mech.LEFT_LEG)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_LEG)})</h1>
 				</span>
 				<g:each in="${battleMechInstance?.getCritSection(Mech.LEFT_LEG)}" status="i" var="critEquip">
-					<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					<g:if test="${critEquip.isActive()}">
+						<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:if>
+					<g:else>
+						<span class="property-value destroyed" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:else>
 				</g:each>
 				<br/>
 				
@@ -180,7 +215,12 @@
 					<h1>Right Leg: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_LEG)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_LEG)})</h1>
 				</span>
 				<g:each in="${battleMechInstance?.getCritSection(Mech.RIGHT_LEG)}" status="i" var="critEquip">
-					<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					<g:if test="${critEquip.isActive()}">
+						<span class="property-value" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:if>
+					<g:else>
+						<span class="property-value destroyed" aria-labelledby="crits-label">${critEquip.toString()}</span>
+					</g:else>
 				</g:each>
 				<br/>
 		</li>

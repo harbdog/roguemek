@@ -89,3 +89,9 @@ div #pingDiv {
 	font-family: UbuntuMono;
 	font-size: 14px;
 }
+
+/* Styles for dialog contents from battleMech/battleInfo.gsp */
+span.destroyed {
+	text-decoration: line-through;
+	color: #FF0000;
+}
