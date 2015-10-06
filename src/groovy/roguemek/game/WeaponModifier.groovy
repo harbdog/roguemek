@@ -94,17 +94,15 @@ class WeaponModifier {
 			}
 		}
 		else if(relDirection == GameService.RelativeDirection.LEFT) {
-			// only left arm weapons are allowed to hit (including punching)
-			if(weapon.location != Mech.LEFT_ARM
-					&& !weapon.isPunch()) {
+			// only left arm weapons are allowed to hit (excluding punching, for now)
+			if(weapon.location != Mech.LEFT_ARM) {
 				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 				return toHitMods
 			}
 		}
 		else if(relDirection == GameService.RelativeDirection.RIGHT) {
-			// only right arm weapons are allowed to hit (including punching)
-			if(weapon.location != Mech.RIGHT_ARM 
-					&& !weapon.isPunch()) {
+			// only right arm weapons are allowed to hit (excluding punching, for now)
+			if(weapon.location != Mech.RIGHT_ARM) {
 				toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 				return toHitMods
 			}
@@ -376,22 +374,13 @@ class WeaponModifier {
 			}
 		}
 		
-		// TODO: any penalties for all melee attacks go here
-		if(weapon.isPunch()) {
-			// TODO: punching gets +1 for no hand actuator or +2 for no arm actuator
-		}
-		else if(weapon.isKick()) {
-			// TODO: kicking is not allowed if a hip is destroyed
-		}
-		
-		//reductions for arm damage, sensor damage, etc
 		if(unit instanceof BattleMech) {
 			// any penalties for all weapon attacks go here
 			
 			def headCrits = unit.getCritSection(Mech.HEAD);
 			for(BattleEquipment thisCrit in headCrits){
-				if(thisCrit != null 
-						&& MechMTF.MTF_CRIT_SENSORS == thisCrit.getName() 
+				if(thisCrit != null
+						&& MechMTF.MTF_CRIT_SENSORS == thisCrit.getName()
 						&& !thisCrit.isActive()) {
 					// +2 HIT for weapons when Sensors are destroyed
 					penaltyMods.add(new WeaponModifier(Modifier.CRIT, 2 * STANDARD_MODIFIER));
@@ -399,10 +388,156 @@ class WeaponModifier {
 			}
 		}
 		
-		// TODO: reductions for the specific weapon based on location (e.g. arm actuator hits)
-		/*if(weapon.getModifier() > 0){
-			penaltyMods.push(new Modifier(Modifier.CRIT, weapon.getModifier()));
-		}*/
+		if(weapon.isPhysical()
+				&& unit instanceof BattleMech) {
+			// any penalties for melee attacks go here
+			if(weapon.isPunch()) {
+				// determine best arm to punch with
+				def bestArmModifiers = -1
+				
+				for(def location in Mech.ARMS) {
+					def locationCrits = unit.getCritSection(location)
+					
+					def numArmModifiers = 0
+					
+					// count active arm actuators/shoulder
+					def numShoulders = 0
+					def numArmActuators = 0
+					def numHandActuators = 0
+					
+					for(BattleEquipment thisCrit in locationCrits) {
+						if(thisCrit != null && thisCrit.isActive()) {
+							if(MechMTF.MTF_CRIT_SHOULDER == thisCrit.getName()) {
+								numShoulders ++
+							}
+							else if(MechMTF.MTF_CRIT_UP_ARM_ACT == thisCrit.getName()
+									|| MechMTF.MTF_CRIT_LOW_ARM_ACT == thisCrit.getName()) {
+								numArmActuators ++ 
+							}
+							else if(MechMTF.MTF_CRIT_HAND_ACT == thisCrit.getName()) {
+								numHandActuators ++
+							}
+						}
+					}
+					
+					if(numShoulders < 1) {
+						// punch cannot hit without active shoulder
+						numArmModifiers = -1
+					}
+					else if(numArmActuators < 2) {
+						// punching gets +2 for each missing arm actuator
+						numArmModifiers = 2 * (2 - numArmActuators)
+					}
+					else if(numHandActuators == 0) {
+						// or, punching gets +1 for missing hand actuator 
+						numArmModifiers = 1
+					}
+					
+					if(numArmModifiers >= 0 && 
+							(bestArmModifiers == -1 || numArmModifiers < bestArmModifiers)){
+						// only take the best arm hit scenario
+						bestArmModifiers = numArmModifiers
+					}
+				}
+				
+				if(bestArmModifiers == -1) {
+					penaltyMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				}
+				else if(bestArmModifiers > 0) {
+					penaltyMods.add(new WeaponModifier(Modifier.CRIT, bestArmModifiers * STANDARD_MODIFIER));
+				}
+			}
+			else if(weapon.isKick()) {
+				// determine best leg to kick with
+				def bestLegModifiers = -1
+				
+				def numHips = 0
+				
+				for(def location in Mech.LEGS) {
+					def locationCrits = unit.getCritSection(location)
+					
+					def numLegModifiers = 0
+					
+					// count active leg actuators
+					def numLegActuators = 0
+					def numFootActuators = 0
+					
+					for(BattleEquipment thisCrit in locationCrits) {
+						if(thisCrit != null && thisCrit.isActive()) {
+							if(MechMTF.MTF_CRIT_HIP == thisCrit.getName()) {
+								numHips ++
+							}
+							else if(MechMTF.MTF_CRIT_UP_LEG_ACT == thisCrit.getName()
+									|| MechMTF.MTF_CRIT_LOW_LEG_ACT == thisCrit.getName()) {
+								numLegActuators ++
+							}
+							else if(MechMTF.MTF_CRIT_FOOT_ACT == thisCrit.getName()) {
+								numFootActuators ++
+							}
+						}
+					}
+					
+					if(numLegActuators < 2) {
+						// kicking gets +2 for each missing leg actuator
+						numLegModifiers = 2 * (2 - numLegActuators)
+					}
+					else if(numFootActuators == 0) {
+						// or, kicking gets +1 for missing foot actuator
+						numLegModifiers = 1
+					}
+					
+					if(numLegModifiers >= 0 &&
+							(bestLegModifiers == -1 || numLegModifiers < bestLegModifiers)){
+						// only take the best leg hit scenario
+						bestLegModifiers = numLegModifiers
+					}
+				}
+				
+				if(numHips < 2) {
+					// kick cannot hit without 2 active hips
+					bestLegModifiers = -1
+				}
+				
+				if(bestLegModifiers == -1) {
+					penaltyMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+				}
+				else if(bestLegModifiers > 0) {
+					penaltyMods.add(new WeaponModifier(Modifier.CRIT, bestLegModifiers * STANDARD_MODIFIER));
+				}
+			}
+		}
+		else {
+			// reductions for the weapon based on location (e.g. arm actuator hits)
+			def location = weapon.getLocation()
+			
+			if(unit instanceof BattleMech) {
+				if(location == Mech.LEFT_ARM
+						|| location == Mech.RIGHT_ARM) {
+					// check for shoulder and arm actuator hits
+					def locationCrits = unit.getCritSection(location)
+					
+					def numActuatorHits = 0
+					for(BattleEquipment thisCrit in locationCrits) {
+						if(thisCrit != null && !thisCrit.isActive()) {
+							if(MechMTF.MTF_CRIT_SHOULDER == thisCrit.getName()) {
+								// shoulder hit gives +4 for weapons in arm, disregards any other damaged actuators
+								numActuatorHits = 4	
+								break
+							}
+							else if(MechMTF.MTF_CRIT_UP_ARM_ACT == thisCrit.getName()
+									|| MechMTF.MTF_CRIT_LOW_ARM_ACT == thisCrit.getName()) {
+								// each arm actuator hit gives +1 for weapons in arm
+								numActuatorHits ++
+							}
+						}
+					}
+					
+					if(numActuatorHits > 0) {
+						penaltyMods.add(new WeaponModifier(Modifier.CRIT, numActuatorHits * STANDARD_MODIFIER));
+					}
+				}
+			}
+		}
 		
 		return penaltyMods;
 	}

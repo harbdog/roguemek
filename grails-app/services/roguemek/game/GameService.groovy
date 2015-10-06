@@ -1436,8 +1436,9 @@ class GameService {
 		int totalHeat = 0
 		
 		for(BattleWeapon weapon in weapons) {
-			// make sure the weapon is attached to the unit that is firing
-			if(!unitWeapons.contains(weapon)) continue
+			// make sure the weapon is not destroyed and is attached to the unit that is firing
+			if(!weapon.isActive()) continue
+			else if(!unitWeapons.contains(weapon)) continue
 			
 			// make sure the weapon is not on cooldown still
 			if(weapon.cooldown > 0) continue
