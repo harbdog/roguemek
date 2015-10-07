@@ -289,7 +289,7 @@ function handleComplete(event) {
     dialogDisplay = $("#dialogDiv").dialog({
     	autoOpen: false,
     	modal: true,
-    	width: 3*canvas.width/4,
+    	width: canvas.width-hexWidth,
     	height: 3*canvas.height/4,
     	position: {my: "top", at: "bottom", of: $("#messagingArea")},
 		show: {

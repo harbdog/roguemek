@@ -90,8 +90,62 @@ div #pingDiv {
 	font-size: 14px;
 }
 
-/* Styles for dialog contents from battleMech/battleInfo.gsp */
-span.destroyed {
+/* Styles for dialog contents from battleInfo.gsp */
+div.unit-header {
+	overflow: auto;
+}
+
+div.header h1 {
+	margin: 0;
+	padding: 0;
+}
+
+div#unit-image {
+	float: left;
+}
+
+div#unit-id {
+	margin-top: 10px;
+	margin-left: 80px;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+span#unit-name {
+	color: #FFFFFF;
+}
+
+div#unit-pilot #unit-type{
+    float: right;
+}
+
+div#unit-pilot #owner{
+    float: right;
+}
+
+div.crits {
+	display: table;
+	width: 100%;
+	font-size: 12px;
+}
+
+div.crits h1 {
+	margin: 10px 10px 0px 0px;
+	padding: 0;
+	font-size: 15px;
+}
+
+div.crits > div {
+	display: table-cell;
+	width: 20%;
+}
+
+div.crits span.property-value {
+	margin: 0px 10px 0px 0px;
+	display: block;
+	white-space: nowrap;
+}
+
+div.crits span.destroyed {
 	text-decoration: line-through;
 	color: #FF0000;
 }
