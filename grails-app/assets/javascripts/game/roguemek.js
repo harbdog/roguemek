@@ -991,6 +991,8 @@ function updateGameData(data) {
 			var ammoObj = getCritObjectById(u, ammoId);
 			ammoObj.ammoRemaining = ammoRemaining;
 		});
+		
+		if(isPlayerU) updateWeapons = true;
 	}
 	
 	if(data.weaponData){
@@ -1010,7 +1012,6 @@ function updateGameData(data) {
 			}
 		});
 		
-		if(isPlayerU) updateWeaponsDisplay(turnUnit);
 		if(isPlayerU) updateWeapons = true;
 	}
 	
@@ -1063,6 +1064,8 @@ function updateGameData(data) {
 	}
 	
 	if(updateWeapons) {
+		updateWeaponsDisplay(turnUnit);
+		
 		// Update selected weapons
 		updateSelectedWeapons();
 	}

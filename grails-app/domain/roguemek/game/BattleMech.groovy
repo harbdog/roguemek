@@ -218,7 +218,7 @@ class BattleMech extends BattleUnit {
 				continue
 			}
 			
-			if(thisEquip.equipment == equip) {
+			if(thisEquip.equipment.id == equip.id) {
 				foundEquipment.add(thisEquip)
 			}
 		}
