@@ -76,12 +76,17 @@ class GameService {
 	 * @return
 	 */
 	public def initializeNextTurn(Game game) {
-		game.unitTurn ++
-		// TODO: account for destroyed units
 		
-		if(game.unitTurn >= game.units.size()) {
-			game.gameTurn ++
-			game.unitTurn = 0
+		// if the next turn unit happens to be destroyed, loop to the next one
+		BattleUnit nextTurnUnit
+		while(nextTurnUnit == null || nextTurnUnit.isDestroyed()) {
+			game.unitTurn ++
+			if(game.unitTurn >= game.units.size()) {
+				game.gameTurn ++
+				game.unitTurn = 0
+			}
+			
+			nextTurnUnit = game.getTurnUnit()
 		}
 		
 		// update the next unit for its new turn
@@ -104,7 +109,6 @@ class GameService {
 	 */
 	private def initializeTurnUnit(Game game) {
 		BattleUnit unit = game.getTurnUnit()
-		
 		
 		def data = [
 			turnUnit: unit.id
@@ -1460,9 +1464,11 @@ class GameService {
 					ammoRemaining = consumeAmmo(unit, ammo, 1)
 					if(ammoRemaining >= 0) {
 						// return with data about ammo remaining in each ammo crit
-						BattleEquipment[] ammoEquipment = unit.getEquipmentFromBaseObject(ammo)
-						for(BattleEquipment ammoEquip in ammoEquipment) {
-							data.ammoRemaining[ammoEquip.id] = ammoEquip.ammoRemaining
+						if(unit instanceof BattleMech) {
+							BattleEquipment[] ammoEquipment = unit.getEquipmentFromBaseObject(ammo)
+							for(BattleEquipment ammoEquip in ammoEquipment) {
+								data.ammoRemaining[ammoEquip.id] = ammoEquip.ammoRemaining
+							}
 						}
 						
 						break
