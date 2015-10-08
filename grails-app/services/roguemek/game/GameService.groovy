@@ -1939,7 +1939,60 @@ class GameService {
 		
 		if(critChance) {
 			// send off to see what criticals might get hit
-			applyCriticalHit(game, unit, critLocation);
+			def critApplied = applyCriticalHit(game, unit, critLocation);
+			
+			if(critApplied) {
+				// check for any potentially unit destroying crits that may have been made
+				if(unit instanceof BattleMech){
+					
+					def numEngineHits = 0
+					def numGyroHits = 0
+					
+					for(int i=0; i<unit.crits.size(); i++) {
+						def thisCrit = unit.getEquipmentAt(i)
+						if(thisCrit != null && !thisCrit.isActive()) {
+							if(MechMTF.MTF_CRIT_COCKPIT == thisCrit.getName()) {
+								// if the cockpit is destroyed, the unit is dead
+								unit.status = BattleUnit.STATUS_DESTROYED
+								
+								// create destroyed message info
+								/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
+								messages.push(gm);*/
+								
+								return
+							}
+							else if(MechMTF.MTF_CRIT_ENGINE == thisCrit.getName()
+									|| MechMTF.MTF_CRIT_FUSION_ENGINE == thisCrit.getName()) {
+								// if the Engine takes 3 or more hits, the unit is dead
+								numEngineHits ++
+							}
+							else if(MechMTF.MTF_CRIT_GYRO == thisCrit.getName()) {
+								// if the Gyro takes 2 hits, the unit is dead
+								numGyroHits ++
+							}
+						}
+					}
+					
+					if(numEngineHits >= 3) {
+						unit.status = BattleUnit.STATUS_DESTROYED
+						
+						// create destroyed message info
+						/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
+						messages.push(gm);*/
+						
+						return
+					}
+					else if(numGyroHits >= 2) {
+						unit.status = BattleUnit.STATUS_DESTROYED
+						
+						// create destroyed message info
+						/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
+						messages.push(gm);*/
+						
+						return
+					}
+				}
+			}
 		}
 		
 		if(unit.internals[Mech.HEAD] == 0 || unit.internals[Mech.CENTER_TORSO] == 0) {
@@ -2029,7 +2082,7 @@ class GameService {
 	 * Rolls to see if a critical hit will occur when the hitLocation has been damaged internally, and applies the result
 	 */
 	public def applyCriticalHit(Game game, BattleUnit unit, int hitLocation, int numHits) {
-		if(unit.isDestroyed()) return
+		if(unit.isDestroyed()) return false
 		
 		def dieResult = Roll.rollD6(2)
 		def locationStr = Mech.getLocationText(hitLocation)
@@ -2049,7 +2102,7 @@ class GameService {
 					Object[] messageArgs = [unit.toString(), locationStr]
 					Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
 					
-					return
+					return true
 				}
 			}
 			else if(dieResult >= 10) {
@@ -2062,7 +2115,7 @@ class GameService {
 			}
 			else {
 				//log.info("No critical hits on "+hitLocation)
-				return
+				return false
 			}
 		}
 		
@@ -2076,7 +2129,7 @@ class GameService {
 		
 		if(critSection == null) {
 			log.error("No crit section "+hitLocation+" for unit "+unit)
-			return
+			return false
 		}
 		else {
 			// generate array of indices that can be critted so the roll only needs to be based on those that remain
@@ -2198,6 +2251,8 @@ class GameService {
 				numCrits --
 			}
 		}
+		
+		return true
 	}
 	
 	/**
