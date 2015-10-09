@@ -17,7 +17,7 @@ class UrlMappings {
 		}
 		
 		name userDetails: "/showUser/$callsign"{
-			controller = 'user'
+			controller = 'mekUser'
 			action = 'showUser'
 			
 			constraints {

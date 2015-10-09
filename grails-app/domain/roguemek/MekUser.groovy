@@ -2,7 +2,7 @@ package roguemek
 
 import roguemek.game.Pilot;
 
-class User {
+class MekUser {
 	private static final Date NULL_DATE = new Date(0)
 	
 	String id
@@ -34,7 +34,7 @@ class User {
 	}
 
 	Set<Role> getAuthorities() {
-		UserRole.findAllByUser(this).collect { it.role }
+		MekUserRole.findAllByUser(this).collect { it.role }
 	}
 	
 	def beforeInsert() {
@@ -57,7 +57,7 @@ class User {
 	
 	static void updateLastLogin(def id) {
 		if(id != null){
-			def user = User.get(id)
+			def user = MekUser.get(id)
 			user.lastLoginDate = new Date()
 			user.save(flush: true, failOnError: true)
 		}

@@ -1,5 +1,5 @@
 
-<%@ page import="roguemek.User" %>
+<%@ page import="roguemek.MekUser" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -23,29 +23,29 @@
 			</g:if>
 			<ol class="property-list user">
 			
-				<g:if test="${userInstance?.username}">
+				<g:if test="${mekUserInstance?.username}">
 				<li class="fieldcontain">
 					<span id="username-label" class="property-label"><g:message code="user.username.label" default="Username" /></span>
 					
-						<span class="property-value" aria-labelledby="username-label"><g:fieldValue bean="${userInstance}" field="username"/></span>
+						<span class="property-value" aria-labelledby="username-label"><g:fieldValue bean="${mekUserInstance}" field="username"/></span>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${userInstance?.callsign}">
+				<g:if test="${mekUserInstance?.callsign}">
 				<li class="fieldcontain">
 					<span id="callsign-label" class="property-label"><g:message code="user.callsign.label" default="Callsign" /></span>
 					
-						<span class="property-value" aria-labelledby="callsign-label"><g:fieldValue bean="${userInstance}" field="callsign"/></span>
+						<span class="property-value" aria-labelledby="callsign-label"><g:fieldValue bean="${mekUserInstance}" field="callsign"/></span>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${userInstance?.password}">
+				<g:if test="${mekUserInstance?.password}">
 				<li class="fieldcontain">
 					<span id="password-label" class="property-label"><g:message code="user.password.label" default="Password" /></span>
 					
-						<span class="property-value" aria-labelledby="password-label"><g:fieldValue bean="${userInstance}" field="password"/></span>
+						<span class="property-value" aria-labelledby="password-label"><g:fieldValue bean="${mekUserInstance}" field="password"/></span>
 					
 				</li>
 				</g:if>
@@ -53,38 +53,38 @@
 				<li class="fieldcontain">
 					<span id="accountExpired-label" class="property-label"><g:message code="user.accountExpired.label" default="Account Expired" /></span>
 					
-						<span class="property-value" aria-labelledby="accountExpired-label"><g:formatBoolean boolean="${userInstance?.accountExpired}" /></span>
+						<span class="property-value" aria-labelledby="accountExpired-label"><g:formatBoolean boolean="${mekUserInstance?.accountExpired}" /></span>
 					
 				</li>
 			
 				<li class="fieldcontain">
 					<span id="accountLocked-label" class="property-label"><g:message code="user.accountLocked.label" default="Account Locked" /></span>
 					
-						<span class="property-value" aria-labelledby="accountLocked-label"><g:formatBoolean boolean="${userInstance?.accountLocked}" /></span>
+						<span class="property-value" aria-labelledby="accountLocked-label"><g:formatBoolean boolean="${mekUserInstance?.accountLocked}" /></span>
 					
 				</li>
 			
 				<li class="fieldcontain">
 					<span id="enabled-label" class="property-label"><g:message code="user.enabled.label" default="Enabled" /></span>
 					
-						<span class="property-value" aria-labelledby="enabled-label"><g:formatBoolean boolean="${userInstance?.enabled}" /></span>
+						<span class="property-value" aria-labelledby="enabled-label"><g:formatBoolean boolean="${mekUserInstance?.enabled}" /></span>
 					
 				</li>
 			
-				<g:if test="${userInstance?.passwordExpired}">
+				<g:if test="${mekUserInstance?.passwordExpired}">
 				<li class="fieldcontain">
 					<span id="passwordExpired-label" class="property-label"><g:message code="user.passwordExpired.label" default="Password Expired" /></span>
 					
-						<span class="property-value" aria-labelledby="passwordExpired-label"><g:formatBoolean boolean="${userInstance?.passwordExpired}" /></span>
+						<span class="property-value" aria-labelledby="passwordExpired-label"><g:formatBoolean boolean="${mekUserInstance?.passwordExpired}" /></span>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${userInstance?.pilots}">
+				<g:if test="${mekUserInstance?.pilots}">
 				<li class="fieldcontain">
 					<span id="pilots-label" class="property-label"><g:message code="user.pilots.label" default="Pilots" /></span>
 					
-						<g:each in="${userInstance.pilots}" var="p">
+						<g:each in="${mekUserInstance.pilots}" var="p">
 						<span class="property-value" aria-labelledby="pilots-label"><g:link controller="pilot" action="show" id="${p.id}">${p?.firstName+" "+p?.lastName}</g:link></span>
 						</g:each>
 					
@@ -92,9 +92,9 @@
 				</g:if>
 			
 			</ol>
-			<g:form url="[resource:userInstance, action:'delete']" method="DELETE">
+			<g:form url="[resource:mekUserInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">
-					<g:link class="edit" action="edit" resource="${userInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+					<g:link class="edit" action="edit" resource="${mekUserInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 					<g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 				</fieldset>
 			</g:form>

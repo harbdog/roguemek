@@ -1,6 +1,6 @@
 package roguemek.game
 
-import roguemek.User
+import roguemek.MekUser
 
 class Pilot {
 	private static final Date NULL_DATE = new Date(0)
@@ -12,7 +12,7 @@ class Pilot {
 
 	String firstName
 	String lastName
-	User ownerUser
+	MekUser ownerUser
 	Character status
 	
 	static hasMany = [ownedUnits:BattleUnit]

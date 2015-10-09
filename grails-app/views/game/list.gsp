@@ -42,7 +42,7 @@
 					
 						<td><g:link action="show" id="${gameInstance.id}">${fieldValue(bean: gameInstance, field: "id")}</g:link></td>
 						
-						<td><g:link controller="user" action="show" id="${gameInstance.ownerUser.id}">${fieldValue(bean: gameInstance, field: "ownerUser")}</g:link></td>
+						<td><g:link controller="mekUser" action="show" id="${gameInstance.ownerUser.id}">${fieldValue(bean: gameInstance, field: "ownerUser")}</g:link></td>
 						
 						<td>${fieldValue(bean: gameInstance, field: "gameState")}</td>
 					

@@ -132,7 +132,7 @@ class LoginController {
 	 * The Ajax success redirect url.
 	 */
 	def ajaxSuccess = {
-		render template: "/user/loginLanding"
+		render template: "/mekUser/loginLanding"
 	}
 
 	/**

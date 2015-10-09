@@ -42,7 +42,7 @@ class RogueMekController {
 		}
 	}
 	
-	private User currentUser() {
-		return User.get(springSecurityService.principal.id)
+	private MekUser currentUser() {
+		return MekUser.get(springSecurityService.principal.id)
 	}
 }

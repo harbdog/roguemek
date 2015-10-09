@@ -1,7 +1,7 @@
 package roguemek.game
 
 import grails.transaction.Transactional
-import roguemek.User
+import roguemek.MekUser
 
 @Transactional
 class GameControllerService {
@@ -11,7 +11,7 @@ class GameControllerService {
 	 * Handles the constant long polling from each client to await updates to the game.
 	 * @return The map of messages to be converted to JSON at the controller back to the client.
 	 */
-	public def performPoll(Game game, User user) {
+	public def performPoll(Game game, MekUser user) {
 		Pilot pilot = game.getPrimaryPilotForUser(user)
 		if(pilot == null) return
 		
@@ -55,7 +55,7 @@ class GameControllerService {
 	 * Calls the method by the name of the action set in the params.perform of the request.
 	 * @return The map of data to be converted to JSON at the controller back to the client.
 	 */
-	public def performAction(Game game, User user, Map params) {
+	public def performAction(Game game, MekUser user, Map params) {
 		// Need to determine what pilot and unit to pass along to the action
 		Pilot pilot
 		BattleUnit unit

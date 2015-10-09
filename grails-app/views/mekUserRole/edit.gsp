@@ -1,4 +1,4 @@
-<%@ page import="roguemek.UserRole" %>
+<%@ page import="roguemek.MekUserRole" %>
 <!DOCTYPE html>
 <html>
 	<head>

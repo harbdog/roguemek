@@ -2,15 +2,15 @@ package roguemek
 
 import org.apache.commons.lang.builder.HashCodeBuilder
 
-class UserRole implements Serializable {
+class MekUserRole implements Serializable {
 
 	private static final long serialVersionUID = 1
 
-	User user
+	MekUser user
 	Role role
 
 	boolean equals(other) {
-		if (!(other instanceof UserRole)) {
+		if (!(other instanceof MekUserRole)) {
 			return false
 		}
 
@@ -25,65 +25,65 @@ class UserRole implements Serializable {
 		builder.toHashCode()
 	}
 
-	static UserRole get(String userId, long roleId) {
-		UserRole.where {
-			user == User.load(userId) &&
+	static MekUserRole get(String userId, long roleId) {
+		MekUserRole.where {
+			user == MekUser.load(userId) &&
 			role == Role.load(roleId)
 		}.get()
 	}
 
 	static boolean exists(String userId, long roleId) {
-		UserRole.where {
-			user == User.load(userId) &&
+		MekUserRole.where {
+			user == MekUser.load(userId) &&
 			role == Role.load(roleId)
 		}.count() > 0
 	}
 
-	static UserRole create(User user, Role role, boolean flush = false) {
-		def instance = new UserRole(user: user, role: role)
+	static MekUserRole create(MekUser user, Role role, boolean flush = false) {
+		def instance = new MekUserRole(user: user, role: role)
 		instance.save(flush: flush, insert: true)
 		instance
 	}
 
-	static boolean remove(User u, Role r, boolean flush = false) {
+	static boolean remove(MekUser u, Role r, boolean flush = false) {
 		if (u == null || r == null) return false
 
-		int rowCount = UserRole.where {
-			user == User.load(u.id) &&
+		int rowCount = MekUserRole.where {
+			user == MekUser.load(u.id) &&
 			role == Role.load(r.id)
 		}.deleteAll()
 
-		if (flush) { UserRole.withSession { it.flush() } }
+		if (flush) { MekUserRole.withSession { it.flush() } }
 
 		rowCount > 0
 	}
 
-	static void removeAll(User u, boolean flush = false) {
+	static void removeAll(MekUser u, boolean flush = false) {
 		if (u == null) return
 
-		UserRole.where {
-			user == User.load(u.id)
+		MekUserRole.where {
+			user == MekUser.load(u.id)
 		}.deleteAll()
 
-		if (flush) { UserRole.withSession { it.flush() } }
+		if (flush) { MekUserRole.withSession { it.flush() } }
 	}
 
 	static void removeAll(Role r, boolean flush = false) {
 		if (r == null) return
 
-		UserRole.where {
+		MekUserRole.where {
 			role == Role.load(r.id)
 		}.deleteAll()
 
-		if (flush) { UserRole.withSession { it.flush() } }
+		if (flush) { MekUserRole.withSession { it.flush() } }
 	}
 
 	static constraints = {
-		role validator: { Role r, UserRole ur ->
+		role validator: { Role r, MekUserRole ur ->
 			if (ur.user == null) return
 			boolean existing = false
-			UserRole.withNewSession {
-				existing = UserRole.exists(ur.user.id, r.id)
+			MekUserRole.withNewSession {
+				existing = MekUserRole.exists(ur.user.id, r.id)
 			}
 			if (existing) {
 				return 'userRole.exists'

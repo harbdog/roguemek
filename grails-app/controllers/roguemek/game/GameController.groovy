@@ -7,7 +7,7 @@ import grails.converters.*
 import roguemek.*
 import roguemek.model.*
 
-@Transactional(readOnly = true)
+@Transactional
 class GameController {
 	
 	transient springSecurityService
@@ -22,7 +22,7 @@ class GameController {
 		
 		if(springSecurityService.isLoggedIn()) {
 			Game g = Game.read(session.game)
-			User user = currentUser()
+			MekUser user = currentUser()
 			
 			if(g == null || user == null) {
 				doRedirect = true
@@ -60,8 +60,9 @@ class GameController {
 	 * This action is only called when the client first loads the game and is initializing.
 	 * @render JSON object containing the game elements such as hex map and units
 	 */
+	@Transactional(readOnly = true)
 	def getGameElements() {
-		User user = currentUser()
+		MekUser user = currentUser()
 		if(user == null) return
 		
 		Game g = Game.read(session.game)
@@ -112,7 +113,7 @@ class GameController {
 	 * @render JSON object containing messages to relay back to the client
 	 */
 	def action() {
-		User user = currentUser()
+		MekUser user = currentUser()
 		if(user == null) return
 		
 		Game game = Game.get(session.game)
@@ -151,7 +152,7 @@ class GameController {
 			return;
 		}
 		
-		User user = currentUser()
+		MekUser user = currentUser()
 		if(user == null) return
 		
 		Game game = Game.get(session.game)
@@ -177,17 +178,20 @@ class GameController {
 		render gameResponse as JSON
 	}
 
+	@Transactional(readOnly = true)
 	@Secured(['ROLE_ADMIN'])
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
         respond Game.list(params), model:[gameInstanceCount: Game.count()]
     }
 
+	@Transactional(readOnly = true)
 	@Secured(['ROLE_ADMIN'])
     def show(Game gameInstance) {
         respond gameInstance
     }
 	
+	@Transactional(readOnly = true)
 	@Secured(['ROLE_ROOT'])
 	def test(Game gameInstance) {
 		respond gameInstance
@@ -198,7 +202,6 @@ class GameController {
         respond new Game(params)
     }
 
-    @Transactional
 	@Secured(['ROLE_ROOT'])
     def save(Game gameInstance) {
         if (gameInstance == null) {
@@ -227,7 +230,6 @@ class GameController {
         respond gameInstance
     }
 
-    @Transactional
 	@Secured(['ROLE_ROOT'])
     def update(Game gameInstance) {
         if (gameInstance == null) {
@@ -251,7 +253,6 @@ class GameController {
         }
     }
 
-    @Transactional
 	@Secured(['ROLE_ROOT'])
     def delete(Game gameInstance) {
 
@@ -272,7 +273,7 @@ class GameController {
     }
 	
 	private currentUser() {
-		return User.get(springSecurityService.principal.id)
+		return MekUser.get(springSecurityService.principal.id)
 	}
 
     protected void notFound() {

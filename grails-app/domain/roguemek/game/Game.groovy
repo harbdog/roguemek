@@ -1,6 +1,6 @@
 package roguemek.game
 
-import roguemek.User
+import roguemek.MekUser
 
 class Game {
 	private static final Date NULL_DATE = new Date(0)
@@ -12,7 +12,7 @@ class Game {
 		id generator: 'uuid'
 	}
 
-	User ownerUser
+	MekUser ownerUser
 	
 	List pilots
 	List units
@@ -101,7 +101,7 @@ class Game {
 	 * @param user
 	 * @return
 	 */
-	public Pilot getPrimaryPilotForUser(User user) {
+	public Pilot getPrimaryPilotForUser(MekUser user) {
 		if(user == null) return null
 		for(Pilot pilot in pilots) {
 			if(user == pilot.ownerUser) {
@@ -116,7 +116,7 @@ class Game {
 	 * @param user
 	 * @return
 	 */
-	public BattleUnit getPrimaryUnitForUser(User user) {
+	public BattleUnit getPrimaryUnitForUser(MekUser user) {
 		if(user == null) return null
 		
 		// find using the primary pilot

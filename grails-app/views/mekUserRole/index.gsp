@@ -1,5 +1,5 @@
 
-<%@ page import="roguemek.UserRole" %>
+<%@ page import="roguemek.MekUserRole" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -36,7 +36,7 @@
 					
 						<td>${userRoleInstance?.role?.authority}</td>
 					
-						<td><g:link controller="user" action="show" id="${userRoleInstance?.user?.id}">${userRoleInstance?.user?.username}</g:link></td>
+						<td><g:link controller="mekUser" action="show" id="${userRoleInstance?.user?.id}">${userRoleInstance?.user?.username}</g:link></td>
 					
 					</tr>
 				</g:each>

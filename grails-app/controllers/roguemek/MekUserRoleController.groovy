@@ -6,25 +6,25 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
 @Transactional(readOnly = true)
-class UserRoleController {
+class MekUserRoleController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond UserRole.list(params), model:[userRoleInstanceCount: UserRole.count()]
+        respond MekUserRole.list(params), model:[userRoleInstanceCount: MekUserRole.count()]
     }
 
-    def show(UserRole userRoleInstance) {
+    def show(MekUserRole userRoleInstance) {
         respond userRoleInstance
     }
 
     def create() {
-        respond new UserRole(params)
+        respond new MekUserRole(params)
     }
 
     @Transactional
-    def save(UserRole userRoleInstance) {
+    def save(MekUserRole userRoleInstance) {
         if (userRoleInstance == null) {
             notFound()
             return
@@ -46,12 +46,12 @@ class UserRoleController {
         }
     }
 
-    def edit(UserRole userRoleInstance) {
+    def edit(MekUserRole userRoleInstance) {
         respond userRoleInstance
     }
 
     @Transactional
-    def update(UserRole userRoleInstance) {
+    def update(MekUserRole userRoleInstance) {
         if (userRoleInstance == null) {
             notFound()
             return
@@ -74,7 +74,7 @@ class UserRoleController {
     }
 
     @Transactional
-    def delete(UserRole userRoleInstance) {
+    def delete(MekUserRole userRoleInstance) {
 
         if (userRoleInstance == null) {
             notFound()

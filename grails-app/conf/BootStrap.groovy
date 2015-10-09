@@ -30,11 +30,11 @@ class BootStrap {
 		def samplePassword = 'Pass99'
 		
 		// Create Admin user with all Roles
-		def adminUser = User.findByUsername(adminEmail)
+		def adminUser = MekUser.findByUsername(adminEmail)
 		def adminPilot
 		if(!adminUser) {
 			// initialize testing admin user
-			adminUser = new User(username: adminEmail, callsign: adminCallsign, password: adminPassword, enabled: true)
+			adminUser = new MekUser(username: adminEmail, callsign: adminCallsign, password: adminPassword, enabled: true)
 			if(!adminUser.validate()) {
 				log.error("Errors with admin "+adminUser.username+":\n")
 				adminUser.errors.allErrors.each {
@@ -61,16 +61,16 @@ class BootStrap {
 			}
 		}
 		
-		UserRole.create adminUser, rootRole, true
-		UserRole.create adminUser, adminRole, true
-		UserRole.create adminUser, userRole, true
+		MekUserRole.create adminUser, rootRole, true
+		MekUserRole.create adminUser, adminRole, true
+		MekUserRole.create adminUser, userRole, true
 		
 		// Create test user with User role
-		def testUser = User.findByUsername(testEmail)
+		def testUser = MekUser.findByUsername(testEmail)
 		def testPilot
 		if(!testUser) {
 			// initialize testing admin user
-			testUser = new User(username: testEmail, callsign: testCallsign, password: testPassword, enabled: true)
+			testUser = new MekUser(username: testEmail, callsign: testCallsign, password: testPassword, enabled: true)
 			if(!testUser.validate()) {
 				log.error("Errors with tester "+testUser.username+":\n")
 				testUser.errors.allErrors.each {
@@ -97,14 +97,14 @@ class BootStrap {
 			}
 		}
 		
-		UserRole.create testUser, userRole, true
+		MekUserRole.create testUser, userRole, true
 		
 		// Create sample user with User role
-		def sampleUser = User.findByUsername(sampleEmail)
+		def sampleUser = MekUser.findByUsername(sampleEmail)
 		def samplePilot
 		if(!sampleUser) {
 			// initialize testing admin user
-			sampleUser = new User(username: sampleEmail, callsign: sampleCallsign, password: samplePassword, enabled: true)
+			sampleUser = new MekUser(username: sampleEmail, callsign: sampleCallsign, password: samplePassword, enabled: true)
 			if(!sampleUser.validate()) {
 				log.error("Errors with tester "+sampleUser.username+":\n")
 				sampleUser.errors.allErrors.each {
@@ -131,11 +131,11 @@ class BootStrap {
 			}
 		}
 		
-		UserRole.create sampleUser, userRole, true
+		MekUserRole.create sampleUser, userRole, true
 		
-		assert User.count() == 3
+		assert MekUser.count() == 3
 		assert Role.count() == 3
-		assert UserRole.count() == 5
+		assert MekUserRole.count() == 5
 		assert Pilot.count() == 3
 		
 		

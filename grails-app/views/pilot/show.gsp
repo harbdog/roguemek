@@ -54,7 +54,7 @@
 				<li class="fieldcontain">
 					<span id="ownerUser-label" class="property-label"><g:message code="pilot.ownerUser.label" default="Owner User" /></span>
 					
-						<span class="property-value" aria-labelledby="ownerUser-label"><g:link controller="user" action="show" id="${pilotInstance?.ownerUser?.id}">${pilotInstance?.ownerUser?.toString()}</g:link></span>
+						<span class="property-value" aria-labelledby="ownerUser-label"><g:link controller="mekUser" action="show" id="${pilotInstance?.ownerUser?.id}">${pilotInstance?.ownerUser?.toString()}</g:link></span>
 					
 				</li>
 				</g:if>

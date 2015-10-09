@@ -23,11 +23,11 @@
 		
 		<div id="loginBox" class="loginBox">
 			<sec:ifLoggedIn>
-				<g:render template="/user/loginLanding" />
+				<g:render template="/mekUser/loginLanding" />
 			</sec:ifLoggedIn>
       		<sec:ifNotLoggedIn>
 				<g:if test="${params.action != 'register'}">
-					<g:render template="/user/loginBox" />
+					<g:render template="/mekUser/loginBox" />
 				</g:if>
 			</sec:ifNotLoggedIn>
 		</div>

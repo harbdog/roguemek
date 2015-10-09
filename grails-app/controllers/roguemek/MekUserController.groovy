@@ -5,17 +5,17 @@ import grails.transaction.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
 @Transactional(readOnly = true)
-class UserController {
+class MekUserController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond User.list(params), model:[userInstanceCount: User.count()]
+        respond MekUser.list(params), model:[userInstanceCount: MekUser.count()]
     }
 
 	@Secured(['ROLE_ADMIN'])
-    def show(User userInstance) {
+    def show(MekUser userInstance) {
 		if(userInstance == null) {
 			redirect controller: 'RogueMek', action: 'index'
 		}
@@ -27,7 +27,7 @@ class UserController {
 	def showUser() {
 		def callsignToSearchFor = params.callsign
 		
-		def userInstance = User.findByCallsign(callsignToSearchFor)
+		def userInstance = MekUser.findByCallsign(callsignToSearchFor)
 		
 		if(userInstance) {
 			respond userInstance
@@ -39,7 +39,7 @@ class UserController {
 
     def register() {
 		if(request.method == 'POST') {
-			def u = new User()
+			def u = new MekUser()
 			u.properties['username', 'password', 'callsign'] = params
 			if(u.password != params.confirm) {
 				u.errors.rejectValue("password", "user.password.dontmatch")
@@ -57,12 +57,12 @@ class UserController {
 
 	@Secured(['ROLE_ADMIN'])
     def create() {
-        respond new User(params)
+        respond new MekUser(params)
     }
 
     @Transactional
 	@Secured(['ROLE_ADMIN'])
-    def save(User userInstance) {
+    def save(MekUser userInstance) {
         if (userInstance == null) {
             notFound()
             return
@@ -85,13 +85,13 @@ class UserController {
     }
 
 	@Secured(['ROLE_ADMIN'])
-    def edit(User userInstance) {
+    def edit(MekUser userInstance) {
         respond userInstance
     }
 
     @Transactional
 	@Secured(['ROLE_ADMIN'])
-    def update(User userInstance) {
+    def update(MekUser userInstance) {
         if (userInstance == null) {
             notFound()
             return
@@ -115,7 +115,7 @@ class UserController {
 
     @Transactional
 	@Secured(['ROLE_ROOT'])
-    def delete(User userInstance) {
+    def delete(MekUser userInstance) {
 
         if (userInstance == null) {
             notFound()

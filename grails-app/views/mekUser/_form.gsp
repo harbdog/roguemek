@@ -1,4 +1,4 @@
-<%@ page import="roguemek.User" %>
+<%@ page import="roguemek.MekUser" %>
 
 
 

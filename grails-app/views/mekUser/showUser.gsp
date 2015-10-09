@@ -1,5 +1,5 @@
 
-<%@ page import="roguemek.User" %>
+<%@ page import="roguemek.MekUser" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -22,20 +22,20 @@
 			</g:if>
 			<ol class="property-list user">
 			
-				<g:if test="${userInstance?.callsign}">
+				<g:if test="${mekUserInstance?.callsign}">
 				<li class="fieldcontain">
 					<span id="callsign-label" class="property-label"><g:message code="user.callsign.label" default="Callsign" /></span>
 					
-						<span class="property-value" aria-labelledby="callsign-label"><g:fieldValue bean="${userInstance}" field="callsign"/></span>
+						<span class="property-value" aria-labelledby="callsign-label"><g:fieldValue bean="${mekUserInstance}" field="callsign"/></span>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${userInstance?.pilots}">
+				<g:if test="${mekUserInstance?.pilots}">
 				<li class="fieldcontain">
 					<span id="pilots-label" class="property-label"><g:message code="user.pilots.label" default="Pilots" /></span>
 					
-						<g:each in="${userInstance.pilots}" var="p">
+						<g:each in="${mekUserInstance.pilots}" var="p">
 						<span class="property-value" aria-labelledby="pilots-label"><g:link controller="pilot" action="show" id="${p.id}">${p?.firstName+" "+p?.lastName}</g:link></span>
 						</g:each>
 					

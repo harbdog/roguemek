@@ -13,22 +13,23 @@
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
+			
 			<ol class="property-list user">
 			
-				<g:if test="${userInstance?.callsign}">
+				<g:if test="${mekUserInstance?.callsign}">
 				<li class="fieldcontain">
 					<span id="callsign-label" class="property-label"><g:message code="user.callsign.label" default="Callsign" /></span>
 					
-						<span class="property-value" aria-labelledby="callsign-label"><g:fieldValue bean="${userInstance}" field="callsign"/></span>
+						<span class="property-value" aria-labelledby="callsign-label"><g:fieldValue bean="${mekUserInstance}" field="callsign"/></span>
 					
 				</li>
 				</g:if>
 			
-				<g:if test="${userInstance?.pilots}">
+				<g:if test="${mekUserInstance?.pilots}">
 				<li class="fieldcontain">
 					<span id="pilots-label" class="property-label"><g:message code="user.pilots.label" default="Pilots" /></span>
 					
-						<g:each in="${userInstance.pilots}" var="p">
+						<g:each in="${mekUserInstance.pilots}" var="p">
 						<%
 							// TODO: The findByPilots query was failing, so doing it the dumb way just to get past, fix it later?
 							def gameList = Game.getAll()

@@ -25,7 +25,7 @@
 		<g:message code="pilot.ownerUser.label" default="Owner User" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="ownerUser" name="ownerUser.id" from="${roguemek.User.list()}" optionKey="id" required="" optionValue="username" value="${pilotInstance?.ownerUser?.id}" class="many-to-one"/>
+	<g:select id="ownerUser" name="ownerUser.id" from="${roguemek.MekUser.list()}" optionKey="id" required="" optionValue="username" value="${pilotInstance?.ownerUser?.id}" class="many-to-one"/>
 
 </div>
 

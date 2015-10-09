@@ -1,4 +1,4 @@
-<%@ page import="roguemek.UserRole" %>
+<%@ page import="roguemek.MekUserRole" %>
 
 
 
@@ -16,7 +16,7 @@
 		<g:message code="userRole.user.label" default="User" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="user" name="user.id" from="${roguemek.User.list()}" optionKey="id" required="" optionValue="username" value="${userRoleInstance?.user?.id}" class="many-to-one"/>
+	<g:select id="user" name="user.id" from="${roguemek.MekUser.list()}" optionKey="id" required="" optionValue="username" value="${userRoleInstance?.user?.id}" class="many-to-one"/>
 
 </div>
 

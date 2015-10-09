@@ -36,7 +36,7 @@
 				<li class="fieldcontain">
 					<span id="ownerUser-label" class="property-label"><g:message code="game.ownerUser.label" default="Owner User" /></span>
 					
-						<span class="property-value" aria-labelledby="ownerUser-label"><g:link controller="user" action="show" id="${gameInstance?.ownerUser.id}">${gameInstance?.ownerUser?.encodeAsHTML()}</g:link></span>
+						<span class="property-value" aria-labelledby="ownerUser-label"><g:link controller="mekUser" action="show" id="${gameInstance?.ownerUser.id}">${gameInstance?.ownerUser?.encodeAsHTML()}</g:link></span>
 					
 				</li>
 				</g:if>

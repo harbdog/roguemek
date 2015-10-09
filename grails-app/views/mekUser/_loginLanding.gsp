@@ -5,7 +5,7 @@
 <g:else>
 	<div style="margin-top:20px">
 		<div style="float:right;">
-			<g:link controller="user" action="profile">Profile</g:link> | <g:link controller="logout">Logout</g:link><br>
+			<g:link controller="mekUser" action="profile">Profile</g:link> | <g:link controller="logout">Logout</g:link><br>
 		</div>
 		
 		<%-- You own (${session?.user?.ownedMechs?.size() ?: 0}) Mechs.<br> --%>
@@ -22,7 +22,7 @@
 		<%-- Hide user box while registering --%>
 	</g:if>
 	<sec:ifLoggedIn>
-		<g:link controller="user"
+		<g:link controller="mekUser"
 				action="mechs">My Mechs</g:link>
 		<br/>
 		<g:link controller="mech"

@@ -109,9 +109,9 @@ environments {
 }
 
 // ElasticeSearch configuration
-elasticSearch.client.mode = 'local'
+//elasticSearch.client.mode = 'local'
 
-elasticSearch.datastoreImpl = 'hibernateDatastore'
+//elasticSearch.datastoreImpl = 'hibernateDatastore'
 
 // log4j configuration
 log4j.main = {
@@ -153,12 +153,12 @@ log4j.main = {
 
 
 // Added by the Spring Security Core plugin:
-grails.plugin.springsecurity.userLookup.userDomainClassName = 'roguemek.User'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'roguemek.UserRole'
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'roguemek.MekUser'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'roguemek.MekUserRole'
 grails.plugin.springsecurity.authority.className = 'roguemek.Role'
 grails.plugin.springsecurity.useSecurityEventListener = true
 grails.plugin.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
-	roguemek.User.updateLastLogin(appCtx.springSecurityService.currentUser.id)
+	roguemek.MekUser.updateLastLogin(appCtx.springSecurityService.currentUser.id)
 }
 grails.plugin.springsecurity.logout.handlerNames = 
 	['rememberMeServices', 'securityContextLogoutHandler',  'securityEventListener']
@@ -167,7 +167,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/index':						['permitAll'],
 	'/index.gsp':					['permitAll'],
 	'/showUser/**':					['permitAll'],
-	'/user/**':						['permitAll'],
+	'/mekUser/**':					['permitAll'],
 	'/userList':					['permitAll'],
 	'/mech/display/**':				['permitAll'],
 	 '/mech/showMech/**':			['permitAll'],
@@ -187,7 +187,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	
 	'/pilot/**':					['ROLE_ADMIN'],
 	
-	'/userRole/**':					['ROLE_ROOT'],
+	'/mekUserRole/**':				['ROLE_ROOT'],
 	'/mech/**':						['ROLE_ROOT'],
 	'/battleMech/**':				['ROLE_ROOT'],
 	'/weapon/**':					['ROLE_ROOT'],

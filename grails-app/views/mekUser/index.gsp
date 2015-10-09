@@ -1,5 +1,5 @@
 
-<%@ page import="roguemek.User" %>
+<%@ page import="roguemek.MekUser" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -41,19 +41,19 @@
 					</tr>
 				</thead>
 				<tbody>
-				<g:each in="${userInstanceList}" status="i" var="userInstance">
+				<g:each in="${mekUserInstanceList}" status="i" var="mekUserInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link mapping="userDetails" params='[callsign:"${userInstance?.callsign}"]'>${userInstance?.callsign}</g:link></td>
+						<td><g:link mapping="userDetails" params='[callsign:"${mekUserInstance?.callsign}"]'>${mekUserInstance?.callsign}</g:link></td>
 					
 						<sec:ifAnyGranted roles="ROLE_ADMIN">
-							<td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "username")}</g:link></td>
+							<td><g:link action="show" id="${mekUserInstance.id}">${fieldValue(bean: mekUserInstance, field: "username")}</g:link></td>
 							
-							<td><g:formatBoolean boolean="${userInstance.accountExpired}" /></td>
+							<td><g:formatBoolean boolean="${mekUserInstance.accountExpired}" /></td>
 						
-							<td><g:formatBoolean boolean="${userInstance.accountLocked}" /></td>
+							<td><g:formatBoolean boolean="${mekUserInstance.accountLocked}" /></td>
 						
-							<td><g:formatBoolean boolean="${userInstance.enabled}" /></td>
+							<td><g:formatBoolean boolean="${mekUserInstance.enabled}" /></td>
 						</sec:ifAnyGranted>
 					</tr>
 				</g:each>

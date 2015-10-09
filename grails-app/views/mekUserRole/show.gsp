@@ -1,5 +1,5 @@
 
-<%@ page import="roguemek.UserRole" %>
+<%@ page import="roguemek.MekUserRole" %>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -36,7 +36,7 @@
 				<li class="fieldcontain">
 					<span id="user-label" class="property-label"><g:message code="userRole.user.label" default="User" /></span>
 					
-						<span class="property-value" aria-labelledby="user-label"><g:link controller="user" action="show" id="${userRoleInstance?.user?.id}">${userRoleInstance?.user?.username}</g:link></span>
+						<span class="property-value" aria-labelledby="user-label"><g:link controller="mekUser" action="show" id="${userRoleInstance?.user?.id}">${userRoleInstance?.user?.username}</g:link></span>
 					
 				</li>
 				</g:if>

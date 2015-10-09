@@ -5,8 +5,8 @@ package roguemek
 import grails.test.mixin.*
 import spock.lang.*
 
-@TestFor(UserRoleController)
-@Mock(UserRole)
+@TestFor(MekUserRoleController)
+@Mock(MekUserRole)
 class UserRoleControllerSpec extends Specification {
 
     def populateValidParams(params) {
@@ -38,7 +38,7 @@ class UserRoleControllerSpec extends Specification {
         when:"The save action is executed with an invalid instance"
             request.contentType = FORM_CONTENT_TYPE
             request.method = 'POST'
-            def userRole = new UserRole()
+            def userRole = new MekUserRole()
             userRole.validate()
             controller.save(userRole)
 
@@ -49,14 +49,14 @@ class UserRoleControllerSpec extends Specification {
         when:"The save action is executed with a valid instance"
             response.reset()
             populateValidParams(params)
-            userRole = new UserRole(params)
+            userRole = new MekUserRole(params)
 
             controller.save(userRole)
 
         then:"A redirect is issued to the show action"
             response.redirectedUrl == '/userRole/show/1'
             controller.flash.message != null
-            UserRole.count() == 1
+            MekUserRole.count() == 1
     }
 
     void "Test that the show action returns the correct model"() {
@@ -68,7 +68,7 @@ class UserRoleControllerSpec extends Specification {
 
         when:"A domain instance is passed to the show action"
             populateValidParams(params)
-            def userRole = new UserRole(params)
+            def userRole = new MekUserRole(params)
             controller.show(userRole)
 
         then:"A model is populated containing the domain instance"
@@ -84,7 +84,7 @@ class UserRoleControllerSpec extends Specification {
 
         when:"A domain instance is passed to the edit action"
             populateValidParams(params)
-            def userRole = new UserRole(params)
+            def userRole = new MekUserRole(params)
             controller.edit(userRole)
 
         then:"A model is populated containing the domain instance"
@@ -104,7 +104,7 @@ class UserRoleControllerSpec extends Specification {
 
         when:"An invalid domain instance is passed to the update action"
             response.reset()
-            def userRole = new UserRole()
+            def userRole = new MekUserRole()
             userRole.validate()
             controller.update(userRole)
 
@@ -115,11 +115,11 @@ class UserRoleControllerSpec extends Specification {
         when:"A valid domain instance is passed to the update action"
             response.reset()
             populateValidParams(params)
-            userRole = new UserRole(params).save(flush: true)
+            userRole = new MekUserRole(params).save(flush: true)
             controller.update(userRole)
 
         then:"A redirect is issues to the show action"
-            response.redirectedUrl == "/userRole/show/$userRole.id"
+            response.redirectedUrl == "/mekUserRole/show/$userRole.id"
             flash.message != null
     }
 
@@ -136,16 +136,16 @@ class UserRoleControllerSpec extends Specification {
         when:"A domain instance is created"
             response.reset()
             populateValidParams(params)
-            def userRole = new UserRole(params).save(flush: true)
+            def userRole = new MekUserRole(params).save(flush: true)
 
         then:"It exists"
-            UserRole.count() == 1
+            MekUserRole.count() == 1
 
         when:"The domain instance is passed to the delete action"
             controller.delete(userRole)
 
         then:"The instance is deleted"
-            UserRole.count() == 0
+            MekUserRole.count() == 0
             response.redirectedUrl == '/userRole/index'
             flash.message != null
     }

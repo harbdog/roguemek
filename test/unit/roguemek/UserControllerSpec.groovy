@@ -5,8 +5,8 @@ package roguemek
 import grails.test.mixin.*
 import spock.lang.*
 
-@TestFor(UserController)
-@Mock(User)
+@TestFor(MekUserController)
+@Mock(MekUser)
 class UserControllerSpec extends Specification {
 
     def populateValidParams(params) {
@@ -38,7 +38,7 @@ class UserControllerSpec extends Specification {
         when:"The save action is executed with an invalid instance"
             request.contentType = FORM_CONTENT_TYPE
             request.method = 'POST'
-            def user = new User()
+            def user = new MekUser()
             user.validate()
             controller.save(user)
 
@@ -49,14 +49,14 @@ class UserControllerSpec extends Specification {
         when:"The save action is executed with a valid instance"
             response.reset()
             populateValidParams(params)
-            user = new User(params)
+            user = new MekUser(params)
 
             controller.save(user)
 
         then:"A redirect is issued to the show action"
             response.redirectedUrl == '/user/show/1'
             controller.flash.message != null
-            User.count() == 1
+            MekUser.count() == 1
     }
 
     void "Test that the show action returns the correct model"() {
@@ -68,7 +68,7 @@ class UserControllerSpec extends Specification {
 
         when:"A domain instance is passed to the show action"
             populateValidParams(params)
-            def user = new User(params)
+            def user = new MekUser(params)
             controller.show(user)
 
         then:"A model is populated containing the domain instance"
@@ -84,7 +84,7 @@ class UserControllerSpec extends Specification {
 
         when:"A domain instance is passed to the edit action"
             populateValidParams(params)
-            def user = new User(params)
+            def user = new MekUser(params)
             controller.edit(user)
 
         then:"A model is populated containing the domain instance"
@@ -104,7 +104,7 @@ class UserControllerSpec extends Specification {
 
         when:"An invalid domain instance is passed to the update action"
             response.reset()
-            def user = new User()
+            def user = new MekUser()
             user.validate()
             controller.update(user)
 
@@ -115,11 +115,11 @@ class UserControllerSpec extends Specification {
         when:"A valid domain instance is passed to the update action"
             response.reset()
             populateValidParams(params)
-            user = new User(params).save(flush: true)
+            user = new MekUser(params).save(flush: true)
             controller.update(user)
 
         then:"A redirect is issues to the show action"
-            response.redirectedUrl == "/user/show/$user.id"
+            response.redirectedUrl == "/mekUser/show/$user.id"
             flash.message != null
     }
 
@@ -136,16 +136,16 @@ class UserControllerSpec extends Specification {
         when:"A domain instance is created"
             response.reset()
             populateValidParams(params)
-            def user = new User(params).save(flush: true)
+            def user = new MekUser(params).save(flush: true)
 
         then:"It exists"
-            User.count() == 1
+            MekUser.count() == 1
 
         when:"The domain instance is passed to the delete action"
             controller.delete(user)
 
         then:"The instance is deleted"
-            User.count() == 0
+            MekUser.count() == 0
             response.redirectedUrl == '/user/index'
             flash.message != null
     }
