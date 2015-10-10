@@ -61,8 +61,8 @@ class MapMTF {
 	 * @param mtfFile
 	 * @return LinkedHashMap representing the contents of the file
 	 */
-	public static LinkedHashMap createMapFromMTF(File mtfFile) {
-		if(mtfFile == null || !mtfFile.exists() || !mtfFile.canRead()) {
+	public static LinkedHashMap createMapFromMTF(InputStream mtfStream) {
+		if(mtfStream == null) {
 			return null
 		}
 		
@@ -71,10 +71,10 @@ class MapMTF {
 		// Hold the name of the most recent main section
 		def sectionName
 		
-		def mtfLineList = mtfFile.readLines()
-		int numLines = mtfLineList.size()
-		for(int i=0; i<numLines; i++) {
-			String line = mtfLineList.get(i).trim()
+		BufferedReader reader = new BufferedReader(new InputStreamReader(mtfStream))
+		String line
+		while((line = reader.readLine()) != null) {
+			line = line.trim()
 			
 			// determine if this line starts a new section by containing a colon character (but not also having a comma)
 			int colon = line.indexOf(":")
@@ -103,6 +103,8 @@ class MapMTF {
 			
 			sectionList.add(line)
 		}
+		
+		mtfStream.close()
 		
 		return map
 	}

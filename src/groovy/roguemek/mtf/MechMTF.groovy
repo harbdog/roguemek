@@ -32,9 +32,9 @@ class MechMTF {
 	 * @param mtfFile
 	 * @return Mech created from the file
 	 */
-	public static Mech createMechFromMTF(File mtfFile) {
+	public static Mech createMechFromMTF(InputStream mtfStream) {
 		
-		def mtf = MapMTF.createMapFromMTF(mtfFile)
+		def mtf = MapMTF.createMapFromMTF(mtfStream)
 		if(mtf == null) {
 			return null
 		}

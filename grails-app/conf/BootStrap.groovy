@@ -7,22 +7,10 @@ import roguemek.model.*
 
 class BootStrap {
 
-	def grailsApplication
-	
     def init = { ServletContext servletContext ->
 		
-		// location to the "src" and "assets" directories are different in war versus development environment
-		File srcDir = grailsApplication.getParentContext().getResource("src").getFile()
-		File assetsDir = grailsApplication.getParentContext().getResource("assets").getFile()
-		if(!srcDir.exists()) {
-			srcDir = new File("src")
-		}
-		if(!assetsDir.exists()) {
-			assetsDir = new File("grails-app/assets")
-		}
-		
-		// Initialize the Context directories
-		ContextHelper.initializeContextDirs(srcDir, assetsDir)
+		// Initialize the Context helping for determining location of resource with or without using the war
+		ContextHelper.setContext(servletContext)
 		
 		// Initialize the Hex Tileset
 		HexTileset.init()
@@ -177,7 +165,7 @@ class BootStrap {
 		
 		// Initialize a sample HexMap board
 		//File boardFile = new File("src/boards/battletech.board")
-		File boardFile = new File(ContextHelper.getContextSourceDir(), "boards/80x17_Benj_7.board")
+		InputStream boardFile = ContextHelper.getContextSource("boards/80x17_Benj_7.board")
 		HexMap boardMap = HexMap.loadBoardFile(boardFile)
 		log.info('Loaded sample Board')
 		

@@ -118,10 +118,10 @@ class BattleUnit {
 	public static byte[] initUnitImage(BattleUnit unit) {
 		if(unit == null) return null;
 		
-		File imageLocation = new File(ContextHelper.getContextAssetsDir(), "images/" + unit.imageFile)
-		log.info("Creating EntityImage with "+imageLocation+", "+unit.rgb)
+		InputStream stream = ContextHelper.getContextAsset("images/" + unit.imageFile)
+		log.info("Creating EntityImage with "+stream.available()+", "+unit.rgb)
 		
-		EntityImage entity = new EntityImage(imageLocation, unit.rgb)
+		EntityImage entity = new EntityImage(stream, unit.rgb)
 		return entity.toByteArray()
 	}
 	

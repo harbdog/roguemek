@@ -22,7 +22,7 @@ class Faction {
 		}
 		
 		// Create all factions for the game from csv
-		new CSVMapReader(new FileReader(new File(ContextHelper.getContextSourceDir(), "csv/Factions.csv"))).eachLine { map ->
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Factions.csv"))).eachLine { map ->
 			def faction = new Faction(map)
 			
 			if(!faction.validate()) {

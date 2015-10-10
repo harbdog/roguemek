@@ -118,13 +118,21 @@ class Mech extends Unit {
 			return
 		}
 		
-		File mtfMechsPath = new File(ContextHelper.getContextSourceDir(), "mtf/mechs/")
+		InputStream mtfMechsList = ContextHelper.getContextSource("mtf/mechs.list")
 		
-		mtfMechsPath.listFiles().each { mtfFile ->
-			if(mtfFile.isFile() && mtfFile.canRead()) {
-				MechMTF.createMechFromMTF(mtfFile)
+		BufferedReader reader = new BufferedReader(new InputStreamReader(mtfMechsList))
+		String line
+		while((line = reader.readLine()) != null) {
+			line = line.trim()
+			if(line.toUpperCase().endsWith(".MTF")) {
+				InputStream mtfFile = ContextHelper.getContextSource("mtf/mechs/"+line)
+				if(mtfFile.available()) {
+					MechMTF.createMechFromMTF(mtfFile)
+				}
 			}
 		}
+		
+		mtfMechsList.close()
 	}
 	
 	/**

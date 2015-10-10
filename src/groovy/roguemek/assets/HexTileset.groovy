@@ -18,9 +18,9 @@ class HexTileset {
 	 * Initialize the tileset for Hex images
 	 */
 	public static void init() {
-		File tilesetFile = new File(ContextHelper.getContextSourceDir(), "tilesets/atmospheric.tileset")
+		InputStream tilesetStream = ContextHelper.getContextSource("tilesets/atmospheric.tileset")
 		
-		HexTileset.loadFromFile(tilesetFile)
+		HexTileset.loadFromFile(tilesetStream)
 	}
 	
 	/**
@@ -28,9 +28,9 @@ class HexTileset {
 	 * @param filename
 	 * @throws IOException
 	 */
-	private static void loadFromFile(File tilesetFile) throws IOException {
+	private static void loadFromFile(InputStream stream) throws IOException {
 		// make input stream for board
-		StreamTokenizer st = new StreamTokenizer(new FileReader(tilesetFile))
+		StreamTokenizer st = new StreamTokenizer(new InputStreamReader(stream))
 		st.eolIsSignificant(true)
 		st.commentChar((int)'#')
 		st.quoteChar((int)'"')

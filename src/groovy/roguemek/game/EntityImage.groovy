@@ -31,10 +31,11 @@ class EntityImage {
 	private static final int IMG_HEIGHT = 72;
 	private static final int IMG_SIZE = IMG_WIDTH * IMG_HEIGHT;
 	
-	public EntityImage(File imageFile, short[] rgb) {
-		this.base = ImageIO.read(imageFile)
-		this.tint = rgb
+	public EntityImage(InputStream imageStream, short[] rgb) {
+		this.base = ImageIO.read(imageStream)
+		imageStream.close()
 		
+		this.tint = rgb
 		this.parent = new Canvas()
 	}
 	

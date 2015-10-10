@@ -47,7 +47,7 @@ class Weapon extends Equipment {
 		}
 		
 		// Create all objects for the game from csv
-		new CSVMapReader(new FileReader(new File(ContextHelper.getContextSourceDir(), "csv/Weapons.csv"))).eachLine { map ->
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Weapons.csv"))).eachLine { map ->
 			
 			// update Aliases to be multiple strings in an array instead of one string
 			Weapon.updateAliases(map)

@@ -167,9 +167,11 @@ class BattleMech extends BattleUnit {
 		
 		// TODO: for now just matching by mech name (all lower case, no spaces), but should also extend to try chassis+variant first
 		String testImage = mech.name.toLowerCase().replaceAll(" ", "") + "."+imagesExtension
-		File imageFile = new File(ContextHelper.getContextAssetsDir(), "images/"+imagesBasePath + testImage)
+		InputStream imageFile = ContextHelper.getContextAsset("images/"+imagesBasePath + testImage)//new File(ContextHelper.getContextAssetsDir(), "images/"+imagesBasePath + testImage)
 		
-		if(imageFile.exists()) {
+		log.info("testImage:"+testImage+", available="+imageFile.available())
+		
+		if(imageFile.available()) {
 			mechImage = testImage
 		}
 		

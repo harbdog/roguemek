@@ -57,7 +57,7 @@ class Equipment {
 		}
 		
 		// Create all objects for the game from csv
-		new CSVMapReader(new FileReader(new File(ContextHelper.getContextSourceDir(), "csv/Equipment.csv"))).eachLine { map ->
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Equipment.csv"))).eachLine { map ->
 			
 			// update Aliases to be multiple strings in an array instead of one string
 			Equipment.updateAliases(map)

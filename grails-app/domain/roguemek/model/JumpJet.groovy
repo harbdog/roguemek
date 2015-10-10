@@ -16,7 +16,7 @@ class JumpJet extends Equipment {
 		}
 		
 		// Create all objects for the game from csv
-		new CSVMapReader(new FileReader(new File(ContextHelper.getContextSourceDir(), "csv/JumpJets.csv"))).eachLine { map ->
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/JumpJets.csv"))).eachLine { map ->
 			
 			// update Aliases to be multiple strings in an array instead of one string
 			JumpJet.updateAliases(map)

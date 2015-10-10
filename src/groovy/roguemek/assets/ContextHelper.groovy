@@ -1,29 +1,41 @@
 package roguemek.assets
 
+import javax.servlet.ServletContext
+
 /**
  * Class used to pass along the location of the context root of the application needed for loading resources from the war
  * @author eric
  *
  */
 class ContextHelper {
-	private static File CONTEXT_SRC_DIR
-	private static File CONTEXT_ASSETS_DIR
+	private static ServletContext servletContext
 	
 	/**
 	 * Initializes all resource paths that are needed in various locations during runtime
 	 * @param srcDir
 	 * @param assetsDir
 	 */
-	public static void initializeContextDirs(File srcDir, File assetsDir) {
-		CONTEXT_SRC_DIR = srcDir
-		CONTEXT_ASSETS_DIR = assetsDir
+	public static void setContext(ServletContext context) {
+		servletContext = context
 	}
 	
-	public static File getContextSourceDir() {
-		return CONTEXT_SRC_DIR
+	public static InputStream getContextSource(String location) {
+		URL url = servletContext.getResource("/src/"+location)
+		if(url == null) {
+			return new FileInputStream("src/"+location)
+		}
+		else {
+			return url.openStream()
+		}
 	}
 	
-	public static File getContextAssetsDir() {
-		return CONTEXT_ASSETS_DIR
+	public static InputStream getContextAsset(String location) {
+		URL url = servletContext.getResource("/assets/"+location)
+		if(url == null) {
+			return new FileInputStream("grails-app/assets/"+location)
+		}
+		else {
+			return url.openStream()
+		}
 	}
 }

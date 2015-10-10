@@ -23,16 +23,14 @@ class HexMap {
 	 * @param boardFile
 	 * @return
 	 */
-	public static HexMap loadBoardFile(File boardFile) {
+	public static HexMap loadBoardFile(InputStream boardStream) {
 		def numCols = 0
 		def numRows = 0
 		
 		String[] hexMap
-		FileInputStream fs
 		
 		try {
-			fs = new FileInputStream(boardFile)
-			StreamTokenizer st = new StreamTokenizer(fs)
+			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(boardStream))
 			st.eolIsSignificant(true)
 			st.commentChar((int)'#')
 			st.quoteChar((int)'"')
@@ -111,8 +109,8 @@ class HexMap {
 			System.err.println("i/o error reading board")
 			System.err.println(ex)
 		} finally {
-			if(fs != null) {
-				fs.close()
+			if(boardStream != null) {
+				boardStream.close()
 			}
 		}
 		
