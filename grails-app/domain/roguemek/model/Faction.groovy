@@ -1,6 +1,9 @@
 package roguemek.model
 
+import java.io.File
+
 import org.grails.plugins.csv.CSVMapReader
+import roguemek.assets.ContextHelper
 
 class Faction {
 	
@@ -19,7 +22,7 @@ class Faction {
 		}
 		
 		// Create all factions for the game from csv
-		new CSVMapReader(new FileReader("src/csv/Factions.csv")).eachLine { map ->
+		new CSVMapReader(new FileReader(new File(ContextHelper.getContextSourceDir(), "csv/Factions.csv"))).eachLine { map ->
 			def faction = new Faction(map)
 			
 			if(!faction.validate()) {

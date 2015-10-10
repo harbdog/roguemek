@@ -1,6 +1,7 @@
 package roguemek.game
 
 import roguemek.model.*
+import roguemek.assets.ContextHelper
 
 /**
  * Represents the owned mech that can be taken into battle
@@ -150,7 +151,6 @@ class BattleMech extends BattleUnit {
 	}
 	
 	private static String imagesBasePath = "units/mechs/"
-	private static String imagesTestPath = imagesServerPath + imagesBasePath
 
 	/**
 	 * Used during creation of the BattleMech to determine the image to be used
@@ -167,7 +167,7 @@ class BattleMech extends BattleUnit {
 		
 		// TODO: for now just matching by mech name (all lower case, no spaces), but should also extend to try chassis+variant first
 		String testImage = mech.name.toLowerCase().replaceAll(" ", "") + "."+imagesExtension
-		File imageFile = new File(imagesTestPath + testImage)
+		File imageFile = new File(ContextHelper.getContextAssetsDir(), "images/"+imagesBasePath + testImage)
 		
 		if(imageFile.exists()) {
 			mechImage = testImage

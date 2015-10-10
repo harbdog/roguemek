@@ -31,9 +31,7 @@ class EntityImage {
 	private static final int IMG_HEIGHT = 72;
 	private static final int IMG_SIZE = IMG_WIDTH * IMG_HEIGHT;
 	
-	public EntityImage(String image, short[] rgb) {
-		File imageFile = new File(image)
-		
+	public EntityImage(File imageFile, short[] rgb) {
 		this.base = ImageIO.read(imageFile)
 		this.tint = rgb
 		

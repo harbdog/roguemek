@@ -1,6 +1,7 @@
 package roguemek.model
 
 import roguemek.mtf.*
+import roguemek.assets.ContextHelper
 
 /**
  * Represents the stock or core Mech configuration
@@ -117,7 +118,7 @@ class Mech extends Unit {
 			return
 		}
 		
-		File mtfMechsPath = new File("src/mtf/mechs/")
+		File mtfMechsPath = new File(ContextHelper.getContextSourceDir(), "mtf/mechs/")
 		
 		mtfMechsPath.listFiles().each { mtfFile ->
 			if(mtfFile.isFile() && mtfFile.canRead()) {

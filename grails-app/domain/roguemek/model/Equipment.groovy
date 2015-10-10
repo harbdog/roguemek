@@ -1,6 +1,9 @@
 package roguemek.model
 
+import java.io.File
+
 import org.grails.plugins.csv.CSVMapReader
+import roguemek.assets.ContextHelper
 
 class Equipment {
 	static searchable = {
@@ -54,7 +57,7 @@ class Equipment {
 		}
 		
 		// Create all objects for the game from csv
-		new CSVMapReader(new FileReader("src/csv/Equipment.csv")).eachLine { map ->
+		new CSVMapReader(new FileReader(new File(ContextHelper.getContextSourceDir(), "csv/Equipment.csv"))).eachLine { map ->
 			
 			// update Aliases to be multiple strings in an array instead of one string
 			Equipment.updateAliases(map)

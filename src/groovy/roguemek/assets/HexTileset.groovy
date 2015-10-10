@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log
 
 import roguemek.game.Hex
 import roguemek.model.Terrain
+import roguemek.assets.ContextHelper
 
 class HexTileset {
 	private static Log log = LogFactory.getLog(this)
@@ -17,7 +18,8 @@ class HexTileset {
 	 * Initialize the tileset for Hex images
 	 */
 	public static void init() {
-		File tilesetFile = new File("src/tilesets/atmospheric.tileset")
+		File tilesetFile = new File(ContextHelper.getContextSourceDir(), "tilesets/atmospheric.tileset")
+		
 		HexTileset.loadFromFile(tilesetFile)
 	}
 	

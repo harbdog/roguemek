@@ -82,9 +82,13 @@ grails.project.dependency.resolution = {
     }
 }
 
-grails.project.war.file = "RogueMek.war"
+grails.project.war.file = "../RogueMek.war"
 grails.war.resources = { stagingDir, args ->
 	copy(todir: "${stagingDir}/src") {
 		fileset(dir: "src")
+	}
+	
+	copy(todir: "${stagingDir}/assets") {
+		fileset(dir: "grails-app/assets")
 	}
 }

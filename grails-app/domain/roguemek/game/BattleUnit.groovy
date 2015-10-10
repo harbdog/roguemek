@@ -3,6 +3,7 @@ package roguemek.game
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 
+import roguemek.assets.ContextHelper
 import roguemek.game.Coords
 import roguemek.game.EntityImage
 
@@ -57,7 +58,6 @@ class BattleUnit {
 	public static final Integer HEADING_NW = 5
 	
 	public static String imagesExtension = "gif"
-	public static String imagesServerPath = "grails-app/assets/images/"
 	
     static constraints = {
 		pilot nullable: true
@@ -118,7 +118,7 @@ class BattleUnit {
 	public static byte[] initUnitImage(BattleUnit unit) {
 		if(unit == null) return null;
 		
-		def imageLocation = imagesServerPath + unit.imageFile
+		File imageLocation = new File(ContextHelper.getContextAssetsDir(), "images/" + unit.imageFile)
 		log.info("Creating EntityImage with "+imageLocation+", "+unit.rgb)
 		
 		EntityImage entity = new EntityImage(imageLocation, unit.rgb)
