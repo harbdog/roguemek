@@ -67,6 +67,13 @@ c.updateArmorBar = function(doAnimate) {
 		totalArmor += initialInternal;
 	}
 	
+	var borderColor = "#C0C0C0";
+	if(this.unit.status == "D") {
+		// unit is destroyed, show 0% and red outline
+		currentArmor = 0;
+		borderColor = "#FF0000";
+	}
+	
 	var percentArmor = (currentArmor/totalArmor);
 	
 	// blend color as percent goes down
@@ -74,7 +81,7 @@ c.updateArmorBar = function(doAnimate) {
 	this.armorBar.graphics.beginFill(barColor)
 			.drawRect(this.image.width/8, 10*this.image.height/12, percentArmor * (6*this.image.width/8), this.image.height/8)
 			.endFill()
-			.setStrokeStyle(1, "round").beginStroke("#C0C0C0")
+			.setStrokeStyle(2, "round").beginStroke(borderColor)
 			.drawRect(this.image.width/8, 10*this.image.height/12, 6*this.image.width/8, this.image.height/8)
 			.endStroke();
 	

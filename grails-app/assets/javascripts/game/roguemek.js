@@ -257,6 +257,8 @@ function loadGameElements() {
 				  unitInstance.internals = thisUnit.internals;
 				  unitInstance.initialInternals = thisUnit.initialInternals;
 				  
+				  unitInstance.status = thisUnit.status;
+				  
 				  unitInstance.crits = thisUnit.crits;
 				  unitInstance.physical = thisUnit.physical;
 				  unitInstance.weapons = initUnitWeapons(thisUnit);
@@ -896,6 +898,15 @@ function updateGameData(data) {
 	// determine what UI areas need to be updated
 	var updatePosition = false;
 	var updateWeapons = false;
+	
+	// update to unit status
+	if(data.status != null) {
+		var prevStatus = u.status;
+		u.status = data.status;
+		
+		console.log("Unit "+data.unit+" hit, prev status="+prevStatus+", new status="+u.status);
+		console.log(u);
+	}
 	
 	// update to position
 	if(data.x != null && data.y != null){

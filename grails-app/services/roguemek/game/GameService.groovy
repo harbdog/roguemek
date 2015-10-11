@@ -1956,8 +1956,13 @@ class GameService {
 								unit.status = BattleUnit.STATUS_DESTROYED
 								
 								// create destroyed message info
-								/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
-								messages.push(gm);*/
+								def destroyedUnitData = [
+									unit: unit.id,
+									status: String.valueOf(unit.status)
+								]
+								
+								Object[] messageArgs = [unit.toString()]
+								Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.cockpit", messageArgs, destroyedUnitData)
 								
 								return
 							}
@@ -1977,8 +1982,13 @@ class GameService {
 						unit.status = BattleUnit.STATUS_DESTROYED
 						
 						// create destroyed message info
-						/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
-						messages.push(gm);*/
+						def destroyedUnitData = [
+							unit: unit.id,
+							status: String.valueOf(unit.status)
+						]
+						
+						Object[] messageArgs = [unit.toString()]
+						Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.engine", messageArgs, destroyedUnitData)
 						
 						return
 					}
@@ -1986,8 +1996,13 @@ class GameService {
 						unit.status = BattleUnit.STATUS_DESTROYED
 						
 						// create destroyed message info
-						/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
-						messages.push(gm);*/
+						def destroyedUnitData = [
+							unit: unit.id,
+							status: String.valueOf(unit.status)
+						]
+						
+						Object[] messageArgs = [unit.toString()]
+						Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.gyro", messageArgs, destroyedUnitData)
 						
 						return
 					}
@@ -1995,14 +2010,35 @@ class GameService {
 			}
 		}
 		
-		if(unit.internals[Mech.HEAD] == 0 || unit.internals[Mech.CENTER_TORSO] == 0) {
+		if(unit.internals[Mech.HEAD] == 0) {
 			// if head or center internal are gone, the unit is dead
-			//debug.log("Head or CT internal destroyed!");
+			//debug.log("Head internal destroyed!");
 			unit.status = BattleUnit.STATUS_DESTROYED
 			
 			// create destroyed message info
-			/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
-			messages.push(gm);*/
+			def destroyedUnitData = [
+				unit: unit.id,
+				status: String.valueOf(unit.status)
+			]
+			
+			Object[] messageArgs = [unit.toString()]
+			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.head", messageArgs, destroyedUnitData)
+			
+			return
+		}
+		else if(unit.internals[Mech.CENTER_TORSO] == 0) {
+			// if head or center internal are gone, the unit is dead
+			//debug.log("CT internal destroyed!");
+			unit.status = BattleUnit.STATUS_DESTROYED
+			
+			// create destroyed message info
+			def destroyedUnitData = [
+				unit: unit.id,
+				status: String.valueOf(unit.status)
+			]
+			
+			Object[] messageArgs = [unit.toString()]
+			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.torso", messageArgs, destroyedUnitData)
 			
 			return
 		}
@@ -2012,8 +2048,13 @@ class GameService {
 			unit.status = BattleUnit.STATUS_DESTROYED
 			
 			// create destroyed message info
-			/*var gm = new GameMessage(unit, true, ((playerMech == unit) ? playerName : unit.chassis) + " has been destroyed.", SEV_HIGH);
-			messages.push(gm);*/
+			def destroyedUnitData = [
+				unit: unit.id,
+				status: String.valueOf(unit.status)
+			]
+			
+			Object[] messageArgs = [unit.toString()]
+			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.legs", messageArgs, destroyedUnitData)
 			
 			return
 		}

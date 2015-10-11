@@ -62,6 +62,12 @@ class WeaponModifier {
 	public static def getToHitModifiers(Game game, BattleUnit srcUnit, BattleWeapon weapon, BattleUnit tgtUnit) {
 		def toHitMods = []
 		
+		if(tgtUnit.isDestroyed()) {
+			// A destroyed unit doesn't need to take additional damage?
+			toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+			return toHitMods
+		}
+		
 		// make sure target is in the firing arc for the weapon's location
 		GameService.RelativeDirection relDirection = GameService.getRelativeDirection(srcUnit, tgtUnit)
 		if(relDirection == GameService.RelativeDirection.REAR){
