@@ -46,6 +46,9 @@ u.setUnitDisplay = function(displayUnit) {
 u.getUnitDisplay = function() {
 	return this.displayUnit;
 }
+u.isDestroyed = function() {
+	return (this.status == "D");
+}
 u.toString = function() {
 	return "[Unit@"+this.xCoords()+","+this.yCoords()+">"+this.heading+"]";
 }

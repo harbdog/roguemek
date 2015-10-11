@@ -42,6 +42,7 @@ c.init = function() {
 	var scale = 0.8 * hexScale;
 	
 	this.removeAllChildren();
+	this.unitImage = null;
 	
 	// add container which will handle any objects that need rotation
 	this.rotateContainer = new createjs.Container();
@@ -64,35 +65,7 @@ c.update = function() {
 	this.rotateContainer.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	this.shadowUnitImage.rotation = this.rotateContainer.rotation;
 	
-	// draw heading indicator
-	if(this.header == null) {
-		this.header = new createjs.Shape();
-		this.header.x = 0;
-		this.header.y = 0;
-		this.rotateContainer.addChildAt(this.header, 0);
-	}
-	this.header.graphics.clear();
-	
-	// TODO: allow customization of the unit heading color
-	var color = null;
-	if(isPlayerUnit(this.unit)) {
-		color = "#3399FF";
-	}
-	else{
-		color = "#FF0000";
-	}
-	
-	var glowColor = shadeColor(color, 0.5);
-	this.header.graphics.setStrokeStyle(2, "square").beginStroke(color).beginFill(glowColor)
-			.moveTo(-5, -hexHeight/2 + 5)
-			.lineTo(0, -hexHeight/2)
-			.lineTo(5, -hexHeight/2 + 5)
-			.endStroke();
-	this.header.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
-	
-	
-	// TODO: figure out proper location of shadow when rotation is set
-	//this.unitImage.shadow = new createjs.Shadow("#000000", -5, -5, 5);
+	this.updateHeadingIndicator();
 	
 	// create hit area (it never needs to be added to display)
 	var hit = new createjs.Shape();
@@ -243,8 +216,16 @@ c.getImage = function() {
 
 c.drawImage = function(scale) {
 	if(this.unitImage == null) {
-		// load the unit image as a Bitmap
-		this.unitImage = new createjs.Bitmap(this.image);
+		if(this.unit.isDestroyed()) {
+			// load the wreck image as a Bitmap
+			var wreckImage = queue.getResult("wreck.mech."+getUnitClassSize(this.unit));
+			this.unitImage = new createjs.Bitmap(wreckImage);
+		}
+		else{
+			// load the unit image as a Bitmap
+			this.unitImage = new createjs.Bitmap(this.image);
+		}
+		
 		this.rotateContainer.addChild(this.unitImage);
 	}
 	
@@ -413,6 +394,43 @@ c.setUnitIndicatorVisible = function(visible) {
 	this.doCache();
 }
 
+c.updateHeadingIndicator = function() {
+	if(this.unit.isDestroyed()) {
+		if(this.header != null) {
+			this.header.visible = false;
+			delete this.header;
+		}
+		
+		return;
+	}
+	
+	// draw heading indicator
+	if(this.header == null) {
+		this.header = new createjs.Shape();
+		this.header.x = 0;
+		this.header.y = 0;
+		this.rotateContainer.addChildAt(this.header, 0);
+	}
+	this.header.graphics.clear();
+	
+	// TODO: allow customization of the unit heading color
+	var color = null;
+	if(isPlayerUnit(this.unit)) {
+		color = "#3399FF";
+	}
+	else{
+		color = "#FF0000";
+	}
+	
+	var glowColor = shadeColor(color, 0.5);
+	this.header.graphics.setStrokeStyle(2, "square").beginStroke(color).beginFill(glowColor)
+			.moveTo(-5, -hexHeight/2 + 5)
+			.lineTo(0, -hexHeight/2)
+			.lineTo(5, -hexHeight/2 + 5)
+			.endStroke();
+	this.header.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+}
+
 c.updateUnitIndicator = function() {
 	this.uncache();
 	
@@ -421,7 +439,15 @@ c.updateUnitIndicator = function() {
 		this.rotateContainer.removeChild(this.indicator);
 	}
 	
-	if(isTurnUnit(this.unit)) {
+	if(this.unit.isDestroyed()) {
+		if(this.indicator != null) {
+			this.indicator.visible = false;
+			delete this.indicator;
+			
+			this.doCache();
+		}
+	}
+	else if(isTurnUnit(this.unit)) {
 		this.showTurnDisplay();
 		
 		// do not cache the object when using the animated turn indicator

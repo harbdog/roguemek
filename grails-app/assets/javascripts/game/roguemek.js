@@ -299,6 +299,11 @@ function loadGameElements() {
 		  
 		  manifest.push({id:"jumpjet", src:"assets/ui/jumpjet_sprite.png"});
 		  
+		  manifest.push({id:"wreck.mech.light", src:"assets/units/wrecks/light.gif"});
+		  manifest.push({id:"wreck.mech.medium", src:"assets/units/wrecks/medium.gif"});
+		  manifest.push({id:"wreck.mech.heavy", src:"assets/units/wrecks/heavy.gif"});
+		  manifest.push({id:"wreck.mech.assault", src:"assets/units/wrecks/assault.gif"});
+		  
 		  queue.loadManifest(manifest);
 	  });
 }
@@ -545,6 +550,33 @@ function getLocationText(index){
 	}
 		
 	return locText;
+}
+
+/**
+ * Returns the string value of the unit class based on its mass
+ * @param unit
+ * @returns {String}
+ */
+function getUnitClassSize(unit) {
+	var classSize = "unknown";
+	
+	if(unit.mass >= 80) {
+		classSize = "assault";
+	}
+	else if(unit.mass >= 60) {
+		classSize = "heavy";
+	}
+	else if(unit.mass >= 40) {
+		classSize = "medium";
+	}
+	else if(unit.mass >= 20) {
+		classSize = "light";
+	}
+	else {
+		classSize = "ultralight";
+	}
+	
+	return classSize;
 }
 
 /**
@@ -906,6 +938,9 @@ function updateGameData(data) {
 		
 		console.log("Unit "+data.unit+" hit, prev status="+prevStatus+", new status="+u.status);
 		console.log(u);
+		
+		// update unit display to show as destroyed
+		u.getUnitDisplay().init();
 	}
 	
 	// update to position

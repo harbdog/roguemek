@@ -68,7 +68,7 @@ c.updateArmorBar = function(doAnimate) {
 	}
 	
 	var borderColor = "#C0C0C0";
-	if(this.unit.status == "D") {
+	if(this.unit.isDestroyed()) {
 		// unit is destroyed, show 0% and red outline
 		currentArmor = 0;
 		borderColor = "#FF0000";
