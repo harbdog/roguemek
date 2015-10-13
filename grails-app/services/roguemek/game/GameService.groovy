@@ -623,7 +623,7 @@ class GameService {
 		if(e instanceof Ammo) {
 			equipRender.type = "Ammo"
 			equipRender.ammoPerTon = e.ammoPerTon
-			equipRender.ammoExplosive = e.explosive
+			equipRender.ammoExplosiveDamage = e.explosiveDamage
 		}
 		if(equip instanceof BattleAmmo) {
 			equipRender.ammoRemaining = equip.ammoRemaining
@@ -2164,6 +2164,9 @@ class GameService {
 		def availableCrits = [:]
 		BattleEquipment[] critSection
 		
+		// store any ammo equipment that gets hit to apply explosion damage
+		def ammoHits = []
+		
 		if(unit instanceof BattleMech) {
 			critSection = unit.getCritSection(hitLocation)
 		}
@@ -2194,14 +2197,12 @@ class GameService {
 				else if(thisEquip.isActive()) {
 					// equipment is active and has no crit damage
 					availableCrits.put(i, [thisEquip: thisEquip, critIndex: critIndex])
-					log.info("Crit found for active equipment "+thisEquip.toString()+": "+i)
 				}
 				else if(thisEquip.isDamaged()) {
 					// equipment is damaged and may have some crits available to damage further
 					if(thisEquip.criticalHits.length > 0
 							&& thisEquip.criticalHits[critIndex] != true) {
 						// TODO: handle equipment whose crits span more than one section
-						log.info("Crit found for damaged equipment "+thisEquip.toString()+": "+i)
 						availableCrits.put(i, [thisEquip: thisEquip, critIndex: critIndex])
 					}
 				}
@@ -2209,12 +2210,10 @@ class GameService {
 		}
 		
 		def numCrits = availableCrits.size()
-		log.info("Crits available to hit: "+numCrits)
-		log.info(availableCrits)
 		
 		if(numCrits == 0) {
 			// TODO: apply critical hits to next location according to damage transfer
-			log.info("No Critical hits remain on "+hitLocation+" for unit "+unit)
+			//log.info("No Critical hits remain on "+hitLocation+" for unit "+unit)
 		}
 		else {
 			if(numHits > numCrits) {
@@ -2222,12 +2221,8 @@ class GameService {
 			}
 			
 			// roll for each hit to see what component is destroyed/damaged
-			log.info("Critical hits on "+hitLocation+": "+numHits+" for unit "+unit)
-			
 			def availableCritKeys = availableCrits.keySet().toArray()
 			def availableCritValues = availableCrits.values().toArray()
-			
-			log.info("availbleCritvalues="+availableCritValues)
 			
 			for(def n = 0; n < numHits; n++) {
 				def dieCrit = Roll.randomInt(numCrits, 1)
@@ -2238,8 +2233,6 @@ class GameService {
 				availableCrits.remove(critHitKey)
 				availableCritKeys = availableCrits.keySet().toArray()
 				availableCritValues = availableCrits.values().toArray()
-				
-				log.info("  critHitKey="+critHitKey+": "+critHit)
 				
 				BattleEquipment critEquip = critHit.thisEquip
 				def critIndex = critHit.critIndex
@@ -2256,13 +2249,9 @@ class GameService {
 							critEquip.criticalHits[i] = (i == critIndex) ? true : false
 						}
 					}
-					
-					log.info("    Applied first critical hit to "+critEquip+" at "+critHitKey + " ("+critEquip.id+")")
 				}
 				else {
 					critEquip.criticalHits[critIndex] = true
-					
-					log.info("    Applied another critical hit to "+critEquip+" at "+critHitKey + " ("+critEquip.id+")")
 					
 					// check to see if all critical hits are filled, and if so set status as destroyed
 					boolean isDestroyed = true
@@ -2275,9 +2264,13 @@ class GameService {
 					
 					if(isDestroyed) {
 						critEquip.status = BattleEquipment.STATUS_DESTROYED
-						
-						log.info("    Destroyed "+critEquip+"!!!")
 					}
+				}
+				
+				if(critEquip instanceof BattleAmmo
+						&& critEquip.ammoRemaining > 0) {
+					// ammo that needs to be exploded and reduced to zero ammo will occur outside this loop
+					ammoHits.add(critEquip)
 				}
 				
 				critEquip.save flush:true
@@ -2290,6 +2283,34 @@ class GameService {
 				Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.hit", messageArgs, data)
 				
 				numCrits --
+			}
+		}
+		
+		if(ammoHits.size() > 0) {
+			for(BattleAmmo bAmmo in ammoHits) {
+				if(bAmmo.isExplosive()) {
+					int ammoRemaining = bAmmo.ammoRemaining
+					int ammoExplosionDamage = ammoRemaining * bAmmo.getExplosiveDamage()
+					
+					applyDamage(game, ammoExplosionDamage, unit, hitLocation)
+					unit.save flush:true
+					
+					// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
+					def data = [
+						unit: unit.id,
+						target: unit.id,
+						damage: ammoExplosionDamage,
+						hitLocation: hitLocation,
+						armorHit: unit.armor,
+						internalsHit: unit.internals
+					]
+					
+					Object[] messageArgs = [unit.toString(), String.valueOf(ammoExplosionDamage), locationStr]
+					Date update = GameMessage.addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, data)
+				}
+				
+				bAmmo.ammoRemaining = 0
+				bAmmo.save flush:true
 			}
 		}
 		

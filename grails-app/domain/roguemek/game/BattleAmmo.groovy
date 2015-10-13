@@ -22,4 +22,11 @@ class BattleAmmo extends BattleEquipment {
 	public int getAmmoPerTon() {
 		return this.equipment.ammoPerTon
 	}
+	
+	public boolean isExplosive() {
+		return (this.equipment.explosiveDamage > 0)
+	}
+	public int getExplosiveDamage() {
+		return this.equipment.explosiveDamage
+	}
 }

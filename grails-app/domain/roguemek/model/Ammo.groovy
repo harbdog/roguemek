@@ -8,13 +8,13 @@ import roguemek.assets.ContextHelper
 class Ammo extends Equipment {
 
 	Integer ammoPerTon
-	Boolean explosive
+	Integer explosiveDamage
 	
 	static belongsTo = Weapon
 	
     static constraints = {
 		ammoPerTon min: 1
-		explosive nullable: false
+		explosiveDamage nullable: false, min: 0
     }
 	
 	static void init() {
