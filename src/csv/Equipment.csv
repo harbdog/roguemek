@@ -1,17 +1,17 @@
 name,shortName,aliases, description,mass,crits,tech,year,cbills,battleValue
-Cockpit,,,,0,1,I,0,0,0
-Life Support,,,,0,1,I,0,0,0
-Sensors,,,,0,1,I,0,0,0
--Empty-,,,,0,1,I,0,0,0
-Shoulder,,,,0,1,I,0,0,0
-Upper Arm Actuator,,,,0,1,I,0,0,0
-Lower Arm Actuator,,,,0,1,I,0,0,0
-Hand Actuator,,,,0,1,I,0,0,0
-Engine,,,,0,1,I,0,0,0
-Fusion Engine,,,,0,1,I,0,0,0
-Gyro,,,,0,1,I,0,0,0
-Hip,,,,0,1,I,0,0,0
-Upper Leg Actuator,,,,0,1,I,0,0,0
-Lower Leg Actuator,,,,0,1,I,0,0,0
-Foot Actuator,,,,0,1,I,0,0,0
+Cockpit,COCKPIT,,,0,1,I,0,0,0
+Life Support,LF_SPRT,,,0,1,I,0,0,0
+Sensors,SENSORS,,,0,1,I,0,0,0
+-Empty-,EMPTY,,,0,1,I,0,0,0
+Shoulder,SHOULDR,,,0,1,I,0,0,0
+Upper Arm Actuator,ARM_ACT,,,0,1,I,0,0,0
+Lower Arm Actuator,ARM_ACT,,,0,1,I,0,0,0
+Hand Actuator,HND_ACT,,,0,1,I,0,0,0
+Engine,ENGINE,,,0,1,I,0,0,0
+Fusion Engine,ENGINE,,,0,1,I,0,0,0
+Gyro,GYRO,,,0,1,I,0,0,0
+Hip,HIP,,,0,1,I,0,0,0
+Upper Leg Actuator,LEG_ACT,,,0,1,I,0,0,0
+Lower Leg Actuator,LEG_ACT,,,0,1,I,0,0,0
+Foot Actuator,FT_ACT,,,0,1,I,0,0,0
 Guardian ECM,GECM,ISGuardianECM,,1.5,2,I,3045,0,0

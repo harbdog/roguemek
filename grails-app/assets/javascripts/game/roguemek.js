@@ -936,8 +936,14 @@ function updateGameData(data) {
 		var prevStatus = u.status;
 		u.status = data.status;
 		
-		console.log("Unit "+data.unit+" hit, prev status="+prevStatus+", new status="+u.status);
-		console.log(u);
+		if(prevStatus != "D" && u.isDestroyed()) {
+			// show floating message about the unit being destroyed
+			var floatMessageStr = "DESTROYED";	// TODO: localize this message
+			
+			// determine location of message and create it
+			var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);
+			createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+		}
 		
 		// update unit display to show as destroyed
 		u.getUnitDisplay().init();
@@ -1026,9 +1032,12 @@ function updateGameData(data) {
 		
 		equipObj.status = status;
 		
-		// TODO: update the UI with the info about the critical hit
-		console.log("Equipment "+equipId+" hit, prev status="+prevStatus+", new status="+status);
-		console.log(equipObj);
+		// show floating message about the crit being hit
+		var floatMessageStr = "CRIT "+equipObj.shortName;	// TODO: localize this message and include short name of the equipment
+		
+		// determine location of message and create it
+		var floatMessagePoint = new Point(t.getUnitDisplay().x, t.getUnitDisplay().y);
+		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
 	}
 	
 	// update ammo remaining
@@ -1075,7 +1084,7 @@ function updateGameData(data) {
 			
 			weapon.cooldown = cooldown;
 			
-			// TODO: show floating miss/hit numbers
+			// show weapon fire and floating miss/hit numbers
 			animateWeaponFire(u, weapon, t, hitLocations);
 			
 		}
