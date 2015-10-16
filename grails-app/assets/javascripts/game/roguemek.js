@@ -947,6 +947,7 @@ function updateGameData(data) {
 		
 		// update unit display to show as destroyed
 		u.getUnitDisplay().init();
+		u.getUnitDisplay().update();
 	}
 	
 	// update to position

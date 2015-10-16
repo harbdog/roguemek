@@ -43,6 +43,7 @@ c.init = function() {
 	
 	this.removeAllChildren();
 	this.unitImage = null;
+	this.shadowUnitImage = null;
 	
 	// add container which will handle any objects that need rotation
 	this.rotateContainer = new createjs.Container();

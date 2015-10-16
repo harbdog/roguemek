@@ -15,7 +15,7 @@ function FloatMessage(message, config) {
 		glowColor: "#333333",
 		messageBoxAlpha: 0.7,
 		messageBoxColor: "#000000",
-		messageTextFont: "Bold 18px Monospace",
+		messageTextFont: "Bold 18px UbuntuMono",
 		messageTextColor: "#FF0000"
 	};
 	this.setup(message, config);
