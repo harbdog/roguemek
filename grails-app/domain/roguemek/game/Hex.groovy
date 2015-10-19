@@ -146,6 +146,52 @@ class Hex {
 	}
 	
 	/**
+	 * @return a level indicating how far features in this hex extend below the surface level.
+	 * 
+	 * sourced from MegaMek Hex.java
+	 */
+	public int depth(boolean hidden) {
+		int depth = 0;
+		Terrain water = this.getTerrain(Terrain.WATER);
+		//Terrain basement = getTerrain(Terrain.BLDG_BASEMENT_TYPE);
+
+		if (water != null) {
+			depth += water.getLevel();
+		}
+		/*if (basement != null) {
+			if (hidden) {
+				depth += BasementType.getType(basement.getLevel()).getDepth();
+			}
+		}*/
+
+		return depth;
+	}
+	
+	/**
+	 * @return the surface level of the hex
+	 * 
+	 * sourced from MegaMek Hex.java
+	 */
+	public int surface() {
+		return this.elevation
+	}
+	
+	/**
+	 * Returns the lowest reachable point of this hex, used for
+	 * terrain types that can extend below the surface of the hex, such as water
+	 * and basements.  Unrevealed basements will not effect this value.
+	 *
+	 * @return the lowest level that revealed features in this hex extend to.
+	 *         Below this level is assumed to be bedrock and/or basement.
+	 *         Unrevealed basements will not effect this value.
+	 *         
+	 * sourced from MegaMek Hex.java
+	 */
+	public int floor() {
+		return this.elevation - this.depth()
+	}
+	
+	/**
 	 * Gets all applicable data for the object that can be turned into JSON for the client
 	 * @return
 	 */

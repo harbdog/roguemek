@@ -104,6 +104,13 @@ class BattleUnit {
 	}
 	
 	/**
+	 * Return the height of this mech above the terrain.
+	 */
+	public int getHeight() {
+		return prone ? 0 : 1;
+	}
+	
+	/**
 	 * Returns just the Callsign of the pilot's user
 	 * @return
 	 */

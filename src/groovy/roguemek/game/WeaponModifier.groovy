@@ -294,7 +294,7 @@ class WeaponModifier {
 		
 		// add in location and target only type mods
 		// TODO: share applicable modifiers with other weapons firing from the same mech (only calculate once)
-		def fromLocationMods = getToHitModifiersFromLocation(game, srcUnit.getLocation(), tgtUnit)
+		def fromLocationMods = getToHitModifiersFromLocation(game, srcUnit, tgtUnit)
 		toHitMods = (toHitMods << fromLocationMods).flatten()
 		
 		//log.info("Modifiers for "+weapon.toString()+" from "+srcUnit.toString() + " at "+tgtUnit.toString())
@@ -310,12 +310,16 @@ class WeaponModifier {
 	 * @param srcLocation
 	 * @param tgtUnit
 	 */
-	public static def getToHitModifiersFromLocation(Game game, Coords srcLocation, BattleUnit tgtUnit){
+	public static def getToHitModifiersFromLocation(Game game, BattleUnit srcUnit, BattleUnit tgtUnit){
 		def toHitMods = []
 		
-		if(srcLocation == null || tgtUnit == null || tgtUnit.getLocation() == null){
+		if(srcUnit == null || srcUnit.getLocation() == null 
+				|| tgtUnit == null || tgtUnit.getLocation() == null){
 			return toHitMods
 		}
+				
+		Coords srcLocation = srcUnit.getLocation()
+		Coords tgtLocation = tgtUnit.getLocation()
 		
 		// add movement modifiers from target
 		GameService.CombatStatus tgtMoveStatus = GameService.getUnitCombatStatus(game, tgtUnit)
@@ -330,7 +334,7 @@ class WeaponModifier {
 		}
 		else if(tgtMoveStatus == GameService.CombatStatus.UNIT_PRONE){
 			// prone mech decreases to hit roll by 2 from adjacent hex (distance of 1), but increases by 1 from all others
-			def range = GameService.getRange(srcLocation, tgtUnit.getLocation())
+			def range = GameService.getRange(srcLocation, tgtLocation)
 			if(range <= 1){
 				toHitMods.push(new WeaponModifier(Modifier.TARGET_PRONE, -2 * STANDARD_MODIFIER))
 			}
@@ -350,7 +354,7 @@ class WeaponModifier {
 		
 		
 		// add LOS obstacle modifiers
-		def los = Compute.calculateLos(game, srcLocation, tgtUnit.location)
+		def los = Compute.calculateLos(game, srcUnit, tgtUnit)
 		def losMods = Compute.losModifiers(los)
 		toHitMods = (toHitMods << losMods).flatten()
 		
@@ -359,7 +363,7 @@ class WeaponModifier {
 		toHitMods = (toHitMods << attackerMods).flatten()
 		
 		// add target terrain modifier
-		def targetMods = Compute.getTargetTerrainModifier(game, tgtUnit.location)
+		def targetMods = Compute.getTargetTerrainModifier(game, tgtLocation)
 		toHitMods = (toHitMods << targetMods).flatten()
 		
 		return toHitMods;

@@ -2,7 +2,9 @@ package roguemek.game
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+
 import roguemek.model.Terrain
+import roguemek.game.BattleUnit
 
 /**
  * Contains source code that is very useful when performing hex based mathematics
@@ -41,7 +43,55 @@ class Compute {
 	}
 	
 	/**
-	 * Returns a LosEffects object representing the LOS effects of interveing
+	 * class to store info about the attack used during calculations
+	 * based off of the same class from MegaMek (LosEffects.java)
+	 */
+	public static class AttackInfo {
+		public boolean attUnderWater;
+		public boolean attInWater;
+		public boolean attOnLand;
+		public boolean targetUnderWater;
+		public boolean targetInWater;
+		public boolean targetOnLand;
+		public boolean underWaterCombat;
+		public boolean targetEntity = true;
+		public boolean targetInfantry;
+		public boolean targetIsMech;
+		public boolean attackerIsMech;
+		public boolean attOffBoard;
+		public Coords attackPos;
+		public Coords targetPos;
+		
+		/**
+		 * The absolute elevation of the attacker, i.e. the number of levels
+		 * attacker is placed above a level 0 hex.
+		 */
+		public int attackAbsHeight;
+		
+		/**
+		 * The absolute elevation of the target, i.e. the number of levels
+		 * target is placed above a level 0 hex.
+		 */
+		public int targetAbsHeight;
+		
+		/**
+		 * The height of the attacker, that is, how many levels above its
+		 * elevation it is for LOS purposes.
+		 */
+		public int attackHeight;
+		
+		/**
+		 * The height of the target, that is, how many levels above its
+		 * elevation it is for LOS purposes.
+		 */
+		public int targetHeight;
+		public String attackerId;
+		public String targetId;
+		int minimumWaterDepth = -1;
+	}
+	
+	/**
+	 * Returns a LosEffects object representing the LOS effects of intervening
 	 * terrain between the attacker and target.
 	 *
 	 * Checks to see if the attacker and target are at an angle where the LOS
@@ -50,19 +100,103 @@ class Compute {
 	 *
 	 * based off of the same method from MegaMek (LosEffects.java)
 	 */
-	public static def calculateLos(Game game, Coords sourceC, Coords targetC) {
+	public static def calculateLos(Game game, BattleUnit sourceU, BattleUnit targetU) {
 	
-		if (sourceC == null || targetC == null) {
+		if (sourceU == null || targetU == null) {
 			def los = new LosEffects()
 			los.blocked = true
 			return los
 		}
 		
-		def degree = getDegree(sourceC, targetC)
-		if (degree % 60 == 30) {
-			return losDivided(game, sourceC, targetC)
+		Coords attackPos = sourceU.getLocation()
+		Coords targetPos = targetU.getLocation()
+		
+		Hex attHex = game.getHexAt(attackPos)
+		Hex targetHex = game.getHexAt(targetPos)
+		
+		final AttackInfo ai = new AttackInfo()
+		ai.attackerIsMech = sourceU instanceof BattleMech
+		ai.attackPos = attackPos
+		ai.attackerId = sourceU.id
+		ai.targetPos = targetPos
+		ai.targetEntity = true //target.getTargetType() == Targetable.TYPE_ENTITY
+		if(ai.targetEntity) {
+			ai.targetId = targetU.id
+			ai.targetIsMech = targetU instanceof BattleMech
+		}else {
+			ai.targetIsMech = false
+		}
+		
+		ai.targetInfantry = false //targetU instanceof Infantry
+		ai.attackHeight = sourceU.getHeight()
+		ai.targetHeight = targetU.getHeight()
+
+		// TODO: handle "relHeight" instead of "getHeight", which takes into consideration unit elevation above the terrain (e.g. VTOL)
+		int attEl = sourceU.getHeight() + attHex.elevation
+		// for spotting, a mast mount raises our elevation by 1
+		/*if (spotting && sourceU.hasWorkingMisc(MiscType.F_MAST_MOUNT, -1)) {
+			attEl += 1
+		}*/
+		int targEl = targetU.getHeight() + targetHex.elevation
+
+		ai.attackAbsHeight = attEl
+		ai.targetAbsHeight = targEl
+		
+		boolean attOffBoard = false //sourceU.isOffBoard()
+		boolean attUnderWater
+		boolean attInWater
+		boolean attOnLand
+		if (attOffBoard) {
+			attUnderWater = true
+			attInWater = false
+			attOnLand = true
 		} else {
-			return losStraight(game, sourceC, targetC)
+			attUnderWater = attHex.containsTerrain(Terrain.WATER) && (attHex.depth() > 0) && (attEl < attHex.surface())
+			attInWater = attHex.containsTerrain(Terrain.WATER) && (attHex.depth() > 0) && (attEl == attHex.surface())
+			attOnLand = !(attUnderWater || attInWater)
+		}
+
+		boolean targetOffBoard = false //!game.getBoard().contains(targetPos)
+		boolean targetUnderWater
+		boolean targetInWater
+		boolean targetOnLand
+		if (targetOffBoard) {
+			targetUnderWater = true
+			targetInWater = false
+			targetOnLand = true
+		} else {
+			targetUnderWater = targetHex.containsTerrain(Terrain.WATER) && (targetHex.depth() > 0) && (targEl < targetHex.surface())
+			targetInWater = targetHex.containsTerrain(Terrain.WATER) && (targetHex.depth() > 0) && (targEl == targetHex.surface())
+			targetOnLand = !(targetUnderWater || targetInWater)
+		}
+
+		boolean underWaterCombat = targetUnderWater || attUnderWater
+
+		ai.attUnderWater = attUnderWater
+		ai.attInWater = attInWater
+		ai.attOnLand = attOnLand
+		ai.targetUnderWater = targetUnderWater
+		ai.targetInWater = targetInWater
+		ai.targetOnLand = targetOnLand
+		ai.underWaterCombat = underWaterCombat
+		ai.attOffBoard = attOffBoard
+		// Handle minimum water depth.
+		// Applies to Torpedos.
+		if (ai.attOnLand || ai.targetOnLand) {
+			ai.minimumWaterDepth = 0
+		} else if (ai.attInWater || ai.targetInWater) {
+			ai.minimumWaterDepth = 1
+		} else if (ai.attUnderWater || ai.targetUnderWater) {
+			ai.minimumWaterDepth = Math.min(
+					attHex.getTerrainLevel(Terrain.WATER), targetHex
+							.getTerrainLevel(Terrain.WATER))
+		}
+		
+		def degree = getDegree(attackPos, targetPos)
+		if (degree % 60 == 30) {
+			return losDivided(game, ai)
+		} else {
+			return losStraight(game, ai)
 		}
 	}
 	
@@ -79,9 +213,12 @@ class Compute {
 	 * hexes.  Since intervening() returns all the coordinates, we just
 	 * add the effects of all those hexes.
 	 *
-	 * based off of the same method from MegaMek (Compute.java)
+	 * based off of the same method from MegaMek (LosEffects.java)
 	 */
-	public static def losStraight(Game game, Coords sourceC, Coords targetC) {
+	private static def losStraight(Game game, AttackInfo ai) {
+		Coords sourceC = ai.attackPos
+		Coords targetC = ai.targetPos
+		
 		log.debug("losStraight: "+sourceC+"->"+targetC)
 		
 		def interveningCoords = intervening(game, sourceC, targetC)
@@ -89,7 +226,7 @@ class Compute {
 		def los = new LosEffects()
 	
 		for (def i = 0; i < interveningCoords.size(); i++) {
-			los.add( losForCoords(game, sourceC, targetC, interveningCoords[i]) )
+			los.add( losForCoords(game, ai, interveningCoords[i]) )
 		}
 	
 		return los
@@ -121,24 +258,29 @@ class Compute {
 	 * leg weapons, as we want to return the same sequence regardless of
 	 * what weapon is attacking.
 	 *
-	 * based off of the same method from MegaMek (Compute.java)
+	 * based off of the same method from MegaMek (LosEffects.java)
 	 */
-	public static def losDivided(Game game, Coords sourceC, Coords targetC) {
+	private static def losDivided(Game game, AttackInfo ai) {
+		Coords sourceC = ai.attackPos
+		Coords targetC = ai.targetPos
+		
 		log.debug("losDivided: "+sourceC+"->"+targetC)
 		
 		def interveningCoords = intervening(game, sourceC, targetC)
 		
 		def los = new LosEffects()
 		
-		Hex sourceHex = game.getHexAt(sourceC)
-		Hex targetHex = game.getHexAt(targetC)
-		
 		//TODO: something needed for elevation difference?
-		def isElevDiff = ( sourceHex.elevation != targetHex.elevation )
+		//def isElevDiff = ( sourceHex.elevation != targetHex.elevation )
 	
 		// add non-divided line segments
 		for (def i = 3; i < interveningCoords.size() - 2; i += 3) {
-			los.add( losForCoords(game, sourceC, targetC, interveningCoords[i]) )
+			los.add( losForCoords(game, ai, interveningCoords[i]) )
+		}
+		
+		if ((ai.minimumWaterDepth < 1) && ai.underWaterCombat) {
+			// TODO: Under Water Combat
+			los.blocked = true;
 		}
 		
 		// if blocked already, return that
@@ -150,8 +292,8 @@ class Compute {
 		// go through divided line segments
 		for (def i = 1; i < interveningCoords.size() - 2; i += 3) {
 			// get effects of each side
-			LosEffects left = losForCoords(game, sourceC, targetC, interveningCoords[i])
-			LosEffects right = losForCoords(game, sourceC, targetC, interveningCoords[i+1])
+			LosEffects left = losForCoords(game, ai, interveningCoords[i])
+			LosEffects right = losForCoords(game, ai, interveningCoords[i+1])
 	
 			// Include all previous LOS effects.
 			left.add(los)
@@ -188,7 +330,7 @@ class Compute {
 	 * Based off of some of the formulas at Amit's game programming site.
 	 * (http://www-cs-students.stanford.edu/~amitp/gameprog.html)
 	 *
-	 * based off of the same method from MegaMek (Compute.java)
+	 * based off of the same method from MegaMek (LosEffects.java)
 	 */
 	public static def intervening(Game game, Coords srcCoord, Coords destCoord) {
 		def iSrc = new IdealHex(srcCoord)
@@ -220,7 +362,7 @@ class Compute {
 	 *
 	 * Not the most elegant solution, but it works.
 	 *
-	 * based off of the same method from MegaMek (Compute.java)
+	 * based off of the same method from MegaMek (LosEffects.java)
 	 */
 	public static def nextHex(Coords currentCoord, IdealHex iSrc, IdealHex iDest, def directions) {
 		for (def i = 0; i < directions.size(); i++) {
@@ -240,40 +382,49 @@ class Compute {
 	 * Returns a LosEffects object representing the LOS effects of anything at
 	 * the specified coordinate.
 	 *
-	 * based off of the same method from MegaMek (Compute.java)
+	 * based off of the same method from MegaMek (LosEffects.java)
 	 */
-	public static LosEffects losForCoords(Game game, Coords sourceC, Coords targetC, Coords thisCoord) {
+	private static LosEffects losForCoords(Game game, AttackInfo ai, Coords thisCoord) {
 		LosEffects los = new LosEffects()
+		
+		Coords sourceC = ai.attackPos
+		Coords targetC = ai.targetPos
 	
 		// ignore hexes the attacker or target are in
 		if ( thisCoord.equals(sourceC) ||  thisCoord.equals(targetC) ) {
 			return los
 		}
 		
-		Hex sourceHex = game.getHexAt(sourceC)
-		Hex targetHex = game.getHexAt(targetC)
 		Hex thisHex = game.getHexAt(thisCoord)
 		
 		if(thisHex == null){
-			log.debug("   HEX NULL")
+			log.error("   HEX NULL @ "+thisCoord)
 			return los
 		}
 		
-		log.debug("   HEX: "+thisHex)
-		
 		// set up elevations
-		def srcEl = sourceHex.elevation + 1		//TODO: the +1 for source represents it is standing, prone would be +0
-		def targEl = targetHex.elevation + 1	//TODO: the +1 for target represents it is standing, prone would be +0
-		def hexEl = thisHex.elevation;
+		def srcEl = ai.attackAbsHeight
+		def targEl = ai.targetAbsHeight
+		def hexEl = ai.underWaterCombat ? thisHex.floor() : thisHex.surface()
 		
 		// TODO: buildings?
 		def bldgEl = 0
 	
+		def totalEl = hexEl + bldgEl
+		
 		// check for block by terrain
-		if ((hexEl + bldgEl > srcEl && hexEl + bldgEl > targEl)
-				|| (hexEl + bldgEl > srcEl && sourceC.distance(thisCoord) == 1)
-				|| (hexEl + bldgEl > targEl && targetC.distance(thisCoord) == 1)) {
+		if ((totalEl > srcEl && totalEl > targEl)
+				|| (totalEl > srcEl && sourceC.distance(thisCoord) == 1)
+				|| (totalEl > targEl && targetC.distance(thisCoord) == 1)) {
 			los.blocked = true
+		}
+				
+		// check if there's a clear hex between the targets that's higher than
+		// one of them, if we're in underwater combat
+		if (ai.underWaterCombat
+				&& (thisHex.getTerrainLevel(Terrain.WATER) == Terrain.LEVEL_NONE)
+				&& ((totalEl > ai.attackAbsHeight) || (totalEl > ai.targetAbsHeight))) {
+			los.blocked = true;
 		}
 	
 		// check for woods or smoke
@@ -298,16 +449,18 @@ class Compute {
 		}
 		
 		// check for target partial cover
-		if (targetC.distance(thisCoord) == 1 && hexEl + bldgEl == targEl && srcEl <= targEl) {
-				//srcEl <= targEl && target.getHeight() > 0) {	// TODO: implement height 0 as prone
+		if (ai.targetIsMech
+				&& targetC.distance(thisCoord) == 1 
+				&& totalEl == targEl && srcEl <= targEl 
+				&& ai.targetHeight > 0) {
 			los.targetCover = true
 		}
 	
 		// check for attacker partial cover
-		if (sourceC.distance(thisCoord) == 1 &&
-				hexEl + bldgEl == srcEl &&
-				srcEl >= targEl) {
-				//srcEl >= targEl && ae.height() > 0) {			// TODO: implement height 0 as prone
+		if (ai.attackerIsMech 
+				&& sourceC.distance(thisCoord) == 1 
+				&& totalEl == srcEl && srcEl >= targEl
+                && ai.attackHeight > 0) {
 			los.attackerCover = true
 		}
 		
@@ -318,7 +471,7 @@ class Compute {
 	 * Returns ToHitData indicating the modifiers to fire for the specified
 	 * LOS effects data.
 	 *
-	 * based off of the same method from MegaMek (Compute.java)
+	 * based off of the same method from MegaMek (LosEffects.java)
 	 */
 	public static def losModifiers(LosEffects los) {
 		

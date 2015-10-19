@@ -1798,7 +1798,7 @@ class GameService {
 			// partial cover does not apply against charge or DFA attacks
 		}
 		else{
-			def fromLocationMods = WeaponModifier.getToHitModifiersFromLocation(game, srcLocation, tgtUnit)
+			def fromLocationMods = WeaponModifier.getToHitModifiersFromLocation(game, srcUnit, tgtUnit)
 			for(int i=0; i<fromLocationMods.size(); i++) {
 				def modifier = fromLocationMods[i]
 				if(modifier != null
