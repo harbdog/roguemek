@@ -237,6 +237,7 @@ class GameService {
 		
 		// reset damage taken for the new turn
 		unit.damageTaken = 0
+		unit.damageTakenCheck = false
 		
 		unit.save flush: true
 		
@@ -1724,6 +1725,9 @@ class GameService {
 			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, thisWeaponData)
 		}
 		
+		// perform piloting check on target in case it has received 20 damage or more this turn and hasn't already performed the check
+		checkDamageTakenPilotSkill(game, target)
+		
 		// update return data with target armor/internals
 		// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
 		data.armorHit = target.armor
@@ -1748,6 +1752,38 @@ class GameService {
 		
 		// TODO: handle returning all of the individual data arrays instead of just the last
 		return data
+	}
+	
+	/**
+	 * Developer use only
+	 * @param game
+	 * @param target
+	 * @return
+	 */
+	public def devTripTarget(Game game, BattleUnit target) {
+		if(!isRootUser()) return
+		
+		log.info("devTrip to "+target.toString())
+		
+		checkDamageTakenPilotSkill(game, target)
+	}
+	
+	/**
+	 * Perform piloting check on target in the event it has received 20 damage or more this turn and hasn't already performed the check
+	 */
+	public def checkDamageTakenPilotSkill(Game game, BattleUnit target) {
+		if(target instanceof BattleMech 
+				//TODO: && target.damageTaken >= 20
+				//TODO: && target.damageTakenCheck == false
+				) {
+				
+			// piloting skill check for damage taken only happens once per unit turn
+			target.damageTakenCheck = true
+			
+			def modifiers = PilotingModifier.getPilotSkillModifiers(game, target)
+			
+			log.info("Modifiers for "+target.toString()+": "+modifiers)
+		}
 	}
 	
 

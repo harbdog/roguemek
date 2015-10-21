@@ -551,4 +551,9 @@ class WeaponModifier {
 		
 		return penaltyMods;
 	}
+	
+	@Override
+	public String toString() {
+		return "<WeaponModifier:"+this.type+"="+this.value+">"
+	}
 }

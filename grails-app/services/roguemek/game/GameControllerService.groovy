@@ -225,4 +225,25 @@ class GameControllerService {
 		
 		return gameService.devCritTarget(game, Integer.valueOf(crits), target, Integer.valueOf(hitLocation))
 	}
+	
+	/**
+	 * Developer use only
+	 * Example usage, from javascript console:
+	 * 	   handleActionJSON({perform: "devTripTarget", target_id: "402880e9502e0b1b01502e0b9459061d"});
+	 * @param game
+	 * @param pilot
+	 * @param unit
+	 * @param params
+	 * @return
+	 */
+	private def devTripTarget(Game game, Pilot pilot, BattleUnit unit, Map params) {
+		String targetId = params.target_id
+		
+		BattleUnit target = BattleUnit.get(targetId)
+		if(target == null) {
+			return
+		}
+		
+		return gameService.devTripTarget(game, target)
+	}
 }

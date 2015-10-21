@@ -36,6 +36,7 @@ class BattleUnit {
 	Integer jpMoved = -1
 	Integer hexesMoved = 0
 	Integer damageTaken = 0
+	Boolean damageTakenCheck = false
 	Boolean shutdown = false
 	Boolean prone = false
 	
@@ -74,6 +75,7 @@ class BattleUnit {
 		apMoved min: 0
 		hexesMoved min: 0
 		damageTaken min: 0
+		damageTakenCheck nullable: false
 		shutdown nullable: false
 		prone nullable: false
 		
