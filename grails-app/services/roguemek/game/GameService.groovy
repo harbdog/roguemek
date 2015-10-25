@@ -1765,7 +1765,13 @@ class GameService {
 		
 		log.info("devTrip to "+target.toString())
 		
-		checkDamageTakenPilotSkill(game, target)
+		def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, null)
+			
+		log.info("Modifiers for "+target.toString()+": "+modifiers)
+		
+		def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+		
+		log.info("checkSuccess: "+checkSuccess)
 	}
 	
 	/**
@@ -1773,17 +1779,86 @@ class GameService {
 	 */
 	public def checkDamageTakenPilotSkill(Game game, BattleUnit target) {
 		if(target instanceof BattleMech 
-				//TODO: && target.damageTaken >= 20
-				//TODO: && target.damageTakenCheck == false
-				) {
+				&& target.damageTaken >= 20
+				&& target.damageTakenCheck == false) {
 				
 			// piloting skill check for damage taken only happens once per unit turn
 			target.damageTakenCheck = true
 			
-			def modifiers = PilotingModifier.getPilotSkillModifiers(game, target)
+			def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, PilotingModifier.Modifier.MECH_DAMAGE)
 			
-			log.info("Modifiers for "+target.toString()+": "+modifiers)
+			def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+			
+			if(checkSuccess) {
+				target.save flush:true
+			}
 		}
+	}
+	
+	/**
+	 * Does the piloting skill check for the unit based on the given modifiers, and if fails makes the unit fall
+	 */
+	public def doPilotSkillCheck(Game game, BattleUnit unit, def modifiers) {
+		if(unit instanceof BattleMech) {
+			// TODO: determine base toHit% based on Pilot skills
+			double toCheck = 90.0
+			for(PilotingModifier mod in modifiers) {
+				toCheck -= mod.getValue()
+			}
+			
+			boolean checkSuccess = false
+			if(toCheck >= 100) {
+				log.info("Unit "+unit+" AUTO STANDS ("+toCheck+")!")
+				checkSuccess = true
+			}
+			else if(toCheck > 0){
+				int result = Roll.randomInt(100, 1)
+				if(result <= toCheck) {
+					log.info("Unit "+unit+" STANDS! Rolled: "+result+"/"+toCheck)
+					checkSuccess = true
+				}
+				else {
+					log.info("Unit "+unit+" FALLS! Rolled: "+result+"/"+toCheck)
+				}
+			}
+			else {
+				log.info("Unit "+unit+" AUTO FALLS ("+toCheck+")!")
+			}
+			
+			if(checkSuccess 
+					&& unit.prone) {
+				// the prone unit stands on its own again
+				unit.prone = false
+				
+				// TODO: add message about standing up again
+				
+				unit.save flush:true
+			}
+			else if(!checkSuccess) {
+				// Unit falls and takes damage
+				unit.prone = true
+				
+				int fallDamage = 5	// TODO: calculate actual fall damage
+				def fallHitLocations = Mech.FRONT_HIT_LOCATIONS	// TODO: determine actual fall locations
+				
+				def selfData = selfDamage(game, fallDamage, unit, fallHitLocations)
+				
+				String selfAttackerDamage = String.valueOf(fallDamage)
+				String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
+				
+				Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, "FALLING", selfLocationStr]	//TODO: i18n
+				Date update = GameMessage.addMessageUpdate(
+						game,
+						"game.unit.damage.self",
+						selfMessageArgs, selfData)
+				
+				unit.save flush:true
+			}
+			
+			return checkSuccess
+		}
+		
+		return true
 	}
 	
 

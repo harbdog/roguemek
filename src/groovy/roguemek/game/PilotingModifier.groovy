@@ -22,11 +22,12 @@ class PilotingModifier {
 		IMMOBILE("IMMOBILE"),						// automatically falls
 		MECH_STANDING("STANDING"),					// +0 for attempting to stand
 		
-		MECH_DAMAGE("DAMAGE"),						// +1 for taking 20+ damage in one turn
+		MECH_DAMAGE("DAMAGE 20+"),					// +1 for taking 20+ damage in one turn
 		MECH_SHUTDOWN("SHUTDOWN"),					// +3 for engine shutdown
 		
-		LEG_ACTUATOR_DESTROYED("LEG ACT DESTROYED"),// +1 for leg/foot actuator destroyed
-		FT_ACTUATOR_DESTROYED("FT ACT DESTROYED"),	// +1 for leg/foot actuator destroyed
+		UP_LEG_ACTUATOR_DESTROYED("UP LEG ACT DESTROYED"),	// +1 for upper leg actuator destroyed
+		LOW_LEG_ACTUATOR_DESTROYED("LOW LEG ACT DESTROYED"),// +1 for lower leg actuator destroyed
+		FT_ACTUATOR_DESTROYED("FT ACT DESTROYED"),	// +1 for foot actuator destroyed
 		HIP_DESTROYED("HIP DESTROYED"),				// +2 for hip actuator destroyed
 		LEG_DESTROYED("LEG DESTROYED"),				// automatically falls or +5 for previously destroyed
 		
@@ -61,28 +62,123 @@ class PilotingModifier {
 	/**
 	 * Returns objects describing each modifier to hit the target from the source with the given weapon
 	 */
-	public static def getPilotSkillModifiers(Game game, BattleUnit unit) {
+	public static def getPilotSkillModifiers(Game game, BattleUnit unit, Modifier causeModifier) {
 		def toHitMods = []
 		
 		if(unit.isDestroyed()) {
 			// A destroyed unit will fall automatically if it isn't already down
-			toHitMods.push(new PilotingModifier(Modifier.DESTROYED, AUTO_MISS))
+			addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.DESTROYED, AUTO_MISS))
 			return toHitMods
 		}
 		
-		if(unit.shutdown) {
-			toHitMods.push(new PilotingModifier(Modifier.MECH_SHUTDOWN, 3 * STANDARD_MODIFIER))
+		if(causeModifier != null) {
+			// optional additional modifier based on the cause of the pilot skill roll to be added
+			if(Modifier.MECH_WATER_1) {
+				// all of the -1 cause modifiers
+				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, -1 * STANDARD_MODIFIER))
+			}
+			else if(Modifier.MECH_DAMAGE == causeModifier
+					|| Modifier.UP_LEG_ACTUATOR_DESTROYED == causeModifier
+					|| Modifier.LOW_LEG_ACTUATOR_DESTROYED == causeModifier
+					|| Modifier.FT_ACTUATOR_DESTROYED == causeModifier
+					|| Modifier.MECH_WATER_3 == causeModifier) {
+				// all of the +1 cause modifiers
+				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, 1 * STANDARD_MODIFIER))
+			}
+			else if(Modifier.HIP_DESTROYED == causeModifier
+					|| Modifier.MECH_CHARGED == causeModifier
+					|| Modifier.MECH_DFAD == causeModifier
+					|| Modifier.MECH_CHARGE == causeModifier) {
+				// all of the +2 cause modifiers
+				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, 2 * STANDARD_MODIFIER))
+			}
+			else if(Modifier.GYRO_HIT == causeModifier) {
+				// all of the +3 cause modifiers
+				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, 3 * STANDARD_MODIFIER))
+			}
+			else if(Modifier.MECH_DFA == causeModifier) {
+				// all of the +4 cause modifiers
+				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, 4 * STANDARD_MODIFIER))
+			}
+			else if(Modifier.GYRO_DESTROYED == causeModifier
+					|| Modifier.LEG_DESTROYED == causeModifier
+					|| Modifier.MECH_MISSED_DFA == causeModifier) {
+				// all of the automatic falls
+				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, AUTO_MISS))
+			}
 		}
 		
-		def numGyroHits = 0
+		// TODO: Handle immobile status in piloting skill modifier
 		
-		// TODO: count gyro hits in CT
+		if(unit.shutdown) {
+			addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.MECH_SHUTDOWN, 3 * STANDARD_MODIFIER))
+		}
 		
-		// TODO: check for a destroyed leg
-		
-		// TODO: count actuator and hip hits in legs
+		if(unit instanceof BattleMech) {
+			// check gyro hits in CT
+			def centerTorso = unit.getCritSection(Mech.CENTER_TORSO)
+			for(BattleEquipment thisCrit in centerTorso) {
+				if(thisCrit == null || thisCrit.isActive()) {
+					continue
+				}
+				
+				if(MechMTF.MTF_CRIT_GYRO == thisCrit.getName()) {
+					if(thisCrit.isDestroyed()) {
+						addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.GYRO_DESTROYED, AUTO_MISS))
+					}
+					else {
+						addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.GYRO_HIT, 3 * STANDARD_MODIFIER))
+					}
+				}
+			}
+			
+			// check for each destroyed leg or actuator hits in leg
+			for(def legIndex in Mech.LEGS) {
+				if(unit.internals[legIndex] == 0) {
+					addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.LEG_DESTROYED, 5 * STANDARD_MODIFIER))
+				}
+				else{
+					// count actuator and hip hits in legs
+					def legCrits = unit.getCritSection(legIndex)
+					
+					for(BattleEquipment thisCrit in legCrits) {
+						if(thisCrit == null || thisCrit.isActive()) {
+							continue
+						}
+						
+						if(MechMTF.MTF_CRIT_HIP == thisCrit.getName()) {
+							addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.HIP_DESTROYED, 2 * STANDARD_MODIFIER))
+						}
+						else if(MechMTF.MTF_CRIT_UP_LEG_ACT == thisCrit.getName()) {
+							addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.UP_LEG_ACTUATOR_DESTROYED, 1 * STANDARD_MODIFIER))
+						}
+						else if(MechMTF.MTF_CRIT_LOW_LEG_ACT == thisCrit.getName()) {
+							addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.LOW_LEG_ACTUATOR_DESTROYED, 1 * STANDARD_MODIFIER))
+						}
+						else if(MechMTF.MTF_CRIT_FOOT_ACT == thisCrit.getName()) {
+							addModifierIfUnique(toHitMods, new PilotingModifier(Modifier.FT_ACTUATOR_DESTROYED, 1 * STANDARD_MODIFIER))
+						}
+					}
+				}
+			}
+		}
 		
 		return toHitMods
+	}
+	
+	/**
+	 * Adds modifier to the list only if that modifier type has not already been added to the list
+	 * @param modsList
+	 * @param modifier
+	 */
+	private static void addModifierIfUnique(def modsList, PilotingModifier modifier) {
+		for(PilotingModifier mod in modsList) {
+			if(mod.type.equals(modifier.type)) {
+				return
+			}
+		}
+		
+		modsList.push(modifier)
 	}
 	
 	@Override
