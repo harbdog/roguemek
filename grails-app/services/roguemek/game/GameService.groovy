@@ -178,6 +178,7 @@ class GameService {
 				if(shutdownPercent >= 100) {
 					// TODO: Shutdown the unit
 					log.info("Auto shutting down "+unit)
+					unit.shutdown = true
 				}
 				else {
 					int shutdownRoll = Roll.randomInt(100, 1)
@@ -185,16 +186,22 @@ class GameService {
 					if(shutdownRoll < shutdownPercent) {
 						// TODO: Shutdown the unit
 						log.info("Shutting down "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+						unit.shutdown = true
 					}
 					else {
 						// Power up the unit if previously shutdown
 						log.info("Shutdown avoided "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+						unit.shutdown = false
 					}
 				}
 			}
-			else {
+			else if(unit.shutdown) {
 				// Power up the unit if previously shutdown
+				log.info("Shutdown ended "+unit)
+				unit.shutdown = false
 			}
+			
+			data.shutdown = unit.shutdown
 			
 			// generate the amount of AP/JP per turn based on MP, Jets and Heat effects
 			unit.actionPoints = getUnitAP(game, unit)
@@ -539,6 +546,8 @@ class GameService {
 				y: u.y,
 				heading: u.heading,
 				status: String.valueOf(u.status),
+				prone: u.prone,
+				shutdown: u.shutdown,
 				apRemaining: u.apRemaining,
 				jpRemaining: u.jpRemaining,
 				jumpJets: u.mech?.jumpMP,
@@ -1646,14 +1655,16 @@ class GameService {
 						if(attackerDamage > 0 && selfHitLocations != null) {
 							def selfData = selfDamage(game, attackerDamage, unit, selfHitLocations)
 							
-							String selfAttackerDamage = String.valueOf(selfData.damage)
-							String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
-							
-							Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, weapon.getShortName(), selfLocationStr]
-							Date update = GameMessage.addMessageUpdate(
-									game,
-									"game.unit.damage.self",
-									selfMessageArgs, selfData)
+							if(selfData != null) {
+								String selfAttackerDamage = String.valueOf(selfData.damage)
+								String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
+								
+								Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, weapon.getShortName(), selfLocationStr]
+								Date update = GameMessage.addMessageUpdate(
+										game,
+										"game.unit.damage.self",
+										selfMessageArgs, selfData)
+							}
 						}
 					}
 				}
@@ -1802,8 +1813,16 @@ class GameService {
 		if(unit instanceof BattleMech) {
 			// TODO: determine base toHit% based on Pilot skills
 			double toCheck = 90.0
+			boolean attemptingStanding = false
+			
+			// TODO: perform pilot skill check to stand when attempting to move (but not rotate) while prone
+			
 			for(PilotingModifier mod in modifiers) {
 				toCheck -= mod.getValue()
+				
+				if(mod.getValue() == 0 && PilotingModifier.Modifier.MECH_STANDING == mod.type) {
+					attemptingStanding = true
+				}
 			}
 			
 			boolean checkSuccess = false
@@ -1826,11 +1845,21 @@ class GameService {
 			}
 			
 			if(checkSuccess 
-					&& unit.prone) {
+					&& attemptingStanding) {
 				// the prone unit stands on its own again
 				unit.prone = false
 				
-				// TODO: add message about standing up again
+				// add message about standing up again
+				def selfData = [
+					unit: unit.id,
+					prone: unit.prone
+				]
+				
+				Object[] selfMessageArgs = [unit.toString()]
+				Date update = GameMessage.addMessageUpdate(
+						game,
+						"game.unit.stands",
+						selfMessageArgs, selfData)
 				
 				unit.save flush:true
 			}
@@ -1838,19 +1867,72 @@ class GameService {
 				// Unit falls and takes damage
 				unit.prone = true
 				
-				int fallDamage = 5	// TODO: calculate actual fall damage
-				def fallHitLocations = Mech.FRONT_HIT_LOCATIONS	// TODO: determine actual fall locations
+				// fall damage is 1 point of damage for evey 10 tons of weight, rounding up, time the number of levels fallen
+				int fallDamage = Math.ceil(unit.mech.mass / 10)	// TODO: calculate fall damage based on falling multiple elevations levels
 				
-				def selfData = selfDamage(game, fallDamage, unit, fallHitLocations)
+				// determine fall hit locations based on new facing after fall
+				def fallHitLocations
+				def dieResult = Roll.rollD6(1)
+				def headingAdd = dieResult - 1
+				unit.heading = (unit.heading + headingAdd) % 6;
 				
-				String selfAttackerDamage = String.valueOf(fallDamage)
-				String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
+				def fallSideStr = "unknown"	// TODO: i18n the fallen side string
+				switch(dieResult) {
+					case 1:	fallHitLocations = Mech.FRONT_HIT_LOCATIONS
+							fallSideStr = "front"
+							break;
+					case 2:	fallHitLocations = Mech.RIGHT_HIT_LOCATIONS
+							fallSideStr = "right"
+							break;
+					case 3:	fallHitLocations = Mech.RIGHT_HIT_LOCATIONS
+							fallSideStr = "right"
+							break;
+					case 4:	fallHitLocations = Mech.REAR_HIT_LOCATIONS
+							fallSideStr = "rear"
+							break;
+					case 5:	fallHitLocations = Mech.LEFT_HIT_LOCATIONS
+							fallSideStr = "left"
+							break;
+					case 6:	fallHitLocations = Mech.LEFT_HIT_LOCATIONS
+							fallSideStr = "left"
+							break;
+							
+					default:break;
+				}
 				
-				Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, "FALLING", selfLocationStr]	//TODO: i18n
-				Date update = GameMessage.addMessageUpdate(
+				def fallData = [
+					unit: unit.id,
+					prone: unit.prone
+				]
+				
+				Object[] fallMessageArgs = [unit.toString(), fallSideStr]
+				Date fallUpdate = GameMessage.addMessageUpdate(
 						game,
-						"game.unit.damage.self",
-						selfMessageArgs, selfData)
+						"game.unit.falls",
+						fallMessageArgs, fallData)
+				
+				// apply damage in groupings of 5
+				while(fallDamage > 0) {
+					def thisDamage = 5
+					if(fallDamage < thisDamage) {
+						thisDamage = fallDamage
+					}
+					
+					def selfData = selfDamage(game, thisDamage, unit, fallHitLocations)
+					
+					if(selfData != null) {
+						String selfAttackerDamage = String.valueOf(thisDamage)
+						String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
+						
+						Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, "FALLING", selfLocationStr]	//TODO: i18n FALLING?
+						Date update = GameMessage.addMessageUpdate(
+								game,
+								"game.unit.damage.self",
+								selfMessageArgs, selfData)
+					}
+					
+					fallDamage -= 5
+				}
 				
 				unit.save flush:true
 			}

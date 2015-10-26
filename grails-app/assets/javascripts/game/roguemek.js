@@ -258,6 +258,8 @@ function loadGameElements() {
 				  unitInstance.initialInternals = thisUnit.initialInternals;
 				  
 				  unitInstance.status = thisUnit.status;
+				  unitInstance.prone = thisUnit.prone;
+				  unitInstance.shutdown = thisUnit.shutdown;
 				  
 				  unitInstance.crits = thisUnit.crits;
 				  unitInstance.physical = thisUnit.physical;
@@ -959,6 +961,22 @@ function updateGameData(data) {
 	if(data.heading != null && u.heading != data.heading){
 		u.heading = data.heading;
 		updatePosition = true;
+	}
+	
+	// update to being prone
+	if(data.prone != null && u.prone != data.prone) {
+		u.prone = data.prone;
+		
+		// TODO: update the UI on being prone or not
+		console.log("Unit prone: "+u.prone);
+	}
+	
+	// update to being shutdown
+	if(data.shutdown != null && u.shutdown != data.shutdown) {
+		u.shutdown = data.shutdown;
+		
+		// TODO: update the UI on being shutdown or not
+		console.log("Unit shutdown: "+u.shutdown);
 	}
 	
 	if(data.moveAP != null) {

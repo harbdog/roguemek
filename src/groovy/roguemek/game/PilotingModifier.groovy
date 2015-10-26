@@ -8,6 +8,8 @@ import roguemek.model.*
 import roguemek.mtf.MechMTF
 
 class PilotingModifier {
+	private static Log log = LogFactory.getLog(this)
+	
 	Modifier type
 	double value
 	
@@ -73,9 +75,13 @@ class PilotingModifier {
 		
 		if(causeModifier != null) {
 			// optional additional modifier based on the cause of the pilot skill roll to be added
-			if(Modifier.MECH_WATER_1) {
+			if(Modifier.MECH_WATER_1 == causeModifier) {
 				// all of the -1 cause modifiers
 				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, -1 * STANDARD_MODIFIER))
+			}
+			else if(Modifier.MECH_STANDING == causeModifier) {
+				// any +0 modifiers that are needed for conditional checking
+				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, 0))
 			}
 			else if(Modifier.MECH_DAMAGE == causeModifier
 					|| Modifier.UP_LEG_ACTUATOR_DESTROYED == causeModifier
@@ -105,6 +111,9 @@ class PilotingModifier {
 					|| Modifier.MECH_MISSED_DFA == causeModifier) {
 				// all of the automatic falls
 				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, AUTO_MISS))
+			}
+			else {
+				log.info("Unspecified causeModifier: "+causeModifier)
 			}
 		}
 		
