@@ -1448,6 +1448,10 @@ class GameService {
 		def unitWeapons = unit.getWeapons()
 		
 		def critsHitList = []
+		def pilotingSkillMap = [
+			source: [],
+			target: []
+		]
 		
 		int totalHeat = 0
 		
@@ -1649,11 +1653,17 @@ class GameService {
 							// charging unit takes 1 point of damage for every 10 tons the defending unit weighs
 							attackerDamage = (target instanceof BattleMech) ? Math.ceil(target.mech.mass / 10) : 0
 							selfHitLocations = Mech.FRONT_HIT_LOCATIONS
+							
+							pilotingSkillMap.source.push(PilotingModifier.Modifier.MECH_CHARGE)
+							pilotingSkillMap.target.push(PilotingModifier.Modifier.MECH_CHARGED)
 						}
 						else if(weapon.isDFA()) {
 							// attacking unit takes 1 point of damage for every 5 tons the attacking unit weighs to the legs
 							attackerDamage = (unit instanceof BattleMech) ? Math.ceil(unit.mech.mass / 5) : 0
 							selfHitLocations = Mech.FRONT_KICK_LOCATIONS
+							
+							pilotingSkillMap.source.push(PilotingModifier.Modifier.MECH_DFA)
+							pilotingSkillMap.target.push(PilotingModifier.Modifier.MECH_DFAD)
 						}
 						
 						if(attackerDamage > 0 && selfHitLocations != null) {
@@ -1671,6 +1681,9 @@ class GameService {
 							}
 						}
 					}
+					else if(weapon.isKick()) {
+						pilotingSkillMap.target.push(PilotingModifier.Modifier.MECH_KICKED)
+					}
 				}
 				
 				if(locationStr == null || damageByLocationStr == null) {
@@ -1685,7 +1698,8 @@ class GameService {
 			}
 			else if(weapon.isPhysical()) {
 				if(weapon.isKick()) {
-					// TODO: kick missed, perform a piloting skill roll
+					// kick missed, perform a piloting skill roll
+					pilotingSkillMap.source.push(PilotingModifier.Modifier.MECH_MISSED_KICK)
 				}
 				else if(weapon.isCharge()) {
 					// charge missed, displace to another location
@@ -1722,7 +1736,8 @@ class GameService {
 					Coords displacedLocation = handleDisplacement(game, unit, displacedHeading)
 				}
 				else if(weapon.isDFA()) {
-					// TODO: DFA attack missed, the attacker falls automatically at its current position and takes falling damage
+					// DFA attack missed, the attacker falls automatically at its current position and takes falling damage
+					pilotingSkillMap.source.push(PilotingModifier.Modifier.MECH_MISSED_DFA)
 				}
 			}
 			
@@ -1740,11 +1755,18 @@ class GameService {
 			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, thisWeaponData)
 		}
 		
+		// perform piloting check on source unit if certain attacks hit or missed
+		checkActionsPilotSkill(game, unit, pilotingSkillMap.source)
+		
+		// perform piloting check on target unit if certain attacks hit
+		checkActionsPilotSkill(game, target, pilotingSkillMap.target)
+		
 		// perform piloting check on target in case it has received 20 damage or more this turn and hasn't already performed the check
 		checkDamageTakenPilotSkill(game, target)
 		
 		// perform piloting check on target if certain criticals received damage from weapons fire
 		checkCriticalsHitPilotSkill(game, target, critsHitList)
+		
 		
 		// update return data with target armor/internals
 		// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
@@ -1790,6 +1812,27 @@ class GameService {
 		def checkSuccess = doPilotSkillCheck(game, target, modifiers)
 		
 		log.info("checkSuccess: "+checkSuccess)
+	}
+	
+	/**
+	 * Performs piloting checks for each action for skill checks provided in the pilotingActionsChecks list
+	 */
+	public def checkActionsPilotSkill(Game game, BattleUnit target, def pilotingActionsChecks) {
+		if(target instanceof BattleMech) {
+			for(PilotingModifier.Modifier thisCause in pilotingActionsChecks) {
+				log.info("Pilot skill check due to: "+thisCause)
+				
+				def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, thisCause)
+				def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+				
+				if(!checkSuccess) {
+					// if a check fails, no subsequent pilot skill checks need to be made
+					return checkSuccess
+				}
+			}
+		}
+		
+		return true
 	}
 	
 	/**
@@ -1851,6 +1894,7 @@ class GameService {
 				
 				if(thisCause != null) {
 					log.info("Pilot skill check due to critical on: "+thisHit)
+					
 					def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, thisCause)
 					def checkSuccess = doPilotSkillCheck(game, target, modifiers)
 					

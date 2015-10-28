@@ -79,8 +79,11 @@ class PilotingModifier {
 				// all of the -1 cause modifiers
 				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, -1 * STANDARD_MODIFIER))
 			}
-			else if(Modifier.MECH_STANDING == causeModifier) {
-				// any +0 modifiers that are needed for conditional checking
+			else if(Modifier.MECH_STANDING == causeModifier
+					|| Modifier.MECH_KICKED == causeModifier
+					|| Modifier.MECH_MISSED_KICK == causeModifier
+					|| Modifier.MECH_WATER_2 == causeModifier) {
+				// any +0 modifiers that could be needed for conditional checking
 				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, 0))
 			}
 			else if(Modifier.MECH_DAMAGE == causeModifier
