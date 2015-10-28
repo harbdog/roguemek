@@ -1447,6 +1447,8 @@ class GameService {
 		
 		def unitWeapons = unit.getWeapons()
 		
+		def critsHitList = []
+		
 		int totalHeat = 0
 		
 		for(BattleWeapon weapon in weapons) {
@@ -1597,7 +1599,9 @@ class GameService {
 						}
 						
 						if(target instanceof BattleMech) {
-							applyDamage(game, actualDamage, target, hitLocation)
+							// handle any piloting skill checks that may need to happen after crits are hit from self damage
+							def fireCritsHitList = applyDamage(game, actualDamage, target, hitLocation)
+							critsHitList = (critsHitList << fireCritsHitList).flatten()
 							
 							thisWeaponFire.weaponHitLocations[hitLocation] += actualDamage
 							
@@ -1739,6 +1743,9 @@ class GameService {
 		// perform piloting check on target in case it has received 20 damage or more this turn and hasn't already performed the check
 		checkDamageTakenPilotSkill(game, target)
 		
+		// perform piloting check on target if certain criticals received damage from weapons fire
+		checkCriticalsHitPilotSkill(game, target, critsHitList)
+		
 		// update return data with target armor/internals
 		// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
 		data.armorHit = target.armor
@@ -1799,148 +1806,203 @@ class GameService {
 			def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, PilotingModifier.Modifier.MECH_DAMAGE)
 			
 			def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+			return checkSuccess
+		}
+				
+		return true
+	}
+	
+	/**
+	 * Perform piloting check on target in the event it has had a critical hit on a component that requires a pilot skill check to be performed
+	 */
+	public def checkCriticalsHitPilotSkill(Game game, BattleUnit target, def critsHitList) {
+		if(target instanceof BattleMech 
+				&& critsHitList != null 
+				&& critsHitList.size() > 0) {
 			
-			if(checkSuccess) {
-				target.save flush:true
+			for(def thisHit in critsHitList) {
+				PilotingModifier.Modifier thisCause = null
+				
+				if(thisHit instanceof Integer) {
+					// a mech location was blown off entirely, if it was a leg a piloting skill check is needed
+					if(Mech.LEFT_LEG == thisHit || Mech.RIGHT_LEG == thisHit) {
+						thisCause = PilotingModifier.Modifier.LEG_DESTROYED
+					}
+				}
+				else if(thisHit instanceof BattleEquipment) {
+					// only certain criticals that are hit require a piloting skill roll to be made
+					if(MechMTF.MTF_CRIT_GYRO == thisHit.getName()) {
+						thisCause = thisHit.isDestroyed() 
+							? PilotingModifier.Modifier.GYRO_DESTROYED : PilotingModifier.Modifier.GYRO_HIT
+					}
+					else if(MechMTF.MTF_CRIT_UP_LEG_ACT == thisHit.getName()) {
+						thisCause = PilotingModifier.Modifier.UP_LEG_ACTUATOR_DESTROYED
+					}
+					else if(MechMTF.MTF_CRIT_LOW_LEG_ACT == thisHit.getName()) {
+						thisCause = PilotingModifier.Modifier.LOW_LEG_ACTUATOR_DESTROYED
+					}
+					else if(MechMTF.MTF_CRIT_FOOT_ACT == thisHit.getName()) {
+						thisCause = PilotingModifier.Modifier.FT_ACTUATOR_DESTROYED
+					}
+					else if(MechMTF.MTF_CRIT_HIP == thisHit.getName()) {
+						thisCause = PilotingModifier.Modifier.HIP_DESTROYED
+					}
+				}
+				
+				if(thisCause != null) {
+					log.info("Pilot skill check due to critical on: "+thisHit)
+					def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, thisCause)
+					def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+					
+					if(!checkSuccess) {
+						// if a check fails, no subsequent pilot skill checks need to be made
+						return checkSuccess
+					}
+				}
 			}
 		}
+				
+		return true
 	}
 	
 	/**
 	 * Does the piloting skill check for the unit based on the given modifiers, and if fails makes the unit fall
 	 */
 	public def doPilotSkillCheck(Game game, BattleUnit unit, def modifiers) {
-		if(unit instanceof BattleMech) {
-			// TODO: determine base toHit% based on Pilot skills
-			double toCheck = 90.0
-			boolean attemptingStanding = false
-			
-			// TODO: perform pilot skill check to stand when attempting to move (but not rotate) while prone
-			
-			for(PilotingModifier mod in modifiers) {
-				toCheck -= mod.getValue()
-				
-				if(mod.getValue() == 0 && PilotingModifier.Modifier.MECH_STANDING == mod.type) {
-					attemptingStanding = true
-				}
-			}
-			
-			boolean checkSuccess = false
-			if(toCheck >= 100) {
-				log.info("Unit "+unit+" AUTO STANDS ("+toCheck+")!")
-				checkSuccess = true
-			}
-			else if(toCheck > 0){
-				int result = Roll.randomInt(100, 1)
-				if(result <= toCheck) {
-					log.info("Unit "+unit+" STANDS! Rolled: "+result+"/"+toCheck)
-					checkSuccess = true
-				}
-				else {
-					log.info("Unit "+unit+" FALLS! Rolled: "+result+"/"+toCheck)
-				}
-			}
-			else {
-				log.info("Unit "+unit+" AUTO FALLS ("+toCheck+")!")
-			}
-			
-			if(checkSuccess 
-					&& attemptingStanding) {
-				// the prone unit stands on its own again
-				unit.prone = false
-				
-				// add message about standing up again
-				def selfData = [
-					unit: unit.id,
-					prone: unit.prone
-				]
-				
-				Object[] selfMessageArgs = [unit.toString()]
-				Date update = GameMessage.addMessageUpdate(
-						game,
-						"game.unit.stands",
-						selfMessageArgs, selfData)
-				
-				unit.save flush:true
-			}
-			else if(!checkSuccess) {
-				// Unit falls and takes damage
-				unit.prone = true
-				
-				// fall damage is 1 point of damage for evey 10 tons of weight, rounding up, time the number of levels fallen
-				int fallDamage = Math.ceil(unit.mech.mass / 10)	// TODO: calculate fall damage based on falling multiple elevations levels
-				
-				// determine fall hit locations based on new facing after fall
-				def fallHitLocations
-				def dieResult = Roll.rollD6(1)
-				def headingAdd = dieResult - 1
-				unit.heading = (unit.heading + headingAdd) % 6;
-				
-				def fallSideStr = "unknown"	// TODO: i18n the fallen side string
-				switch(dieResult) {
-					case 1:	fallHitLocations = Mech.FRONT_HIT_LOCATIONS
-							fallSideStr = "front"
-							break;
-					case 2:	fallHitLocations = Mech.RIGHT_HIT_LOCATIONS
-							fallSideStr = "right"
-							break;
-					case 3:	fallHitLocations = Mech.RIGHT_HIT_LOCATIONS
-							fallSideStr = "right"
-							break;
-					case 4:	fallHitLocations = Mech.REAR_HIT_LOCATIONS
-							fallSideStr = "rear"
-							break;
-					case 5:	fallHitLocations = Mech.LEFT_HIT_LOCATIONS
-							fallSideStr = "left"
-							break;
-					case 6:	fallHitLocations = Mech.LEFT_HIT_LOCATIONS
-							fallSideStr = "left"
-							break;
-							
-					default:break;
-				}
-				
-				def fallData = [
-					unit: unit.id,
-					prone: unit.prone
-				]
-				
-				Object[] fallMessageArgs = [unit.toString(), fallSideStr]
-				Date fallUpdate = GameMessage.addMessageUpdate(
-						game,
-						"game.unit.falls",
-						fallMessageArgs, fallData)
-				
-				// apply damage in groupings of 5
-				while(fallDamage > 0) {
-					def thisDamage = 5
-					if(fallDamage < thisDamage) {
-						thisDamage = fallDamage
-					}
-					
-					def selfData = selfDamage(game, thisDamage, unit, fallHitLocations)
-					
-					if(selfData != null) {
-						String selfAttackerDamage = String.valueOf(thisDamage)
-						String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
-						
-						Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, "FALLING", selfLocationStr]	//TODO: i18n FALLING?
-						Date update = GameMessage.addMessageUpdate(
-								game,
-								"game.unit.damage.self",
-								selfMessageArgs, selfData)
-					}
-					
-					fallDamage -= 5
-				}
-				
-				unit.save flush:true
-			}
-			
-			return checkSuccess
+		if(!unit instanceof BattleMech) {
+			return true
 		}
 		
-		return true
+		// TODO: determine base toHit% based on Pilot skills
+		double toCheck = 90.0
+		boolean attemptingStanding = false
+		
+		// TODO: perform pilot skill check to stand when attempting to move (but not rotate) while prone
+		
+		for(PilotingModifier mod in modifiers) {
+			toCheck -= mod.getValue()
+			
+			if(mod.getValue() == 0 && PilotingModifier.Modifier.MECH_STANDING == mod.type) {
+				attemptingStanding = true
+			}
+		}
+		
+		if(unit.prone && !attemptingStanding) {
+			// if already prone, only reason to roll pilot skill is to try to stand up
+			return false
+		}
+		
+		boolean checkSuccess = false
+		if(toCheck >= 100) {
+			log.info("Unit "+unit+" AUTO STANDS ("+toCheck+")!")
+			checkSuccess = true
+		}
+		else if(toCheck > 0){
+			int result = Roll.randomInt(100, 1)
+			if(result <= toCheck) {
+				log.info("Unit "+unit+" STANDS! Rolled: "+result+"/"+toCheck)
+				checkSuccess = true
+			}
+			else {
+				log.info("Unit "+unit+" FALLS! Rolled: "+result+"/"+toCheck)
+			}
+		}
+		else {
+			log.info("Unit "+unit+" AUTO FALLS ("+toCheck+")!")
+		}
+		
+		if(checkSuccess 
+				&& attemptingStanding) {
+			// the prone unit stands on its own again
+			unit.prone = false
+			
+			// add message about standing up again
+			def selfData = [
+				unit: unit.id,
+				prone: unit.prone
+			]
+			
+			Object[] selfMessageArgs = [unit.toString()]
+			Date update = GameMessage.addMessageUpdate(
+					game,
+					"game.unit.stands",
+					selfMessageArgs, selfData)
+		}
+		else if(!checkSuccess) {
+			// Unit falls and takes damage
+			unit.prone = true
+			
+			// fall damage is 1 point of damage for evey 10 tons of weight, rounding up, time the number of levels fallen
+			int fallDamage = Math.ceil(unit.mech.mass / 10)	// TODO: calculate fall damage based on falling multiple elevations levels
+			
+			// determine fall hit locations based on new facing after fall
+			def fallHitLocations
+			def dieResult = Roll.rollD6(1)
+			def headingAdd = dieResult - 1
+			unit.heading = (unit.heading + headingAdd) % 6;
+			
+			def fallSideStr = "unknown"	// TODO: i18n the fallen side string
+			switch(dieResult) {
+				case 1:	fallHitLocations = Mech.FRONT_HIT_LOCATIONS
+						fallSideStr = "front"
+						break;
+				case 2:	fallHitLocations = Mech.RIGHT_HIT_LOCATIONS
+						fallSideStr = "right"
+						break;
+				case 3:	fallHitLocations = Mech.RIGHT_HIT_LOCATIONS
+						fallSideStr = "right"
+						break;
+				case 4:	fallHitLocations = Mech.REAR_HIT_LOCATIONS
+						fallSideStr = "rear"
+						break;
+				case 5:	fallHitLocations = Mech.LEFT_HIT_LOCATIONS
+						fallSideStr = "left"
+						break;
+				case 6:	fallHitLocations = Mech.LEFT_HIT_LOCATIONS
+						fallSideStr = "left"
+						break;
+						
+				default:break;
+			}
+			
+			def fallData = [
+				unit: unit.id,
+				prone: unit.prone
+			]
+			
+			Object[] fallMessageArgs = [unit.toString(), fallSideStr]
+			Date fallUpdate = GameMessage.addMessageUpdate(
+					game,
+					"game.unit.falls",
+					fallMessageArgs, fallData)
+			
+			// apply damage in groupings of 5
+			while(fallDamage > 0) {
+				def thisDamage = 5
+				if(fallDamage < thisDamage) {
+					thisDamage = fallDamage
+				}
+				
+				def selfData = selfDamage(game, thisDamage, unit, fallHitLocations)
+				
+				if(selfData != null) {
+					String selfAttackerDamage = String.valueOf(thisDamage)
+					String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
+					
+					Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, "FALLING", selfLocationStr]	//TODO: i18n FALLING?
+					Date update = GameMessage.addMessageUpdate(
+							game,
+							"game.unit.damage.self",
+							selfMessageArgs, selfData)
+				}
+				
+				fallDamage -= 5
+			}
+		}
+		
+		unit.save flush:true
+		
+		return checkSuccess
 	}
 	
 
@@ -2089,8 +2151,10 @@ class GameService {
 	
 	// apply damage to hit location starting with armor, then internal, then use damage redirect from there if needed
 	public def applyDamage(Game game, int damage, BattleUnit unit, int hitLocation) {
+		def critsHitList = []
+		
 		if(unit.isDestroyed()) {
-			return
+			return critsHitList
 		}
 		
 		//log.info("Applying "+damage+" damage to "+unit+" @ "+Mech.getLocationText(hitLocation))
@@ -2105,7 +2169,7 @@ class GameService {
 		
 		if(damage == 0) {
 			// no damage remaining after hitting external armor, no need to go further
-			return
+			return critsHitList
 		}
 		
 		// rear hit locations hit internals at a different location index corresponding to their front counterpart
@@ -2128,13 +2192,21 @@ class GameService {
 			critChance = true
 			
 			unit.damageTaken ++
+			
+			
+			// check to see if the limb was just removed, if so add to critsHitList
+			if(unit.internals[critLocation] == 0) {
+				critsHitList.push(critLocation)
+			}
 		}
 		
 		if(critChance) {
 			// send off to see what criticals might get hit
-			def critApplied = applyCriticalHit(game, unit, critLocation);
+			def critsApplied = applyCriticalHit(game, unit, critLocation);
 			
-			if(critApplied) {
+			if(critsApplied.size() > 0) {
+				critsHitList = (critsHitList << critsApplied).flatten()
+				
 				// check for any potentially unit destroying crits that may have been made
 				if(unit instanceof BattleMech){
 					
@@ -2157,7 +2229,7 @@ class GameService {
 								Object[] messageArgs = [unit.toString()]
 								Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.cockpit", messageArgs, destroyedUnitData)
 								
-								return
+								return critsHitList
 							}
 							else if(MechMTF.MTF_CRIT_ENGINE == thisCrit.getName()
 									|| MechMTF.MTF_CRIT_FUSION_ENGINE == thisCrit.getName()) {
@@ -2183,7 +2255,7 @@ class GameService {
 						Object[] messageArgs = [unit.toString()]
 						Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.engine", messageArgs, destroyedUnitData)
 						
-						return
+						return critsHitList
 					}
 					else if(numGyroHits >= 2) {
 						unit.status = BattleUnit.STATUS_DESTROYED
@@ -2197,7 +2269,7 @@ class GameService {
 						Object[] messageArgs = [unit.toString()]
 						Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.gyro", messageArgs, destroyedUnitData)
 						
-						return
+						return critsHitList
 					}
 				}
 			}
@@ -2217,7 +2289,7 @@ class GameService {
 			Object[] messageArgs = [unit.toString()]
 			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.head", messageArgs, destroyedUnitData)
 			
-			return
+			return critsHitList
 		}
 		else if(unit.internals[Mech.CENTER_TORSO] == 0) {
 			// if head or center internal are gone, the unit is dead
@@ -2233,7 +2305,7 @@ class GameService {
 			Object[] messageArgs = [unit.toString()]
 			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.torso", messageArgs, destroyedUnitData)
 			
-			return
+			return critsHitList
 		}
 		else if(unit.internals[Mech.LEFT_LEG] == 0 && unit.internals[Mech.RIGHT_LEG] == 0) {
 			// if both of the legs internal are gone, the unit is dead
@@ -2249,7 +2321,7 @@ class GameService {
 			Object[] messageArgs = [unit.toString()]
 			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.legs", messageArgs, destroyedUnitData)
 			
-			return
+			return critsHitList
 		}
 		
 		if(unit.internals[Mech.LEFT_TORSO] == 0) {
@@ -2269,7 +2341,7 @@ class GameService {
 		
 		// any damage remaining after internals needs spread to other parts unless it was the Head or Center Torso (in which case the unit was already pronounced dead)
 		if(damage == 0 || unit.isDestroyed()) {
-			return
+			return critsHitList
 		}
 		else if(hitLocation == Mech.LEFT_ARM || hitLocation == Mech.LEFT_LEG || hitLocation == Mech.LEFT_REAR) {
 			return applyDamage(game, damage, unit, Mech.LEFT_TORSO)
@@ -2282,6 +2354,7 @@ class GameService {
 		}
 		else {
 			log.error("Who the hell did I hit?  Extra "+damage+" damage from location: "+hitLocation)
+			return critsHitList
 		}
 	}
 	
@@ -2314,9 +2387,13 @@ class GameService {
 	
 	/**
 	 * Rolls to see if a critical hit will occur when the hitLocation has been damaged internally, and applies the result
+	 * @return def list of critical hit equipment or location index of blown off limb
 	 */
 	public def applyCriticalHit(Game game, BattleUnit unit, int hitLocation, int numHits) {
-		if(unit.isDestroyed()) return false
+		// store and return any crit equipment that gets hit
+		def critsHitList = []
+		
+		if(unit.isDestroyed()) return critsHitList
 		
 		def dieResult = Roll.rollD6(2)
 		def locationStr = Mech.getLocationText(hitLocation)
@@ -2336,7 +2413,7 @@ class GameService {
 					Object[] messageArgs = [unit.toString(), locationStr]
 					Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
 					
-					return true
+					return [hitLocation]
 				}
 			}
 			else if(dieResult >= 10) {
@@ -2349,7 +2426,7 @@ class GameService {
 			}
 			else {
 				//log.info("No critical hits on "+hitLocation)
-				return false
+				return critsHitList
 			}
 		}
 		
@@ -2366,7 +2443,7 @@ class GameService {
 		
 		if(critSection == null) {
 			log.error("No crit section "+hitLocation+" for unit "+unit)
-			return false
+			return critsHitList
 		}
 		else {
 			// generate array of indices that can be critted so the roll only needs to be based on those that remain
@@ -2406,7 +2483,7 @@ class GameService {
 		
 		if(numCrits == 0) {
 			// TODO: apply critical hits to next location according to damage transfer
-			//log.info("No Critical hits remain on "+hitLocation+" for unit "+unit)
+			log.info("No Critical hits remain on "+hitLocation+" for unit "+unit)
 		}
 		else {
 			if(numHits > numCrits) {
@@ -2468,6 +2545,8 @@ class GameService {
 				
 				critEquip.save flush:true
 				
+				critsHitList.push(critEquip)
+				
 				// include data in the message for the damaged/destroyed equipment
 				def criticalHitData = [id: critEquip.id, status: String.valueOf(critEquip.status)]
 				def data = [target: unit.id, criticalHit: criticalHitData]
@@ -2485,8 +2564,10 @@ class GameService {
 					int ammoRemaining = bAmmo.ammoRemaining
 					int ammoExplosionDamage = ammoRemaining * bAmmo.getExplosiveDamage()
 					
-					applyDamage(game, ammoExplosionDamage, unit, hitLocation)
+					def ammoCritsHitList = applyDamage(game, ammoExplosionDamage, unit, hitLocation)
 					unit.save flush:true
+					
+					critsHitList = (critsHitList << ammoCritsHitList).flatten()
 					
 					// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
 					def data = [
@@ -2507,7 +2588,7 @@ class GameService {
 			}
 		}
 		
-		return true
+		return critsHitList
 	}
 	
 	/**
@@ -2538,7 +2619,11 @@ class GameService {
 			hitLocation = unitLocations[resultLocation]
 		}
 		
-		applyDamage(game, damage, unit, hitLocation)
+		def critsHitList = applyDamage(game, damage, unit, hitLocation)
+		
+		// handle any piloting skill checks that may need to happen after crits are hit from self damage
+		checkCriticalsHitPilotSkill(game, unit, critsHitList)
+		
 		unit.save flush:true
 		
 		// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
@@ -2898,7 +2983,9 @@ class GameService {
 		
 		log.info("devDamage to "+target.toString()+" for "+damage+" in the "+hitLocation)
 		
-		applyDamage(game, damage, target, hitLocation)
+		def critsHitList = applyDamage(game, damage, target, hitLocation)
+		
+		log.info("  critsHitList: "+critsHitList)
 		
 		target.save flush:true
 		
@@ -2939,7 +3026,11 @@ class GameService {
 		
 		log.info("devCrit to "+target.toString()+" for "+crits+" in the "+hitLocation)
 		
-		applyCriticalHit(game, target, hitLocation, crits)
+		def critsHitList = applyCriticalHit(game, target, hitLocation, crits)
+		
+		log.info("  critsHitList: "+critsHitList)
+		
+		def checkSuccess = checkCriticalsHitPilotSkill(game, target, critsHitList)
 		
 		target.save flush:true
 		
