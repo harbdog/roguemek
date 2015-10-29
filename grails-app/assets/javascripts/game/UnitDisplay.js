@@ -34,8 +34,13 @@ function UnitDisplay(unit) {
 	this.alphaUnitImage = null;
 	
 	this.jumpJetSprite = null;
+	
+	this.statusImages = null;
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
+
+// declaring some static statuses
+c.STATUS_DOWN = "STATUS_DOWN";
 
 c.init = function() {
 	// TODO: scale differently based on mech tonnage/weight class also?
@@ -44,6 +49,7 @@ c.init = function() {
 	this.removeAllChildren();
 	this.unitImage = null;
 	this.shadowUnitImage = null;
+	this.statusImages = [];
 	
 	// add container which will handle any objects that need rotation
 	this.rotateContainer = new createjs.Container();
@@ -56,6 +62,11 @@ c.init = function() {
 		// only load jump jet sprite if the unit has jump jets
 		this.loadJumpJets();
 	}
+	
+	// create hit area (it never needs to be added to display)
+	var hit = new createjs.Shape();
+	hit.graphics.beginFill("#000000").drawCircle(0, 0, hexWidth/3).endStroke();
+	this.hitArea = hit;
 }
 
 c.update = function() {
@@ -68,10 +79,16 @@ c.update = function() {
 	
 	this.updateHeadingIndicator();
 	
-	// create hit area (it never needs to be added to display)
-	var hit = new createjs.Shape();
-	hit.graphics.beginFill("#000000").drawCircle(0, 0, hexWidth/3).endStroke();
-	this.hitArea = hit;
+	this.resetStatusIcons();
+	if(!this.unit.isDestroyed()) {
+		// determine any statuses that still need to appear
+		if(this.unit.prone) {
+			this.addStatusIcon(this.STATUS_DOWN);
+		}
+		if(this.unit.shutdown) {
+			this.addStatusIcon(this.STATUS_DOWN);
+		}
+	}
 	
 	this.updateUnitIndicator();
 }
@@ -293,6 +310,53 @@ c.loadJumpJets = function() {
 	this.jumpJetSprite.y = -hexHeight/4;
 	this.addChildAt(this.jumpJetSprite, 1);
 	// do not cache animated sprites
+}
+
+/**
+ * Add a status icon to the status list and show on the display
+ */
+c.addStatusIcon = function(status) {
+	// declare icon width and height for all status icons
+	var iW = 12;
+	var iH = 10;
+	
+	var numStatuses = this.statusImages.length;
+	
+	if(this.STATUS_DOWN == status) {
+		var thisStatus = new createjs.Shape();
+		thisStatus.x = hexWidth/4 - iW;
+		thisStatus.y = hexHeight/3 - iH - (numStatuses*iH/3);
+		
+		// TODO: allow customization of the status icon color
+		var color = "#FF0000";
+		var outlineColor = "#FFFFFF";
+		
+		thisStatus.graphics.setStrokeStyle(1, "square").beginStroke(outlineColor).beginFill(color)
+				.moveTo(iW/2, iH)
+				.lineTo(0, iH/2)
+				.lineTo(1*iW/3, iH/2)
+				.lineTo(iW/2, 0)
+				.lineTo(2*iW/3, iH/2)
+				.lineTo(iW, iH/2)
+				.lineTo(iW/2, iH)
+				.endStroke();
+		
+		this.addChild(thisStatus);
+		this.statusImages.push(thisStatus);
+	}
+}
+
+/**
+ * Remove and clear any status icons currently shown on the display
+ */
+c.resetStatusIcons = function() {
+	for(var n=0; n<this.statusImages.length; n++) {
+		var thisStatus = this.statusImages[n];
+		this.removeChild(thisStatus);
+		delete this.statusImages[n];
+	}
+	
+	this.statusImages = [];
 }
 
 c.getUpdatedDisplayX = function(coords) {

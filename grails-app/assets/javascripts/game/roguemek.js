@@ -969,6 +969,7 @@ function updateGameData(data) {
 		
 		// TODO: update the UI on being prone or not
 		console.log("Unit prone: "+u.prone);
+		u.getUnitDisplay().update();
 	}
 	
 	// update to being shutdown
@@ -977,6 +978,7 @@ function updateGameData(data) {
 		
 		// TODO: update the UI on being shutdown or not
 		console.log("Unit shutdown: "+u.shutdown);
+		u.getUnitDisplay().update();
 	}
 	
 	if(data.moveAP != null) {

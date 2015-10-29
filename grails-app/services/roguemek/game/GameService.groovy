@@ -1875,6 +1875,7 @@ class GameService {
 				else if(thisHit instanceof BattleEquipment) {
 					// only certain criticals that are hit require a piloting skill roll to be made
 					if(MechMTF.MTF_CRIT_GYRO == thisHit.getName()) {
+						// TODO: fix Gyro thinking it is one crit when it is multiple for one object instance
 						thisCause = thisHit.isDestroyed() 
 							? PilotingModifier.Modifier.GYRO_DESTROYED : PilotingModifier.Modifier.GYRO_HIT
 					}
