@@ -87,6 +87,8 @@ class GameService {
 			}
 			
 			nextTurnUnit = game.getTurnUnit()
+			
+			// TODO: avoid infinite loop if all mechs become destroyed!
 		}
 		
 		// update the next unit for its new turn
@@ -99,6 +101,11 @@ class GameService {
 		
 		Object[] messageArgs = [turnUnit.toString()]
 		Date update = GameMessage.addMessageUpdate(game, "game.unit.new.turn", messageArgs, data)
+		
+		if(turnUnit.isDestroyed()) {
+			// if the unit is destroyed from something like ammo explosion, proceed to the next unit's turn automatically
+			return this.initializeNextTurn(game)
+		}
 		
 		return data
 	}
@@ -167,8 +174,70 @@ class GameService {
 			// Evaluate if any overheat effects need to apply at this time (shutdown, ammo explosion)
 			def heatEffects = HeatEffect.getHeatEffectsAt(unit.heat)
 			if(heatEffects.containsKey(HeatEffect.Effect.AMMO_EXP_RISK)) {
-				// TODO: ammo explosion
+				// roll to see if there will be an ammo explosion
 				int explosionRisk = heatEffects.getAt(HeatEffect.Effect.AMMO_EXP_RISK)
+				
+				int explosionRoll = Roll.randomInt(100, 1)
+				
+				if(explosionRoll < explosionRisk) {
+					//  the unit failed the ammo explosion roll, look for the most volatile ammo to asplode
+					log.info("Ammo exploding on "+unit+" | "+explosionRoll+"/"+explosionRisk)
+					
+					def mostExplosiveAmmo
+					def mostExplosiveAmmoLocation
+					def mostExplosiveAmmoDamage = 0
+					def mostExplosiveAmmoRemaining = 0
+					
+					def allCrits = unit.getAllCritSections()
+					allCrits.eachWithIndex { critSection, hitLocation ->
+					    for(BattleEquipment thisEquip in critSection) {
+							if(thisEquip instanceof BattleAmmo 
+									&& thisEquip.isExplosive()
+									&& thisEquip.ammoRemaining > 0) {
+								// check to see if we have found the most explosive ammo yet
+								def thisAmmoRemaining = thisEquip.ammoRemaining
+								def thisExplosiveDamage = thisEquip.getExplosiveDamage()
+								if(thisExplosiveDamage > mostExplosiveAmmoDamage
+										|| (thisExplosiveDamage == mostExplosiveAmmoDamage && thisAmmoRemaining > mostExplosiveAmmoRemaining)) {
+									mostExplosiveAmmo = thisEquip
+									mostExplosiveAmmoLocation = hitLocation
+									mostExplosiveAmmoDamage = thisExplosiveDamage
+									mostExplosiveAmmoRemaining = thisAmmoRemaining
+								}
+							}
+						}
+					}
+					
+					if(mostExplosiveAmmo != null) {
+						int ammoRemaining = mostExplosiveAmmo.ammoRemaining
+						int ammoExplosionDamage = ammoRemaining * mostExplosiveAmmo.getExplosiveDamage()
+						
+						def ammoCritsHitList = applyDamage(game, ammoExplosionDamage, unit, mostExplosiveAmmoLocation)
+						unit.save flush:true
+						
+						mostExplosiveAmmo.status = BattleEquipment.STATUS_DESTROYED
+						mostExplosiveAmmo.ammoRemaining = 0
+						mostExplosiveAmmo.save flush:true
+						
+						// TODO: make the applyDamage method return hash of locations damaged instead of the entire armor/internals array
+						def explosionData = [
+							unit: unit.id,
+							target: unit.id,
+							damage: ammoExplosionDamage,
+							hitLocation: mostExplosiveAmmoLocation,
+							armorHit: unit.armor,
+							internalsHit: unit.internals
+						]
+						
+						def locationStr = Mech.getLocationText(mostExplosiveAmmoLocation)
+						
+						Object[] messageArgs = [unit.toString(), String.valueOf(ammoExplosionDamage), locationStr]
+						Date update = GameMessage.addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, explosionData)
+						
+						// perform piloting check on target if certain criticals received damage from weapons fire
+						checkCriticalsHitPilotSkill(game, unit, ammoCritsHitList)
+					}
+				}
 			}
 			
 			if(heatEffects.containsKey(HeatEffect.Effect.SHUTDOWN_RISK)) {
@@ -2199,7 +2268,8 @@ class GameService {
 		def critsHitList = []
 		
 		if(unit.isDestroyed()) {
-			return critsHitList
+			// allow overkill damage since it means less salvage 
+			//return critsHitList
 		}
 		
 		//log.info("Applying "+damage+" damage to "+unit+" @ "+Mech.getLocationText(hitLocation))
@@ -2438,7 +2508,10 @@ class GameService {
 		// store and return any crit equipment that gets hit
 		def critsHitList = []
 		
-		if(unit.isDestroyed()) return critsHitList
+		if(unit.isDestroyed()) {
+			// allow overkill damage since it means less salvage 
+			//return critsHitList
+		}
 		
 		def dieResult = Roll.rollD6(2)
 		def locationStr = Mech.getLocationText(hitLocation)
