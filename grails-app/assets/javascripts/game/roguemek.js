@@ -950,6 +950,15 @@ function updateGameData(data) {
 		// update unit display to show as destroyed
 		u.getUnitDisplay().init();
 		u.getUnitDisplay().update();
+		
+		// update unit info display to show as destroyed
+		infoDisplays[u.id].update();
+		
+		// update unit list display to show armor bar as destroyed
+		var listUnit = getUnitListDisplay(u);
+		if(listUnit != null) {
+			listUnit.updateArmorBar(true);
+		}
 	}
 	
 	// update to position
@@ -967,7 +976,14 @@ function updateGameData(data) {
 	if(data.prone != null && u.prone != data.prone) {
 		u.prone = data.prone;
 		
-		// TODO: update the UI on being prone or not
+		// show floating message about the unit being prone
+		var floatMessageStr = "PRONE";	// TODO: localize this message
+		
+		// determine location of message and create it
+		var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);
+		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+		
+		// update the UI on being prone or not
 		console.log("Unit prone: "+u.prone);
 		u.getUnitDisplay().update();
 	}
@@ -976,7 +992,14 @@ function updateGameData(data) {
 	if(data.shutdown != null && u.shutdown != data.shutdown) {
 		u.shutdown = data.shutdown;
 		
-		// TODO: update the UI on being shutdown or not
+		// show floating message about the unit being destroyed
+		var floatMessageStr = "SHUTDOWN";	// TODO: localize this message
+		
+		// determine location of message and create it
+		var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);
+		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+		
+		// update the UI on being shutdown or not
 		console.log("Unit shutdown: "+u.shutdown);
 		u.getUnitDisplay().update();
 	}

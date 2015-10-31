@@ -479,7 +479,7 @@ function applyUnitDamage(unit, index, isInternal, doAnimate) {
 		
 		unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue, doAnimate);
 
-		var listUnit = getPlayerUnitListDisplay(unit);
+		var listUnit = getUnitListDisplay(unit);
 		if(listUnit != null) {
 			listUnit.updateArmorBar(doAnimate);
 		}
@@ -532,7 +532,7 @@ function updatePlayerUnitListDisplay() {
 /**
  * Gets the player unit display belonging to the given unit
  */
-function getPlayerUnitListDisplay(unit) {
+function getUnitListDisplay(unit) {
 	if(unit == null || unitListDisplayArray == null) return null;
 	
 	for(var index=0; index<unitListDisplayArray.length; index++) {

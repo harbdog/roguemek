@@ -39,9 +39,6 @@ function UnitDisplay(unit) {
 }
 var c = createjs.extend(UnitDisplay, createjs.Container);
 
-// declaring some static statuses
-c.STATUS_DOWN = "STATUS_DOWN";
-
 c.init = function() {
 	// TODO: scale differently based on mech tonnage/weight class also?
 	var scale = 0.8 * hexScale;
@@ -83,10 +80,10 @@ c.update = function() {
 	if(!this.unit.isDestroyed()) {
 		// determine any statuses that still need to appear
 		if(this.unit.prone) {
-			this.addStatusIcon(this.STATUS_DOWN);
+			this.addStatusIcon(StatusIcon.STATUS_DOWN);
 		}
 		if(this.unit.shutdown) {
-			this.addStatusIcon(this.STATUS_DOWN);
+			this.addStatusIcon(StatusIcon.STATUS_DOWN);
 		}
 	}
 	
@@ -315,35 +312,17 @@ c.loadJumpJets = function() {
 /**
  * Add a status icon to the status list and show on the display
  */
-c.addStatusIcon = function(status) {
+c.addStatusIcon = function(statusIconType) {
 	// declare icon width and height for all status icons
-	var iW = 12;
-	var iH = 10;
-	
 	var numStatuses = this.statusImages.length;
 	
-	if(this.STATUS_DOWN == status) {
-		var thisStatus = new createjs.Shape();
-		thisStatus.x = hexWidth/4 - iW;
-		thisStatus.y = hexHeight/3 - iH - (numStatuses*iH/3);
-		
-		// TODO: allow customization of the status icon color
-		var color = "#FF0000";
-		var outlineColor = "#FFFFFF";
-		
-		thisStatus.graphics.setStrokeStyle(1, "square").beginStroke(outlineColor).beginFill(color)
-				.moveTo(iW/2, iH)
-				.lineTo(0, iH/2)
-				.lineTo(1*iW/3, iH/2)
-				.lineTo(iW/2, 0)
-				.lineTo(2*iW/3, iH/2)
-				.lineTo(iW, iH/2)
-				.lineTo(iW/2, iH)
-				.endStroke();
-		
-		this.addChild(thisStatus);
-		this.statusImages.push(thisStatus);
-	}
+	var thisStatus = new StatusIcon(statusIconType);
+	thisStatus.init();
+	thisStatus.x = hexWidth/5 - thisStatus.width/2;
+	thisStatus.y = hexHeight/3 - thisStatus.height - (numStatuses*thisStatus.height/3);
+	
+	this.addChild(thisStatus);
+	this.statusImages.push(thisStatus);
 }
 
 /**
