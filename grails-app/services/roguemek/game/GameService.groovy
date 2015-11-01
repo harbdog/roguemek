@@ -1,5 +1,8 @@
 package roguemek.game
 
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+
 import grails.transaction.Transactional
 import roguemek.*
 import roguemek.model.*
@@ -9,6 +12,8 @@ import roguemek.mtf.*
 class GameService {
 	
 	transient springSecurityService
+	
+	private static Log log = LogFactory.getLog(this)
 	
 	// TODO: move CombatStatus enum out to a separate class
 	public enum CombatStatus {
@@ -337,7 +342,7 @@ class GameService {
 			int walkMPThisTurn = unit.mech.walkMP - walkMPReduce
 			
 			if(walkMPThisTurn <= 0) {
-				// TODO: when WalkMP is 0, make AP only usable for weapons fire
+				// TODO: when WalkMP is 0, make AP only usable for weapons fire?
 				return 0
 			}
 			
@@ -772,6 +777,10 @@ class GameService {
 	public static def getMoveAP(Game game, BattleUnit unit, boolean forward, boolean jumping) {
 		if(unit.apRemaining == 0) return 0
 		else if(unit != game.getTurnUnit()) return 0
+		else if(unit.prone) {
+			// if the unit is prone, it must first stand up
+			return forward ? 1 : -1
+		}
 		
 		int moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
 		Coords unitCoords = unit.getLocation()
@@ -781,14 +790,14 @@ class GameService {
 		
 		def notMoving = (moveCoords.equals(unitCoords))
 		if(notMoving) {
-			return 0
+			return -1
 		}
 		
 		// check to see if there is another unit already in the coords
 		def unitObstacles = game.getUnitsAt(moveCoords.x, moveCoords.y)
 		if(unitObstacles.length > 0) {
 			// TODO: Charging/DFA if a unit is present at the new coords
-			return 0
+			return -1
 		}
 		
 		// calculate the amount of AP required to move
@@ -858,25 +867,33 @@ class GameService {
 			}
 		}
 		
+		boolean attemptingStanding = unit.prone
+		
 		int moveHeading = forward ? unit.heading : ((unit.heading + 3) % 6)
 		Coords unitCoords = unit.getLocation()
 		
 		// check to see if the new hex can be moved into
-		Coords moveCoords = GameService.getForwardCoords(game, unitCoords, moveHeading)
+		Coords moveCoords = attemptingStanding ? unitCoords : GameService.getForwardCoords(game, unitCoords, moveHeading)
 		
-		def notMoving = (moveCoords.equals(unitCoords))
-		if(notMoving) {
-			return new GameMessage("game.you.cannot.move.edge", null, null)
+		if(attemptingStanding) {
+			// unit attempting to stand will not be moving to a new hex
 		}
-		
-		// check to see if there is another unit already in the coords
-		def unitObstacles = game.getUnitsAt(moveCoords.x, moveCoords.y)
-		if(unitObstacles.length > 0) {
-			return new GameMessage("game.you.cannot.move.unit", null, null)
+		else{
+			def notMoving = (moveCoords.equals(unitCoords))
+			if(notMoving) {
+				return new GameMessage("game.you.cannot.move.edge", null, null)
+			}
+			
+			// check to see if there is another unit already in the coords
+			def unitObstacles = game.getUnitsAt(moveCoords.x, moveCoords.y)
+			if(unitObstacles.length > 0) {
+				return new GameMessage("game.you.cannot.move.unit", null, null)
+			}
 		}
 		
 		// calculate the amount of AP required to move
-		int apRequired = jumping ? getHexRequiredJP(game, unitCoords, moveCoords) 
+		int apRequired = attemptingStanding ? 1
+							: jumping ? getHexRequiredJP(game, unitCoords, moveCoords) 
 								 : getHexRequiredAP(game, unitCoords, moveCoords)
 		
 		if(jumping) {
@@ -917,9 +934,16 @@ class GameService {
 			unit.jpMoved ++
 		}
 		
-		unit.hexesMoved ++
-		unit.x = moveCoords.x
-		unit.y = moveCoords.y
+		if(attemptingStanding) {
+			// unit is attempting to stand, perform piloting skill check before allowing it
+			def modifiers = PilotingModifier.getPilotSkillModifiers(game, unit, PilotingModifier.Modifier.MECH_STANDING)
+			def checkSuccess = doPilotSkillCheck(game, unit, modifiers)
+		}
+		else {
+			unit.hexesMoved ++
+			unit.x = moveCoords.x
+			unit.y = moveCoords.y
+		}
 		
 		// If changing movement status to WALKING or RUNNING, add the appropriate heat
 		CombatStatus unitStatus = getUnitCombatStatus(game, unit)
@@ -981,10 +1005,15 @@ class GameService {
 			moveAP: moveAP
 		]
 		
+		// attempting to stand does not need a message since it would have already been done based on pilot skill roll
+		def moveMessage = attemptingStanding ? null 
+							: jumping ? "game.unit.jumped" 
+								: "game.unit.moved"
+					
 		Object[] messageArgs = [unit.toString(), unit.x, unit.y]
 		Date update = GameMessage.addMessageUpdate(
 				game, 
-				jumping ? "game.unit.jumped" : "game.unit.moved", 
+				moveMessage, 
 				messageArgs, data)
 		
 		if(unit.apRemaining == 0
@@ -1402,6 +1431,8 @@ class GameService {
 				for(WeaponModifier mod in modifiers) {
 					toHit -= mod.getValue()
 				}
+				
+				if(toHit > 100) toHit = 100
 				
 				if(toHit > 0) {
 					def thisWeaponToHit = [
@@ -2800,7 +2831,8 @@ class GameService {
 		Hex currentHex = game.board?.getHexAt(currentCoords.x, currentCoords.y)
 		Hex newHex = game.board?.getHexAt(newCoords.x, newCoords.y)
 		
-		if(currentHex == null || newHex == null) {
+		if(currentHex == null || newHex == null
+				|| (currentHex.x == newHex.x && currentHex.y == newHex.y)) {
 			return -1
 		}
 		
