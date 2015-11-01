@@ -488,14 +488,37 @@ function initUnitsDisplay() {
 		thisUnit.setUnitDisplay(displayUnit);
 		displayUnit.init();
 		
-		stage.addChild(displayUnit);
-		
 		// add mouse event listener
 		displayUnit.on("click", handleUnitClick);
 		displayUnit.mouseChildren = false;
 	});
 	
+	arrangeUnitsDisplay();
+	
 	updateUnitDisplayObjects();
+}
+
+/**
+ * Removes and adds each unit display such that destroyed units are drawn first and not be on top
+ */
+function arrangeUnitsDisplay() {
+	// add destroyed units displays first
+	$.each(units, function(index, thisUnit) {
+		if(thisUnit.isDestroyed()) {
+			var displayUnit = thisUnit.getUnitDisplay();
+			stage.removeChild(displayUnit);
+			stage.addChild(displayUnit);
+		}
+	});
+	
+	// then active units displays
+	$.each(units, function(index, thisUnit) {
+		if(!thisUnit.isDestroyed()) {
+			var displayUnit = thisUnit.getUnitDisplay();
+			stage.removeChild(displayUnit);
+			stage.addChild(displayUnit);
+		}
+	});
 }
 
 /**
@@ -950,6 +973,7 @@ function updateGameData(data) {
 		// update unit display to show as destroyed
 		u.getUnitDisplay().init();
 		u.getUnitDisplay().update();
+		arrangeUnitsDisplay();
 		
 		// update unit info display to show as destroyed
 		infoDisplays[u.id].update();
@@ -977,7 +1001,7 @@ function updateGameData(data) {
 		u.prone = data.prone;
 		
 		// show floating message about the unit being prone
-		var floatMessageStr = "PRONE";	// TODO: localize this message
+		var floatMessageStr = u.prone? "PRONE" : "STANDING";	// TODO: localize this message
 		
 		// determine location of message and create it
 		var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);
@@ -993,7 +1017,7 @@ function updateGameData(data) {
 		u.shutdown = data.shutdown;
 		
 		// show floating message about the unit being destroyed
-		var floatMessageStr = "SHUTDOWN";	// TODO: localize this message
+		var floatMessageStr = u.shutdown ? "SHUTDOWN" : "POWER ON";	// TODO: localize this message
 		
 		// determine location of message and create it
 		var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);

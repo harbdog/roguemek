@@ -78,7 +78,7 @@ class Game {
 		def foundUnits = []
 		int i = 0
 		for(BattleUnit thisUnit in units) {
-			if(thisUnit.x == x && thisUnit.y == y) {
+			if(!thisUnit.isDestroyed() && thisUnit.x == x && thisUnit.y == y) {
 				foundUnits.add(thisUnit)
 			}
 		}
