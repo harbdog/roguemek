@@ -17,6 +17,10 @@
 	src: url('images/UbuntuMono.ttf');
 }
 
+html * {
+	font-family: UbuntuMono;
+}
+
 body {
   -webkit-user-select: none;
      -moz-user-select: -moz-none;
@@ -64,7 +68,6 @@ div #pingDiv {
 	top: 0px;
 	right: 0px;
 	color: #FFFFFF;
-	font-family: UbuntuMono;
 	font-size: 12px;
 }
 
@@ -72,7 +75,6 @@ div #pingDiv {
 	top: 0px;
 	right: 0px;
 	color: #FFFFFF;
-	font-family: UbuntuMono;
 	font-size: 12px;
 }
 
@@ -86,13 +88,22 @@ div #pingDiv {
 	border: none;
 	border-bottom: 1px solid #FFFFFF;
 	border-left: 1px solid #FFFFFF;
-	font-family: UbuntuMono;
 	font-size: 14px;
 }
 
 /* Styles for dialog contents from battleInfo.gsp */
+.ui-dialog .ui-dialog-titlebar {
+	padding: 0;
+}
+
+.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+	padding: 0.25em 0.5em;
+}
+
 div.unit-header {
 	overflow: auto;
+	font-weight: normal;
+	font-size: 125%;
 }
 
 div.header h1 {
@@ -122,6 +133,18 @@ div#unit-pilot #owner{
     float: right;
 }
 
+div#dialogDiv {
+	padding: 0;
+}
+
+div#info-stats .stats-negative {
+	color: #FF0000;
+}
+
+div#info-stats .stats-positive {
+	color: #3399FF;
+}
+
 div.crits {
 	display: table;
 	width: 100%;
@@ -131,7 +154,7 @@ div.crits {
 div.crits h1 {
 	margin: 10px 10px 0px 0px;
 	padding: 0;
-	font-size: 15px;
+	font-size: 14px;
 }
 
 div.crits > div {

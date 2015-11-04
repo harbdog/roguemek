@@ -182,6 +182,24 @@ function resize_canvas(){
 		    }
 		}
 		
+		// update dialog display
+		dialogDisplay.dialog("option", "width", (canvas.width >= 900) ? 900 : canvas.width);
+		dialogDisplay.dialog("option", "height", (canvas.height >= 600) ? 600 : canvas.height);
+		
+		if(canvas.width < 900) {
+			dialogDisplay.dialog("option", "position", { my: "left", at: "left", of: window});
+		}
+		else {
+			dialogDisplay.dialog("option", "position", { my: "center", at: "center", of: window});
+		}
+		
+		if(canvas.height < 600) {
+			dialogDisplay.dialog("option", "position", { my: "top", at: "top", of: window});
+		}
+		else {
+			dialogDisplay.dialog("option", "position", { my: "center", at: "center", of: window});
+		}
+		
 		// update displayable hexes
 		updateHexMapDisplay();
 		
@@ -256,7 +274,7 @@ function handleProgress(event) {
     
     update = true;
 }
-
+var dialogDisplayTitle = "<i>title</i>";
 function handleComplete(event) {
 	stage.removeChild(progress);
 	
@@ -287,11 +305,9 @@ function handleComplete(event) {
     
     // Initialize dialog display
     dialogDisplay = $("#dialogDiv").dialog({
+    	open: function () { $(this).siblings().find(".ui-dialog-title").html("<div id='unit-title'></div>"); },
     	autoOpen: false,
     	modal: true,
-    	width: canvas.width-hexWidth,
-    	height: 3*canvas.height/4,
-    	position: {my: "top", at: "bottom", of: $("#messagingArea")},
 		show: {
 			effect: "blind",
 			duration: 500
