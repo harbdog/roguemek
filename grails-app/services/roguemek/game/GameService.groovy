@@ -2908,8 +2908,8 @@ class GameService {
 				BattleEquipment[] critSection = allCritSections[critSectionIndex]
 				
 				for(BattleEquipment equip in critSection) {
-					if(equip.equipment instanceof HeatSink
-							&& equip.status == BattleEquipment.STATUS_ACTIVE) {
+					if(equip.isActive()
+							&& equip.equipment instanceof HeatSink) {
 							
 						// since each heat sink can be referenced multiple times, need to store by id to only count once
 						equipHeatSinks[equip.id] = equip
@@ -2918,6 +2918,15 @@ class GameService {
 								|| (unitWaterLevel == 1 && Mech.LEGS.contains(critSectionIndex))) {
 							// At level 1 water only count heatsinks in the legs, if deeper count all
 							waterHeatSinks[equip.id] = equip 
+						}
+					}
+					else if(!equip.isActive() 
+							&& (MechMTF.MTF_CRIT_ENGINE == equip.getName()
+								|| MechMTF.MTF_CRIT_FUSION_ENGINE == equip.getName())) {
+						// reduce engine heat sink capability by 5 for each engine crit
+						def engineHitReduction = (engineHeatSinks >= 5) ? 5 : engineHeatSinks
+						if(engineHeatSinks > 0) {
+							engineHeatSinks -= engineHitReduction
 						}
 					}
 				}

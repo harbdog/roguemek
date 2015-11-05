@@ -10,15 +10,15 @@ class HeatEffect {
 	Integer value
 	
 	private static def heatEffects
-	private static final int MIN_HEAT_EFFECT = 15
+	public static final int MIN_HEAT_EFFECT = 15
+	public static final int MAX_HEAT_EFFECT = 40
 	
 	public enum Effect {
 		// modifier types that will be found in the Modifier objects
 		MP_REDUCE("mp_reduce"),			// speed mp reduction (affects total AP)
 		TOHIT_INCREASE("aim_reduce"),	// adds modifiers to hit
 		AMMO_EXP_RISK("ammo_exp"),		// chance of ammo explosion
-		SHUTDOWN_RISK("shutdown"),		// chance of shutdown
-		HEAT_INCREASE("heat_increase"),	// heat built up every turn automatically (e.g. from engine damage)
+		SHUTDOWN_RISK("shutdown_eff"),	// chance of shutdown
 		
 		Effect(str) { this.str = str }
 		private final String str
@@ -28,6 +28,10 @@ class HeatEffect {
 	public HeatEffect(Effect effect, Integer value) {
 		this.effect = effect
 		this.value = value
+	}
+	
+	public static def getAllHeatEffects() {
+		return heatEffects.clone()
 	}
 	
 	/**
@@ -79,10 +83,10 @@ class HeatEffect {
 			
 		heatEffects = []
 		
-		for(int i=40; i>=MIN_HEAT_EFFECT; i--){
+		for(int i=MAX_HEAT_EFFECT; i>=MIN_HEAT_EFFECT; i--){
 			HeatEffect effect = null;
 			switch(i){
-				case 40:
+				case MAX_HEAT_EFFECT:
 						effect = new HeatEffect(Effect.SHUTDOWN_RISK, 100);//SD100%
 						break;
 				case 38:
@@ -95,7 +99,7 @@ class HeatEffect {
 						effect = new HeatEffect(Effect.MP_REDUCE, 5);// -5MP
 						break;
 				case 34:
-						effect = new HeatEffect(Effect.TOHIT_INCREASE, 4);//+4HIT
+						effect = new HeatEffect(Effect.TOHIT_INCREASE, 4 * (int)WeaponModifier.STANDARD_MODIFIER);//+4HIT
 						break;
 				case 33:
 						effect = new HeatEffect(Effect.AMMO_EXP_RISK, 28);//AE28%, die roll 5 or higher to avoid
@@ -113,7 +117,7 @@ class HeatEffect {
 						effect = new HeatEffect(Effect.SHUTDOWN_RISK, 28);//SD28%, die roll 5 or higher to avoid
 						break;
 				case 27:
-						effect = new HeatEffect(Effect.TOHIT_INCREASE, 3);//+3HIT
+						effect = new HeatEffect(Effect.TOHIT_INCREASE, 3 * (int)WeaponModifier.STANDARD_MODIFIER);//+3HIT
 						break;
 				case 25:
 						effect = new HeatEffect(Effect.MP_REDUCE, 3);// -3MP
@@ -122,13 +126,13 @@ class HeatEffect {
 						effect = new HeatEffect(Effect.SHUTDOWN_RISK, 8);// SD8%, die roll 3 or higher to avoid
 						break;
 				case 23:
-						effect = new HeatEffect(Effect.TOHIT_INCREASE, 2);//+2HIT
+						effect = new HeatEffect(Effect.TOHIT_INCREASE, 2 * (int)WeaponModifier.STANDARD_MODIFIER);//+2HIT
 						break;
 				case 20:
 						effect = new HeatEffect(Effect.MP_REDUCE, 2);//-2MP
 						break;
 				case 18:
-						effect = new HeatEffect(Effect.TOHIT_INCREASE, 1);//+1HIT
+						effect = new HeatEffect(Effect.TOHIT_INCREASE, 1 * (int)WeaponModifier.STANDARD_MODIFIER);//+1HIT
 						break;
 				case 15:
 						effect = new HeatEffect(Effect.MP_REDUCE, 1);//-1MP

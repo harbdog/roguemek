@@ -1,13 +1,25 @@
 <%@ page 
 	import="roguemek.game.BattleMech"
 	import="roguemek.model.Mech"
+	import="roguemek.game.HeatEffect"
  %>
  
  <% 
 	def mechInstance = battleMechInstance?.mech
 	def pilotInstance = battleMechInstance?.pilot
+	
+	def allHeatEffects = HeatEffect.getAllHeatEffects()
+	def unitHeatEffects = HeatEffect.getHeatEffectsAt(battleMechInstance?.heat)
+	def heatAsPercent = 100 * (battleMechInstance?.heat / HeatEffect.MAX_HEAT_EFFECT)
+	if(heatAsPercent > 100) heatAsPercent = 100
  %>
  
+ <style>
+ 	div#heat-bar {
+ 		width:${heatAsPercent}%;
+ 	}
+ </style>
+
  <g:if test="${battleMechInstance?.isDestroyed()}">
  	<g:set var="entityName" value="${message(code: 'battleMech.destroyed.label', default: 'Scrap Heap')}" />
  </g:if>
@@ -49,32 +61,57 @@
 		</ul>
 	
 		<div id="info-stats">
-			<div class="stats-negative">
-				<g:if test="${battleMechInstance?.isDestroyed()}">
-					<div>Destroyed</div>
-				</g:if>
-				<g:else>
-					<g:if test="${battleMechInstance?.prone}">
-						<div>Prone</div>
+			<div id="statuses">
+				<div class="status-positive">
+					<g:if test="${battleMechInstance?.isDestroyed()}">
+						<%-- nothing positive about being destroyed --%>
 					</g:if>
-					<g:if test="${battleMechInstance?.shutdown}">
-						<div>Shutdown</div>
+					<g:else>
+						<g:if test="${!battleMechInstance?.prone}">
+							<div><g:message code="unit.status.standing" /></div>
+						</g:if>
+						
+						<g:if test="${!battleMechInstance?.shutdown}">
+							<div><g:message code="unit.status.powered" /></div>
+						</g:if>
+					</g:else>
+				</div>
+			
+				<div class="status-negative">
+					<g:if test="${battleMechInstance?.isDestroyed()}">
+						<div><g:message code="unit.status.destroyed" /></div>
 					</g:if>
-				</g:else>
+					<g:else>
+						<g:if test="${battleMechInstance?.prone}">
+							<div><g:message code="unit.status.prone" /></div>
+						</g:if>
+						
+						<g:if test="${battleMechInstance?.shutdown}">
+							<div><g:message code="unit.status.shutdown" /></div>
+						</g:if>
+						
+						<g:if test="${unitHeatEffects.size() > 0}">
+							<g:each in="${unitHeatEffects}" var="effect">
+								<div><g:message code="unit.status.${effect.key.toString()}" args="[effect.value]" /></div>
+							</g:each>
+						</g:if>
+						
+					</g:else>
+				</div>
 			</div>
 			
-			<div class="stats-positive">
-				<g:if test="${battleMechInstance?.isDestroyed()}">
-					<%-- nothing positive about being destroyed --%>
-				</g:if>
-				<g:else>
-					<g:if test="${!battleMechInstance?.prone}">
-						<div>Standing</div>
-					</g:if>
-					<g:if test="${!battleMechInstance?.shutdown}">
-						<div>Powered On</div>
-					</g:if>
-				</g:else>
+			<div id="heat">
+				<span>Heat: ${battleMechInstance?.heat}</span>
+				<div id="heat-bar-background">
+					<div id="heat-bar"></div>
+					
+					<g:each in="${(HeatEffect.MAX_HEAT_EFFECT..HeatEffect.MIN_HEAT_EFFECT)}" var="count">
+						<g:if test="${allHeatEffects[count]}">
+							<% def thisPercent = 100 * (count/HeatEffect.MAX_HEAT_EFFECT) %>
+							<div class="heat-level" id="heat-level-${count}" style="width:${thisPercent}%"></div>
+						</g:if>
+					</g:each>
+				</div>
 			</div>
 		</div>
 	

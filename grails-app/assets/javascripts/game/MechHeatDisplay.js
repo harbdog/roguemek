@@ -108,10 +108,10 @@ c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 	this.heatGenDissLabel.x = this.staticGenDissLabel.x + this.staticGenDissLabel.getMeasuredWidth()/2 -this.heatGenDissLabel.getMeasuredWidth()/2 ;
 	
 	// update the heat bar and its mask
-	this.staticHeatBar.alpha = 0.5 + 0.5 * heat/30;
+	this.staticHeatBar.alpha = 0.5 + 0.5 * heat/40;
 	
 	this.heatMask.graphics.clear();
-	this.heatMask.graphics.drawRect(0, 0, this.width * (heat / 30), this.height);
+	this.heatMask.graphics.drawRect(0, 0, this.width * (heat / 40), this.height);
 	
 	// draw the end of turn heat gen/diss result line
 	var heatResultColor = "#FFFFFF";
@@ -123,7 +123,7 @@ c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 	}
 	this.heatResultLine.graphics.clear();
 	this.heatResultLine.graphics.beginFill(heatResultColor)
-			.drawRect(0, 0, this.width * ((heat +heatGen -heatDiss) / 30), this.height);
+			.drawRect(0, 0, this.width * ((heat +heatGen -heatDiss) / 40), this.height);
 	
 	this.doCache();
 }

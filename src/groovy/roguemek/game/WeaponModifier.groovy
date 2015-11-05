@@ -380,7 +380,7 @@ class WeaponModifier {
 		if(unit.heat >= HeatEffect.MIN_HEAT_EFFECT) {
 			HeatEffect thisEffect = HeatEffect.getHeatEffectForTypeAt(HeatEffect.Effect.TOHIT_INCREASE, unit.heat)
 			if(thisEffect != null) {
-				penaltyMods.add(new WeaponModifier(Modifier.HEAT, thisEffect.value * STANDARD_MODIFIER));
+				penaltyMods.add(new WeaponModifier(Modifier.HEAT, thisEffect.value));
 			}
 		}
 		
