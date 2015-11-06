@@ -14,12 +14,6 @@
 	if(heatAsPercent > 100) heatAsPercent = 100
  %>
  
- <style>
- 	div#heat-bar {
- 		width:${heatAsPercent}%;
- 	}
- </style>
-
  <g:if test="${battleMechInstance?.isDestroyed()}">
  	<g:set var="entityName" value="${message(code: 'battleMech.destroyed.label', default: 'Scrap Heap')}" />
  </g:if>
@@ -101,17 +95,125 @@
 			</div>
 			
 			<div id="heat">
-				<span>Heat: ${battleMechInstance?.heat}</span>
-				<div id="heat-bar-background">
-					<div id="heat-bar"></div>
+				<g:if test="${battleMechInstance?.heat >= 0}">
+					<style>
+						div#heat-bar {
+					 		width:${heatAsPercent}%;
+						}
+					</style>
 					
-					<g:each in="${(HeatEffect.MAX_HEAT_EFFECT..HeatEffect.MIN_HEAT_EFFECT)}" var="count">
-						<g:if test="${allHeatEffects[count]}">
-							<% def thisPercent = 100 * (count/HeatEffect.MAX_HEAT_EFFECT) %>
-							<div class="heat-level" id="heat-level-${count}" style="width:${thisPercent}%"></div>
-						</g:if>
-					</g:each>
-				</div>
+					<span>Heat: ${battleMechInstance?.heat}</span>
+					
+					<div id="heat-bar-background">
+						<div id="heat-bar"></div>
+						
+						<g:each in="${(HeatEffect.MAX_HEAT_EFFECT..HeatEffect.MIN_HEAT_EFFECT)}" var="count">
+							<g:if test="${allHeatEffects[count]}">
+								<% def thisPercent = 100 * (count/HeatEffect.MAX_HEAT_EFFECT) %>
+								<div class="heat-level" id="heat-level-${count}" style="width:${thisPercent}%"></div>
+							</g:if>
+						</g:each>
+					</div>
+				</g:if>
+			</div>
+			
+			<div class="armor">
+				<g:if test="${battleMechInstance?.armor}">
+					<%
+						def armorPercents = [:]
+						def internalPercents = [:]
+					
+						for(def section in Mech.ALL_LOCATIONS) {
+							int initialArmor = mechInstance.armor[section]
+							int currentArmor =  battleMechInstance.armor[section]
+							armorPercents[section] = (initialArmor > 0) ? 100 * currentArmor / initialArmor : 0
+							
+							if(section <= Mech.RIGHT_LEG) {
+								/* rear sections do not have internal at same index */
+								int initialInternal = mechInstance.internals.getAt(section)
+								int currentInternal = battleMechInstance.internals.getAt(section)
+								internalPercents[section] = (initialInternal > 0) ? 100 * currentInternal / initialInternal : 0
+							}
+						}
+					%>
+				
+					<div id="armor-section-1">
+						<div id="armor-LA">
+							<span class="property-value">
+								<h1>Left Arm: ${battleMechInstance?.armor?.getAt(Mech.LEFT_ARM)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_ARM)})</h1>
+							</span>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.LEFT_ARM]}%"></div></div>
+							<div class="internals-bar"><div style="height:${internalPercents[Mech.LEFT_ARM]}%"></div></div>
+						</div>
+					</div>
+						
+					<div id="armor-section-2">
+						<div id="armor-LT">
+							<span class="property-value">
+								<h1>Left Torso: ${battleMechInstance?.armor?.getAt(Mech.LEFT_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.LEFT_REAR)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_TORSO)})</h1>
+							</span>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.LEFT_TORSO]}%"></div></div>
+							<div class="internals-bar"><div style="height:${internalPercents[Mech.LEFT_TORSO]}%"></div></div>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.LEFT_REAR]}%"></div></div>
+						</div>
+						
+						<div id="armor-LL">
+							<span class="property-value">
+								<h1>Left Leg: ${battleMechInstance?.armor?.getAt(Mech.LEFT_LEG)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_LEG)})</h1>
+							</span>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.LEFT_LEG]}%"></div></div>
+							<div class="internals-bar"><div style="height:${internalPercents[Mech.LEFT_LEG]}%"></div></div>
+						</div>
+					</div>
+					
+					<div id="armor-section-3">
+						<div id="armor-HD">
+							<span class="property-value">
+								<h1>Head: ${battleMechInstance?.armor?.getAt(Mech.HEAD)}(${battleMechInstance?.internals?.getAt(Mech.HEAD)})</h1>
+							</span>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.HEAD]}%"></div></div>
+							<div class="internals-bar"><div style="height:${internalPercents[Mech.HEAD]}%"></div></div>
+						</div>
+						
+						<div id="armor-CT">
+							<span class="property-value">
+								<h1>Center Torso: ${battleMechInstance?.armor?.getAt(Mech.CENTER_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.CENTER_REAR)}(${battleMechInstance?.internals?.getAt(Mech.CENTER_TORSO)})</h1>
+							</span>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.CENTER_TORSO]}%"></div></div>
+							<div class="internals-bar"><div style="height:${internalPercents[Mech.CENTER_TORSO]}%"></div></div>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.CENTER_REAR]}%"></div></div>
+						</div>
+					</div>
+					
+					<div id="armor-section-4">
+						<div id="armor-RT">
+							<span class="property-value">
+								<h1>Right Torso: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.RIGHT_REAR)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_TORSO)})</h1>
+							</span>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.RIGHT_TORSO]}%"></div></div>
+							<div class="internals-bar"><div style="height:${internalPercents[Mech.RIGHT_TORSO]}%"></div></div>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.RIGHT_REAR]}%"></div></div>
+						</div>
+						
+						<div id="armor-RL">
+							<span class="property-value">
+								<h1>Right Leg: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_LEG)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_LEG)})</h1>
+							</span>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.RIGHT_LEG]}%"></div></div>
+							<div class="internals-bar"><div style="height:${internalPercents[Mech.RIGHT_LEG]}%"></div></div>
+						</div>
+					</div>
+					
+					<div id="armor-section-5">
+						<div id="armor-RA">
+							<span class="property-value">
+								<h1>Right Arm: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_ARM)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_ARM)})</h1>
+							</span>
+							<div class="armor-bar"><div style="height:${armorPercents[Mech.RIGHT_ARM]}%"></div></div>
+							<div class="internals-bar"><div style="height:${internalPercents[Mech.RIGHT_ARM]}%"></div></div>
+						</div>
+					</div>
+				</g:if>
 			</div>
 		</div>
 	
