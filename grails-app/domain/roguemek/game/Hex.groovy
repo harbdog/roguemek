@@ -150,7 +150,7 @@ class Hex {
 	 * 
 	 * sourced from MegaMek Hex.java
 	 */
-	public int depth(boolean hidden) {
+	public int depth() {
 		int depth = 0;
 		Terrain water = this.getTerrain(Terrain.WATER);
 		//Terrain basement = getTerrain(Terrain.BLDG_BASEMENT_TYPE);
