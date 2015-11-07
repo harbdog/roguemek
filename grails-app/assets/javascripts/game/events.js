@@ -151,9 +151,14 @@ function handleKeyPress(key) {
 /**
  * Enables fullscreen mode, if supported
  */
-function goFullScreen(){
+function toggleFullScreen(){
 	if (fullScreenApi.supportsFullScreen) {
-		fullScreenApi.requestFullScreen(document.body);
+		if(fullScreenApi.isFullScreen()) {
+			fullScreenApi.cancelFullScreen(document.body);
+		}
+		else {
+			fullScreenApi.requestFullScreen(document.body);
+		}
 	}
 }
 
@@ -318,26 +323,61 @@ function handleComplete(event) {
 		}
     });
     
-    // only show the fullscreen button on mobile devices browsers
-    if( fullScreenApi.supportsFullScreen
-    		&& (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    		|| devMode)) {
+    // show the board zoom in button
+    var inButton = new createjs.Container();
+    inButton.x = 0;
+    inButton.y = 0;
+	rootStage.addChild(inButton);
+	
+	var inBackground = new createjs.Shape();
+	inBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 25,25);
+	inButton.addChild(inBackground);
+	
+	var inText = new createjs.Text("[+]", "12px UbuntuMono", "white");
+	inText.x = (25 - inText.getMeasuredWidth())/2;
+	inText.y = (25 - inText.getMeasuredHeight()*2)/2;
+	inButton.addChild(inText);
+	
+	inButton.on("click", handleZoomIn);
+	inButton.mouseChildren = false;
+	
+	// show the board zoom out button
+	var outButton = new createjs.Container();
+	outButton.x = 0;
+	outButton.y = 25;
+	rootStage.addChild(outButton);
+	
+	var outBackground = new createjs.Shape();
+	outBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 25,25);
+	outButton.addChild(outBackground);
+	
+	var outText = new createjs.Text("[-]", "12px UbuntuMono", "white");
+	outText.x = (25 - outText.getMeasuredWidth())/2;
+	outText.y = (25 - outText.getMeasuredHeight()*2)/2;
+	outButton.addChild(outText);
+	
+	outButton.on("click", handleZoomOut);
+	outButton.mouseChildren = false;
+    
+    
+    // only show the fullscreen button if the browser supports it
+    if( fullScreenApi.supportsFullScreen || devMode ) {
     	// TODO: find a better place for the fullscreen button
 		var fsButton = new createjs.Container();
 		fsButton.x = 0;
-		fsButton.y = 100;
+		fsButton.y = 50;
 		rootStage.addChild(fsButton);
 		
 		var fsBackground = new createjs.Shape();
-		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 100,25);
+		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 25,25);
 		fsButton.addChild(fsBackground);
 		
-		var fsText = new createjs.Text("Go Fullscreen", "12px UbuntuMono", "white");
-		fsText.x = (100 - fsText.getMeasuredWidth())/2;
-		fsText.y = (20 - fsText.getMeasuredHeight())/2;
+		var fsText = new createjs.Text("[ ]", "12px UbuntuMono", "white");
+		fsText.x = (25 - fsText.getMeasuredWidth())/2;
+		fsText.y = (25 - fsText.getMeasuredHeight()*2)/2;
 		fsButton.addChild(fsText);
 		
-		fsButton.on("click", goFullScreen);
+		fsButton.on("click", toggleFullScreen);
 		fsButton.mouseChildren = false;
     }
     
@@ -629,13 +669,111 @@ function handleMouseWheel(evt) {
 	
 	// need to handle different browsers differently based on event and property type defined when mouse scroll is used
 	if (!evt) evt = event;
-	var direction = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1;
+	var direction = (evt.detail < 0 || evt.wheelDelta > 0) ? 2 : -1;
 	
 	var mouseX = evt.clientX - stage.x;
 	var mouseY = evt.clientY - stage.y;
 	
 	var oldScale = stage.scaleX;
 	var newScale = stage.scaleX + (direction * 0.1);
+	
+	if(newScale > 0 && newScale <= 5) {
+		console.log("scale="+newScale);
+		
+		if(doAnimate) {
+			var aTime = 250;
+			createjs.Tween.removeTweens(stage);
+			createjs.Tween.get(stage)
+					.to({scaleX: newScale, scaleY: newScale}, aTime, createjs.Ease.quadOut)
+					.call(function() {
+						update = true;
+						
+						// Keep the board from going off the window too much
+					    keepBoardInWindow();
+						
+						// update visible hexes
+					    updateHexMapDisplay();
+					})
+					.addEventListener("change", function() {
+						update = true;
+						
+						// Keep the board from going off the window too much
+					    keepBoardInWindow();
+						
+						// update visible hexes
+					    updateHexMapDisplay();
+					});
+		}
+		else{
+			stage.scaleX = newScale;
+			stage.scaleY = newScale;
+			
+			// Keep the board from going off the window too much
+		    keepBoardInWindow();
+			
+			// update visible hexes
+		    updateHexMapDisplay();
+		    
+		    update = true;
+		}
+	}
+}
+
+function handleZoomIn() {
+	var oldScale = stage.scaleX;
+	var newScale = stage.scaleX + 0.2;
+	
+	// TODO: allow animations to be turned off
+	var doAnimate = true;
+	
+	if(newScale > 0 && newScale <= 5) {
+		console.log("scale="+newScale);
+		
+		if(doAnimate) {
+			var aTime = 250;
+			createjs.Tween.removeTweens(stage);
+			createjs.Tween.get(stage)
+					.to({scaleX: newScale, scaleY: newScale}, aTime, createjs.Ease.quadOut)
+					.call(function() {
+						update = true;
+						
+						// Keep the board from going off the window too much
+					    keepBoardInWindow();
+						
+						// update visible hexes
+					    updateHexMapDisplay();
+					})
+					.addEventListener("change", function() {
+						update = true;
+						
+						// Keep the board from going off the window too much
+					    keepBoardInWindow();
+						
+						// update visible hexes
+					    updateHexMapDisplay();
+					});
+		}
+		else{
+			stage.scaleX = newScale;
+			stage.scaleY = newScale;
+			
+			// Keep the board from going off the window too much
+		    keepBoardInWindow();
+			
+			// update visible hexes
+		    updateHexMapDisplay();
+		    
+		    update = true;
+		}
+	}
+}
+
+function handleZoomOut() {
+	var oldScale = stage.scaleX;
+	var newScale = stage.scaleX - 0.1;
+	
+	// TODO: allow animations to be turned off
+	var doAnimate = true;
 	
 	if(newScale > 0 && newScale <= 5) {
 		console.log("scale="+newScale);
