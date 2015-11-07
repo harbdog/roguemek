@@ -159,9 +159,20 @@ div#statuses {
 	color: #3399FF;
 }
 
+div#points {
+	float: left;
+	width: 70%;
+	margin-bottom: 10px;
+}
+
+div#points > span {
+	white-space: nowrap
+}
+
 div#heat {
 	float: left;
 	width: 70%;
+	margin-bottom: 10px;
 }
 
 div#heat-bar-background {
@@ -191,15 +202,21 @@ div.heat-level {
 	border-color: #FFFFFF;
 }
 
-div.armor {
+div#armor {
 	display: table;
-	width: 100%;
+	width: 70%;
 	font-size: 12px;
 }
 
-div.armor > div {
+div#armor > div {
 	display: table-cell;
 	width: 20%;
+	position: relative;
+}
+
+div#armor > div > div {
+	position: absolute;
+	display: inline-block;
 }
 
 div.armor-bar {
@@ -219,6 +236,18 @@ div.armor-bar > div {
 	background-color: #3399FF;
 }
 
+div.armor-bar > div.color75percent {
+	background-color: #5D79CA;
+}
+
+div.armor-bar > div.color50percent {
+	background-color: #994D80;
+}
+
+div.armor-bar > div.color25percent {
+	background-color: #FF0000;
+}
+
 div.internals-bar {
 	position: relative;
 	float: left;
@@ -235,6 +264,18 @@ div.internals-bar > div {
     bottom: 0;
 	width: 100%;
 	background-color: #3399FF;
+}
+
+div.internals-bar > div.color75percent {
+	background-color: #5D79CA;
+}
+
+div.internals-bar > div.color50percent {
+	background-color: #994D80;
+}
+
+div.internals-bar > div.color25percent {
+	background-color: #FF0000;
 }
 
 div.crits {

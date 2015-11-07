@@ -1,6 +1,6 @@
 <%@ page 
-	import="roguemek.game.BattleMech"
 	import="roguemek.model.Mech"
+	import="roguemek.game.BattleMech"
 	import="roguemek.game.HeatEffect"
  %>
  
@@ -25,7 +25,7 @@
  	<div class="unit-header">
  		<div id="unit-image">
 	 		<g:if test="${battleMechInstance?.image}">
-				<!-- show stored byte array as an image on the page -->
+				<%-- show stored byte array as an image on the page --%>
 				<img src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': battleMechInstance.id])}"/>
 			</g:if>
 		</div>
@@ -94,6 +94,13 @@
 				</div>
 			</div>
 			
+			<div id="points">
+				<span>AP Per Turn: ${battleMechInstance?.actionPoints}</span>
+				<g:if test="${battleMechInstance?.jumpPoints > 0}">
+					<span style="float:right;">JP Per Turn: ${battleMechInstance?.jumpPoints}</span>
+				</g:if>
+			</div>
+			
 			<div id="heat">
 				<g:if test="${battleMechInstance?.heat >= 0}">
 					<style>
@@ -117,7 +124,7 @@
 				</g:if>
 			</div>
 			
-			<div class="armor">
+			<div id="armor">
 				<g:if test="${battleMechInstance?.armor}">
 					<%
 						def armorPercents = [:]
@@ -135,15 +142,20 @@
 								internalPercents[section] = (initialInternal > 0) ? 100 * currentInternal / initialInternal : 0
 							}
 						}
+						
+						def armorBarClass
+						def internalBarClass
+						def rearBarClass
 					%>
 				
 					<div id="armor-section-1">
-						<div id="armor-LA">
+						<div id="armor-LA" style="top: 50px;">
 							<span class="property-value">
 								<h1>Left Arm: ${battleMechInstance?.armor?.getAt(Mech.LEFT_ARM)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_ARM)})</h1>
 							</span>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.LEFT_ARM]}%"></div></div>
-							<div class="internals-bar"><div style="height:${internalPercents[Mech.LEFT_ARM]}%"></div></div>
+							
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.LEFT_ARM]}"/>' style="height:${armorPercents[Mech.LEFT_ARM]}%"></div></div>
+							<div class="internals-bar"><div class='<g:colorPercentClass percent="${internalPercents[Mech.LEFT_ARM]}"/>' style="height:${internalPercents[Mech.LEFT_ARM]}%"></div></div>
 						</div>
 					</div>
 						
@@ -152,17 +164,19 @@
 							<span class="property-value">
 								<h1>Left Torso: ${battleMechInstance?.armor?.getAt(Mech.LEFT_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.LEFT_REAR)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_TORSO)})</h1>
 							</span>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.LEFT_TORSO]}%"></div></div>
-							<div class="internals-bar"><div style="height:${internalPercents[Mech.LEFT_TORSO]}%"></div></div>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.LEFT_REAR]}%"></div></div>
+							
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.LEFT_TORSO]}"/>' style="height:${armorPercents[Mech.LEFT_TORSO]}%"></div></div>
+							<div class="internals-bar"><div class='<g:colorPercentClass percent="${internalPercents[Mech.LEFT_TORSO]}"/>' style="height:${internalPercents[Mech.LEFT_TORSO]}%"></div></div>
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.LEFT_REAR]}"/>' style="height:${armorPercents[Mech.LEFT_REAR]}%"></div></div>
 						</div>
 						
-						<div id="armor-LL">
+						<div id="armor-LL" style="top: 200px;">
 							<span class="property-value">
 								<h1>Left Leg: ${battleMechInstance?.armor?.getAt(Mech.LEFT_LEG)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_LEG)})</h1>
 							</span>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.LEFT_LEG]}%"></div></div>
-							<div class="internals-bar"><div style="height:${internalPercents[Mech.LEFT_LEG]}%"></div></div>
+							
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.LEFT_LEG]}"/>' style="height:${armorPercents[Mech.LEFT_LEG]}%"></div></div>
+							<div class="internals-bar"><div class='<g:colorPercentClass percent="${internalPercents[Mech.LEFT_LEG]}"/>' style="height:${internalPercents[Mech.LEFT_LEG]}%"></div></div>
 						</div>
 					</div>
 					
@@ -171,17 +185,19 @@
 							<span class="property-value">
 								<h1>Head: ${battleMechInstance?.armor?.getAt(Mech.HEAD)}(${battleMechInstance?.internals?.getAt(Mech.HEAD)})</h1>
 							</span>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.HEAD]}%"></div></div>
-							<div class="internals-bar"><div style="height:${internalPercents[Mech.HEAD]}%"></div></div>
+							
+							<div class="armor-bar" style="height: 50px;"><div class='<g:colorPercentClass percent="${armorPercents[Mech.HEAD]}"/>' style="height:${armorPercents[Mech.HEAD]}%"></div></div>
+							<div class="internals-bar" style="height: 25px; margin-top: 25px;"><div class='<g:colorPercentClass percent="${internalPercents[Mech.HEAD]}"/>' style="height:${internalPercents[Mech.HEAD]}%"></div></div>
 						</div>
 						
-						<div id="armor-CT">
+						<div id="armor-CT"  style="top: 100px;">
 							<span class="property-value">
 								<h1>Center Torso: ${battleMechInstance?.armor?.getAt(Mech.CENTER_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.CENTER_REAR)}(${battleMechInstance?.internals?.getAt(Mech.CENTER_TORSO)})</h1>
 							</span>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.CENTER_TORSO]}%"></div></div>
-							<div class="internals-bar"><div style="height:${internalPercents[Mech.CENTER_TORSO]}%"></div></div>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.CENTER_REAR]}%"></div></div>
+							
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.CENTER_TORSO]}"/>' style="height:${armorPercents[Mech.CENTER_TORSO]}%"></div></div>
+							<div class="internals-bar"><div class='<g:colorPercentClass percent="${internalPercents[Mech.CENTER_TORSO]}"/>' style="height:${internalPercents[Mech.CENTER_TORSO]}%"></div></div>
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.CENTER_REAR]}"/>' style="height:${armorPercents[Mech.CENTER_REAR]}%"></div></div>
 						</div>
 					</div>
 					
@@ -190,27 +206,30 @@
 							<span class="property-value">
 								<h1>Right Torso: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.RIGHT_REAR)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_TORSO)})</h1>
 							</span>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.RIGHT_TORSO]}%"></div></div>
-							<div class="internals-bar"><div style="height:${internalPercents[Mech.RIGHT_TORSO]}%"></div></div>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.RIGHT_REAR]}%"></div></div>
+							
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.RIGHT_TORSO]}"/>' style="height:${armorPercents[Mech.RIGHT_TORSO]}%"></div></div>
+							<div class="internals-bar"><div class='<g:colorPercentClass percent="${internalPercents[Mech.RIGHT_TORSO]}"/>' style="height:${internalPercents[Mech.RIGHT_TORSO]}%"></div></div>
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.RIGHT_REAR]}"/>' style="height:${armorPercents[Mech.RIGHT_REAR]}%"></div></div>
 						</div>
 						
-						<div id="armor-RL">
+						<div id="armor-RL"  style="top: 200px;">
 							<span class="property-value">
 								<h1>Right Leg: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_LEG)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_LEG)})</h1>
 							</span>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.RIGHT_LEG]}%"></div></div>
-							<div class="internals-bar"><div style="height:${internalPercents[Mech.RIGHT_LEG]}%"></div></div>
+							
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.RIGHT_LEG]}"/>' style="height:${armorPercents[Mech.RIGHT_LEG]}%"></div></div>
+							<div class="internals-bar"><div class='<g:colorPercentClass percent="${internalPercents[Mech.RIGHT_LEG]}"/>' style="height:${internalPercents[Mech.RIGHT_LEG]}%"></div></div>
 						</div>
 					</div>
 					
 					<div id="armor-section-5">
-						<div id="armor-RA">
+						<div id="armor-RA" style="top: 50px;">
 							<span class="property-value">
 								<h1>Right Arm: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_ARM)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_ARM)})</h1>
 							</span>
-							<div class="armor-bar"><div style="height:${armorPercents[Mech.RIGHT_ARM]}%"></div></div>
-							<div class="internals-bar"><div style="height:${internalPercents[Mech.RIGHT_ARM]}%"></div></div>
+							
+							<div class="armor-bar"><div class='<g:colorPercentClass percent="${armorPercents[Mech.RIGHT_ARM]}"/>' style="height:${armorPercents[Mech.RIGHT_ARM]}%"></div></div>
+							<div class="internals-bar"><div class='<g:colorPercentClass percent="${internalPercents[Mech.RIGHT_ARM]}"/>' style="height:${internalPercents[Mech.RIGHT_ARM]}%"></div></div>
 						</div>
 					</div>
 				</g:if>
