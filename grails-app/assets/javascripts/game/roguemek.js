@@ -1028,13 +1028,6 @@ function updateGameData(data) {
 		u.getUnitDisplay().update();
 	}
 	
-	if(data.moveAP != null) {
-		u.forwardAP = data.moveAP.forward;
-		u.backwardAP = data.moveAP.backward;
-		
-		if(isPlayerU) updateUnitMovePoints(u);
-	}
-	
 	if(data.apRemaining != null) {
 		u.apRemaining = data.apRemaining;
 		
@@ -1057,6 +1050,13 @@ function updateGameData(data) {
 		else{
 			u.getUnitDisplay().positionUpdate();
 		}
+	}
+	
+	if(data.moveAP != null) {
+		u.forwardAP = data.moveAP.forward;
+		u.backwardAP = data.moveAP.backward;
+		
+		if(isPlayerU) updateUnitMovePoints(u);
 	}
 	
 	// update armor values of the target

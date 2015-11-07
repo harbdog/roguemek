@@ -110,6 +110,15 @@ c.init = function() {
 	this.update();
 }
 
+c.setHighlighted = function(highlight) {
+	if(highlight) {
+		this.alpha = 1.0;
+	}
+	else {
+		this.alpha = 0.5;
+	}
+}
+
 c.setPoints = function(points) {
 	if(points < 0) points = "-";
 	this.label.text = points;

@@ -687,7 +687,7 @@ function updateUnitActionPoints(unit) {
 	
 	var controlDisplay = unitControls[unit.id];
 	if(controlDisplay != null) {
-		controlDisplay.setActionPoints(unit.apRemaining);
+		controlDisplay.updateActionPoints();
 	}
 }
 
@@ -696,7 +696,7 @@ function updateUnitMovePoints(unit) {
 	
 	var controlDisplay = unitControls[unit.id];
 	if(controlDisplay != null) {
-		controlDisplay.setMoveActionPoints(unit.forwardAP, unit.backwardAP, unit.jumping);
+		controlDisplay.updateMoveActionPoints();
 	}
 }
 
@@ -705,7 +705,7 @@ function updateUnitJumpPoints(unit) {
 	
 	var controlDisplay = unitControls[unit.id];
 	if(controlDisplay != null) {
-		controlDisplay.setJumpPoints(unit.jpRemaining);
+		controlDisplay.updateJumpPoints();
 	}
 }
 

@@ -90,9 +90,9 @@ c.init = function() {
 	
 	this.update();
 	
-	this.setActionPoints(this.unit.apRemaining);
-	this.setMoveActionPoints(this.unit.forwardAP, this.unit.backwardAP, this.unit.jumping);
-	this.setJumpPoints(this.unit.jpRemaining);
+	this.updateActionPoints();
+	this.updateMoveActionPoints();
+	this.updateJumpPoints();
 }
 
 c.update = function() {
@@ -127,9 +127,24 @@ c.update = function() {
 	this.doCache();
 }
 
-c.setMoveActionPoints = function(forwardAP, backwardAP, jumping) {
-	if(forwardAP) this.forward.setPoints(forwardAP);
-	if(backwardAP) this.backward.setPoints(backwardAP);
+c.updateMoveActionPoints = function() {
+	var forwardAP = this.unit.forwardAP;
+	var backwardAP = this.unit.backwardAP;
+	var jumping = this.unit.jumping;
+	
+	var pointsRemaining = (this.unit.jumping) 
+			? ((this.unit.apRemaining > this.unit.jpRemaining) ? this.unit.jpRemaining : this.unit.apRemaining) 
+				: this.unit.apRemaining;
+	
+	if(forwardAP) {
+		this.forward.setPoints(forwardAP);
+		this.forward.setHighlighted((forwardAP > 0 && pointsRemaining >= forwardAP));
+	}
+	
+	if(backwardAP) {
+		this.backward.setPoints(backwardAP);
+		this.backward.setHighlighted((backwardAP > 0 && pointsRemaining >= backwardAP));
+	}
 	
 	if(jumping) {
 		// set rotate controls to 0 AP
@@ -139,7 +154,10 @@ c.setMoveActionPoints = function(forwardAP, backwardAP, jumping) {
 	else {
 		// set rotate controls to 1 AP
 		this.left.setPoints(1);
+		this.left.setHighlighted((pointsRemaining >= 1));
+		
 		this.right.setPoints(1);
+		this.right.setHighlighted((pointsRemaining >= 1));
 	}
 	
 	if(this.jump != null) {
@@ -149,13 +167,15 @@ c.setMoveActionPoints = function(forwardAP, backwardAP, jumping) {
 	this.update();
 }
 
-c.setActionPoints = function(ap) {
+c.updateActionPoints = function() {
+	var ap = this.unit.apRemaining;
 	this.center.setPoints("AP "+ap);
 	
 	this.update();
 }
 
-c.setJumpPoints = function(jp) {
+c.updateJumpPoints = function(jp) {
+	var jp = this.unit.jpRemaining;
 	if(this.jump != null) {
 		this.jump.setPoints("JP "+jp);
 	}
