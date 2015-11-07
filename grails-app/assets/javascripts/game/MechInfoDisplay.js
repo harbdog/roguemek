@@ -49,10 +49,10 @@ c.init = function() {
 	
 	var unitId = this.unit.id;
 	this.on("click", function() {
+		// TODO: show the info dialog when clicked but with a loading animation/message until fully loaded
+    	dialogDisplay.dialog("open");
+    	
 		dialogDisplay.load("battleMech/battleInfo/"+unitId, function() {
-			// TODO: show the info dialog when clicked but with a loading animation/message until fully loaded
-	    	dialogDisplay.dialog("open");
-	    	
 	    	// move the header to the title area of the dialog
 	    	$(".unit-header").appendTo("#unit-title");
 	    });
