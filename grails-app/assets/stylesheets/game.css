@@ -287,7 +287,12 @@ div.crits {
 div.crits h1 {
 	margin: 10px 10px 0px 0px;
 	padding: 0;
+	color: #3399FF;
 	font-size: 14px;
+}
+
+div.crits span.destroyed > h1 {
+	color: #FF0000;
 }
 
 div.crits > div {
@@ -295,8 +300,14 @@ div.crits > div {
 	width: 20%;
 }
 
+div.crits span.property-heading {
+	display: block;
+	white-space: nowrap;
+}
+
 div.crits span.property-value {
 	margin: 0px 10px 0px 0px;
+	padding: 0px 10px 0px 0px;
 	display: block;
 	white-space: nowrap;
 }
@@ -304,4 +315,9 @@ div.crits span.property-value {
 div.crits span.destroyed {
 	text-decoration: line-through;
 	color: #FF0000;
+}
+
+div.crits span.new-equipment {
+	border-top: 1px solid;
+	border-color: #808080;
 }

@@ -238,127 +238,264 @@
 	
 		<div id="info-crits">
 			<g:if test="${battleMechInstance?.crits}">
-			
+				
+				
 				<div class="crits">
 				
 					<div id="crit-section-1">
 						<div id="mech-LA">
-							<span class="property-value">
-								<h1>Left Arm: ${battleMechInstance?.armor?.getAt(Mech.LEFT_ARM)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_ARM)})</h1>
+							<g:set var="prevCritEquip" value="${null}" />
+							<g:set var="critSection" value="${Mech.LEFT_ARM}" />
+							<g:set var="headingClass" value="property-heading" />
+							<%
+								if(battleMechInstance?.internals?.getAt(critSection) == 0) {
+									headingClass += " destroyed"
+								}
+							%>
+							
+							<span class="${headingClass}">
+								<h1>Left Arm: ${battleMechInstance?.armor?.getAt(critSection)}(${battleMechInstance?.internals?.getAt(critSection)})</h1>
 							</span>
-							<g:each in="${battleMechInstance?.getCritSection(Mech.LEFT_ARM)}" status="i" var="critEquip">
-								<g:if test="${critEquip.isActive()}">
-									<span class="property-value">${critEquip.toString()}</span>
-								</g:if>
-								<g:else>
-									<span class="property-value destroyed">${critEquip.toString()}</span>
-								</g:else>
+							
+							<g:each in="${battleMechInstance?.getCritSection(critSection)}" status="i" var="critEquip">
+								<%
+									def critClasses = "property-value"
+									if(!critEquip.isActive()) {
+										critClasses += " destroyed"
+									}
+									if(prevCritEquip == null || critEquip.id != prevCritEquip.id) {
+										critClasses += " new-equipment"
+									}
+								%>
+							
+								<span class="${critClasses}">${critEquip.toString()}</span>
+								
+								<g:set var="prevCritEquip" value="${critEquip}" />
 							</g:each>
 						</div>
 					</div>
 						
 					<div id="crit-section-2">
 						<div id="mech-LT">
-							<span class="property-value">
-								<h1>Left Torso: ${battleMechInstance?.armor?.getAt(Mech.LEFT_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.LEFT_REAR)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_TORSO)})</h1>
+							<g:set var="prevCritEquip" value="${null}" />
+							<g:set var="critSection" value="${Mech.LEFT_TORSO}" />
+							<g:set var="headingClass" value="property-heading" />
+							<%
+								if(battleMechInstance?.internals?.getAt(critSection) == 0) {
+									headingClass += " destroyed"
+								}
+							%>
+							
+							<span class="${headingClass}">
+								<h1>Left Torso: ${battleMechInstance?.armor?.getAt(critSection)}/${battleMechInstance?.armor?.getAt(Mech.LEFT_REAR)}(${battleMechInstance?.internals?.getAt(critSection)})</h1>
 							</span>
-							<g:each in="${battleMechInstance?.getCritSection(Mech.LEFT_TORSO)}" status="i" var="critEquip">
-								<g:if test="${critEquip.isActive()}">
-									<span class="property-value">${critEquip.toString()}</span>
-								</g:if>
-								<g:else>
-									<span class="property-value destroyed">${critEquip.toString()}</span>
-								</g:else>
+							
+							<g:each in="${battleMechInstance?.getCritSection(critSection)}" status="i" var="critEquip">
+								<%
+									def critClasses = "property-value"
+									if(!critEquip.isActive()) {
+										critClasses += " destroyed"
+									}
+									if(prevCritEquip == null || critEquip.id != prevCritEquip.id) {
+										critClasses += " new-equipment"
+									}
+								%>
+							
+								<span class="${critClasses}">${critEquip.toString()}</span>
+								
+								<g:set var="prevCritEquip" value="${critEquip}" />
 							</g:each>
 						</div>
 						
 						<div id="mech-LL">
-							<span class="property-value">
-								<h1>Left Leg: ${battleMechInstance?.armor?.getAt(Mech.LEFT_LEG)}(${battleMechInstance?.internals?.getAt(Mech.LEFT_LEG)})</h1>
+							<g:set var="prevCritEquip" value="${null}" />
+							<g:set var="critSection" value="${Mech.LEFT_LEG}" />
+							<g:set var="headingClass" value="property-heading" />
+							<%
+								if(battleMechInstance?.internals?.getAt(critSection) == 0) {
+									headingClass += " destroyed"
+								}
+							%>
+							
+							<span class="${headingClass}">
+								<h1>Left Leg: ${battleMechInstance?.armor?.getAt(critSection)}(${battleMechInstance?.internals?.getAt(critSection)})</h1>
 							</span>
-							<g:each in="${battleMechInstance?.getCritSection(Mech.LEFT_LEG)}" status="i" var="critEquip">
-								<g:if test="${critEquip.isActive()}">
-									<span class="property-value">${critEquip.toString()}</span>
-								</g:if>
-								<g:else>
-									<span class="property-value destroyed">${critEquip.toString()}</span>
-								</g:else>
+							
+							<g:each in="${battleMechInstance?.getCritSection(critSection)}" status="i" var="critEquip">
+								<%
+									def critClasses = "property-value"
+									if(!critEquip.isActive()) {
+										critClasses += " destroyed"
+									}
+									if(prevCritEquip == null || critEquip.id != prevCritEquip.id) {
+										critClasses += " new-equipment"
+									}
+								%>
+							
+								<span class="${critClasses}">${critEquip.toString()}</span>
+								
+								<g:set var="prevCritEquip" value="${critEquip}" />
 							</g:each>
 						</div>
 					</div>
 					
 					<div id="crit-section-3">
 						<div id="mech-HD">
-							<span class="property-value">
-								<h1>Head: ${battleMechInstance?.armor?.getAt(Mech.HEAD)}(${battleMechInstance?.internals?.getAt(Mech.HEAD)})</h1>
+							<g:set var="prevCritEquip" value="${null}" />
+							<g:set var="critSection" value="${Mech.HEAD}" />
+							<g:set var="headingClass" value="property-heading" />
+							<%
+								if(battleMechInstance?.internals?.getAt(critSection) == 0) {
+									headingClass += " destroyed"
+								}
+							%>
+							
+							<span class="${headingClass}">
+								<h1>Head: ${battleMechInstance?.armor?.getAt(critSection)}(${battleMechInstance?.internals?.getAt(critSection)})</h1>
 							</span>
-							<g:each in="${battleMechInstance?.getCritSection(Mech.HEAD)}" status="i" var="critEquip">
-								<g:if test="${critEquip.isActive()}">
-									<span class="property-value">${critEquip.toString()}</span>
-								</g:if>
-								<g:else>
-									<span class="property-value destroyed">${critEquip.toString()}</span>
-								</g:else>
+							
+							<g:each in="${battleMechInstance?.getCritSection(critSection)}" status="i" var="critEquip">
+								<%
+									def critClasses = "property-value"
+									if(!critEquip.isActive()) {
+										critClasses += " destroyed"
+									}
+									if(prevCritEquip == null || critEquip.id != prevCritEquip.id) {
+										critClasses += " new-equipment"
+									}
+								%>
+							
+								<span class="${critClasses}">${critEquip.toString()}</span>
+								
+								<g:set var="prevCritEquip" value="${critEquip}" />
 							</g:each>
 						</div>
 						
 						<div id="mech-CT">
-							<span class="property-value">
-								<h1>Center Torso: ${battleMechInstance?.armor?.getAt(Mech.CENTER_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.CENTER_REAR)}(${battleMechInstance?.internals?.getAt(Mech.CENTER_TORSO)})</h1>
+							<g:set var="prevCritEquip" value="${null}" />
+							<g:set var="critSection" value="${Mech.CENTER_TORSO}" />
+							<g:set var="headingClass" value="property-heading" />
+							<%
+								if(battleMechInstance?.internals?.getAt(critSection) == 0) {
+									headingClass += " destroyed"
+								}
+							%>
+							
+							<span class="${headingClass}">
+								<h1>Center Torso: ${battleMechInstance?.armor?.getAt(critSection)}/${battleMechInstance?.armor?.getAt(Mech.CENTER_REAR)}(${battleMechInstance?.internals?.getAt(critSection)})</h1>
 							</span>
-							<g:each in="${battleMechInstance?.getCritSection(Mech.CENTER_TORSO)}" status="i" var="critEquip">
-								<g:if test="${critEquip.isActive()}">
-									<span class="property-value">${critEquip.toString()}</span>
-								</g:if>
-								<g:else>
-									<span class="property-value destroyed">${critEquip.toString()}</span>
-								</g:else>
+							
+							<g:each in="${battleMechInstance?.getCritSection(critSection)}" status="i" var="critEquip">
+								<%
+									def critClasses = "property-value"
+									if(!critEquip.isActive()) {
+										critClasses += " destroyed"
+									}
+									if(prevCritEquip == null || critEquip.id != prevCritEquip.id) {
+										critClasses += " new-equipment"
+									}
+								%>
+							
+								<span class="${critClasses}">${critEquip.toString()}</span>
+								
+								<g:set var="prevCritEquip" value="${critEquip}" />
 							</g:each>
 						</div>
 					</div>
 					
 					<div id="crit-section-4">
 						<div id="mech-RT">
-							<span class="property-value">
-								<h1>Right Torso: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_TORSO)}/${battleMechInstance?.armor?.getAt(Mech.RIGHT_REAR)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_TORSO)})</h1>
+							<g:set var="prevCritEquip" value="${null}" />
+							<g:set var="critSection" value="${Mech.RIGHT_TORSO}" />
+							<g:set var="headingClass" value="property-heading" />
+							<%
+								if(battleMechInstance?.internals?.getAt(critSection) == 0) {
+									headingClass += " destroyed"
+								}
+							%>
+							
+							<span class="${headingClass}">
+								<h1>Right Torso: ${battleMechInstance?.armor?.getAt(critSection)}/${battleMechInstance?.armor?.getAt(Mech.RIGHT_REAR)}(${battleMechInstance?.internals?.getAt(critSection)})</h1>
 							</span>
-							<g:each in="${battleMechInstance?.getCritSection(Mech.RIGHT_TORSO)}" status="i" var="critEquip">
-								<g:if test="${critEquip.isActive()}">
-									<span class="property-value">${critEquip.toString()}</span>
-								</g:if>
-								<g:else>
-									<span class="property-value destroyed">${critEquip.toString()}</span>
-								</g:else>
+							
+							<g:each in="${battleMechInstance?.getCritSection(critSection)}" status="i" var="critEquip">
+								<%
+									def critClasses = "property-value"
+									if(!critEquip.isActive()) {
+										critClasses += " destroyed"
+									}
+									if(prevCritEquip == null || critEquip.id != prevCritEquip.id) {
+										critClasses += " new-equipment"
+									}
+								%>
+							
+								<span class="${critClasses}">${critEquip.toString()}</span>
+								
+								<g:set var="prevCritEquip" value="${critEquip}" />
 							</g:each>
 						</div>
 						
 						<div id="mech-RL">
-							<span class="property-value">
-								<h1>Right Leg: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_LEG)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_LEG)})</h1>
+							<g:set var="prevCritEquip" value="${null}" />
+							<g:set var="critSection" value="${Mech.RIGHT_LEG}" />
+							<g:set var="headingClass" value="property-heading" />
+							<%
+								if(battleMechInstance?.internals?.getAt(critSection) == 0) {
+									headingClass += " destroyed"
+								}
+							%>
+							
+							<span class="${headingClass}">
+								<h1>Right Leg: ${battleMechInstance?.armor?.getAt(critSection)}(${battleMechInstance?.internals?.getAt(critSection)})</h1>
 							</span>
-							<g:each in="${battleMechInstance?.getCritSection(Mech.RIGHT_LEG)}" status="i" var="critEquip">
-								<g:if test="${critEquip.isActive()}">
-									<span class="property-value">${critEquip.toString()}</span>
-								</g:if>
-								<g:else>
-									<span class="property-value destroyed">${critEquip.toString()}</span>
-								</g:else>
+							
+							<g:each in="${battleMechInstance?.getCritSection(critSection)}" status="i" var="critEquip">
+								<%
+									def critClasses = "property-value"
+									if(!critEquip.isActive()) {
+										critClasses += " destroyed"
+									}
+									if(prevCritEquip == null || critEquip.id != prevCritEquip.id) {
+										critClasses += " new-equipment"
+									}
+								%>
+							
+								<span class="${critClasses}">${critEquip.toString()}</span>
+								
+								<g:set var="prevCritEquip" value="${critEquip}" />
 							</g:each>
 						</div>
 					</div>
 					
 					<div id="crit-section-5">
 						<div id="mech-RA">
-							<span class="property-value">
-								<h1>Right Arm: ${battleMechInstance?.armor?.getAt(Mech.RIGHT_ARM)}(${battleMechInstance?.internals?.getAt(Mech.RIGHT_ARM)})</h1>
+							<g:set var="prevCritEquip" value="${null}" />
+							<g:set var="critSection" value="${Mech.RIGHT_ARM}" />
+							<g:set var="headingClass" value="property-heading" />
+							<%
+								if(battleMechInstance?.internals?.getAt(critSection) == 0) {
+									headingClass += " destroyed"
+								}
+							%>
+							
+							<span class="${headingClass}">
+								<h1>Right Arm: ${battleMechInstance?.armor?.getAt(critSection)}(${battleMechInstance?.internals?.getAt(critSection)})</h1>
 							</span>
-							<g:each in="${battleMechInstance?.getCritSection(Mech.RIGHT_ARM)}" status="i" var="critEquip">
-								<g:if test="${critEquip.isActive()}">
-									<span class="property-value">${critEquip.toString()}</span>
-								</g:if>
-								<g:else>
-									<span class="property-value destroyed">${critEquip.toString()}</span>
-								</g:else>
+							
+							<g:each in="${battleMechInstance?.getCritSection(critSection)}" status="i" var="critEquip">
+								<%
+									def critClasses = "property-value"
+									if(!critEquip.isActive()) {
+										critClasses += " destroyed"
+									}
+									if(prevCritEquip == null || critEquip.id != prevCritEquip.id) {
+										critClasses += " new-equipment"
+									}
+								%>
+							
+								<span class="${critClasses}">${critEquip.toString()}</span>
+								
+								<g:set var="prevCritEquip" value="${critEquip}" />
 							</g:each>
 						</div>
 					</div>
