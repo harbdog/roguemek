@@ -80,7 +80,7 @@ div #pingDiv {
 
 #messagingArea {
 	cursor: default;
-	padding: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 5px;
 	resize: none;
 	background-color: transparent;
 	color: #FFFFFF;
@@ -228,6 +228,9 @@ div.armor-bar {
 	border-width: 2px;
 	border-color: #FFFFFF;
 }
+div.armor-bar.destroyed {
+	border-color: #FF0000;
+}
 
 div.armor-bar > div {
 	position: absolute;
@@ -257,6 +260,9 @@ div.internals-bar {
 	border-style: solid;
 	border-width: 2px;
 	border-color: #FFFFFF;
+}
+div.internals-bar.destroyed {
+	border-color: #FF0000;
 }
 
 div.internals-bar > div {
