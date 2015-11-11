@@ -4,13 +4,12 @@
 (function() {
 "use strict";
 
-var DEFAULT_WIDTH = 1000;
 var DEFAULT_HEIGHT = 75;
 
 function MessagingDisplay() {
 	this.Container_constructor();
 	
-	this.width = DEFAULT_WIDTH;
+	this.width = 1000;
 	this.height = DEFAULT_HEIGHT;
 	
 	this.background = null;
@@ -45,12 +44,7 @@ c.makeTextArea = function(id) {
 }
 
 c.update = function() {
-	this.width = DEFAULT_WIDTH;
-	this.height = DEFAULT_HEIGHT;
-	if(canvas.width < this.width) {
-		this.width = canvas.width;
-	}
-	
+	this.width = canvas.width - 25;
 	this.x = canvas.width - this.width;
 	this.y = 0;
 	

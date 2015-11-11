@@ -5,12 +5,17 @@
 "use strict";
 
 //Weapon classifications
-Weapon.WEAPON_MELEE = "Melee";
+Weapon.WEAPON_PHYSICAL = "Physical";
 Weapon.WEAPON_ENERGY = "Energy";
 Weapon.WEAPON_BALLISTIC = "Ballistic";
 Weapon.WEAPON_MISSILE = "Missile";
 
 //Specific weapons
+Weapon.Punch = "PUNCH";
+Weapon.Kick = "KICK";
+Weapon.Charge = "CHARGE";
+Weapon.DFA = "DFA";
+
 Weapon.WeaponAC20 = "AC/20";
 Weapon.WeaponAC10 = "AC/10";
 Weapon.WeaponAC5 = "AC/5";
@@ -63,7 +68,19 @@ w.isClusterWeapon = function() {
 	return (this.projectiles > 1);
 }
 w.isMeleeWeapon = function() {
-	return (this.weaponType == Weapon.WEAPON_MELEE);
+	return (this.weaponType == Weapon.WEAPON_PHYSICAL);
+}
+w.isPunch = function() {
+	return (this.shortName == Weapon.Punch);
+}
+w.isKick = function() {
+	return (this.shortName == Weapon.Kick);
+}
+w.isCharge = function() {
+	return (this.shortName == Weapon.Charge);
+}
+w.isDFA = function() {
+	return (this.shortName == Weapon.DFA);
 }
 w.isEnergyWeapon = function() {
 	return (this.weaponType == Weapon.WEAPON_ENERGY);

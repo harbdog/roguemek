@@ -26,6 +26,7 @@ var c = createjs.extend(MechInfoDisplay, createjs.Container);
 MechInfoDisplay.STATUS_DESTROYED = "DESTROYED";
 MechInfoDisplay.STATUS_PRONE = "PRONE";
 MechInfoDisplay.STATUS_SHUTDOWN = "SHUTDOWN";
+MechInfoDisplay.STATUS_JUMPING = "JUMPING";
 
 c.init = function() {
 	this.background = new createjs.Shape();
@@ -80,6 +81,9 @@ c.update = function() {
 	}
 	else {
 		// determine any statuses that still need to appear
+		if(this.unit.jumping) {
+			this.addStatusInfo(MechInfoDisplay.STATUS_JUMPING);
+		}
 		if(this.unit.prone) {
 			this.addStatusInfo(MechInfoDisplay.STATUS_PRONE);
 		}
@@ -108,6 +112,9 @@ c.addStatusInfo = function(statusInfoType) {
 	else if(MechInfoDisplay.STATUS_SHUTDOWN == statusInfoType) {
 		statusIconType = StatusIcon.STATUS_DOWN;
 	}
+	else if(MechInfoDisplay.STATUS_JUMPING == statusInfoType) {
+		statusIconType = StatusIcon.STATUS_JUMPING;
+	}
 	
 	var statusInfoContainer = new createjs.Container();
 	
@@ -118,13 +125,13 @@ c.addStatusInfo = function(statusInfoType) {
 	
 	var statusIcon = new StatusIcon(statusIconType);
 	statusIcon.init();
-	statusIcon.x = statusLabel.getMeasuredWidth();
+	statusIcon.x = 5 + statusLabel.getMeasuredWidth();
 	statusIcon.y = 0;
 	statusInfoContainer.addChild(statusIcon);
 	
 	// use generated size of icon and label to determine container position
-	statusInfoContainer.x = this.width - statusIcon.width - statusLabel.getMeasuredWidth();
-	statusInfoContainer.y = numStatuses * statusLabel.getMeasuredHeight()*2;
+	statusInfoContainer.x = this.width - statusIcon.width - statusIcon.x;
+	statusInfoContainer.y = numStatuses * statusIcon.height;
 	
 	this.addChild(statusInfoContainer);
 	this.statusContainers.push(statusInfoContainer);

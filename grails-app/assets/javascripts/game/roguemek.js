@@ -319,15 +319,6 @@ function initUnitWeapons(unit) {
 	
 	var weapons = {};
 	
-	$.each(unit.physical, function(index, c) {
-		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
-			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, 
-								c.damage, c.projectiles, c.heat, c.cycle, c.cooldown, 
-								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
-			weapons[c.id] = w;
-		}
-	});
-	
 	$.each(unit.crits, function(index, c) {
 		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
 			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, 
@@ -345,6 +336,15 @@ function initUnitWeapons(unit) {
 					}
 				});
 			}
+		}
+	});
+	
+	$.each(unit.physical, function(index, c) {
+		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
+			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, 
+								c.damage, c.projectiles, c.heat, c.cycle, c.cooldown, 
+								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
+			weapons[c.id] = w;
 		}
 	});
 	
@@ -759,7 +759,22 @@ function getSelectedWeaponsIndices() {
 	var index = 0;
 	$.each(turnUnit.weapons, function(key, weapon) {
 		if( $.inArray(weapon, selectedWeapons) != -1) {
-			selectedIndices.push(index);
+			
+			var wIndex = (index+1).toString();
+			if(weapon.isPunch()) {
+				wIndex = "P";
+			}
+			else if(weapon.isKick()) {
+				wIndex = "K";
+			}
+			else if(weapon.isCharge()) {
+				wIndex = "C";
+			}
+			else if(weapon.isDFA()) {
+				wIndex = "V";
+			}
+			
+			selectedIndices.push(wIndex);
 		}
 		
 		index++;
@@ -773,6 +788,20 @@ function clearSelectedWeapons() {
 function addSelectedWeapon(weapon) {
 	if(weapon != null && weapon.cooldown == 0
 			&& weapon.toHit != null && weapon.toHit > 0) {
+		
+		if(weapon.isMeleeWeapon()) {
+			// the weapon is a physical weapon, ensure it is the only weapon selected
+			clearSelectedWeapons();
+		}
+		else {
+			// otherwise, make sure no physical weapons are selected already to fire this weapon
+			$.each(selectedWeapons, function(index, w) {
+				if(w != null && w.isMeleeWeapon()){
+					clearSelectedWeapons();
+				}
+			});
+		}
+		
 		var selectedIndex = $.inArray(weapon, selectedWeapons);
 		if(selectedIndex == -1) {
 			// weapon not currently selected
@@ -955,6 +984,8 @@ function updateGameData(data) {
 	// determine what UI areas need to be updated
 	var updatePosition = false;
 	var updateWeapons = false;
+    var updateUnitDisplay = false;
+    var updateInfoDisplay = false;
 	
 	// update to unit status
 	if(data.status != null) {
@@ -970,13 +1001,13 @@ function updateGameData(data) {
 			createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
 		}
 		
-		// update unit display to show as destroyed
+		// re-initialize unit display to show as destroyed
 		u.getUnitDisplay().init();
-		u.getUnitDisplay().update();
+		updateUnitDisplay = true;
 		arrangeUnitsDisplay();
 		
 		// update unit info display to show as destroyed
-		infoDisplays[u.id].update();
+		updateInfoDisplay = true;
 		
 		// update unit list display to show armor bar as destroyed
 		var listUnit = getUnitListDisplay(u);
@@ -1008,8 +1039,10 @@ function updateGameData(data) {
 		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
 		
 		// update the UI on being prone or not
-		console.log("Unit prone: "+u.prone);
-		u.getUnitDisplay().update();
+		updateUnitDisplay = true;
+		
+		// update unit info display to show as prone
+		updateInfoDisplay = true;
 	}
 	
 	// update to being shutdown
@@ -1024,8 +1057,10 @@ function updateGameData(data) {
 		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
 		
 		// update the UI on being shutdown or not
-		console.log("Unit shutdown: "+u.shutdown);
-		u.getUnitDisplay().update();
+		updateUnitDisplay = true;
+		
+		// update unit info display to show as shutdown
+		updateInfoDisplay = true;
 	}
 	
 	if(data.apRemaining != null) {
@@ -1050,6 +1085,9 @@ function updateGameData(data) {
 		else{
 			u.getUnitDisplay().positionUpdate();
 		}
+		
+		// update unit info display to show as jumping
+		updateInfoDisplay = true;
 	}
 	
 	if(data.moveAP != null) {
@@ -1192,6 +1230,16 @@ function updateGameData(data) {
 		// Update selected weapons
 		updateSelectedWeapons();
 	}
+    
+    if(updateUnitDisplay) {
+        // updates the unit display object
+        u.getUnitDisplay().update();
+    }
+    
+    if(updateInfoDisplay) {
+        // updates the unit info display window
+        infoDisplays[u.id].update();
+    }
 	
 	// do some final UI updates from turn changes
 	if(prevTurnUnit != null && prevTurnUnit.id != turnUnit.id) {

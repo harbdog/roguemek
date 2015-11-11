@@ -31,7 +31,21 @@ c.init = function() {
 	// create each individual weapon display
 	var index = 0;
 	$.each(this.unit.weapons, function(weaponId, weapon) {
-		var weaponDisplay = new WeaponDisplay(index, weapon);
+		var hotkey = (index+1).toString();
+		if(weapon.isPunch()) {
+			hotkey = "P";
+		}
+		else if(weapon.isKick()) {
+			hotkey = "K";
+		}
+		else if(weapon.isCharge()) {
+			hotkey = "C";
+		}
+		else if(weapon.isDFA()) {
+			hotkey = "V";
+		}
+		
+		var weaponDisplay = new WeaponDisplay(hotkey, weapon);
 		weaponDisplay.init();
 		
 		weaponsArray.push(weaponDisplay);

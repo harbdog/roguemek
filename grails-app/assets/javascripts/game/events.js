@@ -78,7 +78,7 @@ function handleKeyPress(key) {
 				index ++;
 			}
 			
-			if(weapon != null) {
+			if(weapon != null && !weapon.isMeleeWeapon()) {
 				var selectedIndex = $.inArray(weapon, selectedWeapons);
 				if(selectedIndex == -1) {
 					addSelectedWeapon(weapon);
@@ -135,6 +135,82 @@ function handleKeyPress(key) {
 			jump(turnUnit.jumping);
 		}
 	}
+	else if(key == "p") {
+		// toggle punch to fire
+		if(isPlayerUnitTurn()) {
+			for(var id in turnUnit.weapons) {
+				var weapon = turnUnit.weapons[id];
+				if(weapon.isPunch()) {
+					var selectedIndex = $.inArray(weapon, selectedWeapons);
+					if(selectedIndex == -1) {
+						addSelectedWeapon(weapon);
+					}
+					else {
+						removeSelectedWeapon(weapon);
+					}
+					updateSelectedWeapons();
+					break;
+				}
+			}
+		}
+	}
+	else if(key == "k") {
+		// toggle kick to fire
+		if(isPlayerUnitTurn()) {
+			for(var id in turnUnit.weapons) {
+				var weapon = turnUnit.weapons[id];
+				if(weapon.isKick()) {
+					var selectedIndex = $.inArray(weapon, selectedWeapons);
+					if(selectedIndex == -1) {
+						addSelectedWeapon(weapon);
+					}
+					else {
+						removeSelectedWeapon(weapon);
+					}
+					updateSelectedWeapons();
+					break;
+				}
+			}
+		}
+	}
+	else if(key == "c") {
+		// toggle charge to fire
+		if(isPlayerUnitTurn()) {
+			for(var id in turnUnit.weapons) {
+				var weapon = turnUnit.weapons[id];
+				if(weapon.isCharge()) {
+					var selectedIndex = $.inArray(weapon, selectedWeapons);
+					if(selectedIndex == -1) {
+						addSelectedWeapon(weapon);
+					}
+					else {
+						removeSelectedWeapon(weapon);
+					}
+					updateSelectedWeapons();
+					break;
+				}
+			}
+		}
+	}
+	else if(key == "v") {
+		// toggle DFA to fire
+		if(isPlayerUnitTurn()) {
+			for(var id in turnUnit.weapons) {
+				var weapon = turnUnit.weapons[id];
+				if(weapon.isDFA()) {
+					var selectedIndex = $.inArray(weapon, selectedWeapons);
+					if(selectedIndex == -1) {
+						addSelectedWeapon(weapon);
+					}
+					else {
+						removeSelectedWeapon(weapon);
+					}
+					updateSelectedWeapons();
+					break;
+				}
+			}
+		}
+	}
 	else if(key == "`"){
 		// toggle isometric view
 		toggleIsometricDisplay();
@@ -166,7 +242,7 @@ function toggleFullScreen(){
  * Resizes the canvas based on the current browser window size
  */
 function resize_canvas(){
-	if(stage != null){
+	if(stage != null && !initializing){
 		// TODO: add method to also center on the turn unit on resize
 		
 		canvas.width = window.innerWidth - 5;
@@ -330,7 +406,7 @@ function handleComplete(event) {
 	rootStage.addChild(inButton);
 	
 	var inBackground = new createjs.Shape();
-	inBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 25,25);
+	inBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
 	inButton.addChild(inBackground);
 	
 	var inText = new createjs.Text("[+]", "12px UbuntuMono", "white");
@@ -348,7 +424,7 @@ function handleComplete(event) {
 	rootStage.addChild(outButton);
 	
 	var outBackground = new createjs.Shape();
-	outBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 25,25);
+	outBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
 	outButton.addChild(outBackground);
 	
 	var outText = new createjs.Text("[-]", "12px UbuntuMono", "white");
@@ -369,7 +445,7 @@ function handleComplete(event) {
 		rootStage.addChild(fsButton);
 		
 		var fsBackground = new createjs.Shape();
-		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#C0C0C0").beginFill("#404040").drawRect(0,0, 25,25);
+		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
 		fsButton.addChild(fsBackground);
 		
 		var fsText = new createjs.Text("[ ]", "12px UbuntuMono", "white");
@@ -385,6 +461,7 @@ function handleComplete(event) {
 	ping();
     
     // resize the canvas and adjust the board to the canvas on first load
+	initializing = false;
 	resize_canvas();
     
     update = true;
@@ -531,6 +608,7 @@ function handleWeaponClick(event) {
 	var unitWeaponDisplay = event.target;
 	
 	console.log("clicked "+unitWeaponDisplay); 
+	console.log(unitWeaponDisplay.weapon);
 	
 	if(isPlayerUnitTurn()) {
 		var weapon = unitWeaponDisplay.weapon;

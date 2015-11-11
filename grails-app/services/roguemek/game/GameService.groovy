@@ -1536,7 +1536,7 @@ class GameService {
 		if(unit != game.getTurnUnit()) return
 		
 		if(unit.apRemaining == 0) {
-			// not enough action points to fire
+			// not enough action points to fire // TODO: allow firing weapons when AP is zero? For example, when MP is reduced to 0
 			return new GameMessage("game.you.cannot.fire.ap.zero", null, null)
 		}
 		
@@ -1547,6 +1547,26 @@ class GameService {
 		
 		def unitWeapons = unit.getWeapons()
 		
+		// make sure each weapon is capable of being fired
+		def firingWeapons = []
+		for(BattleWeapon weapon in weapons) {
+			// make sure the weapon is not destroyed
+			if(!weapon.isActive()) continue
+			// and is attached to the unit that is firing
+			else if(!unitWeapons.contains(weapon)) continue
+			// and make sure the weapon is not on cooldown still
+			else if(weapon.cooldown > 0) continue
+			
+			if(weapon.isPhysical()) {
+				// if a physical attack is being made, no other weapon attacks can be made this turn
+				firingWeapons = [weapon]
+				break;
+			}
+			else {
+				firingWeapons.push(weapon)
+			}
+		}
+		
 		def critsHitList = []
 		def pilotingSkillMap = [
 			source: [],
@@ -1555,14 +1575,7 @@ class GameService {
 		
 		int totalHeat = 0
 		
-		for(BattleWeapon weapon in weapons) {
-			// make sure the weapon is not destroyed and is attached to the unit that is firing
-			if(!weapon.isActive()) continue
-			else if(!unitWeapons.contains(weapon)) continue
-			
-			// make sure the weapon is not on cooldown still
-			if(weapon.cooldown > 0) continue
-			
+		for(BattleWeapon weapon in firingWeapons) {
 			String messageCode
 			Object[] messageArgs
 			

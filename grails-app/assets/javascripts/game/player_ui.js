@@ -7,7 +7,9 @@
 // Close enough...
 var PI = 3.14;
 
-// variables for updating the stage on demand
+// Prevent updates to the UI elements while initializing those elements (such as resizing window while loading)
+var initializing = true;	
+//variables for updating the stage on demand
 var update = true;
 var firstUpdate = true;
 var lastUpdate = 0;

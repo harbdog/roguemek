@@ -8,13 +8,13 @@ var DEFAULT_WIDTH = 200;
 var DEFAULT_HEIGHT = 25;
 var BORDER_WIDTH = 3;
 
-function WeaponDisplay(index, weapon) {
+function WeaponDisplay(hotkey, weapon) {
 	this.Container_constructor();
 	
 	this.width = DEFAULT_WIDTH;
 	this.height = DEFAULT_HEIGHT;
 	
-	this.index = index;
+	this.hotkey = hotkey;
 	this.weapon = weapon;
 	this.selected = false;
 	
@@ -30,7 +30,7 @@ c.init = function() {
 	// TODO: allow custom UI colors
 	
 	// add weapon number label
-	var numLabel = new createjs.Text((this.index+1).toString(), "16px UbuntuMono", "#000000");
+	var numLabel = new createjs.Text(this.hotkey, "16px UbuntuMono", "#000000");
 	numLabel.x = (WeaponDisplay.MAX_NUMBER_LABEL_WIDTH - numLabel.getMeasuredWidth())/2;
 	numLabel.y = BORDER_WIDTH;
 	this.addChild(numLabel);

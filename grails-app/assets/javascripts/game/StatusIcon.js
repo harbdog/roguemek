@@ -19,6 +19,7 @@ var s = createjs.extend(StatusIcon, createjs.Shape);
 //declaring some static icon types
 StatusIcon.STATUS_DESTROYED = "STATUS_DESTROYED";
 StatusIcon.STATUS_DOWN = "STATUS_DOWN";
+StatusIcon.STATUS_JUMPING = "STATUS_JUMPING";
 
 s.init = function() {
 	var iW = this.width;
@@ -49,6 +50,20 @@ s.init = function() {
 				.lineTo(iW, iH/2)
 				.lineTo(iW/2, iH)
 				.endStroke();
+	}
+	else if(StatusIcon.STATUS_JUMPING == this.type) {
+		var color = "#3399FF";
+		var outlineColor = "#FFFFFF";
+		
+		this.graphics.setStrokeStyle(1, "square").beginStroke(outlineColor).beginFill(color)
+				.moveTo(0, iH/2).lineTo(iW/2, 0)
+				.lineTo(iW, iH/2)
+				.lineTo(iW, iH)
+				.lineTo(3*iW/4, 3*iH/5)
+				.lineTo(iW/2, 4*iH/5)
+				.lineTo(iW/4, 3*iH/5)
+				.lineTo(0, iH)
+				.lineTo(0, iH/2).endFill();
 	}
 }
 
