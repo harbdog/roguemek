@@ -33,7 +33,7 @@ var showLevels = true;
 
 var rootStage, stage, overlay, canvas;
 var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray;
-var fpsDisplay, pingDisplay, dialogDisplay;
+var fpsDisplay, pingDisplay, dialogDisplay, dialogLoading;
 
 var messagingDisplay;
 var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;
@@ -881,7 +881,7 @@ function centerDisplayOnHexAt(hexCoords, doAnimate) {
 	var boardY = -((hexCoords.y+1) * scaledHexHeight) + canvas.height/2;
 	
 	// Keep the board from going off the window too much
-	var boardPoint = getBoardPointInWindow(new Point(boardX, boardY));
+	var boardPoint = getBoardPointInWindow(new Point(boardX, boardY), 1);
 	
 	if(doAnimate) {
 		var aTime = 500;
@@ -914,7 +914,7 @@ function centerDisplayOnHexAt(hexCoords, doAnimate) {
  * @param boardPoint
  * @returns
  */
-function getBoardPointInWindow(boardPoint) {
+function getBoardPointInWindow(boardPoint, maxBoundedHexes) {
 	if(boardPoint == null || boardPoint.x == null || boardPoint.y == null) return boardPoint;
 	
 	var inX = boardPoint.x;
@@ -923,19 +923,23 @@ function getBoardPointInWindow(boardPoint) {
 	var scaledHexWidth = hexWidth * stage.scaleX;
     var scaledHexHeight = hexHeight * stage.scaleY;
     
+    if(maxBoundedHexes == null) maxBoundedHexes = 4;
+    var maxBoundedX = maxBoundedHexes*(3 * scaledHexWidth / 4);
+    var maxBoundedY = maxBoundedHexes*(3 * scaledHexHeight / 4);
+    
     // Keep the board from going off the window too much
-    if(inX < -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width){
-    	inX = -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width;
+    if(inX < -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width - maxBoundedX) {
+    	inX = -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width - maxBoundedX;
     }
-    if(inX > 10) {
-    	inX = 10;
+    if(inX > 10 + maxBoundedX) {
+    	inX = 10 + maxBoundedX;
     }
     
-    if(inY < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height){
-    	inY = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height;
+    if(inY < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height - maxBoundedY) {
+    	inY = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height - maxBoundedY;
     }
-    if(inY > 10 + (isometricPadding * stage.scaleY)) {
-    	inY = 10 + (isometricPadding * stage.scaleY);
+    if(inY > 10 + (isometricPadding * stage.scaleY) + maxBoundedY) {
+    	inY = 10 + (isometricPadding * stage.scaleY) + maxBoundedY;
     }
     
     return new Point(inX, inY);

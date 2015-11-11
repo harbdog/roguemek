@@ -38,6 +38,17 @@ h1 {
 	color: #FFFFFF;
 }
 
+div #spinner {
+	background: url(../images/hex-spinner.gif) no-repeat transparent;
+	height: 32px;
+	width: 32px;
+    padding: 0.5em;
+    position: absolute;
+    top: calc(50% - 16px);
+    left: calc(50% - 16px);
+	text-indent: -9999px;
+}
+
 div.hidden {
 	display: none;
 }
@@ -104,6 +115,7 @@ div.unit-header {
 	overflow: auto;
 	font-weight: normal;
 	font-size: 125%;
+	height: 80px;
 }
 
 div.header h1 {

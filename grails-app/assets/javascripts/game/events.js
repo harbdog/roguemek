@@ -399,6 +399,21 @@ function handleComplete(event) {
 		}
     });
     
+    dialogLoading = $("#loadingDiv").dialog({
+    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
+    	title: "Loading...",
+    	autoOpen: false,
+    	modal: true,
+		show: {
+			effect: "fade",
+			duration: 250
+		},
+		hide: {
+			effect: "fade",
+			duration: 250
+		}
+    });
+    
     // show the board zoom in button
     var inButton = new createjs.Container();
     inButton.x = 0;
@@ -755,7 +770,7 @@ function handleMouseWheel(evt) {
 	var oldScale = stage.scaleX;
 	var newScale = stage.scaleX + (direction * 0.1);
 	
-	if(newScale > 0 && newScale <= 5) {
+	if(newScale >= 0.1 && newScale <= 5) {
 		console.log("scale="+newScale);
 		
 		if(doAnimate) {

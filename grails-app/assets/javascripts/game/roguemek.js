@@ -293,6 +293,7 @@ function loadGameElements() {
 		  
 		  
 		  // load any additional client side images
+		  manifest.push({id:"space", src:"assets/hexes/boring/space.gif"});
 		  
 		  manifest.push({id:"laser", src:"assets/ui/laser.png"});
 		  manifest.push({id:"ballistic", src:"assets/ui/ballistics.png"});
@@ -364,6 +365,25 @@ function initHexMapDisplay() {
 		
 		canvas.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
 		canvas.addEventListener("mousewheel", handleMouseWheel, false); 	// for everyone else
+	}
+	
+	// first, lay down series of hexes to act as the out of bounds area
+	for(var y=-5; y<numRows+5; y++){
+		for(var x=-5; x<numCols+5; x++){
+			// only place these hexes outside of where normal hexes will be placed
+			if(y < 0 || y >= numRows || x < 0 || x >= numCols) {
+				var hex = new Hex(x, y, 0, null, null);
+				var hexDisplay = new HexDisplay(hex);
+				var hexImg = new createjs.Bitmap(queue.getResult("space"));
+				hexImg.scaleX = hexScale;
+				hexImg.scaleY = hexScale;
+				hexDisplay.addChild(hexImg);
+				
+				hexDisplay.update();
+				
+				stage.addChild(hexDisplay);
+			}
+		}
 	}
 		
 	for(var y=0; y<numRows; y++){
