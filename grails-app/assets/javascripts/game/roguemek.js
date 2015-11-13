@@ -131,9 +131,7 @@ function initGame(){
 	queue.addEventListener("progress", handleProgress);
 	
 	// create progress bar during image loading
-	progress = new createjs.Shape();
-	progress.graphics.beginStroke("#000000").drawRect(0,0,100,20);
-	stage.addChild(progress);
+	progress = $("#progressBar");
 	
 	// load the board, units and their images
 	loadGameElements();
@@ -246,6 +244,7 @@ function loadGameElements() {
 				  unitInstance.jpRemaining = thisUnit.jpRemaining;
 				  unitInstance.jumpJets = thisUnit.jumpJets;
 				  unitInstance.jumping = thisUnit.jumping;
+				  unitInstance.jumpCapable = thisUnit.jumpCapable;
 				  unitInstance.heat = thisUnit.heat;
 				  unitInstance.heatDiss = thisUnit.heatDiss;
 				  unitInstance.callsign = thisUnit.callsign;
@@ -293,7 +292,8 @@ function loadGameElements() {
 		  
 		  
 		  // load any additional client side images
-		  manifest.push({id:"space", src:"assets/hexes/boring/space.gif"});
+		  manifest.push({id:"out1", src:"assets/hexes/boring/out_of_bounds_1.gif"});
+		  manifest.push({id:"out2", src:"assets/hexes/boring/out_of_bounds_2.gif"});
 		  
 		  manifest.push({id:"laser", src:"assets/ui/laser.png"});
 		  manifest.push({id:"ballistic", src:"assets/ui/ballistics.png"});
@@ -372,9 +372,16 @@ function initHexMapDisplay() {
 		for(var x=-5; x<numCols+5; x++){
 			// only place these hexes outside of where normal hexes will be placed
 			if(y < 0 || y >= numRows || x < 0 || x >= numCols) {
+				var hexImg;
+				if((x < numCols/2 && y < numRows/2) || (x > numCols/2 && y > numRows/2)) {
+					hexImg = new createjs.Bitmap(queue.getResult("out1"));
+				}
+				else {
+					hexImg = new createjs.Bitmap(queue.getResult("out2"));
+				}
+				
 				var hex = new Hex(x, y, 0, null, null);
 				var hexDisplay = new HexDisplay(hex);
-				var hexImg = new createjs.Bitmap(queue.getResult("space"));
 				hexImg.scaleX = hexScale;
 				hexImg.scaleY = hexScale;
 				hexDisplay.addChild(hexImg);
@@ -1108,6 +1115,10 @@ function updateGameData(data) {
 		
 		// update unit info display to show as jumping
 		updateInfoDisplay = true;
+	}
+	
+	if(data.jumpCapable != null) {
+		u.jumpCapable = data.jumpCapable;
 	}
 	
 	if(data.moveAP != null) {

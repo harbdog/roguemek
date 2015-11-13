@@ -297,6 +297,7 @@ class GameService {
 			}
 			data.jpRemaining = unit.jpRemaining
 			data.jumping = false
+			data.jumpCapable = (unit.jumpPoints > 0)
 			
 			def moveAP = null
 			if(unit.apRemaining > 0) {
@@ -1001,6 +1002,7 @@ class GameService {
 			jpRemaining: unit.jpRemaining,
 			jpMoved: unit.jpMoved,
 			jumping: jumping,
+			jumpCapable: (unit.jumpPoints > 0 && (unit.apMoved == 0 || unit.jpMoved >= 0)),
 			heat: unit.heat,
 			moveAP: moveAP
 		]
@@ -1124,6 +1126,7 @@ class GameService {
 			jpRemaining: unit.jpRemaining,
 			jpMoved: unit.jpMoved,
 			jumping: jumping,
+			jumpCapable: (unit.jumpPoints > 0 && (unit.apMoved == 0 || unit.jpMoved >= 0)),
 			heat: unit.heat,
 			moveAP: moveAP
 		]
@@ -1377,7 +1380,8 @@ class GameService {
 			unit: unit.id,
 			moveAP: moveAP,
 			jpMoved: unit.jpMoved,
-			jumping: jumping
+			jumping: jumping,
+			jumpCapable: (unit.jumpPoints > 0 && (unit.apMoved == 0 || unit.jpMoved >= 0))
 		]
 		
 		return data

@@ -40,13 +40,29 @@ h1 {
 
 div #spinner {
 	background: url(../images/hex-spinner.gif) no-repeat transparent;
-	height: 32px;
-	width: 32px;
+	background-size: 64px;
+	width: 64px;
+	height: 64px;
     padding: 0.5em;
     position: absolute;
-    top: calc(50% - 16px);
-    left: calc(50% - 16px);
+    top: calc(50% - 32px);
+    left: calc(50% - 32px);
 	text-indent: -9999px;
+}
+
+div #progressDiv {
+	position: absolute;
+	top: calc(50% + 50px);
+	left: calc(50% - 50px);
+	width: 100px;
+	height: 20px;
+	border: 2px solid #FFFFFF;
+}
+
+div #progressBar {
+	width: 0%;
+	height: 100%;
+	background-color: #3399FF;
 }
 
 div.hidden {

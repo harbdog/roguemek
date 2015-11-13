@@ -345,19 +345,12 @@ function updateHexMapDisplay() {
 }
 
 function handleProgress(event) {
-	progress.graphics.clear();
-    
-    // Draw the outline again.
-    progress.graphics.beginStroke("#000000").drawRect(0,0,100,20);
-    
-    // Draw the progress bar
-    progress.graphics.beginFill("#ff0000").drawRect(0,0,100*event.progress,20);
-    
-    update = true;
+	progress.css("width", (100*event.progress)+"%");
 }
 var dialogDisplayTitle = "<i>title</i>";
 function handleComplete(event) {
-	stage.removeChild(progress);
+	// hide the progress bar
+	$("#progressDiv").css("display", "none");
 	
 	//rootStage.enableMouseOver(10);
 	
@@ -390,11 +383,11 @@ function handleComplete(event) {
     	autoOpen: false,
     	modal: true,
 		show: {
-			effect: "blind",
+			effect: "fade",
 			duration: 500
 		},
 		hide: {
-			effect: "blind",
+			effect: "clip",
 			duration: 250
 		}
     });
@@ -409,7 +402,7 @@ function handleComplete(event) {
 			duration: 250
 		},
 		hide: {
-			effect: "fade",
+			effect: "explode",
 			duration: 250
 		}
     });

@@ -13,7 +13,9 @@
 			<div id="pingDiv"></div>
 			<div id="fpsDiv"></div>
 			<div id="dialogDiv"></div>
+			
 			<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
+			<div id="progressDiv"><div id="progressBar"></div></div>
 			
 			<canvas id="canvas">
 		        <g:message code="page.browser.not.supported" />

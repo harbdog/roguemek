@@ -162,6 +162,7 @@ c.updateMoveActionPoints = function() {
 	
 	if(this.jump != null) {
 		this.jump.drawButtonAsActive(jumping);
+		this.jump.setHighlighted((this.jumping || this.unit.jumpCapable));
 	}
 	
 	this.update();
