@@ -413,17 +413,46 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
  * @param staticMessage
  */
 function createFloatMessage(srcPoint, message, color, delay, durationMultiplier, staticMessage){
-	var endPoint = new Point(srcPoint.x, srcPoint.y);
-	if(!staticMessage) {
-		// message floats upward
-		endPoint.y = srcPoint.y - 100;
-	}
 	
 	var floatMessageBox = new FloatMessage(message);
 	floatMessageBox.visible = false;
-	floatMessageBox.x = srcPoint.x;
-	floatMessageBox.y = srcPoint.y;
+	
 	stage.addChild(floatMessageBox);
 	
-	createjs.Tween.get(floatMessageBox).wait(delay).to({visible:true}).to({x:endPoint.x, y:endPoint.y}, 2000 * durationMultiplier).to({alpha:0}, 200).call(removeThisFromStage, null, floatMessageBox);
+	setTimeout(function() {
+		// sort existing floating messages by y position
+		var sortedFloatingMessages = floatingMessages.slice();
+		sortedFloatingMessages.sort(function(a, b){
+			var aBounds = a.getBounds();
+			var bBounds = b.getBounds();
+			return (aBounds.y + aBounds.height) - (bBounds.y + bBounds.height);
+		});
+		
+		// modify the source point if existing messages are going to be in the way
+		var floatBox = new createjs.Rectangle(srcPoint.x, srcPoint.y, floatMessageBox.width, floatMessageBox.height);
+		for(var i=0; i<sortedFloatingMessages.length; i++) {
+			var thisFloater = sortedFloatingMessages[i];
+			if(thisFloater != null) {
+				var chkBox = thisFloater.getBounds();
+				var intersects = checkIntersection(floatBox, chkBox);
+				if(intersects) {
+					floatBox.y = chkBox.y + chkBox.height + 1;
+				}
+			}
+		}
+		
+		floatMessageBox.setBounds(floatBox.x, floatBox.y, floatBox.width, floatBox.height);
+		floatMessageBox.x = floatBox.x;
+		floatMessageBox.y = floatBox.y;
+		
+		floatingMessages.push(floatMessageBox);
+		
+		var endPoint = new Point(floatBox.x, floatBox.y);
+		if(!staticMessage) {
+			// message floats upward
+			endPoint.y = floatBox.y - 100;
+		}
+		
+		createjs.Tween.get(floatMessageBox).to({visible:true}).to({x:endPoint.x, y:endPoint.y}, 2000 * durationMultiplier).to({alpha:0}, 200).call(removeFloatMessage, null, floatMessageBox);
+	}, delay);
 }

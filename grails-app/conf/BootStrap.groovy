@@ -206,11 +206,6 @@ class BootStrap {
 			}
 		}
 		else {
-			// TESTING ONLY
-			for(def i=0; i<battleMech2.armor.length; i++) {
-				battleMech2.armor[i] = 0
-			}
-			
 			battleMech2.save flush:true
 		
 			log.info('Initialized battle mech '+battleMech2.mech.name+" with ID="+battleMech2.id)
@@ -225,11 +220,6 @@ class BootStrap {
 			}
 		}
 		else {
-			// TESTING ONLY
-			for(def i=0; i<battleMech3.armor.length; i++) {
-				battleMech3.armor[i] = 0
-			}
-			
 			battleMech3.save flush:true
 		
 			log.info('Initialized battle mech '+battleMech3.mech.name+" with ID="+battleMech3.id)

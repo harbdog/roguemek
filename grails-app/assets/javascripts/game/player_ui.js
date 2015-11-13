@@ -35,7 +35,7 @@ var rootStage, stage, overlay, canvas;
 var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray;
 var fpsDisplay, pingDisplay, dialogDisplay, dialogLoading;
 
-var messagingDisplay;
+var messagingDisplay, floatingMessages;
 var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;
 
 var unitDisplayWidth = 250;
@@ -51,6 +51,9 @@ function initPlayerUI() {
 	messagingDisplay = new MessagingDisplay();
 	messagingDisplay.init();
 	overlay.addChild(messagingDisplay);
+	
+	// stores any active floating messages
+	floatingMessages = [];
 	
 	// create the player unit display list
 	initPlayerUnitListDisplay();
@@ -676,6 +679,28 @@ function removeThisFromStage() {
 }
 
 /**
+ * Intended to be called back from FloatMessage Tweens when the animation is completed and ready to be removed from the stage
+ */
+function removeFloatMessage() {
+	stage.removeChild(this);
+	
+	// remove from the float message array also
+	var floatIndex = -1;
+	for(var i=0; i<floatingMessages.length; i++) {
+		var thisFloater = floatingMessages[i];
+		if(thisFloater != null && thisFloater == this) {
+			floatIndex = i;
+			break;
+		}
+	}
+	
+	if(floatIndex >= 0) {
+		// splice this float message out of the array
+		floatingMessages.splice(floatIndex, 1);
+	}
+}
+
+/**
  * Intended to be called back from Tweens when the object is ready to be cached again after animation is completed
  */
 function callDoCache() {
@@ -1120,6 +1145,18 @@ function shadeColor(color, percent) {
 function blendColors(c0, c1, p) {
     var f=parseInt(c0.slice(1),16),t=parseInt(c1.slice(1),16),R1=f>>16,G1=f>>8&0x00FF,B1=f&0x0000FF,R2=t>>16,G2=t>>8&0x00FF,B2=t&0x0000FF;
     return "#"+(0x1000000+(Math.round((R2-R1)*p)+R1)*0x10000+(Math.round((G2-G1)*p)+G1)*0x100+(Math.round((B2-B1)*p)+B1)).toString(16).slice(1);
+}
+
+//http://stackoverflow.com/a/20353486/854696
+function checkIntersection(rect1, rect2) {
+	if ( rect1.x >= rect2.x + rect2.width 
+			|| rect1.x + rect1.width <= rect2.x 
+			|| rect1.y >= rect2.y + rect2.height 
+			|| rect1.y + rect1.height <= rect2.y ){
+		return false;
+	}
+	
+    return true;
 }
 
 //http://stackoverflow.com/a/9458996/128597

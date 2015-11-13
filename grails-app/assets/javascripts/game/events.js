@@ -615,8 +615,7 @@ function handleWeaponClick(event) {
 	var y = event.stageY;
 	var unitWeaponDisplay = event.target;
 	
-	console.log("clicked "+unitWeaponDisplay); 
-	console.log(unitWeaponDisplay.weapon);
+	console.log("clicked "+unitWeaponDisplay);
 	
 	if(isPlayerUnitTurn()) {
 		var weapon = unitWeaponDisplay.weapon;
