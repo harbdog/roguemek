@@ -37,7 +37,7 @@ Weapon.WeaponLRM10 = "LRM10";
 Weapon.WeaponLRM15 = "LRM15";
 Weapon.WeaponLRM20 = "LRM20";
 
-function Weapon(id, name, shortName, weaponType, location, damage, projectiles, heat, cycle, cooldown, minRange, range, status) {
+function Weapon(id, name, shortName, weaponType, location, damage, projectiles, heat, cycle, cooldown, minRange, range, equipObj) {
 	this.id = id;
 	this.name = name;
 	this.shortName = shortName;
@@ -53,11 +53,14 @@ function Weapon(id, name, shortName, weaponType, location, damage, projectiles, 
 	this.cooldown = cooldown;
 	
 	this.ammo = null;
-	this.status = status;
+	this.equipment = equipObj;
 }
 
 var w = Weapon.prototype;
 
+w.isActive = function() {
+	return (this.equipment.status == "A");
+}
 w.getProjectiles = function() {
 	return this.projectiles;
 }

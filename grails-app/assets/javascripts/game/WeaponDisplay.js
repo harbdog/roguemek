@@ -19,6 +19,8 @@ function WeaponDisplay(hotkey, weapon) {
 	this.selected = false;
 	
 	this.background = null;
+	this.numLabel = null;
+	this.locationLabel = null;
 	this.nameLabel = null;
 	this.toHitLabel = null;
 }
@@ -30,10 +32,10 @@ c.init = function() {
 	// TODO: allow custom UI colors
 	
 	// add weapon number label
-	var numLabel = new createjs.Text(this.hotkey, "16px UbuntuMono", "#000000");
-	numLabel.x = (WeaponDisplay.MAX_NUMBER_LABEL_WIDTH - numLabel.getMeasuredWidth())/2;
-	numLabel.y = BORDER_WIDTH;
-	this.addChild(numLabel);
+	this.numLabel = new createjs.Text(this.hotkey, "16px UbuntuMono", "#000000");
+	this.numLabel.x = (WeaponDisplay.MAX_NUMBER_LABEL_WIDTH - this.numLabel.getMeasuredWidth())/2;
+	this.numLabel.y = BORDER_WIDTH*2;
+	this.addChild(this.numLabel);
 	
 	// add weapon number label background
 	var numBackground = new createjs.Shape();
@@ -45,15 +47,15 @@ c.init = function() {
 	
 	// add weapon location label
 	var locationStr = getLocationText(this.weapon.location);
-	var locationLabel = new createjs.Text(locationStr, "14px UbuntuMono", "#FFFFFF");
-	locationLabel.x = 5 + numLabel.x + numLabel.getMeasuredWidth() + BORDER_WIDTH;
-	locationLabel.y = 5;
-	this.addChild(locationLabel);
+	this.locationLabel = new createjs.Text(locationStr, "14px UbuntuMono", "#FFFFFF");
+	this.locationLabel.x = 5 + this.numLabel.x + this.numLabel.getMeasuredWidth() + BORDER_WIDTH;
+	this.locationLabel.y = 5;
+	this.addChild(this.locationLabel);
 	
 	// add weapon type image
 	var image = WeaponDisplay.getWeaponTypeImage(this.weapon);
 	var typeImage = new createjs.Bitmap(image);
-	typeImage.x = 5 + locationLabel.x + locationLabel.getMeasuredWidth();
+	typeImage.x = 5 + this.locationLabel.x + this.locationLabel.getMeasuredWidth();
 	typeImage.y = 5;
 	this.addChild(typeImage);
 	
@@ -97,6 +99,8 @@ c.update = function() {
 	
 	this.drawSelected();
 	
+	var weaponActive = this.weapon.isActive();
+	
 	// update weapon name and ammo
 	var weaponInfo = this.weapon.shortName;
 	if(this.weapon.ammo) {
@@ -108,10 +112,17 @@ c.update = function() {
 		weaponInfo += "["+ammoRemaining+"]";
 		
 		if(ammoRemaining <= 0) {
-			// TODO: disable when when out of ammo
+			// disable when when out of ammo
+			weaponActive = false;
 		}
 	}
 	this.nameLabel.text = weaponInfo
+	
+	if(!weaponActive) {
+		this.numLabel.color = "#A0A0A0";
+		this.locationLabel.color = "#A0A0A0";
+		this.nameLabel.color = "#A0A0A0";
+	}
 	
 	// update to Hit percent
 	var toHitAsPercent = "  --";

@@ -229,6 +229,28 @@ class BattleMech extends BattleUnit {
 	}
 	
 	/**
+	 * Gets only the BattleEquipment objects which match the base equipment object
+	 * @param equip
+	 * @return
+	 */
+	public BattleEquipment[] getEquipmentFromMTFNames(List MTF_NAMES) {
+		def foundEquipment = []
+		
+		for(String equipId in crits) {
+			BattleEquipment thisEquip = BattleEquipment.get(equipId)
+			if(thisEquip == null) {
+				continue
+			}
+			
+			if(MTF_NAMES.contains(thisEquip.getName())) {
+				foundEquipment.add(thisEquip)
+			}
+		}
+		
+		return foundEquipment
+	}
+	
+	/**
 	 * Gets the Critical section index of the given equipment index
 	 * @param critIndex
 	 * @return

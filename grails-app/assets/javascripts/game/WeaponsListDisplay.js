@@ -35,10 +35,12 @@ c.init = function() {
 	// add each weapon text to the container
 	var index = 0;
 	$.each(this.unit.weapons, function(id, weapon) {
-		var weaponDisplay = new createjs.Text("---", "12px UbuntuMono", "#FFFFFF");
-		weaponDisplay.id = weapon.id;
-		
-		weaponsArray.push(weaponDisplay);
+		if(!weapon.isMeleeWeapon()) {
+			var weaponText = new createjs.Text("---", "12px UbuntuMono", "#FFFFFF");
+			weaponText.id = weapon.id;
+			
+			weaponsArray.push(weaponText);
+		}
 		
 		index ++;
 	});
@@ -65,21 +67,26 @@ c.update = function() {
 		
 		this.height = 0;
 		for(var index=0; index<totalWeapons; index++) {
-			var weaponDisplay = this.weapons[index];
-			var weapon = this.unit.weapons[weaponDisplay.id];
+			var weaponText = this.weapons[index];
+			var weapon = this.unit.weapons[weaponText.id];
 						
-			// TODO: update text for when the weapon is destroyed
 			var locationStr = getLocationText(weapon.location);
-			weaponDisplay.text = locationStr+":"+weapon.shortName;
+			weaponText.text = locationStr+":"+weapon.shortName;
 			
-			weaponDisplay.x = 5+ Math.floor(index/weaponRows) * this.width/2;
-			weaponDisplay.y = (index % weaponRows) * weaponDisplay.getMeasuredHeight()*2;
+			// update text for when the weapon is destroyed
+			if(!weapon.isActive()) {
+				// TODO: draw a red strikethrough instead for inactive weapons
+				weaponText.color = "#A0A0A0";
+			}
 			
-			this.addChild(weaponDisplay);
+			weaponText.x = 5+ Math.floor(index/weaponRows) * this.width/2;
+			weaponText.y = (index % weaponRows) * weaponText.getMeasuredHeight()*2;
+			
+			this.addChild(weaponText);
 			
 			// update container height as each element is added
-			if(weaponDisplay.y + weaponDisplay.getMeasuredHeight()*2 > this.height) {
-				this.height = weaponDisplay.y + weaponDisplay.getMeasuredHeight()*2;
+			if(weaponText.y + weaponText.getMeasuredHeight()*2 > this.height) {
+				this.height = weaponText.y + weaponText.getMeasuredHeight()*2;
 			}
 		}
 	}

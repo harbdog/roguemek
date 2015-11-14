@@ -81,6 +81,11 @@ class GameService {
 	 * @return
 	 */
 	public def initializeNextTurn(Game game) {
+		// Apply any end of turn effects to current turn unit before moving to the next unit's turn
+		BattleUnit currentTurnUnit = game.getTurnUnit()
+		if(currentTurnUnit != null) {
+			checkEndTurnPilotSkill(game, currentTurnUnit)
+		}
 		
 		// if the next turn unit happens to be destroyed, loop to the next one
 		BattleUnit nextTurnUnit
@@ -93,7 +98,11 @@ class GameService {
 			
 			nextTurnUnit = game.getTurnUnit()
 			
-			// TODO: avoid infinite loop if all mechs become destroyed!
+			// avoid infinite loop if all mechs become destroyed!
+			if(currentTurnUnit != null && nextTurnUnit.id == currentTurnUnit.id) {
+				log.info("All other mechs destroyed, last unit not destroyed?")
+				break;
+			}
 		}
 		
 		// update the next unit for its new turn
@@ -107,7 +116,7 @@ class GameService {
 		Object[] messageArgs = [turnUnit.toString()]
 		Date update = GameMessage.addMessageUpdate(game, "game.unit.new.turn", messageArgs, data)
 		
-		if(turnUnit.isDestroyed()) {
+		if(turnUnit.isDestroyed() && (currentTurnUnit != null && nextTurnUnit.id != currentTurnUnit.id)) {
 			// if the unit is destroyed from something like ammo explosion, proceed to the next unit's turn automatically
 			return this.initializeNextTurn(game)
 		}
@@ -611,6 +620,8 @@ class GameService {
 				heatDiss = getHeatDissipation(game, u)
 			}
 			
+			CombatStatus unitStatus = getUnitCombatStatus(game, u)
+			
 			def uRender = [
 				unit: u.id,
 				callsign: u.pilot?.ownerUser?.callsign,
@@ -626,7 +637,7 @@ class GameService {
 				apRemaining: u.apRemaining,
 				jpRemaining: u.jpRemaining,
 				jumpJets: u.mech?.jumpMP,
-				jumping: (u.jpMoved >= 0),
+				jumping: (unitStatus == CombatStatus.UNIT_JUMPING),
 				heat: u.heat,
 				heatDiss: heatDiss,
 				armor: armor,
@@ -851,7 +862,7 @@ class GameService {
 			return new GameMessage("game.you.cannot.move.jp.zero", null, null)
 		}
 		
-		// TODO: TESTING: Instead, store combat status directly on the unit as a new field?
+		// TODO: Instead, store combat status directly on the unit as a new field?
 		CombatStatus prevUnitStatus = getUnitCombatStatus(game, unit)
 		
 		// prevent unit from jumping and walking/running in the same turn
@@ -1539,8 +1550,8 @@ class GameService {
 	public def fireWeaponsAtUnit(Game game, BattleUnit unit, ArrayList weapons, BattleUnit target) {
 		if(unit != game.getTurnUnit()) return
 		
-		if(unit.apRemaining == 0) {
-			// not enough action points to fire // TODO: allow firing weapons when AP is zero? For example, when MP is reduced to 0
+		if(unit.apRemaining == 0 && unit.actionPoints > 0) {
+			// not enough action points to fire, but allow firing weapons when AP starts the round as zero due to MP reductions
 			return new GameMessage("game.you.cannot.fire.ap.zero", null, null)
 		}
 		
@@ -1894,8 +1905,10 @@ class GameService {
 		unit.heat += totalHeat
 		data.heat = unit.heat
 		
-		// use an actionPoint
-		unit.apRemaining -= 1
+		// use an actionPoint only if it had AP to use
+		if(unit.apRemaining > 0) {
+			unit.apRemaining -= 1
+		}
 		data.apRemaining = unit.apRemaining
 		
 		unit.save flush:true
@@ -2028,6 +2041,65 @@ class GameService {
 	}
 	
 	/**
+	 * Perform piloting check on unit if anything performed during its turn requires a piloting skill check only at the end of the turn
+	 * @param game
+	 * @param unit
+	 * @return
+	 */
+	public def checkEndTurnPilotSkill(Game game, BattleUnit unit) {
+		if(unit instanceof BattleMech) {
+			PilotingModifier.Modifier pilotingCheckModifier = null
+			
+			CombatStatus turnUnitStatus = getUnitCombatStatus(game, unit)
+			if(turnUnitStatus == CombatStatus.UNIT_JUMPING) {
+				// jumping will require a piloting skill check with destroyed leg, or damaged gyro, leg/foot/hip actuators
+				if(unit.isLegged()) {
+					log.info("Pilot skill check due to jumping with destroyed leg")
+					pilotingCheckModifier = PilotingModifier.Modifier.MECH_JUMPING
+				}
+				else {
+					def mtfNamesList = [MechMTF.MTF_CRIT_GYRO, MechMTF.MTF_CRIT_HIP,
+							MechMTF.MTF_CRIT_UP_LEG_ACT, MechMTF.MTF_CRIT_LOW_LEG_ACT, MechMTF.MTF_CRIT_FOOT_ACT]
+					def critsList = unit.getEquipmentFromMTFNames(mtfNamesList)
+					
+					for(BattleEquipment critEquip in critsList) {
+						
+						if(!critEquip.isActive()) {
+							log.info("Pilot skill check due to jumping with critical on: "+critEquip)
+							pilotingCheckModifier = PilotingModifier.Modifier.MECH_JUMPING
+							break;
+						}
+					}
+				}
+			}
+			else if(turnUnitStatus == CombatStatus.UNIT_RUNNING) {
+				// running will require a piloting skill check with damaged hip or gyro
+				def mtfNamesList = [MechMTF.MTF_CRIT_GYRO, MechMTF.MTF_CRIT_HIP]
+				def critsList = unit.getEquipmentFromMTFNames(mtfNamesList)
+				
+				for(BattleEquipment critEquip in critsList) {
+					
+					if(!critEquip.isActive()) {
+						log.info("Pilot skill check due to running with critical on: "+critEquip)
+						pilotingCheckModifier = PilotingModifier.Modifier.MECH_RUNNING
+						break;
+					}
+				}
+				
+			}
+			
+			if(pilotingCheckModifier != null) {
+				def modifiers = PilotingModifier.getPilotSkillModifiers(game, unit, pilotingCheckModifier)
+				def checkSuccess = doPilotSkillCheck(game, unit, modifiers)
+				
+				return checkSuccess
+			}
+		}
+		
+		return true
+	}
+	
+	/**
 	 * Does the piloting skill check for the unit based on the given modifiers, and if fails makes the unit fall
 	 */
 	public def doPilotSkillCheck(Game game, BattleUnit unit, def modifiers) {
@@ -2129,8 +2201,14 @@ class GameService {
 			
 			def fallData = [
 				unit: unit.id,
+				heading: unit.heading,
 				prone: unit.prone
 			]
+			
+			if(unit.jpMoved >= 0) {
+				// unit was jumping but is now prone
+				fallData.jumping = false
+			}
 			
 			Object[] fallMessageArgs = [unit.toString(), fallSideStr]
 			Date fallUpdate = GameMessage.addMessageUpdate(

@@ -324,7 +324,7 @@ function initUnitWeapons(unit) {
 		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
 			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, 
 								c.damage, c.projectiles, c.heat, c.cycle, c.cooldown, 
-								c.minRange, [c.shortRange, c.mediumRange, c.longRange], c.status);
+								c.minRange, [c.shortRange, c.mediumRange, c.longRange], c);
 			weapons[c.id] = w;
 			
 			if(c.ammo) {
@@ -342,9 +342,12 @@ function initUnitWeapons(unit) {
 	
 	$.each(unit.physical, function(index, c) {
 		if(c.type == TYPE_WEAPON && weapons[c.id] == null){
+			// ensure physical weapons appear as active on the UI
+			c.status = "A";
+			
 			var w = new Weapon(c.id, c.name, c.shortName, c.weaponType, c.location, 
 								c.damage, c.projectiles, c.heat, c.cycle, c.cooldown, 
-								c.minRange, [c.shortRange, c.mediumRange, c.longRange]);
+								c.minRange, [c.shortRange, c.mediumRange, c.longRange], c);
 			weapons[c.id] = w;
 		}
 	});
@@ -1175,6 +1178,15 @@ function updateGameData(data) {
 		// determine location of message and create it
 		var floatMessagePoint = new Point(t.getUnitDisplay().x, t.getUnitDisplay().y);
 		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+		
+		if(equipObj.status != "A" && equipObj.type == TYPE_WEAPON) {
+			if(isPlayerT) {
+				updateWeapons = true;
+			}
+			else {
+				weaponsListDisplay[t.id].update();
+			}
+		}
 	}
 	
 	// update ammo remaining

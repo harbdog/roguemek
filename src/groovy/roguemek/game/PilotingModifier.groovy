@@ -23,6 +23,8 @@ class PilotingModifier {
 		DESTROYED("DESTROYED"),						// mech is already destroyed
 		IMMOBILE("IMMOBILE"),						// automatically falls
 		MECH_STANDING("STANDING"),					// +0 for attempting to stand
+		MECH_RUNNING("RUNNING"),					// +0 for running with damaged hip/gyro
+		MECH_JUMPING("JUMPING"),					// +0 for jumping with destroyed leg or damaged hip/gyro/leg/foot/hip actuators
 		
 		MECH_DAMAGE("DAMAGE 20+"),					// +1 for taking 20+ damage in one turn
 		MECH_SHUTDOWN("SHUTDOWN"),					// +3 for engine shutdown
@@ -80,6 +82,8 @@ class PilotingModifier {
 				addModifierIfUnique(toHitMods, new PilotingModifier(causeModifier, -1 * STANDARD_MODIFIER))
 			}
 			else if(Modifier.MECH_STANDING == causeModifier
+					|| Modifier.MECH_RUNNING == causeModifier
+					|| Modifier.MECH_JUMPING == causeModifier
 					|| Modifier.MECH_KICKED == causeModifier
 					|| Modifier.MECH_MISSED_KICK == causeModifier
 					|| Modifier.MECH_WATER_2 == causeModifier) {
