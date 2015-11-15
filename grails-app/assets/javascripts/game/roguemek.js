@@ -255,7 +255,8 @@ function loadGameElements() {
 				  unitInstance.initialArmor = thisUnit.initialArmor;
 				  unitInstance.internals = thisUnit.internals;
 				  unitInstance.initialInternals = thisUnit.initialInternals;
-				  
+					
+				  unitInstance.effects = thisUnit.effects;
 				  unitInstance.status = thisUnit.status;
 				  unitInstance.prone = thisUnit.prone;
 				  unitInstance.shutdown = thisUnit.shutdown;
@@ -1255,15 +1256,22 @@ function updateGameData(data) {
 		if(isPlayerU) updateHeatDisplay(u);
 	}
 	
+	if(data.effects != null) {
+		u.effects = data.effects;
+		
+		// update unit info display to show any effects
+		updateInfoDisplay = true;
+	}
+	
 	if(updatePosition) {
 		// hide the target line before starting the animated move
 		setPlayerTargetLineVisible(false);
 		
 		if(isPlayerU) {
-			u.displayUnit.animateUpdateDisplay(u.getHexLocation(), u.getHeading(), performUnitPositionUpdates);
+			u.getUnitDisplay().animateUpdateDisplay(u.getHexLocation(), u.getHeading(), performUnitPositionUpdates);
 		}
 		else {
-			u.displayUnit.animateUpdateDisplay(u.getHexLocation(), u.getHeading());
+			u.getUnitDisplay().animateUpdateDisplay(u.getHexLocation(), u.getHeading());
 		}
 	}
 	

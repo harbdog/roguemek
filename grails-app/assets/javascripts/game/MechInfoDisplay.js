@@ -96,6 +96,13 @@ c.update = function() {
 		if(this.unit.shutdown) {
 			this.addStatusInfo(MechInfoDisplay.STATUS_SHUTDOWN);
 		}
+		
+		if(this.unit.effects != null) {
+			var me = this;
+			$.each(this.unit.effects, function(index, effect) {
+				me.addStatusInfo(effect);
+			});
+		}
 	}
 	
 	//this.doCache();
@@ -120,6 +127,9 @@ c.addStatusInfo = function(statusInfoType) {
 	}
 	else if(MechInfoDisplay.STATUS_JUMPING == statusInfoType) {
 		statusIconType = StatusIcon.STATUS_JUMPING;
+	}
+	else {
+		statusIconType = StatusIcon.STATUS_DOWN;
 	}
 	
 	var statusInfoContainer = new createjs.Container();

@@ -371,6 +371,12 @@ c.getUpdatedDisplayRotation = function(heading) {
 	return HEADING_ANGLE[heading];
 }
 c.animateUpdateDisplay = function(coords, heading, callFunction) {
+	
+	// cancel any currently acting tweens
+	createjs.Tween.removeTweens(this);
+	createjs.Tween.removeTweens(this.rotateContainer);
+	createjs.Tween.removeTweens(this.shadowUnitImage);
+	
 	var newX = this.getUpdatedDisplayX(coords);
 	var newY = this.getUpdatedDisplayY(coords);
 	var actualRot = this.getUpdatedDisplayRotation(heading);

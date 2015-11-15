@@ -2,6 +2,7 @@ package roguemek.game
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.springframework.context.i18n.LocaleContextHolder
 
 import grails.transaction.Transactional
 import roguemek.*
@@ -12,6 +13,8 @@ import roguemek.mtf.*
 class GameService {
 	
 	transient springSecurityService
+	
+	def messageSource
 	
 	private static Log log = LogFactory.getLog(this)
 	
@@ -187,6 +190,15 @@ class GameService {
 			
 			// Evaluate if any overheat effects need to apply at this time (shutdown, ammo explosion)
 			def heatEffects = HeatEffect.getHeatEffectsAt(unit.heat)
+			
+			// show effects on the frontend
+			data.effects = []
+			heatEffects.each{ key, value -> 
+				String messageCode = "unit.status.short."+key.toString()
+				Object[] messageArgs = [value] as Object[]
+				data.effects << messageSource.getMessage(messageCode, messageArgs, LocaleContextHolder.locale)
+			}
+			
 			if(heatEffects.containsKey(HeatEffect.Effect.AMMO_EXP_RISK)) {
 				// roll to see if there will be an ammo explosion
 				int explosionRisk = heatEffects.getAt(HeatEffect.Effect.AMMO_EXP_RISK)
@@ -622,6 +634,17 @@ class GameService {
 			
 			CombatStatus unitStatus = getUnitCombatStatus(game, u)
 			
+			// Evaluate if any overheat effects need to apply at this time (shutdown, ammo explosion)
+			def heatEffects = HeatEffect.getHeatEffectsAt(u.heat)
+			
+			// show effects on the frontend
+			def effects = []
+			heatEffects.each{ key, value ->
+				String messageCode = "unit.status.short."+key.toString()
+				Object[] messageArgs = [value] as Object[]
+				effects << messageSource.getMessage(messageCode, messageArgs, LocaleContextHolder.locale)
+			}
+			
 			def uRender = [
 				unit: u.id,
 				callsign: u.pilot?.ownerUser?.callsign,
@@ -632,6 +655,7 @@ class GameService {
 				y: u.y,
 				heading: u.heading,
 				status: String.valueOf(u.status),
+				effects: effects,
 				prone: u.prone,
 				shutdown: u.shutdown,
 				apRemaining: u.apRemaining,
@@ -3073,6 +3097,21 @@ class GameService {
 		else{
 			return CombatStatus.UNIT_WALKING
 		}
+	}
+	
+	/**
+	 * Determines and returns a list of effects that affect the unit
+	 * @param game
+	 * @param unit
+	 * @return
+	 */
+	public static def getUnitCombatEffects(Game game, BattleUnit unit) {
+		def combatEffects = []
+		if(unit instanceof BattleMech) {
+			
+		}
+		
+		return combatEffects
 	}
 	
 	/**
