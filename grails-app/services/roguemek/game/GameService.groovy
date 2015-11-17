@@ -123,6 +123,10 @@ class GameService {
 			// if the unit is destroyed from something like ammo explosion, proceed to the next unit's turn automatically
 			return this.initializeNextTurn(game)
 		}
+		else if(turnUnit.shutdown) {
+			// the unit has been shutdown from overheating, proceed to the next unit's turn automatically
+			return this.initializeNextTurn(game)
+		}
 		
 		return data
 	}
@@ -1573,6 +1577,7 @@ class GameService {
 	 */
 	public def fireWeaponsAtUnit(Game game, BattleUnit unit, ArrayList weapons, BattleUnit target) {
 		if(unit != game.getTurnUnit()) return
+		else if(unit.shutdown) return
 		
 		if(unit.apRemaining == 0 && unit.actionPoints > 0) {
 			// not enough action points to fire, but allow firing weapons when AP starts the round as zero due to MP reductions
@@ -1777,6 +1782,8 @@ class GameService {
 						}
 					}
 				}
+				
+				// TODO: Make flamer able to apply heat instead of damage to target
 				
 				if(weapon.isPhysical()) {
 					if(weapon.isCharge()

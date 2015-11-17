@@ -62,7 +62,12 @@ class WeaponModifier {
 	public static def getToHitModifiers(Game game, BattleUnit srcUnit, BattleWeapon weapon, BattleUnit tgtUnit) {
 		def toHitMods = []
 		
-		if(tgtUnit.isDestroyed()) {
+		if(srcUnit.shutdown) {
+			// A shutdown unit cannot hit with any weapon
+			toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
+			return toHitMods
+		}
+		else if(tgtUnit.isDestroyed()) {
 			// A destroyed unit doesn't need to take additional damage?
 			toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 			return toHitMods

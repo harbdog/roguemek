@@ -170,7 +170,7 @@ class BootStrap {
 		log.info('Loaded sample Board')
 		
 		// Initialize a sample BattleMech
-		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("BattleMaster"), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
+		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Flashman"), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
 		if(!battleMech.validate()) {
 			log.error("Errors with battle mech "+battleMech.mech?.name+":\n")
 			battleMech.errors.allErrors.each {
