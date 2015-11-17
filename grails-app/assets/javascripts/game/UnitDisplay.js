@@ -64,15 +64,21 @@ c.init = function() {
 	var hit = new createjs.Shape();
 	hit.graphics.beginFill("#000000").drawCircle(0, 0, hexWidth/3).endStroke();
 	this.hitArea = hit;
-}
-
-c.update = function() {
-	this.uncache();
 	
 	this.x = this.getUpdatedDisplayX(this.unit.coords);
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotateContainer.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
 	this.shadowUnitImage.rotation = this.rotateContainer.rotation;
+}
+
+c.update = function() {
+	this.uncache();
+	
+	// Do not set x,y or rotation during update method since it interferes with these value while animating these moves
+	/*this.x = this.getUpdatedDisplayX(this.unit.coords);
+	this.y = this.getUpdatedDisplayY(this.unit.coords);
+	this.rotateContainer.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
+	this.shadowUnitImage.rotation = this.rotateContainer.rotation;*/
 	
 	this.updateHeadingIndicator();
 	
@@ -84,6 +90,12 @@ c.update = function() {
 		}
 		if(this.unit.shutdown) {
 			this.addStatusIcon(StatusIcon.STATUS_DOWN);
+		}
+		if(this.unit.effects != null) {
+			var me = this;
+			$.each(this.unit.effects, function(index, effect) {
+				me.addStatusIcon(StatusIcon.STATUS_DOWN);
+			});
 		}
 	}
 	
@@ -316,13 +328,16 @@ c.addStatusIcon = function(statusIconType) {
 	// declare icon width and height for all status icons
 	var numStatuses = this.statusImages.length;
 	
-	var thisStatus = new StatusIcon(statusIconType);
-	thisStatus.init();
-	thisStatus.x = hexWidth/5 - thisStatus.width/2;
-	thisStatus.y = hexHeight/3 - thisStatus.height - (numStatuses*thisStatus.height/3);
-	
-	this.addChild(thisStatus);
-	this.statusImages.push(thisStatus);
+	if(numStatuses < 3) {
+		// max of 3 icons to show at the same time
+		var thisStatus = new StatusIcon(statusIconType);
+		thisStatus.init();
+		thisStatus.x = hexWidth/5 - thisStatus.width/2;
+		thisStatus.y = hexHeight/3 - thisStatus.height - (numStatuses*thisStatus.height/3);
+		
+		this.addChild(thisStatus);
+		this.statusImages.push(thisStatus);
+	}
 }
 
 /**
@@ -372,11 +387,6 @@ c.getUpdatedDisplayRotation = function(heading) {
 }
 c.animateUpdateDisplay = function(coords, heading, callFunction) {
 	
-	// cancel any currently acting tweens
-	createjs.Tween.removeTweens(this);
-	createjs.Tween.removeTweens(this.rotateContainer);
-	createjs.Tween.removeTweens(this.shadowUnitImage);
-	
 	var newX = this.getUpdatedDisplayX(coords);
 	var newY = this.getUpdatedDisplayY(coords);
 	var actualRot = this.getUpdatedDisplayRotation(heading);
@@ -393,6 +403,11 @@ c.animateUpdateDisplay = function(coords, heading, callFunction) {
 	
 	// use consistent animation time across the Tweens
 	var aTime = 250;
+	
+	// cancel any currently acting tweens
+	createjs.Tween.removeTweens(this);
+	createjs.Tween.removeTweens(this.rotateContainer);
+	createjs.Tween.removeTweens(this.shadowUnitImage);
 	
 	var self = this;
 	createjs.Tween.get(this)
@@ -448,7 +463,6 @@ c.updateHeadingIndicator = function() {
 	if(this.unit.isDestroyed()) {
 		if(this.header != null) {
 			this.header.visible = false;
-			delete this.header;
 		}
 		
 		return;
@@ -473,11 +487,37 @@ c.updateHeadingIndicator = function() {
 	}
 	
 	var glowColor = shadeColor(color, 0.5);
-	this.header.graphics.setStrokeStyle(2, "square").beginStroke(color).beginFill(glowColor)
-			.moveTo(-5, -hexHeight/2 + 5)
-			.lineTo(0, -hexHeight/2)
-			.lineTo(5, -hexHeight/2 + 5)
-			.endStroke();
+	if(this.unit.jumping) {
+		var iW = 12;
+		var iH = 8;
+		this.header.graphics.setStrokeStyle(1, "square").beginStroke(color).beginFill(glowColor)
+				.moveTo(-iW/2, -hexHeight/2 + iH/2)
+				.lineTo(0, -hexHeight/2)
+				.lineTo(iW/2, -hexHeight/2 + iH/2)
+				.lineTo(iW/2, -hexHeight/2 + iH)
+				.lineTo(iW/6, -hexHeight/2 + 3*iH/5)
+				.lineTo(0, -hexHeight/2 + 4*iH/5)
+				.lineTo(-iW/6, -hexHeight/2 + 3*iH/5)
+				.lineTo(-iW/2, -hexHeight/2 + iH)
+				.lineTo(-iW/2, -hexHeight/2 + iH/2)
+				.endFill().setStrokeStyle(1, "square").beginStroke(color)
+				.moveTo(-iW/2, -hexHeight/2 + iH)
+				.lineTo(-iW/2, -hexHeight/2 + iH/2)
+				.lineTo(0, -hexHeight/2)
+				.lineTo(iW/2, -hexHeight/2 + iH/2)
+				.lineTo(iW/2, -hexHeight/2 + iH)
+				.endStroke();
+	}
+	else {
+		var iW = 10;
+		var iH = 5;
+		this.header.graphics.setStrokeStyle(1, "square").beginStroke(color).beginFill(glowColor)
+				.moveTo(-iW/2, -hexHeight/2 + iH)
+				.lineTo(0, -hexHeight/2)
+				.lineTo(iW/2, -hexHeight/2 + iH)
+				.endStroke();
+	}
+	// TODO: add setting for shadows/glows to be disabled across all elements
 	this.header.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
 }
 
@@ -492,7 +532,6 @@ c.updateUnitIndicator = function() {
 	if(this.unit.isDestroyed()) {
 		if(this.indicator != null) {
 			this.indicator.visible = false;
-			delete this.indicator;
 			
 			this.doCache();
 		}

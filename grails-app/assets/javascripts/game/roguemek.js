@@ -1119,6 +1119,7 @@ function updateGameData(data) {
 		
 		// update unit info display to show as jumping
 		updateInfoDisplay = true;
+		updateUnitDisplay = true;
 	}
 	
 	if(data.jumpCapable != null) {
@@ -1261,6 +1262,7 @@ function updateGameData(data) {
 		
 		// update unit info display to show any effects
 		updateInfoDisplay = true;
+		updateUnitDisplay = true;
 	}
 	
 	if(updatePosition) {
