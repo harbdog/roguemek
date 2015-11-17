@@ -84,6 +84,7 @@ class PilotingModifier {
 			else if(Modifier.MECH_STANDING == causeModifier
 					|| Modifier.MECH_RUNNING == causeModifier
 					|| Modifier.MECH_JUMPING == causeModifier
+					|| Modifier.MECH_PUSHED == causeModifier
 					|| Modifier.MECH_KICKED == causeModifier
 					|| Modifier.MECH_MISSED_KICK == causeModifier
 					|| Modifier.MECH_WATER_2 == causeModifier) {

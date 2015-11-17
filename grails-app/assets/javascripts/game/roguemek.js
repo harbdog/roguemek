@@ -1232,18 +1232,30 @@ function updateGameData(data) {
 		
 		var weapon = getUnitWeaponById(id);
 		if(weapon != null){
-			
 			weapon.cooldown = cooldown;
 			
 			// show weapon fire and floating miss/hit numbers
 			animateWeaponFire(u, weapon, t, hitLocations);
-			
 		}
 		else{
 			console.log("Weapon null? Weapon ID:"+id);
 		}
 		
 		if(isPlayerU) updateWeapons = true;
+	}
+	
+	if(data.damage != null && data.hitLocation != null) {
+		// show damage resulting from a non-weapon action
+		var damage = data.damage;
+		var hitLocation = data.hitLocation;
+		
+		var srcUnit = (t != null) ? t : u;
+		var srcPoint = new Point(srcUnit.displayUnit.x, srcUnit.displayUnit.y);
+		
+		var floatMessagePoint = getPositionFromLocationAngle(srcPoint, srcUnit.heading, data.hitLocation);
+		var floatMessageStr = getLocationText(hitLocation) + " -" + damage;
+		
+		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
 	}
 	
 	if(data.heat != null) {

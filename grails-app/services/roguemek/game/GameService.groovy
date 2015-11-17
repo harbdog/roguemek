@@ -1324,8 +1324,9 @@ class GameService {
 						// TODO: handle potentially being force displacement from accidental falls from above (>1 elevation level above)
 					}
 					
-					// TODO: mech obstacle must make a pilot skill roll to avoid falling from domino effect
-					//doPilotSkillRoll(mechObstacle)
+					// mech obstacle must make a pilot skill roll to avoid falling from domino effect
+					def modifiers = PilotingModifier.getPilotSkillModifiers(game, unitObstacle, PilotingModifier.Modifier.MECH_PUSHED)
+					def checkSuccess = doPilotSkillCheck(game, unitObstacle, modifiers)
 				}
 			}
 		}
@@ -1710,6 +1711,11 @@ class GameService {
 				}
 			}
 			
+			// TESTING ONLY
+			if(weapon.isCharge()) {
+				weaponHit = true
+			}
+			
 			if(weaponHit) {
 				int damage = weapon.getDamage()
 				int projectiles = weapon.getProjectiles()
@@ -1866,13 +1872,13 @@ class GameService {
 					Hex origHex = game.getHexAt(unitLocation)
 					
 					int headingLeft = getRotateHeadingCCW(unit.heading)
-					Coords displacedLeft = getForwardCoords(unitLocation, headingLeft)
+					Coords displacedLeft = getForwardCoords(game, unitLocation, headingLeft)
 					
 					int headingRight = getRotateHeadingCW(unit.heading)
-					Coords displacedRight = getForwardCoords(unitLocation, headingRight)
+					Coords displacedRight = getForwardCoords(game, unitLocation, headingRight)
 					
 					// handle if the new displaced location cannot be entered, or if an existing unit is in that location
-					int displacedHeading = null
+					int displacedHeading = -1
 					if(displacedLeft.equals(unitLocation)){
 						// left is not possible, use right
 						displacedHeading = headingRight
@@ -1892,7 +1898,9 @@ class GameService {
 						}
 					}
 					
-					Coords displacedLocation = handleDisplacement(game, unit, displacedHeading)
+					if(displacedHeading != -1) {
+						Coords displacedLocation = handleDisplacement(game, unit, displacedHeading)
+					}
 				}
 				else if(weapon.isDFA()) {
 					// DFA attack missed, the attacker falls automatically at its current position and takes falling damage
@@ -2133,7 +2141,7 @@ class GameService {
 	/**
 	 * Does the piloting skill check for the unit based on the given modifiers, and if fails makes the unit fall
 	 */
-	public def doPilotSkillCheck(Game game, BattleUnit unit, def modifiers) {
+	public static def doPilotSkillCheck(Game game, BattleUnit unit, def modifiers) {
 		if(!unit instanceof BattleMech) {
 			return true
 		}
