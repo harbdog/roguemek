@@ -45,6 +45,10 @@ h1 {
 	color: #FFFFFF;
 }
 
+a:link, a:visited, a:hover {
+	color: #3399FF;
+}
+
 div #spinner {
 	background: url(../images/hex-spinner.gif) no-repeat transparent;
 	background-size: 64px;

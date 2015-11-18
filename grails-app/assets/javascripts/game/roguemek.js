@@ -113,7 +113,7 @@ function initGame(){
 		// If we haven't been passed the event get the window.event
 	    e = e || window.event;
 
-	    var message = 'Embrace Cowardice?';
+	    var message = 'Embrace Cowardice?';	// TODO: i18n?
 	    // For IE6-8 and Firefox prior to version 4
 	    if(e) {
 	        e.returnValue = message;
@@ -969,6 +969,35 @@ function updateGameData(data) {
 		// display the message to the player
 		var t = new Date(data.time);
 		addMessageUpdate("["+t.toLocaleTimeString()+"] "+data.message);
+	}
+	
+	if(data.gameState != null 
+			&& data.gameState == "O") {
+		// the game is over, open a dialog with the message and button to go to debriefing URL
+		
+		// TODO: pause the stage
+		
+		// disable the browser accidental navigation protection
+		window.onbeforeunload = null;
+		
+		var gameOverDialog = $("<div>"+data.gameOverMessage+"<br/><br/><a href='"+data.gameOverURL+"'>"+"&gt; "+data.gameOverLabel+"</a></div>").dialog({
+	    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
+	    	title: data.gameOverHeader,
+	    	autoOpen: false,
+	    	modal: true,
+			show: {
+				effect: "fade",
+				duration: 1000
+			},
+			hide: {
+				effect: "explode",
+				duration: 500
+			}
+	    });
+		
+		gameOverDialog.dialog("open");
+		
+		return;
 	}
 	
 	if(data.unit && data.turnUnit){

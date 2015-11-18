@@ -42,7 +42,7 @@
 							}
 						%>
 							<g:if test="${g}">
-								<span class="property-value" aria-labelledby="pilots-label"><g:link action="playGame" params='[game:"${g.id}", pilot:"${p.id}"]'>${p?.firstName+" "+p?.lastName} - Game ID:${g.id}</g:link></span>
+								<span class="property-value" aria-labelledby="pilots-label"><g:link action="playGame" params='[game:"${g.id}"]'>${p?.firstName+" "+p?.lastName} - Game ID:${g.id}</g:link></span>
 							</g:if>
 						</g:each>
 					

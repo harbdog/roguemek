@@ -52,6 +52,27 @@ class Game {
 	}
 	
 	/**
+	 * Gets a map of users with list of units controller by that user
+	 */
+	public def getUnitsByUser() {
+		def unitsByUser = [:]
+		
+		for(BattleUnit unit in units) {
+			MekUser user = unit.pilot?.ownerUser
+			
+			def unitList = unitsByUser[user]
+			if(unitList == null) {
+				unitList = []
+				unitsByUser[user] = unitList
+			}
+			
+			unitList << unit
+		}
+		
+		return unitsByUser
+	}
+	
+	/**
 	 * Gets the unit at the given index of the unit list
 	 * @param index
 	 * @return
@@ -129,4 +150,18 @@ class Game {
 		}
 		return null
 	}
+	
+	public boolean isInit() {
+		return (this.gameState == Game.GAME_INIT)
+	}
+	public boolean isActive() {
+		return (this.gameState == Game.GAME_ACTIVE)
+	}
+	public boolean isPaused() {
+		return (this.gameState == Game.GAME_PAUSED)
+	}
+	public boolean isOver() {
+		return (this.gameState == Game.GAME_OVER)
+	}
+	
 }

@@ -28,7 +28,7 @@ class GameController {
 				doRedirect = true
 			}
 			else {
-				if(g.gameState == Game.GAME_INIT) {
+				if(g.isInit()) {
 					if(g.ownerUser == user) {
 						// TODO: give owner User a button to start the game instead of auto starting
 						log.info("Game("+g.id+") owner User "+user?.username+" is starting the game")
@@ -39,8 +39,9 @@ class GameController {
 						// TODO: give participant pilots a screen showing they are waiting for the owner to start
 					}
 				}
-				else if(g.gameState == Game.GAME_OVER) {
-					// TODO: give a screen that the game is over with some results
+				else if(g.isOver()) {
+					// give a screen that the game is over with some results
+					redirect action: "debrief", id: g.id
 				}
 				else {
 					log.info("User "+user?.username+" joining Game("+g.id+")")
@@ -177,6 +178,18 @@ class GameController {
 		
 		render gameResponse as JSON
 	}
+	
+	@Transactional(readOnly = true)
+	def debrief(Game game) {
+		// only show debriefing if the game is actually over
+		if(game == null || !game.isOver()) {
+			redirect controller: "RogueMek"
+		}
+		else{
+			respond game
+		}
+	}
+	
 
 	@Transactional(readOnly = true)
 	@Secured(['ROLE_ADMIN'])

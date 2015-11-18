@@ -2,6 +2,7 @@ package roguemek.game
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.context.i18n.LocaleContextHolder
 
 import grails.transaction.Transactional
@@ -13,8 +14,8 @@ import roguemek.mtf.*
 class GameService {
 	
 	transient springSecurityService
-	
 	def messageSource
+	LinkGenerator grailsLinkGenerator
 	
 	private static Log log = LogFactory.getLog(this)
 	
@@ -80,14 +81,72 @@ class GameService {
 	}
 	
 	/**
+	 * Checks the game to see if any end game conditions are met, and if so it sets the GAME_OVER status
+	 * @param game
+	 * @return
+	 */
+	public def checkEndGameConditions(Game game) {
+		
+		def gameOver = false
+		
+		// TODO: move this function to a new class dedicated to checking win conditions
+		
+		def unitsByUserMap = game.getUnitsByUser()
+		def numActiveUsers = 0
+		unitsByUserMap.each{ user, unitList ->
+			for(BattleUnit unit in unitList) {
+				if(unit.isActive()) {
+					numActiveUsers ++
+					break
+				}
+			}
+		}
+		
+		if(numActiveUsers <= 1) {
+			log.info("Game "+game.id+" over due to "+numActiveUsers+" users with active units")
+			gameOver = true
+		}
+		
+		if(gameOver) {
+			game.gameState = Game.GAME_OVER
+			game.save flush: true
+		}
+		
+		return (game.gameState == Game.GAME_OVER)
+	}
+	
+	/**
 	 * Starts the next unit's turn
 	 * @return
 	 */
 	public def initializeNextTurn(Game game) {
+		// TODO: apply heat dissipation and heat effects at end of turn instead of beginning of next turn
+		
 		// Apply any end of turn effects to current turn unit before moving to the next unit's turn
 		BattleUnit currentTurnUnit = game.getTurnUnit()
 		if(currentTurnUnit != null) {
 			checkEndTurnPilotSkill(game, currentTurnUnit)
+		}
+		
+		// check for end-game conditions before continuing to the next turn
+		def endGameCheck = checkEndGameConditions(game)
+		if(endGameCheck) {
+			// game has ended
+			def gameOverHeader = messageSource.getMessage("game.over.debriefing.header", null, LocaleContextHolder.locale)
+			def gameOverMessage = messageSource.getMessage("game.over.debriefing", null, LocaleContextHolder.locale)
+			def gameOverLabel = messageSource.getMessage("game.over.debriefing.label", null, LocaleContextHolder.locale)
+			def gameOverURL = grailsLinkGenerator.link(action: 'debrief', id: game.id)
+			
+			def data = [
+				game: game.id,
+				gameState: String.valueOf(game.gameState),
+				gameOverHeader: gameOverHeader,
+				gameOverMessage: gameOverMessage,
+				gameOverLabel: gameOverLabel,
+				gameOverURL: gameOverURL
+			]
+			Date update = GameMessage.addMessageUpdate(game, "game.over", null, data)
+			return
 		}
 		
 		// if the next turn unit happens to be destroyed, loop to the next one
@@ -1297,7 +1356,7 @@ class GameService {
 	 * @param jumping
 	 * @return
 	 */
-	public static Coords handleDisplacement(Game game, BattleUnit unit, int displaceHeading){
+	public Coords handleDisplacement(Game game, BattleUnit unit, int displaceHeading){
 		
 		Coords unitLocation = unit.getLocation()
 		Coords displacedLocation = getForwardCoords(game, unitLocation, displaceHeading)
@@ -1665,6 +1724,7 @@ class GameService {
 			}
 			
 			if(toHit <= 0) {
+				// TODO: if the target is destroyed, let it continue to be overkilled by remaining fire for less salvage
 				// If the weapon cannot hit, do not bother firing it
 				continue
 			}
@@ -1709,11 +1769,6 @@ class GameService {
 				else {
 					//log.info("Weapon "+weapon+" MISSED! Rolled: "+result+"/"+toHit)
 				}
-			}
-			
-			// TESTING ONLY
-			if(weapon.isCharge()) {
-				weaponHit = true
 			}
 			
 			if(weaponHit) {
@@ -2141,7 +2196,7 @@ class GameService {
 	/**
 	 * Does the piloting skill check for the unit based on the given modifiers, and if fails makes the unit fall
 	 */
-	public static def doPilotSkillCheck(Game game, BattleUnit unit, def modifiers) {
+	public def doPilotSkillCheck(Game game, BattleUnit unit, def modifiers) {
 		if(!unit instanceof BattleMech) {
 			return true
 		}
@@ -3112,21 +3167,6 @@ class GameService {
 		else{
 			return CombatStatus.UNIT_WALKING
 		}
-	}
-	
-	/**
-	 * Determines and returns a list of effects that affect the unit
-	 * @param game
-	 * @param unit
-	 * @return
-	 */
-	public static def getUnitCombatEffects(Game game, BattleUnit unit) {
-		def combatEffects = []
-		if(unit instanceof BattleMech) {
-			
-		}
-		
-		return combatEffects
 	}
 	
 	/**

@@ -95,6 +95,14 @@ class BattleUnit {
 	}
 	
 	/**
+	 * Returns true if the status of the unit is active
+	 * @return
+	 */
+	public boolean isActive() {
+		return status == STATUS_ACTIVE
+	}
+	
+	/**
 	 * Gets the x,y hex location of this unit as Coords
 	 * @return
 	 */

@@ -25,14 +25,19 @@ class UrlMappings {
 			}
 		}
 		
+		name playGame: "/play"{
+			controller = 'rogueMek'
+			action = 'index'
+		}
+		
 		name battleGame: "/battle"{
 			controller = 'game'
 			action = 'index'
 		}
 		
-		name playGame: "/play"{
-			controller = 'rogueMek'
-			action = 'index'
+		name debriefGame: "/debrief/$id"{
+			controller = 'game'
+			action = 'debrief'
 		}
 		
 		"/"(view:"/index")
