@@ -19,7 +19,7 @@
 		<g:message code="game.ownerUser.label" default="Owner User" />
 		
 	</label>
-	<g:select name="ownerUser" from="${roguemek.game.User.list()}" optionKey="id" value="${gameInstance?.ownerUser?.id}"/>
+	<g:select name="ownerUser" from="${roguemek.MekUser.list()}" optionKey="id" value="${gameInstance?.ownerUser?.id}"/>
 
 </div>
 

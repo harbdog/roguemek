@@ -89,6 +89,9 @@ function initGame(){
         options.async = true;
     });
 	
+	// prevent ajax caching
+	$.ajaxSetup({ cache: false });
+	
 	// Create the EaselJS stage
 	rootStage = new createjs.Stage("canvas");
 	canvas = rootStage.canvas;
@@ -198,6 +201,13 @@ function loadGameElements() {
 		    console.log( "Request Failed: " + err );
 	  })
 	  .done(function( data ) {
+		  
+		  if(data.gameState != null 
+				  && data.gameState == "O") {
+			  // The game is over already
+			  showGameOverDialog(data);
+			  return;
+		  }
 
 		  var manifest = [];
 		  var alreadyManifested = {};
@@ -965,6 +975,7 @@ function ping() {
  * @param data
  */
 function updateGameData(data) {
+
 	if(data.message) {
 		// display the message to the player
 		var t = new Date(data.time);
@@ -973,30 +984,8 @@ function updateGameData(data) {
 	
 	if(data.gameState != null 
 			&& data.gameState == "O") {
-		// the game is over, open a dialog with the message and button to go to debriefing URL
-		
-		// TODO: pause the stage
-		
-		// disable the browser accidental navigation protection
-		window.onbeforeunload = null;
-		
-		var gameOverDialog = $("<div>"+data.gameOverMessage+"<br/><br/><a href='"+data.gameOverURL+"'>"+"&gt; "+data.gameOverLabel+"</a></div>").dialog({
-	    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
-	    	title: data.gameOverHeader,
-	    	autoOpen: false,
-	    	modal: true,
-			show: {
-				effect: "fade",
-				duration: 1000
-			},
-			hide: {
-				effect: "explode",
-				duration: 500
-			}
-	    });
-		
-		gameOverDialog.dialog("open");
-		
+		// The game is over
+		showGameOverDialog(data);
 		return;
 	}
 	

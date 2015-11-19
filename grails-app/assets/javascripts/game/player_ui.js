@@ -880,6 +880,36 @@ function addMessageUpdate(message) {
 }
 
 /**
+ * Uses the data coming from the server to generate the game over dialog and message
+ * @param data
+ */
+function showGameOverDialog(data) {
+	// the game is over, open a dialog with the message and button to go to debriefing URL
+	
+	// TODO: pause the stage
+	
+	// disable the browser accidental navigation protection
+	window.onbeforeunload = null;
+	
+	var gameOverDialog = $("<div>"+data.gameOverMessage+"<br/><br/><a href='"+data.gameOverURL+"'>"+"&gt; "+data.gameOverLabel+"</a></div>").dialog({
+    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
+    	title: data.gameOverHeader,
+    	autoOpen: false,
+    	modal: true,
+		show: {
+			effect: "fade",
+			duration: 1000
+		},
+		hide: {
+			effect: "explode",
+			duration: 500
+		}
+    });
+	
+	gameOverDialog.dialog("open");
+}
+
+/**
  * switches the hex board between isometric and flat
  */
 function toggleIsometricDisplay() {

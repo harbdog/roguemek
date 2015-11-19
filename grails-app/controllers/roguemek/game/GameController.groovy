@@ -61,12 +61,19 @@ class GameController {
 	 * This action is only called when the client first loads the game and is initializing.
 	 * @render JSON object containing the game elements such as hex map and units
 	 */
-	@Transactional(readOnly = true)
 	def getGameElements() {
 		MekUser user = currentUser()
 		if(user == null) return
 		
 		Game g = Game.read(session.game)
+		
+		if(g.isOver()) {
+			// game has ended
+			def endGameData =  gameService.getEndGameData(g)
+			render endGameData as JSON
+			return
+		}
+		
 		HexMap b = g?.board
 		if(g == null || b == null) {
 			return

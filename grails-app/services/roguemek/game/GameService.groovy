@@ -87,32 +87,63 @@ class GameService {
 	 */
 	public def checkEndGameConditions(Game game) {
 		
-		def gameOver = false
+		def endGameData = null
+		def gameOver = game.isOver()
 		
 		// TODO: move this function to a new class dedicated to checking win conditions
 		
-		def unitsByUserMap = game.getUnitsByUser()
-		def numActiveUsers = 0
-		unitsByUserMap.each{ user, unitList ->
-			for(BattleUnit unit in unitList) {
-				if(unit.isActive()) {
-					numActiveUsers ++
-					break
+		if(gameOver) {
+			log.info("Game "+game.id+" is already over")
+		}
+		else {
+			def unitsByUserMap = game.getUnitsByUser()
+			def numActiveUsers = 0
+			unitsByUserMap.each{ user, unitList ->
+				for(BattleUnit unit in unitList) {
+					if(unit.isActive()) {
+						numActiveUsers ++
+						break
+					}
 				}
 			}
-		}
-		
-		if(numActiveUsers <= 1) {
-			log.info("Game "+game.id+" over due to "+numActiveUsers+" users with active units")
-			gameOver = true
+			
+			if(numActiveUsers <= 1) {
+				log.info("Game "+game.id+" over due to "+numActiveUsers+" users with active units")
+				gameOver = true
+			}
 		}
 		
 		if(gameOver) {
 			game.gameState = Game.GAME_OVER
 			game.save flush: true
+			
+			endGameData = getEndGameData(game)
 		}
 		
-		return (game.gameState == Game.GAME_OVER)
+		return endGameData
+	}
+	
+	/**
+	 * Gets the return data for the end of the game
+	 * @param game
+	 * @return
+	 */
+	public def getEndGameData(Game game) {
+		def gameOverHeader = messageSource.getMessage("game.over.debriefing.header", null, LocaleContextHolder.locale)
+		def gameOverMessage = messageSource.getMessage("game.over.debriefing", null, LocaleContextHolder.locale)
+		def gameOverLabel = messageSource.getMessage("game.over.debriefing.label", null, LocaleContextHolder.locale)
+		def gameOverURL = grailsLinkGenerator.link(action: 'debrief', id: game.id)
+		
+		def endGameData = [
+			game: game.id,
+			gameState: String.valueOf(game.gameState),
+			gameOverHeader: gameOverHeader,
+			gameOverMessage: gameOverMessage,
+			gameOverLabel: gameOverLabel,
+			gameOverURL: gameOverURL
+		]
+		
+		return endGameData
 	}
 	
 	/**
@@ -129,23 +160,10 @@ class GameService {
 		}
 		
 		// check for end-game conditions before continuing to the next turn
-		def endGameCheck = checkEndGameConditions(game)
-		if(endGameCheck) {
+		def endGameData = checkEndGameConditions(game)
+		if(endGameData != null) {
 			// game has ended
-			def gameOverHeader = messageSource.getMessage("game.over.debriefing.header", null, LocaleContextHolder.locale)
-			def gameOverMessage = messageSource.getMessage("game.over.debriefing", null, LocaleContextHolder.locale)
-			def gameOverLabel = messageSource.getMessage("game.over.debriefing.label", null, LocaleContextHolder.locale)
-			def gameOverURL = grailsLinkGenerator.link(action: 'debrief', id: game.id)
-			
-			def data = [
-				game: game.id,
-				gameState: String.valueOf(game.gameState),
-				gameOverHeader: gameOverHeader,
-				gameOverMessage: gameOverMessage,
-				gameOverLabel: gameOverLabel,
-				gameOverURL: gameOverURL
-			]
-			Date update = GameMessage.addMessageUpdate(game, "game.over", null, data)
+			Date update = GameMessage.addMessageUpdate(game, "game.over", null, endGameData)
 			return
 		}
 		
