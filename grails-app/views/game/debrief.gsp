@@ -20,36 +20,19 @@
 			</g:if>
 			<ol class="property-list game">
 			
-				<g:if test="${gameInstance?.gameState}">
-				<li class="fieldcontain">
-					<span id="gameState-label" class="property-label"><g:message code="game.gameState.label" default="Game State" /></span>
-					
-						<span class="property-value" aria-labelledby="gameState-label"><g:fieldValue bean="${gameInstance}" field="gameState"/></span>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${gameInstance?.pilots}">
-				<li class="fieldcontain">
-					<span id="pilots-label" class="property-label"><g:message code="game.pilots.label" default="Pilots" /></span>
-					
-						<g:each in="${gameInstance.pilots}" var="p">
-						<span class="property-value" aria-labelledby="pilots-label"><g:link controller="pilot" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></span>
-						</g:each>
-					
-				</li>
-				</g:if>
-				
-				<g:if test="${gameInstance?.units}">
-					<li class="fieldcontain">
-						<span id="units-label" class="property-label"><g:message code="game.units.label" default="Units" /></span>
-						
-							<g:each in="${gameInstance.units}" var="u">
-							<span class="property-value" aria-labelledby="units-label"><g:link controller="battleMech" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
-							</g:each>
-						
-					</li>
-				</g:if>
+				<g:each in="${gameInstance?.getUnitsByUser()}" var="entry">
+					<g:set var="user" value="${entry.key}" />
+                	<g:set var="unitList" value="${entry.value}" /> 
+                	
+                	<li class="fieldcontain">
+                		<span id="users-label" class="property-label">${user.callsign}</span>
+                		
+                		<g:each in="${unitList}" var="unit">
+                			<g:set var="pilot" value="${unit.pilot}" />
+                			<span class="property-value" aria-labelledby="users-label">${unit.getHealthPercentage().round()}% : <g:link controller="battleMech" action="show" id="${unit.id}">${unit?.encodeAsHTML()}</g:link> - <g:link controller="pilot" action="show" id="${pilot.id}">${pilot?.encodeAsHTML()}</g:link></span>
+                		</g:each>
+                	</li>
+                </g:each>
 			
 				<g:if test="${gameInstance?.startDate}">
 				<li class="fieldcontain">
@@ -62,7 +45,7 @@
 			
 				<g:if test="${gameInstance?.updateDate}">
 				<li class="fieldcontain">
-					<span id="updateDate-label" class="property-label"><g:message code="game.updateDate.label" default="Update Date" /></span>
+					<span id="updateDate-label" class="property-label"><g:message code="game.endDate.label" default="End Date" /></span>
 					
 						<span class="property-value" aria-labelledby="updateDate-label"><g:formatDate date="${gameInstance?.updateDate}" /></span>
 					

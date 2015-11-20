@@ -331,6 +331,38 @@ class BattleMech extends BattleUnit {
 		return weapons
 	}
 	
+	/**
+	 * Gets the average calculated health percentage of the unit based on its remaining armor/internals
+	 * @return Double value of overall health percentage
+	 */
+	@Override
+	public double getHealthPercentage() {
+		def percentage = 0
+		
+		if(mech != null && !this.isDestroyed()) {
+			def initialArmor = 0
+			def initialInternal = 0
+			
+			def currentArmor = 0
+			def currentInternal = 0
+			
+			for(def section in Mech.ALL_LOCATIONS) {
+				
+				initialArmor += mech.armor[section]
+				currentArmor += armor[section]
+				
+				if(section < internals.size()) {
+					initialInternal += mech.internals[section]
+					currentInternal += internals[section]
+				}
+			}
+			
+			percentage = ((currentArmor + currentInternal) / (initialArmor + initialInternal)) * 100
+		}
+		
+		return percentage
+	}
+	
 	@Override
 	public String toString() {
 		return mech?.name +" "+ mech?.chassis+"-"+mech?.variant

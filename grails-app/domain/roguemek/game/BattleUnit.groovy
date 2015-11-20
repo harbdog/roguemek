@@ -150,6 +150,14 @@ class BattleUnit {
 		return new BattleWeapon[0]
 	}
 	
+	/**
+	 * Gets the average calculated health percentage of the unit based on its remaining armor/internals/etc.
+	 * @return Double value of overall health percentage
+	 */
+	public double getHealthPercentage() {
+		return 0d
+	}
+	
 	@Override
 	public String toString() {
 		return "Unit piloted by "+pilot?.toString()
