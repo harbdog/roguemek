@@ -124,7 +124,7 @@ c.update = function() {
 		this.jump.y = this.forward.y - this.jump.height;
 	}
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.updateMoveActionPoints = function() {
@@ -191,7 +191,7 @@ c.drawCenterAsFireButton = function(drawAsFire) {
 	
 	this.center.drawCenterAsFireButton(drawAsFire, false);
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.drawButtonAsActive = function(controlType, active) {
@@ -221,7 +221,7 @@ c.drawButtonAsActive = function(controlType, active) {
 		control.drawButtonAsActive(active);
 	}
 	
-	this.doCache();
+	//this.doCache();
 	
 	return control;
 }

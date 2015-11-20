@@ -6,6 +6,7 @@
 //= require jquery-ui.min.js
 //= require jquery.form.js
 //= require createjs-2015.05.21.min.js
+//= require amplify-1.1.2.min.js
 //= require fullscreen-api.js
 //= require game/roguemek.js
 //= require_self

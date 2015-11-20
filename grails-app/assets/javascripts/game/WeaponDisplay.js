@@ -132,7 +132,7 @@ c.update = function() {
 	this.toHitLabel.text = toHitAsPercent;
 	this.toHitLabel.x = this.width - this.toHitLabel.getMeasuredWidth() - 5;
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.drawSelected = function() {
@@ -162,7 +162,7 @@ c.setSelected = function(selected) {
 	this.selected = selected;
 	this.drawSelected();
 	
-	this.doCache();
+	//this.doCache();
 }
 
 

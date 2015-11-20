@@ -65,8 +65,6 @@ function handleKeyPress(key) {
 	}
 	
 	if(weaponFired >= 0){
-
-		// TESTING: weapons fire, see console
 		if(isPlayerUnitTurn()) {
 			var weapon, index = 0;
 			for(var id in turnUnit.weapons) {
@@ -211,13 +209,37 @@ function handleKeyPress(key) {
 			}
 		}
 	}
+	else if(key == "e"){
+		// target previous enemy unit
+		cycleTarget(false);
+	}
+	else if(key == "r"){
+		// target next enemy unit
+		cycleTarget(true);
+	}
 	else if(key == "`"){
 		// toggle isometric view
 		toggleIsometricDisplay();
 	}
 	else if(key == "home"){
 		// enter fullscreen mode
-		goFullScreen();
+		toggleFullScreen();
+	}
+	else if(key == "-"){
+		// zoom out board
+		handleZoomOut();
+	}
+	else if(key == "="){
+		// zoom in board
+		handleZoomIn();
+	}
+	else if(key == "["){
+		// scale down UI
+		handleScaleDown();
+	}
+	else if(key == "]"){
+		// scale up UI
+		handleScaleUp();
 	}
 	else {
 		console.log("Unbound key pressed: " + key);
@@ -411,7 +433,7 @@ function handleComplete(event) {
     var inButton = new createjs.Container();
     inButton.x = 0;
     inButton.y = 0;
-	rootStage.addChild(inButton);
+    overlay.addChild(inButton);
 	
 	var inBackground = new createjs.Shape();
 	inBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
@@ -429,7 +451,7 @@ function handleComplete(event) {
 	var outButton = new createjs.Container();
 	outButton.x = 0;
 	outButton.y = 25;
-	rootStage.addChild(outButton);
+	overlay.addChild(outButton);
 	
 	var outBackground = new createjs.Shape();
 	outBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
@@ -450,7 +472,7 @@ function handleComplete(event) {
 		var fsButton = new createjs.Container();
 		fsButton.x = 0;
 		fsButton.y = 50;
-		rootStage.addChild(fsButton);
+		overlay.addChild(fsButton);
 		
 		var fsBackground = new createjs.Shape();
 		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
@@ -594,19 +616,7 @@ function handleUnitClick(event) {
 	console.log("clicked "+targetUnitDisplay); 
 	
 	if(isPlayerUnitTurn() && !isPlayerUnit(targetUnit)) {
-		var prevTargetUnit = getUnitTarget(turnUnit);
-		setUnitTarget(turnUnit, targetUnit);
-		
-		setPlayerTarget(targetUnit);
-		
-		// show the unit indicator on the previous target, hide on the new target
-		if(prevTargetUnit != null && prevTargetUnit.getUnitDisplay()!= null
-				&& prevTargetUnit.id != targetUnit.id) {
-			prevTargetUnit.getUnitDisplay().setUnitIndicatorVisible(true);
-		}
-		targetUnitDisplay.setUnitIndicatorVisible(false);
-		
-		target(targetUnit);
+		handleTargetChange(targetUnit);
 	}
 }
 
@@ -759,60 +769,31 @@ function handleMouseWheel(evt) {
 	var mouseX = evt.clientX - stage.x;
 	var mouseY = evt.clientY - stage.y;
 	
-	var oldScale = stage.scaleX;
-	var newScale = stage.scaleX + (direction * 0.1);
-	
-	if(newScale >= 0.1 && newScale <= 5) {
-		console.log("scale="+newScale);
-		
-		if(doAnimate) {
-			var aTime = 250;
-			createjs.Tween.removeTweens(stage);
-			createjs.Tween.get(stage)
-					.to({scaleX: newScale, scaleY: newScale}, aTime, createjs.Ease.quadOut)
-					.call(function() {
-						update = true;
-						
-						// Keep the board from going off the window too much
-					    keepBoardInWindow();
-						
-						// update visible hexes
-					    updateHexMapDisplay();
-					})
-					.addEventListener("change", function() {
-						update = true;
-						
-						// Keep the board from going off the window too much
-					    keepBoardInWindow();
-						
-						// update visible hexes
-					    updateHexMapDisplay();
-					});
-		}
-		else{
-			stage.scaleX = newScale;
-			stage.scaleY = newScale;
-			
-			// Keep the board from going off the window too much
-		    keepBoardInWindow();
-			
-			// update visible hexes
-		    updateHexMapDisplay();
-		    
-		    update = true;
-		}
-	}
+	handleZoomBoard(direction * 0.1);
 }
 
 function handleZoomIn() {
+	handleZoomBoard(0.2);
+}
+function handleZoomOut() {
+	handleZoomBoard(-0.1);
+}
+/**
+ * Zooms the board in or out based on the zoom value given
+ * @param zoom
+ */
+function handleZoomBoard(zoom) {
 	var oldScale = stage.scaleX;
-	var newScale = stage.scaleX + 0.2;
+	var newScale = stage.scaleX + zoom;
 	
 	// TODO: allow animations to be turned off
 	var doAnimate = true;
 	
 	if(newScale > 0 && newScale <= 5) {
-		console.log("scale="+newScale);
+		console.log("board scale="+newScale);
+		
+		// put the new scale in local storage
+		amplify.store("BOARD_SCALE", newScale);
 		
 		if(doAnimate) {
 			var aTime = 250;
@@ -853,53 +834,109 @@ function handleZoomIn() {
 	}
 }
 
-function handleZoomOut() {
-	var oldScale = stage.scaleX;
-	var newScale = stage.scaleX - 0.1;
+function handleScaleUp() {
+	handleScaleOverlay(0.05);
+}
+function handleScaleDown() {
+	handleScaleOverlay(-0.05);
+}
+/**
+ * Scales the UI overlay up or down based on the scale value given
+ * @param scale
+ */
+function handleScaleOverlay(scale) {
+	var oldScale = overlay.scaleX;
+	var newScale = overlay.scaleX + scale;
 	
-	// TODO: allow animations to be turned off
-	var doAnimate = true;
-	
-	if(newScale > 0 && newScale <= 5) {
-		console.log("scale="+newScale);
+	if(newScale > 0 && newScale <= 3) {
+		console.log("overlay scale="+newScale);
 		
-		if(doAnimate) {
-			var aTime = 250;
-			createjs.Tween.removeTweens(stage);
-			createjs.Tween.get(stage)
-					.to({scaleX: newScale, scaleY: newScale}, aTime, createjs.Ease.quadOut)
-					.call(function() {
-						update = true;
-						
-						// Keep the board from going off the window too much
-					    keepBoardInWindow();
-						
-						// update visible hexes
-					    updateHexMapDisplay();
-					})
-					.addEventListener("change", function() {
-						update = true;
-						
-						// Keep the board from going off the window too much
-					    keepBoardInWindow();
-						
-						// update visible hexes
-					    updateHexMapDisplay();
-					});
+		// put the new scale in local storage
+		amplify.store("UI_SCALE", newScale);
+		
+		overlay.scaleX = newScale;
+		overlay.scaleY = newScale;
+		
+		updatePlayerUI();
+	    
+	    update = true;
+	}
+}
+
+/**
+ * Cycles to the next active target forward or backward 
+ * @param cycleForward
+ */
+function cycleTarget(cycleForward) {
+	if(isPlayerUnitTurn()) {
+		var targetUnit = null;
+		var prevTargetUnit = getUnitTarget(turnUnit);
+		
+		var unitList = [];
+		
+		var index = 0;
+		var targetIndex = -1;
+		$.each(units, function(id, thisUnit) {
+			if(prevTargetUnit != null 
+					&& id == prevTargetUnit.id) {
+				targetIndex = index;
+			}
+			
+			unitList.push(thisUnit);
+			index ++;
+		});
+		
+		// start looping through the array start
+		index = (cycleForward) ? targetIndex + 1 : targetIndex - 1;
+		while(targetUnit == null && index != targetIndex) {
+			if(index >= unitList.length) {
+				index = 0;
+			}
+			else if(index < 0) {
+				index = unitList.length - 1;
+			}
+			
+			var thisUnit = unitList[index];
+			
+			if((prevTargetUnit != null && thisUnit.id == prevTargetUnit.id)
+					|| isPlayerUnit(thisUnit) 
+					|| thisUnit.isDestroyed()) {
+				// do not consider for targeting
+			}
+			else {
+				// target this unit!
+				targetUnit = thisUnit;
+				break;
+			}
+			
+			if(cycleForward) index ++;
+			else index --;
 		}
-		else{
-			stage.scaleX = newScale;
-			stage.scaleY = newScale;
-			
-			// Keep the board from going off the window too much
-		    keepBoardInWindow();
-			
-			// update visible hexes
-		    updateHexMapDisplay();
-		    
-		    update = true;
+		
+		if(targetUnit != null) {
+			handleTargetChange(targetUnit);
 		}
 	}
+}
+
+/**
+ * Handles changing the target
+ * @param targetUnit
+ */
+function handleTargetChange(targetUnit) {
+	var prevTargetUnit = getUnitTarget(turnUnit);
+	setUnitTarget(turnUnit, targetUnit);
+	
+	setPlayerTarget(targetUnit);
+	
+	// show the unit indicator on the previous target, hide on the new target
+	if(prevTargetUnit != null && prevTargetUnit.getUnitDisplay()!= null
+			&& prevTargetUnit.id != targetUnit.id) {
+		prevTargetUnit.getUnitDisplay().setUnitIndicatorVisible(true);
+	}
+	targetUnit.getUnitDisplay().setUnitIndicatorVisible(false);
+	
+	target(targetUnit);
 }
 
 function keepBoardInWindow() {

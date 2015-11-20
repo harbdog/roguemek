@@ -79,7 +79,7 @@ c.update = function() {
 		if(totalWeapons > MAX_WEAPON_ROWS) {
 			// only allow >1 columns if the canvas width can fit it with the rest of the UI
 			var maxWeaponColumns = 
-				Math.floor((canvas.width - unitDisplayBounds.x - unitDisplayBounds.width - firstTargetDisplayWidth) 
+				Math.floor((canvas.width*(1/overlay.scaleX) - unitDisplayBounds.x - unitDisplayBounds.width - firstTargetDisplayWidth) 
 								/ firstWeaponDisplay.width);
 			
 			weaponColumns = Math.ceil(totalWeapons / MAX_WEAPON_ROWS);
@@ -117,7 +117,7 @@ c.update = function() {
 		this.addChildAt(this.background, 0);
 	}
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.setSelectedWeapons = function(weaponsArray) {
@@ -128,7 +128,7 @@ c.setSelectedWeapons = function(weaponsArray) {
 		unitWeaponDisplay.setSelected(selected);
 	});
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.doCache = function() {

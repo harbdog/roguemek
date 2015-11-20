@@ -84,7 +84,7 @@ c.setSectionPercent = function(section, index, percent, doAnimate) {
 	section.setDisplayedPercent(index, percent, doAnimate);
 	
 	if(doCache) {
-		this.doCache();
+		//this.doCache();
 	}
 }
 
@@ -97,7 +97,7 @@ c.update = function() {
 			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
 			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.doCache = function() {

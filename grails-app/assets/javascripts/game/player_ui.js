@@ -184,8 +184,8 @@ function updateOtherUnitDisplay() {
 			// fix x, y position of the target unit display
 			var thisDisplayBounds = targetDisplayBounds[unitId];
 			
-			thisDisplayBounds.x = canvas.width - thisDisplayBounds.width;
-			thisDisplayBounds.y = canvas.height - thisDisplayBounds.height;
+			thisDisplayBounds.x = canvas.width*(1/overlay.scaleX) - thisDisplayBounds.width;
+			thisDisplayBounds.y = canvas.height*(1/overlay.scaleY) - thisDisplayBounds.height;
 			
 			unitGroupDisplay.x = thisDisplayBounds.x;
 			unitGroupDisplay.y = thisDisplayBounds.y;
@@ -308,13 +308,13 @@ function updatePlayerUnitDisplay() {
 		 var thisUnit = units[unitId];
 		 if(isPlayerUnit(thisUnit)) {
 			 // fix y position of unit display
-			 unitDisplayBounds.y = canvas.height - unitDisplayBounds.height
+			 unitDisplayBounds.y = canvas.height*(1/overlay.scaleY) - unitDisplayBounds.height;
 			 unitGroupDisplay.y = unitDisplayBounds.y;
 			 
 			 // update y position and size of weapons display 
 			 var unitWeaponsDisplay = weaponsDisplays[unitId];
 			 unitWeaponsDisplay.update();
-			 unitWeaponsDisplay.y = canvas.height - unitWeaponsDisplay.height;
+			 unitWeaponsDisplay.y = canvas.height*(1/overlay.scaleY) - unitWeaponsDisplay.height;
 		 }
 	 });
 }
@@ -526,7 +526,7 @@ function updatePlayerUnitListDisplay() {
 		if(isPlayerUnit(listUnit.unit)) {
 			// update the position in case the resize was called
 			listUnit.x = 1;
-			listUnit.y = canvas.height - (index+1) * listUnit.getDisplayHeight();
+			listUnit.y = canvas.height*(1/overlay.scaleY) - (index+1) * listUnit.getDisplayHeight();
 			
 			// update the selected status in case its the unit's turn
 			listUnit.setSelected(isTurnUnit(listUnit.unit));

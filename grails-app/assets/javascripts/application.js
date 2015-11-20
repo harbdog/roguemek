@@ -5,7 +5,6 @@
 //= require jquery
 //= require jquery-ui.min.js
 //= require jquery.form.js
-//= require createjs-2013.12.12.min.js
 //= require_self
 
 if (typeof jQuery !== 'undefined') {

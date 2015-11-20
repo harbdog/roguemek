@@ -44,8 +44,8 @@ c.makeTextArea = function(id) {
 }
 
 c.update = function() {
-	this.width = canvas.width - 25;
-	this.x = canvas.width - this.width;
+	this.width = canvas.width*(1/overlay.scaleY) - 25;
+	this.x = canvas.width*(1/overlay.scaleY) - this.width;
 	this.y = 0;
 	
 	this.background.graphics.clear();

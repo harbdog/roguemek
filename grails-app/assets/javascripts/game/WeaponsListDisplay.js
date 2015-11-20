@@ -98,7 +98,7 @@ c.update = function() {
 	
 	this.addChildAt(this.background, 0);
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.doCache = function() {

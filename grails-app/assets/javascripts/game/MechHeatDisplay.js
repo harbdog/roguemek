@@ -8,6 +8,8 @@ var DEFAULT_WIDTH = 300;
 var DEFAULT_HEIGHT = 50;
 var BORDER_WIDTH = 3;
 
+var MAX_HEAT = 40;
+
 function MechHeatDisplay() {
 	this.Container_constructor();
 	
@@ -85,7 +87,7 @@ c.update = function() {
 			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
 			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
@@ -121,11 +123,20 @@ c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 	else if(heatGen > heatDiss) {
 		heatResultColor = "#FF0000";
 	}
+	
+	var heatResult = (heat +heatGen -heatDiss);
+	if(heatResult < 0) {
+		heatResult = 0;
+	}
+	else if(heatResult > MAX_HEAT) {
+		heatResult = MAX_HEAT;
+	}
+	
 	this.heatResultLine.graphics.clear();
 	this.heatResultLine.graphics.beginFill(heatResultColor)
-			.drawRect(0, 0, this.width * ((heat +heatGen -heatDiss) / 40), this.height);
+			.drawRect(0, 0, this.width * (heatResult / MAX_HEAT), this.height);
 	
-	this.doCache();
+	//this.doCache();
 }
 
 c.doCache = function() {
