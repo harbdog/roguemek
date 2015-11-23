@@ -801,7 +801,7 @@ function handleZoomBoard(newScale) {
 	// TODO: allow animations to be turned off
 	var doAnimate = true;
 	
-	if(newScale > 0 && newScale <= 5) {
+	if(newScale > 0 && newScale <= 4) {
 		console.log("board scale="+newScale);
 		
 		// put the new scale in local storage
@@ -847,19 +847,24 @@ function handleZoomBoard(newScale) {
 }
 
 function handleScaleUp() {
-	handleScaleOverlay(0.05);
+	var newScale = overlay.scaleX + 0.05;
+	handleScaleOverlay(newScale);
+	
+	// update in settings in case it is showing
+	settingsDisplay.update();
 }
 function handleScaleDown() {
-	handleScaleOverlay(-0.05);
+	var newScale = overlay.scaleX - 0.05;
+	handleScaleOverlay(newScale);
+	
+	// update in settings in case it is showing
+	settingsDisplay.update();
 }
 /**
  * Scales the UI overlay up or down based on the scale value given
  * @param scale
  */
-function handleScaleOverlay(scale) {
-	var oldScale = overlay.scaleX;
-	var newScale = overlay.scaleX + scale;
-	
+function handleScaleOverlay(newScale) {
 	if(newScale > 0 && newScale <= 3) {
 		console.log("overlay scale="+newScale);
 		
