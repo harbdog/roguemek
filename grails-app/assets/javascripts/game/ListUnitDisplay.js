@@ -14,6 +14,7 @@ function ListUnitDisplay(unitDisplay) {
 	this.image = unitDisplay.getImage();
 	
 	this.background = null;
+	this.foreground = null;
 	this.armorBar = null;
 	this.scale = 0.5;
 }
@@ -25,8 +26,12 @@ c.init = function() {
 	
 	// create background shape with color
 	this.background = new createjs.Shape();
-	this.background.alpha = 0.75;
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	this.addChild(this.background);
+	
+	// create foreground shape for the outline
+	this.foreground = new createjs.Shape();
+	this.addChild(this.foreground);
 	
 	// load the unit image as a Bitmap
 	var unitImg = new createjs.Bitmap(this.image);
@@ -103,13 +108,17 @@ c.updateArmorBar = function(doAnimate) {
 
 c.setSelected = function(selected, isOtherUnit) {
 	this.uncache();
+	this.foreground.graphics.clear();
 	this.background.graphics.clear();
+	
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
 	// TODO: allow customization of the player/enemy unit indicator color
 	if(selected && isOtherUnit){
 		this.background.graphics.beginFill("#404040")
 				.drawRect(0, 0, this.image.width, this.image.height)
-				.endFill().setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#FF0000")
+				.endFill();
+		this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#FF0000")
 				.moveTo(0, this.image.height)
 				.lineTo(0, 0)
 				.lineTo(this.image.width, 0)
@@ -118,7 +127,8 @@ c.setSelected = function(selected, isOtherUnit) {
 	else if(selected) {
 		this.background.graphics.beginFill("#404040")
 				.drawRect(0, 0, this.image.width, this.image.height)
-				.endFill().setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#3399FF")
+				.endFill();
+		this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#3399FF")
 				.moveTo(0, this.image.height)
 				.lineTo(0, 0)
 				.lineTo(this.image.width, 0)

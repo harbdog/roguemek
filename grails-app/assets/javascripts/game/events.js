@@ -780,14 +780,14 @@ function handleMouseWheel(evt) {
 }
 
 function handleZoomIn() {
-	var newScale = stage.scaleX + 0.2;
+	var newScale = Settings.get(Settings.BOARD_SCALE) + 0.2;
 	handleZoomBoard(newScale);
 	
 	// update in settings in case it is showing
 	settingsDisplay.update();
 }
 function handleZoomOut() {
-	var newScale = stage.scaleX - 0.1;
+	var newScale = Settings.get(Settings.BOARD_SCALE) - 0.1;
 	handleZoomBoard(newScale);
 	
 	// update in settings in case it is showing
@@ -805,7 +805,7 @@ function handleZoomBoard(newScale) {
 		console.log("board scale="+newScale);
 		
 		// put the new scale in local storage
-		amplify.store("BOARD_SCALE", newScale);
+		Settings.set(Settings.BOARD_SCALE, newScale);
 		
 		if(doAnimate) {
 			var aTime = 250;
@@ -847,14 +847,14 @@ function handleZoomBoard(newScale) {
 }
 
 function handleScaleUp() {
-	var newScale = overlay.scaleX + 0.05;
+	var newScale = Settings.get(Settings.UI_SCALE) + 0.05;
 	handleScaleOverlay(newScale);
 	
 	// update in settings in case it is showing
 	settingsDisplay.update();
 }
 function handleScaleDown() {
-	var newScale = overlay.scaleX - 0.05;
+	var newScale = Settings.get(Settings.UI_SCALE) - 0.05;
 	handleScaleOverlay(newScale);
 	
 	// update in settings in case it is showing
@@ -869,7 +869,7 @@ function handleScaleOverlay(newScale) {
 		console.log("overlay scale="+newScale);
 		
 		// put the new scale in local storage
-		amplify.store("UI_SCALE", newScale);
+		Settings.set(Settings.UI_SCALE, newScale);
 		
 		overlay.scaleX = newScale;
 		overlay.scaleY = newScale;
@@ -877,6 +877,24 @@ function handleScaleOverlay(newScale) {
 		updatePlayerUI();
 	    
 	    update = true;
+	}
+}
+
+/**
+ * Updates the UI overlay components' background opacity
+ * @param opacity
+ */
+function handleUITransparency(opacity) {
+	if(opacity >= 0 && opacity <= 1) {
+		console.log("ui opacity="+opacity);
+		
+		// put the new scale in local storage
+		Settings.set(Settings.UI_OPACITY, opacity);
+		
+		// update any UI which contains a background that can change opacity
+		updatePlayerUI();
+		
+		update = true;
 	}
 }
 

@@ -29,7 +29,7 @@ var c = createjs.extend(MechHeatDisplay, createjs.Container);
 
 c.init = function() {
 	this.background = new createjs.Shape();
-	this.background.alpha = 0.75;
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	this.addChild(this.background);
 	
 	// TODO: allow custom UI colors
@@ -82,6 +82,8 @@ c.update = function() {
 	this.uncache();
 	this.background.graphics.clear();
 	
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
+	
 	this.background.graphics.beginFill("#404040")
 			.drawRect(0, 0, this.width, this.height)
 			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
@@ -110,7 +112,7 @@ c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 	this.heatGenDissLabel.x = this.staticGenDissLabel.x + this.staticGenDissLabel.getMeasuredWidth()/2 -this.heatGenDissLabel.getMeasuredWidth()/2 ;
 	
 	// update the heat bar and its mask
-	this.staticHeatBar.alpha = 0.5 + 0.5 * heat/40;
+	this.staticHeatBar.alpha = 0.75 + 0.25 * heat/40;
 	
 	this.heatMask.graphics.clear();
 	this.heatMask.graphics.drawRect(0, 0, this.width * (heat / 40), this.height);

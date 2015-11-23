@@ -89,6 +89,7 @@ function updatePlayerUI() {
 	messagingDisplay.update();
 	
 	updatePlayerUnitListDisplay();
+	updateOtherUnitListDisplay();
 	
 	updatePlayerUnitDisplay();
 	updateOtherUnitDisplay();
@@ -192,6 +193,15 @@ function updateOtherUnitDisplay() {
 			
 			unitGroupDisplay.x = thisDisplayBounds.x;
 			unitGroupDisplay.y = thisDisplayBounds.y;
+			
+			var unitArmorDisplay = armorDisplays[unitId];
+			unitArmorDisplay.update();
+			
+			var unitWeaponsDisplay = weaponsListDisplay[unitId];
+			unitWeaponsDisplay.update();
+			
+			var unitInfoDisplay = infoDisplays[unitId];
+			unitInfoDisplay.update();
 		}
 	});
 }
@@ -318,6 +328,15 @@ function updatePlayerUnitDisplay() {
 			 var unitWeaponsDisplay = weaponsDisplays[unitId];
 			 unitWeaponsDisplay.update();
 			 unitWeaponsDisplay.y = canvas.height*(1/overlay.scaleY) - unitWeaponsDisplay.height;
+			 
+			 var unitArmorDisplay = armorDisplays[unitId];
+			 unitArmorDisplay.update();
+			
+			 var unitHeatDisplay = heatDisplays[unitId];
+			 unitHeatDisplay.update();
+			 
+			 var unitInfoDisplay = infoDisplays[unitId];
+			 unitInfoDisplay.update();
 		 }
 	 });
 }
@@ -533,6 +552,20 @@ function updatePlayerUnitListDisplay() {
 			
 			// update the selected status in case its the unit's turn
 			listUnit.setSelected(isTurnUnit(listUnit.unit));
+		}
+	});
+}
+
+/**
+ * Updates the other units' display list
+ */
+function updateOtherUnitListDisplay() {
+	if(unitListDisplayArray == null) return;
+	
+	$.each(unitListDisplayArray, function(index, listUnit) {
+		if(!isPlayerUnit(listUnit.unit)) {
+			// update graphics of the display
+			listUnit.setSelected(true, true);
 		}
 	});
 }

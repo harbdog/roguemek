@@ -30,7 +30,7 @@ MechInfoDisplay.STATUS_JUMPING = "JUMPING";
 
 c.init = function() {
 	this.background = new createjs.Shape();
-	this.background.alpha = 0.75;
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	this.addChild(this.background);
 	
 	// TODO: allow custom UI colors
@@ -75,6 +75,8 @@ c.init = function() {
 c.update = function() {
 	this.uncache();
 	this.background.graphics.clear();
+	
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
 	this.background.graphics.beginFill("#404040")
 			.drawRect(0, 0, this.width, this.height)

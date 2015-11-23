@@ -20,7 +20,7 @@ var c = createjs.extend(MechArmorDisplay, createjs.Container);
 
 c.init = function() {
 	this.background = new createjs.Shape();
-	this.background.alpha = 0.75;
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	this.addChild(this.background);
 	
 	this.SECTION_WIDTH = this.width / 22;
@@ -91,6 +91,8 @@ c.setSectionPercent = function(section, index, percent, doAnimate) {
 c.update = function() {
 	this.uncache();
 	this.background.graphics.clear();
+	
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
 	this.background.graphics.beginFill("#404040")
 			.drawRect(0, 0, this.width, this.height)

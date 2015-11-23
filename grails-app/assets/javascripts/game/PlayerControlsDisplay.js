@@ -101,27 +101,33 @@ c.update = function() {
 	// position the backward button at the bottom center
 	this.backward.x = (this.width - this.backward.width) / 2;
 	this.backward.y = this.height - this.backward.height;
+	this.backward.update();
 	
 	// position the left button at the left above the backward button
 	this.left.x = 0;
 	this.left.y = -10+ this.backward.y - this.left.height;
+	this.left.update();
 	
 	// position the right button at the right above the backward button
 	this.right.x = this.width - this.right.width;
 	this.right.y = -10+ this.backward.y - this.right.height;
+	this.right.update();
 	
 	// position the center button above the backward button
 	this.center.x = (this.width - this.center.width) / 2;
 	this.center.y = -10+ this.backward.y - this.center.height;
+	this.center.update();
 	
 	// position the forward button above the center button
 	this.forward.x = (this.width - this.forward.width) / 2;
 	this.forward.y = -10+ this.center.y - this.forward.height;
+	this.forward.update();
 	
 	if(this.jump != null) {
 		// position the jump button above the forward button
 		this.jump.x = (this.width - this.jump.width) / 2;
 		this.jump.y = this.forward.y - this.jump.height;
+		this.jump.update();
 	}
 	
 	//this.doCache();

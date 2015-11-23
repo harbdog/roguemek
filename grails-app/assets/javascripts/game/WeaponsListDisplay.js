@@ -25,7 +25,7 @@ var c = createjs.extend(WeaponsListDisplay, createjs.Container);
 
 c.init = function() {
 	this.background = new createjs.Shape();
-	this.background.alpha = 0.75;
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	this.addChild(this.background);
 	
 	// TODO: allow custom UI colors
@@ -52,6 +52,8 @@ c.update = function() {
 	this.removeAllChildren();
 	this.uncache();
 	this.background.graphics.clear();
+	
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
 	var totalWeapons = this.weapons.length;
 	

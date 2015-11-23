@@ -92,6 +92,9 @@ function initGame(){
 	// prevent ajax caching
 	$.ajaxSetup({ cache: false });
 	
+	// load default or stored settings
+	Settings.init();
+	
 	// Create the EaselJS stage
 	rootStage = new createjs.Stage("canvas");
 	canvas = rootStage.canvas;

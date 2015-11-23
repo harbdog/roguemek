@@ -23,7 +23,7 @@ var c = createjs.extend(MechWeaponsDisplay, createjs.Container);
 
 c.init = function() {
 	this.background = new createjs.Shape();
-	this.background.alpha = 0.75;
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
 	// TODO: allow custom UI colors
 	var weaponsArray = this.weapons;
@@ -59,6 +59,8 @@ c.update = function() {
 	this.removeAllChildren();
 	this.uncache();
 	this.background.graphics.clear();
+	
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
 	// determine positions based on number of weapons
 	var totalWeapons = this.weapons.length;

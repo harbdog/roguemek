@@ -32,7 +32,8 @@ s.init = function() {
 		}
     });
 	
-	// create the board scale setting
+	////////////////////////////////////
+	// create the board scale setting //
 	var boardScaleDiv = $("<div>", {id: "boardScaleDiv"});
 	settingsDiv.append(boardScaleDiv);
 	
@@ -48,7 +49,7 @@ s.init = function() {
 	boardScaleDiv.append(this.boardScaleSlider);
 	
 	this.boardScaleSlider.slider({
-		value: 1.0,
+		value: Settings.get(Settings.BOARD_SCALE),
 	    min: 0.1,
 	    max: 4.0,
 	    step: 0.1,
@@ -62,7 +63,8 @@ s.init = function() {
 	});
 	boardScaleValue.text(this.boardScaleSlider.slider("value"));
 	
-	// create the UI scale setting
+	/////////////////////////////////
+	// create the UI scale setting //
 	var uiScaleDiv = $("<div>", {id: "uiScaleDiv"});
 	settingsDiv.append(uiScaleDiv);
 	
@@ -78,7 +80,7 @@ s.init = function() {
 	uiScaleDiv.append(this.uiScaleSlider);
 	
 	this.uiScaleSlider.slider({
-		value: 1.0,
+		value: Settings.get(Settings.UI_SCALE),
 	    min: 0.1,
 	    max: 3.0,
 	    step: 0.05,
@@ -87,17 +89,48 @@ s.init = function() {
 	    },
 	    slide: function(event, ui) {
 	    	uiScaleValue.text(ui.value);
-	    	handleScaleOverlay(ui.value)
+	    	handleScaleOverlay(ui.value);
 	    }
 	});
 	uiScaleValue.text(this.uiScaleSlider.slider("value"));
+	
+	///////////////////////////////////////////////////
+	// create the UI background transparency setting //
+	var bgTransDiv = $("<div>", {id: "bgTransDiv"});
+	settingsDiv.append(bgTransDiv);
+	
+	var bgTransLabel = $("<span>", {id: "bgTransLabel", class: "property-heading"});
+	bgTransLabel.text("UI Opacity");
+	bgTransDiv.append(bgTransLabel);
+	
+	var bgTransValue = $("<span>", {id: "bgTransValue", class: "property-value"});
+	bgTransValue.css("float", "right");
+	bgTransDiv.append(bgTransValue);
+	
+	this.bgTransSlider = $("<div>", {id: "bgTransSlider", class: "property-value"});
+	bgTransDiv.append(this.bgTransSlider);
+	
+	this.bgTransSlider.slider({
+		value: Settings.get(Settings.UI_OPACITY),
+	    min: 0,
+	    max: 1,
+	    step: 0.05,
+	    change: function(event, ui) {
+	    	bgTransValue.text(ui.value);
+	    },
+	    slide: function(event, ui) {
+	    	bgTransValue.text(ui.value);
+	    	handleUITransparency(ui.value)
+	    }
+	});
+	bgTransValue.text(this.bgTransSlider.slider("value"));
 }
 
 s.update = function() {
 	// update any values that need to be updated between showing settings
 	// such as zoom/scale that can be adjusted without using the settings menu
-	this.boardScaleSlider.slider("option", "value", amplify.store("BOARD_SCALE"));
-	this.uiScaleSlider.slider("option", "value", amplify.store("UI_SCALE"));
+	this.boardScaleSlider.slider("option", "value", Settings.get(Settings.BOARD_SCALE));
+	this.uiScaleSlider.slider("option", "value", Settings.get(Settings.UI_SCALE));
 }
 
 s.show = function() {

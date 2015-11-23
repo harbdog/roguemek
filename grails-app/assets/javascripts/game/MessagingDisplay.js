@@ -21,7 +21,7 @@ var c = createjs.extend(MessagingDisplay, createjs.Container);
 
 c.init = function() {
 	this.background = new createjs.Shape();
-	this.background.alpha = 0.75;
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	this.addChild(this.background);
 	
 	this.messagingElement = this.makeTextArea("messagingArea");
@@ -51,6 +51,7 @@ c.update = function() {
 	this.y = 0;
 	
 	this.background.graphics.clear();
+	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	this.background.graphics.beginFill("#404040")
 			.drawRect(0, 0, this.width, this.height);
 	
