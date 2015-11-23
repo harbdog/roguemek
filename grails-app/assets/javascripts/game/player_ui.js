@@ -35,6 +35,7 @@ var rootStage, stage, overlay, canvas;
 var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray;
 var fpsDisplay, pingDisplay, dialogDisplay, dialogLoading;
 
+var settingsDisplay;
 var messagingDisplay, floatingMessages;
 var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;
 
@@ -47,9 +48,11 @@ var activeControl, unitControls, targetBracket, targetLine;
 
 //initialize canvas based UI overlay
 function initPlayerUI() {
+	// create the settings menu
+	settingsDisplay = new SettingsDisplay();
+	
 	// create the messaging area
 	messagingDisplay = new MessagingDisplay();
-	messagingDisplay.init();
 	overlay.addChild(messagingDisplay);
 	
 	// stores any active floating messages

@@ -14,6 +14,8 @@ function MessagingDisplay() {
 	
 	this.background = null;
 	this.messagingElement = null;
+	
+	this.init();
 }
 var c = createjs.extend(MessagingDisplay, createjs.Container);
 

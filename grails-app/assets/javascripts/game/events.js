@@ -241,6 +241,10 @@ function handleKeyPress(key) {
 		// scale up UI
 		handleScaleUp();
 	}
+	else if(key == "?"){
+		// show the settings dialog
+		settingsDisplay.show();
+	}
 	else {
 		console.log("Unbound key pressed: " + key);
 	}
@@ -769,23 +773,31 @@ function handleMouseWheel(evt) {
 	var mouseX = evt.clientX - stage.x;
 	var mouseY = evt.clientY - stage.y;
 	
-	handleZoomBoard(direction * 0.1);
+	handleZoomBoard(stage.scaleX + (direction * 0.1));
+
+	// update in settings in case it is showing
+	settingsDisplay.update();
 }
 
 function handleZoomIn() {
-	handleZoomBoard(0.2);
+	var newScale = stage.scaleX + 0.2;
+	handleZoomBoard(newScale);
+	
+	// update in settings in case it is showing
+	settingsDisplay.update();
 }
 function handleZoomOut() {
-	handleZoomBoard(-0.1);
+	var newScale = stage.scaleX - 0.1;
+	handleZoomBoard(newScale);
+	
+	// update in settings in case it is showing
+	settingsDisplay.update();
 }
 /**
  * Zooms the board in or out based on the zoom value given
  * @param zoom
  */
-function handleZoomBoard(zoom) {
-	var oldScale = stage.scaleX;
-	var newScale = stage.scaleX + zoom;
-	
+function handleZoomBoard(newScale) {
 	// TODO: allow animations to be turned off
 	var doAnimate = true;
 	

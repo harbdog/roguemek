@@ -41,17 +41,20 @@ c.update = function() {
 	this.drawIsometric();
 	this.drawLevel();
 	
-	// cache the object
-	if(useIsometric && this.getHex() != null) {
-		if(this.getHex().getElevation() >= 0) {
-			this.cache(0, 0, hexWidth, hexHeight + (elevationHeight * this.getHex().getElevation()));
+	// TODO: cache the object based on settings, since caching makes text blurry
+	var useCache = true;
+	if(useCache) {
+		if(useIsometric && this.getHex() != null) {
+			if(this.getHex().getElevation() >= 0) {
+				this.cache(0, 0, hexWidth, hexHeight + (elevationHeight * this.getHex().getElevation()));
+			}
+			else {
+				this.cache(0, (elevationHeight * this.getHex().getElevation()), hexWidth, hexHeight);
+			}
 		}
 		else {
-			this.cache(0, (elevationHeight * this.getHex().getElevation()), hexWidth, hexHeight);
+			this.cache(0, 0, hexWidth, hexHeight);
 		}
-	}
-	else {
-		this.cache(0, 0, hexWidth, hexHeight);
 	}
 }
 
