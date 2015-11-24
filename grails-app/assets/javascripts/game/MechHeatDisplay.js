@@ -50,23 +50,23 @@ c.init = function() {
 	this.addChild(this.staticHeatBar);
 	
 	// draw static and dynamic heat labels
-	this.staticHeatLabel = new createjs.Text("Heat", "11px UbuntuMono", "#FFFFFF");
+	this.staticHeatLabel = new createjs.Text("Heat", "11px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	this.staticHeatLabel.x = 5;
 	this.staticHeatLabel.y = 0;
 	this.addChild(this.staticHeatLabel);
 	
-	this.heatLabel = new createjs.Text("-", "16px UbuntuMono", "#FFFFFF");
+	this.heatLabel = new createjs.Text("-", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	//this.heatLabel.x = this.staticHeatLabel.x + this.staticHeatLabel.getMeasuredWidth()/2 - this.heatLabel.getMeasuredWidth()/2;
 	this.heatLabel.y = this.staticHeatLabel.x/2 + this.staticHeatLabel.getMeasuredHeight();
 	this.addChild(this.heatLabel);
 	
 	// draw static and dynamic heat gen/diss labels
-	this.staticGenDissLabel = new createjs.Text("GEN/DISS", "10px UbuntuMono", "#FFFFFF");
+	this.staticGenDissLabel = new createjs.Text("GEN/DISS", "10px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	this.staticGenDissLabel.x = this.staticHeatLabel.x*2 + this.width/3 - this.staticGenDissLabel.getMeasuredWidth()/2;
 	this.staticGenDissLabel.y = 0;
 	this.addChild(this.staticGenDissLabel);
 	
-	this.heatGenDissLabel = new createjs.Text("+ / -", "10px UbuntuMono", "#FFFFFF");
+	this.heatGenDissLabel = new createjs.Text("+ / -", "10px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	//this.heatGenDissLabel.x = this.staticGenDissLabel.x + this.staticGenDissLabel.getMeasuredWidth()/2 -this.heatGenDissLabel.getMeasuredWidth()/2 ;
 	this.heatGenDissLabel.y = this.staticGenDissLabel.y + this.staticGenDissLabel.getMeasuredHeight()*1.5;
 	this.addChild(this.heatGenDissLabel);
@@ -84,9 +84,9 @@ c.update = function() {
 	
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
-	this.background.graphics.beginFill("#404040")
+	this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
 			.drawRect(0, 0, this.width, this.height)
-			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
+			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR))
 			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 	
 	//this.doCache();

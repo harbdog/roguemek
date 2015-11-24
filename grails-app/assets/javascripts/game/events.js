@@ -440,10 +440,10 @@ function handleComplete(event) {
     overlay.addChild(inButton);
 	
 	var inBackground = new createjs.Shape();
-	inBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
+	inBackground.graphics.setStrokeStyle(2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR)).beginFill(Settings.get(Settings.UI_BG_COLOR)).drawRect(0,0, 25,25);
 	inButton.addChild(inBackground);
 	
-	var inText = new createjs.Text("[+]", "12px UbuntuMono", "white");
+	var inText = new createjs.Text("[+]", "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	inText.x = (25 - inText.getMeasuredWidth())/2;
 	inText.y = (25 - inText.getMeasuredHeight()*2)/2;
 	inButton.addChild(inText);
@@ -458,10 +458,10 @@ function handleComplete(event) {
 	overlay.addChild(outButton);
 	
 	var outBackground = new createjs.Shape();
-	outBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
+	outBackground.graphics.setStrokeStyle(2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR)).beginFill(Settings.get(Settings.UI_BG_COLOR)).drawRect(0,0, 25,25);
 	outButton.addChild(outBackground);
 	
-	var outText = new createjs.Text("[-]", "12px UbuntuMono", "white");
+	var outText = new createjs.Text("[-]", "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	outText.x = (25 - outText.getMeasuredWidth())/2;
 	outText.y = (25 - outText.getMeasuredHeight()*2)/2;
 	outButton.addChild(outText);
@@ -479,10 +479,10 @@ function handleComplete(event) {
 		overlay.addChild(fsButton);
 		
 		var fsBackground = new createjs.Shape();
-		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke("#FFFFFF").beginFill("#404040").drawRect(0,0, 25,25);
+		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR)).beginFill(Settings.get(Settings.UI_BG_COLOR)).drawRect(0,0, 25,25);
 		fsButton.addChild(fsBackground);
 		
-		var fsText = new createjs.Text("[ ]", "12px UbuntuMono", "white");
+		var fsText = new createjs.Text("[ ]", "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 		fsText.x = (25 - fsText.getMeasuredWidth())/2;
 		fsText.y = (25 - fsText.getMeasuredHeight()*2)/2;
 		fsButton.addChild(fsText);
@@ -881,21 +881,15 @@ function handleScaleOverlay(newScale) {
 }
 
 /**
- * Updates the UI overlay components' background opacity
+ * Handles updating for various settings changes for the UI
  * @param opacity
  */
-function handleUITransparency(opacity) {
-	if(opacity >= 0 && opacity <= 1) {
-		console.log("ui opacity="+opacity);
-		
-		// put the new scale in local storage
-		Settings.set(Settings.UI_OPACITY, opacity);
-		
-		// update any UI which contains a background that can change opacity
-		updatePlayerUI();
-		
-		update = true;
-	}
+function handleSettingsUpdate(settingKey) {
+	
+	
+	updatePlayerUI();
+	
+	update = true;
 }
 
 /**

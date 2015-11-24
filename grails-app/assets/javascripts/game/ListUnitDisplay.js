@@ -72,7 +72,7 @@ c.updateArmorBar = function(doAnimate) {
 		totalArmor += initialInternal;
 	}
 	
-	var borderColor = "#C0C0C0";
+	var borderColor = Settings.get(Settings.UI_FG_COLOR);
 	if(this.unit.isDestroyed()) {
 		// unit is destroyed, show 0% and red outline
 		currentArmor = 0;
@@ -113,29 +113,28 @@ c.setSelected = function(selected, isOtherUnit) {
 	
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
-	// TODO: allow customization of the player/enemy unit indicator color
 	if(selected && isOtherUnit){
-		this.background.graphics.beginFill("#404040")
+		this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
 				.drawRect(0, 0, this.image.width, this.image.height)
 				.endFill();
-		this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#FF0000")
+		this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
 				.moveTo(0, this.image.height)
 				.lineTo(0, 0)
 				.lineTo(this.image.width, 0)
 				.endStroke();
 	}
 	else if(selected) {
-		this.background.graphics.beginFill("#404040")
+		this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
 				.drawRect(0, 0, this.image.width, this.image.height)
 				.endFill();
-		this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke("#3399FF")
+		this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke(Settings.get(Settings.UI_PLAYER_COLOR))
 				.moveTo(0, this.image.height)
 				.lineTo(0, 0)
 				.lineTo(this.image.width, 0)
 				.endStroke();
 	}
 	else{
-		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke("#C0C0C0")
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_FG_COLOR))
 				.drawRect(0, 0, this.image.width, this.image.height);
 	}
 	

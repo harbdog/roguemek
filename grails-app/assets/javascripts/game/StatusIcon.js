@@ -26,7 +26,7 @@ s.init = function() {
 	var iH = this.height;
 	
 	if(StatusIcon.STATUS_DESTROYED == this.type) {
-		// TODO: allow customization of the status icon color
+		// allow customization of the status icon color
 		var color = "#FF0000";
 		var outlineColor = "#FFFFFF";
 		

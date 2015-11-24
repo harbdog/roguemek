@@ -52,7 +52,7 @@ c.update = function() {
 	
 	this.background.graphics.clear();
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
-	this.background.graphics.beginFill("#404040")
+	this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
 			.drawRect(0, 0, this.width, this.height);
 	
 	this.messagingElement.htmlElement.style.width = this.width + "px";

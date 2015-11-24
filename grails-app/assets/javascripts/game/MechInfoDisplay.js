@@ -36,12 +36,12 @@ c.init = function() {
 	// TODO: allow custom UI colors
 	
 	// create static unit labels for mech name/chassis, and pilot
-	var staticUnitLabel = new createjs.Text(this.unit.name +" " + this.unit.chassisVariant, "14px UbuntuMono", "#FFFFFF");
+	var staticUnitLabel = new createjs.Text(this.unit.name +" " + this.unit.chassisVariant, "14px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	staticUnitLabel.x = 5;
 	staticUnitLabel.y = 0;
 	this.addChild(staticUnitLabel);
 	
-	var staticPilotLabel = new createjs.Text(this.unit.callsign, "12px UbuntuMono", "#FFFFFF");
+	var staticPilotLabel = new createjs.Text(this.unit.callsign, "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	staticPilotLabel.x = 5;
 	staticPilotLabel.y = staticUnitLabel.y + staticUnitLabel.getMeasuredHeight() * 2;
 	this.addChild(staticPilotLabel);
@@ -78,9 +78,9 @@ c.update = function() {
 	
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
-	this.background.graphics.beginFill("#404040")
+	this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
 			.drawRect(0, 0, this.width, this.height)
-			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
+			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR))
 			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 	
 	this.resetStatusInfo();
@@ -136,7 +136,7 @@ c.addStatusInfo = function(statusInfoType) {
 	
 	var statusInfoContainer = new createjs.Container();
 	
-	var statusLabel = new createjs.Text(statusInfoType, "12px UbuntuMono", "#FFFFFF");	// TODO: i18n of the statusInfoType display string
+	var statusLabel = new createjs.Text(statusInfoType, "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));	// TODO: i18n of the statusInfoType display string
 	statusLabel.x = 0;
 	statusLabel.y = 0;
 	statusInfoContainer.addChild(statusLabel);

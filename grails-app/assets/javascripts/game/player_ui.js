@@ -627,11 +627,11 @@ function setPlayerTarget(unit) {
 	}
 	
 	targetLine.graphics.setStrokeDash([10, 20], 10).
-			setStrokeStyle(3, "round").beginStroke("#FF0000")
+			setStrokeStyle(3, "round").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
 			.moveTo(turnUnit.getUnitDisplay().x, turnUnit.getUnitDisplay().y)
 			.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
 	// give the indicator a glow
-	var glowColor = shadeColor("#FF0000", 0.75);
+	var glowColor = shadeColor(Settings.get(Settings.UI_ENEMY_COLOR), 0.75);
 	targetLine.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
 	targetLine.alpha = 0;
 	

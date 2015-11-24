@@ -36,7 +36,7 @@ c.init = function() {
 	var index = 0;
 	$.each(this.unit.weapons, function(id, weapon) {
 		if(!weapon.isMeleeWeapon()) {
-			var weaponText = new createjs.Text("---", "12px UbuntuMono", "#FFFFFF");
+			var weaponText = new createjs.Text("---", "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 			weaponText.id = weapon.id;
 			
 			weaponsArray.push(weaponText);
@@ -93,9 +93,9 @@ c.update = function() {
 		}
 	}
 	
-	this.background.graphics.beginFill("#404040")
+	this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
 			.drawRect(0, 0, this.width, this.height)
-			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke("#C0C0C0")
+			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR))
 			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 	
 	this.addChildAt(this.background, 0);

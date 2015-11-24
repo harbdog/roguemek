@@ -17,7 +17,7 @@ function FloatMessage(message, config) {
 		messageBoxAlpha: 0.7,
 		messageBoxColor: "#000000",
 		messageTextFont: "Bold 18px UbuntuMono",
-		messageTextColor: "#FF0000"
+		messageTextColor: Settings.get(Settings.UI_ENEMY_COLOR)
 	};
 	this.setup(message, config);
 }

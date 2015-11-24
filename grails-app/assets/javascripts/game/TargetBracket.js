@@ -18,7 +18,7 @@ function TargetBracket() {
 }
 var c = createjs.extend(TargetBracket, createjs.Container);
 
-TargetBracket.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "11px UbuntuMono", "#FFFFFF").getMeasuredWidth();
+TargetBracket.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "11px UbuntuMono", Settings.get(Settings.UI_FG_COLOR)).getMeasuredWidth();
 
 c.init = function() {
 	this.background = new createjs.Shape();
@@ -35,7 +35,7 @@ c.update = function() {
 	
 	var scale = 0.8 * hexScale;
 	
-	this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke("#FF0000")
+	this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
 			.moveTo(0, 0).lineTo(hexWidth/6, 0)
 			.moveTo(0, 0).lineTo(0, hexHeight/6)
 			
@@ -70,7 +70,7 @@ c.update = function() {
 		for(var i=0; i<totalWeapons; i++) {
 			var weaponIndex = this.weaponIndices[i];
 			if(weaponIndex != null){
-				var weaponIndexDisplay = new createjs.Text(weaponIndex, "11px UbuntuMono", "#FFFFFF");
+				var weaponIndexDisplay = new createjs.Text(weaponIndex, "11px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 				var measuredWidth = weaponIndexDisplay.getMeasuredWidth();
 				var measuredHeight = weaponIndexDisplay.getMeasuredHeight()*2;
 				
@@ -91,7 +91,7 @@ c.update = function() {
 				
 				// create a background for the index label
 				var weaponIndexBackground = new createjs.Shape();
-				weaponIndexBackground.graphics.beginFill("#FF0000")
+				weaponIndexBackground.graphics.beginFill(Settings.get(Settings.UI_ENEMY_COLOR))
 						.drawRect(0, 0, TargetBracket.MAX_NUMBER_LABEL_WIDTH, measuredHeight);
 				
 				weaponIndexBackground.x = weaponIndexDisplay.x - (TargetBracket.MAX_NUMBER_LABEL_WIDTH - measuredWidth)/2;

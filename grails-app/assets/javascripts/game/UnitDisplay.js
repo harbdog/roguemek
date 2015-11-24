@@ -477,13 +477,13 @@ c.updateHeadingIndicator = function() {
 	}
 	this.header.graphics.clear();
 	
-	// TODO: allow customization of the unit heading color
+	// allow customization of the unit heading color
 	var color = null;
 	if(isPlayerUnit(this.unit)) {
-		color = "#3399FF";
+		color = Settings.get(Settings.UI_PLAYER_COLOR);
 	}
 	else{
-		color = "#FF0000";
+		color = Settings.get(Settings.UI_ENEMY_COLOR);
 	}
 	
 	var glowColor = shadeColor(color, 0.5);
@@ -544,14 +544,14 @@ c.updateUnitIndicator = function() {
 	else {
 		this.indicator = new createjs.Shape();
 		
-		// TODO: allow customization of the unit indicator color
+		// allow customization of the unit indicator color
 		var color = null;
 		if(isPlayerUnit(this.unit)) {
-			color = "#3399FF";
+			color = Settings.get(Settings.UI_PLAYER_COLOR);
 			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawCircle(0, 0, hexWidth/3-2).endStroke();
 		}
 		else{
-			color = "#FF0000";
+			color = Settings.get(Settings.UI_ENEMY_COLOR);
 			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/3, 4, 0.5, -90).endStroke();
 		}
 		
@@ -571,11 +571,11 @@ c.showTurnDisplay = function(show) {
 	
 	var color = null;
 	if(isPlayerUnit(this.unit)) {
-		color = "#3399FF";
+		color = Settings.get(Settings.UI_PLAYER_COLOR);
 		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke(color).drawCircle(0, 0 ,hexWidth/10).endStroke();
 	}
 	else {
-		color = "#FF0000";
+		color = Settings.get(Settings.UI_ENEMY_COLOR);
 		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/8, 4, 0.5, -90).endStroke();
 	}
 	

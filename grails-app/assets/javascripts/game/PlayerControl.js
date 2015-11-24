@@ -31,9 +31,9 @@ PlayerControl.TYPE_JUMP = "JUMP";
 
 c.init = function() {
 	
-	// TODO: allow custom UI colors
-	var color = "#404040";
-	var borderColor = "#3399FF";
+	// allow custom UI colors
+	var color = Settings.get(Settings.UI_BG_COLOR);
+	var borderColor = Settings.get(Settings.UI_PLAYER_COLOR);
 	
 	this.background = new createjs.Shape();
 	this.addChild(this.background);
@@ -43,7 +43,7 @@ c.init = function() {
 	
 	if(PlayerControl.TYPE_BACKWARD == this.type) {
 		// show label on top of the control for the AP cost
-		this.label = new createjs.Text("1", "16px UbuntuMono", "#FFFFFF");
+		this.label = new createjs.Text("1", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 		this.label.x = (this.width - this.label.getMeasuredWidth()) / 2;
 		this.label.y = (this.height - this.label.getMeasuredHeight()*1.5) / 2;
 		
@@ -51,7 +51,7 @@ c.init = function() {
 	}
 	else if(PlayerControl.TYPE_FORWARD == this.type) {
 		// show label on top of the control for the AP cost
-		this.label = new createjs.Text("1", "16px UbuntuMono", "#FFFFFF");
+		this.label = new createjs.Text("1", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 		this.label.x = (this.width - this.label.getMeasuredWidth()) / 2;
 		this.label.y = (this.height - this.label.getMeasuredHeight()*1.5) / 2;
 		
@@ -59,7 +59,7 @@ c.init = function() {
 	}
 	else if(PlayerControl.TYPE_LEFT == this.type) {
 		// show label on top of the control for the AP cost
-		this.label = new createjs.Text("1", "16px UbuntuMono", "#FFFFFF");
+		this.label = new createjs.Text("1", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 		this.label.x = (this.width - this.label.getMeasuredWidth()) / 2;
 		this.label.y = (this.height - this.label.getMeasuredHeight()*1.5) / 2;
 		
@@ -67,7 +67,7 @@ c.init = function() {
 	}
 	else if(PlayerControl.TYPE_RIGHT == this.type) {
 		// show label on top of the control for the AP cost
-		this.label = new createjs.Text("1", "16px UbuntuMono", "#FFFFFF");
+		this.label = new createjs.Text("1", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 		this.label.x = (this.width - this.label.getMeasuredWidth()) / 2;
 		this.label.y = (this.height - this.label.getMeasuredHeight()*1.5) / 2;
 		
@@ -75,12 +75,12 @@ c.init = function() {
 	}
 	else if(PlayerControl.TYPE_CENTER == this.type) {
 		// show label on top of the control for the AP cost
-		this.label = new createjs.Text("AP 1", "16px UbuntuMono", "#FFFFFF");
+		this.label = new createjs.Text("AP 1", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 		this.addChild(this.label);
 	}
 	else if(PlayerControl.TYPE_JUMP == this.type) {
 		// show label on top of the control for the AP cost
-		this.label = new createjs.Text("JP 1", "16px UbuntuMono", "#FFFFFF");
+		this.label = new createjs.Text("JP 1", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 		this.label.x = (this.width - this.label.getMeasuredWidth()) / 2;
 		this.label.y = this.label.getMeasuredHeight();
 		
@@ -114,13 +114,12 @@ c.setPoints = function(points) {
 }
 
 c.drawButtonAsActive = function(active) {
-	// TODO: allow custom UI colors
-	var color = "#404040";
-	var borderColor = "#3399FF";
+	var color = Settings.get(Settings.UI_BG_COLOR);
+	var borderColor = Settings.get(Settings.UI_PLAYER_COLOR);
 	
 	if(active) {
 		color = borderColor;
-		borderColor = "#FFFFFF";
+		borderColor = Settings.get(Settings.UI_FG_COLOR);
 	}
 	
 	var gList = [this.background, this.control];
@@ -250,13 +249,12 @@ c.drawCenterAsFireButton = function(drawAsFire, active) {
 	if(drawAsFire == null) drawAsFire = false;
 	this.drawAsFire = drawAsFire;
 	
-	// TODO: allow custom UI colors
-	var color = "#404040";
+	var color = Settings.get(Settings.UI_BG_COLOR);
 	var borderColor = this.drawAsFire ? "#FF0000" : "#3399FF";
 	
 	if(active) {
 		color = borderColor;
-		borderColor = "#FFFFFF";
+		borderColor = Settings.get(Settings.UI_FG_COLOR);
 	}
 	
 	if(drawAsFire){

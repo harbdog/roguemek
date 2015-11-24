@@ -16,12 +16,24 @@ Settings.init = function() {
 	
 	// the opacity of the background of the UI overlay
 	Settings.default(Settings.UI_OPACITY, 0.75);
+	
+	// the colors of the of the UI overlay
+	Settings.default(Settings.UI_BG_COLOR, "#404040");
+	Settings.default(Settings.UI_FG_COLOR, "#FFFFFF");
+	Settings.default(Settings.UI_PLAYER_COLOR, "#3399FF");
+	Settings.default(Settings.UI_FRIENDLY_COLOR, "#00CC29");
+	Settings.default(Settings.UI_ENEMY_COLOR, "#FF0000");
 }
 
 // STATIC key names of settings for the game
 Settings.BOARD_SCALE = "BOARD_SCALE";
 Settings.UI_SCALE = "UI_SCALE";
 Settings.UI_OPACITY = "UI_OPACITY";
+Settings.UI_BG_COLOR = "UI_BG_COLOR";
+Settings.UI_FG_COLOR = "UI_FG_COLOR";
+Settings.UI_PLAYER_COLOR = "UI_PLAYER_COLOR";
+Settings.UI_FRIENDLY_COLOR = "UI_FRIENDLY_COLOR";
+Settings.UI_ENEMY_COLOR = "UI_ENEMY_COLOR";
 
 Settings.default = function(key, value) {
 	if(Settings.get(key) == null) {

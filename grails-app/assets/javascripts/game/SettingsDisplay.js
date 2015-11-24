@@ -119,11 +119,112 @@ s.init = function() {
 	    	bgTransValue.text(ui.value);
 	    },
 	    slide: function(event, ui) {
-	    	bgTransValue.text(ui.value);
-	    	handleUITransparency(ui.value)
+	    	var settingKey = Settings.UI_OPACITY;
+	    	var opacity = ui.value;
+	    	
+	    	bgTransValue.text(opacity);
+			Settings.set(settingKey, opacity);
+			
+			handleSettingsUpdate(settingKey);
 	    }
 	});
 	bgTransValue.text(this.bgTransSlider.slider("value"));
+	
+	////////////////////////////////////////////
+	// create the UI background color setting //
+	var bgColorDiv = $("<div>", {id: "bgColorDiv"});
+	settingsDiv.append(bgColorDiv);
+	
+	var bgColorLabel = $("<span>", {id: "bgColorLabel", class: "property-heading"});
+	bgColorLabel.text("UI Background");
+	bgColorDiv.append(bgColorLabel);
+	
+	var bgColorInput = $("<input>", {id: "bgColorInput", value: Settings.get(Settings.UI_BG_COLOR)});
+	bgColorDiv.append(bgColorInput);
+	
+	bgColorInput.spectrum({
+		preferredFormat: "hex",
+		showInitial: true,
+		move: function(color) {
+			var settingKey = Settings.UI_BG_COLOR;
+			var color = color.toHexString();
+			Settings.set(settingKey, color);
+			
+			handleSettingsUpdate(settingKey);
+		}
+	});
+	
+	////////////////////////////////////////////
+	// create the UI foreground color setting //
+	var fgColorDiv = $("<div>", {id: "fgColorDiv"});
+	settingsDiv.append(fgColorDiv);
+	
+	var fgColorLabel = $("<span>", {id: "fgColorLabel", class: "property-heading"});
+	fgColorLabel.text("UI Foreground");
+	fgColorDiv.append(fgColorLabel);
+	
+	var fgColorInput = $("<input>", {id: "bgColorInput", value: Settings.get(Settings.UI_FG_COLOR)});
+	fgColorDiv.append(fgColorInput);
+	
+	fgColorInput.spectrum({
+		preferredFormat: "hex",
+		showInitial: true,
+		move: function(color) {
+			var settingKey = Settings.UI_FG_COLOR;
+			var color = color.toHexString();
+			Settings.set(settingKey, color);
+			
+			handleSettingsUpdate(settingKey);
+		}
+	});
+	
+	/////////////////////////////////////
+	// create the player color setting //
+	var playerColorDiv = $("<div>", {id: "playerColorDiv"});
+	settingsDiv.append(playerColorDiv);
+	
+	var playerColorLabel = $("<span>", {id: "playerColorLabel", class: "property-heading"});
+	playerColorLabel.text("Player");
+	playerColorDiv.append(playerColorLabel);
+	
+	var playerColorInput = $("<input>", {id: "playerColorInput", value: Settings.get(Settings.UI_PLAYER_COLOR)});
+	playerColorDiv.append(playerColorInput);
+	
+	playerColorInput.spectrum({
+		preferredFormat: "hex",
+		showInitial: true,
+		move: function(color) {
+			var settingKey = Settings.UI_PLAYER_COLOR;
+			var color = color.toHexString();
+			Settings.set(settingKey, color);
+			
+			handleSettingsUpdate(settingKey);
+		}
+	});
+	
+	////////////////////////////////////
+	// create the enemy color setting //
+	var enemyColorDiv = $("<div>", {id: "enemyColorDiv"});
+	settingsDiv.append(enemyColorDiv);
+	
+	var enemyColorLabel = $("<span>", {id: "enemyColorLabel", class: "property-heading"});
+	enemyColorLabel.text("Enemy");
+	enemyColorDiv.append(enemyColorLabel);
+	
+	var enemyColorInput = $("<input>", {id: "enemyColorInput", value: Settings.get(Settings.UI_ENEMY_COLOR)});
+	enemyColorDiv.append(enemyColorInput);
+	
+	enemyColorInput.spectrum({
+		preferredFormat: "hex",
+		showInitial: true,
+		move: function(color) {
+			var settingKey = Settings.UI_ENEMY_COLOR;
+			var color = color.toHexString();
+			Settings.set(settingKey, color);
+			
+			handleSettingsUpdate(settingKey);
+		}
+	});
 }
 
 s.update = function() {

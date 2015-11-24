@@ -26,13 +26,13 @@ function WeaponDisplay(hotkey, weapon) {
 }
 var c = createjs.extend(WeaponDisplay, createjs.Container);
 
-WeaponDisplay.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "16px UbuntuMono", "#FFFFFF").getMeasuredWidth();
+WeaponDisplay.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR)).getMeasuredWidth();
 
 c.init = function() {
 	// TODO: allow custom UI colors
 	
 	// add weapon number label
-	this.numLabel = new createjs.Text(this.hotkey, "16px UbuntuMono", "#000000");
+	this.numLabel = new createjs.Text(this.hotkey, "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	this.numLabel.x = (WeaponDisplay.MAX_NUMBER_LABEL_WIDTH - this.numLabel.getMeasuredWidth())/2;
 	this.numLabel.y = BORDER_WIDTH*2;
 	this.addChild(this.numLabel);
@@ -47,7 +47,7 @@ c.init = function() {
 	
 	// add weapon location label
 	var locationStr = getLocationText(this.weapon.location);
-	this.locationLabel = new createjs.Text(locationStr, "14px UbuntuMono", "#FFFFFF");
+	this.locationLabel = new createjs.Text(locationStr, "14px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	this.locationLabel.x = 5 + this.numLabel.x + this.numLabel.getMeasuredWidth() + BORDER_WIDTH;
 	this.locationLabel.y = 5;
 	this.addChild(this.locationLabel);
@@ -65,7 +65,7 @@ c.init = function() {
 		// the update method will get the actual ammo count
 		weaponStr += "[----]";
 	}
-	this.nameLabel = new createjs.Text(weaponStr, "14px UbuntuMono", "#FFFFFF");
+	this.nameLabel = new createjs.Text(weaponStr, "14px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	this.nameLabel.x = 5+ typeImage.x + image.width;
 	this.nameLabel.y = 5;
 	this.addChild(this.nameLabel);
@@ -73,7 +73,7 @@ c.init = function() {
 	// the update method will show actual calculated TO-HIT 
 	var toHitAsPercent = "  --";
 	// add weapon % to hit label to the far right
-	this.toHitLabel = new createjs.Text(toHitAsPercent, "14px UbuntuMono", "#FFFFFF");
+	this.toHitLabel = new createjs.Text(toHitAsPercent, "14px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
 	this.toHitLabel.x = this.width - this.toHitLabel.getMeasuredWidth() - 5;
 	this.toHitLabel.y = 5;	
 	this.addChild(this.toHitLabel);
