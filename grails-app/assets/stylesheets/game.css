@@ -130,6 +130,10 @@ div #pingDiv {
 	font-size: 14px;
 }
 
+#settingsDiv span.property-heading {
+	margin-left: 10px;
+}
+
 /* Styles for dialog contents from battleInfo.gsp */
 .ui-dialog .ui-dialog-titlebar {
 	padding: 0;

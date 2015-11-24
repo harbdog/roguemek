@@ -132,97 +132,169 @@ s.init = function() {
 	
 	////////////////////////////////////////////
 	// create the UI background color setting //
+	var bgColorKey = Settings.UI_BG_COLOR;
 	var bgColorDiv = $("<div>", {id: "bgColorDiv"});
 	settingsDiv.append(bgColorDiv);
+	
+	var bgColorInput = $("<input>", {id: "bgColorInput", class: "property-value", value: Settings.get(bgColorKey)});
+	bgColorDiv.append(bgColorInput);
 	
 	var bgColorLabel = $("<span>", {id: "bgColorLabel", class: "property-heading"});
 	bgColorLabel.text("UI Background");
 	bgColorDiv.append(bgColorLabel);
 	
-	var bgColorInput = $("<input>", {id: "bgColorInput", value: Settings.get(Settings.UI_BG_COLOR)});
-	bgColorDiv.append(bgColorInput);
+	var bgColorUpdateFunc = function(tinycolor) {
+		var settingKey = bgColorKey;
+		var color = tinycolor.toHexString();
+		Settings.set(settingKey, color);
+		
+		handleSettingsUpdate(settingKey);
+	};
 	
 	bgColorInput.spectrum({
 		preferredFormat: "hex",
 		showInitial: true,
-		move: function(color) {
-			var settingKey = Settings.UI_BG_COLOR;
-			var color = color.toHexString();
-			Settings.set(settingKey, color);
-			
-			handleSettingsUpdate(settingKey);
+		move: bgColorUpdateFunc,
+		show: function() {
+			$(this).data('changed', false);
+			$(this).data('origColor', tinycolor(Settings.get(bgColorKey)));
+		},
+		change: function(color) {
+			$(this).data('changed', true);
+		},
+		hide: function(color) {
+			if($(this).data('changed')) {
+				// changed (update would have occurred from move action)
+			} else {
+				// cancelled
+				bgColorUpdateFunc($(this).data('origColor'));
+			}
 		}
 	});
 	
 	////////////////////////////////////////////
 	// create the UI foreground color setting //
+	var fgColorKey = Settings.UI_FG_COLOR;
 	var fgColorDiv = $("<div>", {id: "fgColorDiv"});
 	settingsDiv.append(fgColorDiv);
+	
+	var fgColorInput = $("<input>", {id: "fgColorInput", class: "property-value", value: Settings.get(fgColorKey)});
+	fgColorDiv.append(fgColorInput);
 	
 	var fgColorLabel = $("<span>", {id: "fgColorLabel", class: "property-heading"});
 	fgColorLabel.text("UI Foreground");
 	fgColorDiv.append(fgColorLabel);
 	
-	var fgColorInput = $("<input>", {id: "bgColorInput", value: Settings.get(Settings.UI_FG_COLOR)});
-	fgColorDiv.append(fgColorInput);
+	var fgColorUpdateFunc = function(tinycolor) {
+		var settingKey = fgColorKey;
+		var color = tinycolor.toHexString();
+		Settings.set(settingKey, color);
+		
+		handleSettingsUpdate(settingKey);
+	};
 	
 	fgColorInput.spectrum({
 		preferredFormat: "hex",
 		showInitial: true,
-		move: function(color) {
-			var settingKey = Settings.UI_FG_COLOR;
-			var color = color.toHexString();
-			Settings.set(settingKey, color);
-			
-			handleSettingsUpdate(settingKey);
+		move: fgColorUpdateFunc,
+		show: function() {
+			$(this).data('changed', false);
+			$(this).data('origColor', tinycolor(Settings.get(fgColorKey)));
+		},
+		change: function(color) {
+			$(this).data('changed', true);
+		},
+		hide: function(color) {
+			if($(this).data('changed')) {
+				// changed
+			} else {
+				// cancelled
+				fgColorUpdateFunc($(this).data('origColor'));
+			}
 		}
 	});
 	
 	/////////////////////////////////////
 	// create the player color setting //
+	var playerColorKey = Settings.UI_PLAYER_COLOR;
 	var playerColorDiv = $("<div>", {id: "playerColorDiv"});
 	settingsDiv.append(playerColorDiv);
+	
+	var playerColorInput = $("<input>", {id: "playerColorInput", class: "property-value", value: Settings.get(playerColorKey)});
+	playerColorDiv.append(playerColorInput);
 	
 	var playerColorLabel = $("<span>", {id: "playerColorLabel", class: "property-heading"});
 	playerColorLabel.text("Player");
 	playerColorDiv.append(playerColorLabel);
 	
-	var playerColorInput = $("<input>", {id: "playerColorInput", value: Settings.get(Settings.UI_PLAYER_COLOR)});
-	playerColorDiv.append(playerColorInput);
+	var playerColorUpdateFunc = function(tinycolor) {
+		var settingKey = playerColorKey;
+		var color = tinycolor.toHexString();
+		Settings.set(settingKey, color);
+		
+		handleSettingsUpdate(settingKey);
+	};
 	
 	playerColorInput.spectrum({
 		preferredFormat: "hex",
 		showInitial: true,
-		move: function(color) {
-			var settingKey = Settings.UI_PLAYER_COLOR;
-			var color = color.toHexString();
-			Settings.set(settingKey, color);
-			
-			handleSettingsUpdate(settingKey);
+		move: playerColorUpdateFunc,
+		show: function() {
+			$(this).data('changed', false);
+			$(this).data('origColor', tinycolor(Settings.get(playerColorKey)));
+		},
+		change: function(color) {
+			$(this).data('changed', true);
+		},
+		hide: function(color) {
+			if($(this).data('changed')) {
+				// changed
+			} else {
+				// cancelled
+				playerColorUpdateFunc($(this).data('origColor'));
+			}
 		}
 	});
 	
 	////////////////////////////////////
 	// create the enemy color setting //
+	var enemyColorKey = Settings.UI_ENEMY_COLOR;
 	var enemyColorDiv = $("<div>", {id: "enemyColorDiv"});
 	settingsDiv.append(enemyColorDiv);
+	
+	var enemyColorInput = $("<input>", {id: "enemyColorInput", class: "property-value", value: Settings.get(enemyColorKey)});
+	enemyColorDiv.append(enemyColorInput);
 	
 	var enemyColorLabel = $("<span>", {id: "enemyColorLabel", class: "property-heading"});
 	enemyColorLabel.text("Enemy");
 	enemyColorDiv.append(enemyColorLabel);
 	
-	var enemyColorInput = $("<input>", {id: "enemyColorInput", value: Settings.get(Settings.UI_ENEMY_COLOR)});
-	enemyColorDiv.append(enemyColorInput);
+	var enemyColorUpdateFunc = function(tinycolor) {
+		var settingKey = enemyColorKey;
+		var color = tinycolor.toHexString();
+		Settings.set(settingKey, color);
+		
+		handleSettingsUpdate(settingKey);
+	};
 	
 	enemyColorInput.spectrum({
 		preferredFormat: "hex",
 		showInitial: true,
-		move: function(color) {
-			var settingKey = Settings.UI_ENEMY_COLOR;
-			var color = color.toHexString();
-			Settings.set(settingKey, color);
-			
-			handleSettingsUpdate(settingKey);
+		move: enemyColorUpdateFunc,
+		show: function() {
+			$(this).data('changed', false);
+			$(this).data('origColor', tinycolor(Settings.get(enemyColorKey)));
+		},
+		change: function(color) {
+			$(this).data('changed', true);
+		},
+		hide: function(color) {
+			if($(this).data('changed')) {
+				// changed
+			} else {
+				// cancelled
+				enemyColorUpdateFunc($(this).data('origColor'));
+			}
 		}
 	});
 }
