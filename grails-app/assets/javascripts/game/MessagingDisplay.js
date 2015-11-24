@@ -58,6 +58,8 @@ c.update = function() {
 	this.messagingElement.htmlElement.style.width = this.width + "px";
 	this.messagingElement.htmlElement.style.height = this.height + "px";
 	
+	$("#messagingArea").css("color", Settings.get(Settings.UI_FG_COLOR))
+	
 	// Do NOT cache this object, it causes massive frameloss on slow tablets 
 	//this.cache(0,0, this.width,this.height);
 }
