@@ -31,10 +31,6 @@ PlayerControl.TYPE_JUMP = "JUMP";
 
 c.init = function() {
 	
-	// allow custom UI colors
-	var color = Settings.get(Settings.UI_BG_COLOR);
-	var borderColor = Settings.get(Settings.UI_PLAYER_COLOR);
-	
 	this.background = new createjs.Shape();
 	this.addChild(this.background);
 	
@@ -114,6 +110,8 @@ c.setPoints = function(points) {
 }
 
 c.drawButtonAsActive = function(active) {
+	this.active = active;
+	
 	var color = Settings.get(Settings.UI_BG_COLOR);
 	var borderColor = Settings.get(Settings.UI_PLAYER_COLOR);
 	
@@ -250,7 +248,7 @@ c.drawCenterAsFireButton = function(drawAsFire, active) {
 	this.drawAsFire = drawAsFire;
 	
 	var color = Settings.get(Settings.UI_BG_COLOR);
-	var borderColor = this.drawAsFire ? "#FF0000" : "#3399FF";
+	var borderColor = this.drawAsFire ? Settings.get(Settings.UI_ENEMY_COLOR) : Settings.get(Settings.UI_PLAYER_COLOR);
 	
 	if(active) {
 		color = borderColor;
@@ -299,6 +297,7 @@ c.drawCenterAsFireButton = function(drawAsFire, active) {
 
 c.update = function() {
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
+	this.drawButtonAsActive(this.active);
 }
 
 c.toString = function() {

@@ -885,8 +885,25 @@ function handleScaleOverlay(newScale) {
  * @param opacity
  */
 function handleSettingsUpdate(settingKey) {
+	// handle any key specific UI updates here first
+	if(settingKey == Settings.UI_PLAYER_COLOR) {
+		$.each(units, function(index, thisUnit) {
+			if(isPlayerUnit(thisUnit)) {
+				var displayUnit = thisUnit.getUnitDisplay();
+				displayUnit.update();
+			}
+		});
+	}
+	else if(settingKey == Settings.UI_ENEMY_COLOR) {
+		$.each(units, function(index, thisUnit) {
+			if(!isPlayerUnit(thisUnit)) {
+				var displayUnit = thisUnit.getUnitDisplay();
+				displayUnit.update();
+			}
+		});
+	}
 	
-	
+	// general UI updates performed
 	updatePlayerUI();
 	
 	update = true;

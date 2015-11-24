@@ -88,11 +88,11 @@ c.init = function() {
 		this.jump.mouseChildren = false;
 	}
 	
-	this.update();
-	
 	this.updateActionPoints();
 	this.updateMoveActionPoints();
 	this.updateJumpPoints();
+	
+	this.update();
 }
 
 c.update = function() {
@@ -168,17 +168,13 @@ c.updateMoveActionPoints = function() {
 	
 	if(this.jump != null) {
 		this.jump.drawButtonAsActive(jumping);
-		this.jump.setHighlighted((this.jumping || this.unit.jumpCapable));
+		this.jump.setHighlighted((jumping || this.unit.jumpCapable));
 	}
-	
-	this.update();
 }
 
 c.updateActionPoints = function() {
 	var ap = this.unit.apRemaining;
 	this.center.setPoints("AP "+ap);
-	
-	this.update();
 }
 
 c.updateJumpPoints = function(jp) {
@@ -186,8 +182,6 @@ c.updateJumpPoints = function(jp) {
 	if(this.jump != null) {
 		this.jump.setPoints("JP "+jp);
 	}
-	
-	this.update();
 }
 
 c.drawCenterAsFireButton = function(drawAsFire) {

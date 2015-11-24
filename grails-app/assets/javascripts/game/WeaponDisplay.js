@@ -26,20 +26,19 @@ function WeaponDisplay(hotkey, weapon) {
 }
 var c = createjs.extend(WeaponDisplay, createjs.Container);
 
-WeaponDisplay.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR)).getMeasuredWidth();
+WeaponDisplay.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "16px UbuntuMono", "#FFF").getMeasuredWidth();
 
 c.init = function() {
-	// TODO: allow custom UI colors
 	
 	// add weapon number label
-	this.numLabel = new createjs.Text(this.hotkey, "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+	this.numLabel = new createjs.Text(this.hotkey, "16px UbuntuMono", Settings.get(Settings.UI_BG_COLOR));
 	this.numLabel.x = (WeaponDisplay.MAX_NUMBER_LABEL_WIDTH - this.numLabel.getMeasuredWidth())/2;
 	this.numLabel.y = BORDER_WIDTH*2;
 	this.addChild(this.numLabel);
 	
 	// add weapon number label background
 	var numBackground = new createjs.Shape();
-	numBackground.graphics.beginFill("#FFFFFF")
+	numBackground.graphics.beginFill(Settings.get(Settings.UI_FG_COLOR))
 			.drawRect(0, BORDER_WIDTH, WeaponDisplay.MAX_NUMBER_LABEL_WIDTH,  this.height - BORDER_WIDTH);
 	numBackground.x = 0;
 	numBackground.y = 0;

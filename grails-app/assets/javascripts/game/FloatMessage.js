@@ -14,10 +14,7 @@ function FloatMessage(message, config) {
 		glow: false,
 		glowSize: 3,
 		glowColor: "#333333",
-		messageBoxAlpha: 0.7,
-		messageBoxColor: "#000000",
-		messageTextFont: "Bold 18px UbuntuMono",
-		messageTextColor: Settings.get(Settings.UI_ENEMY_COLOR)
+		messageTextFont: "Bold 18px UbuntuMono"
 	};
 	this.setup(message, config);
 }
@@ -40,7 +37,7 @@ c.drawFloatMessage = function(message){
 	this.uncache();
 	
 	// create the message text
-	var messageText = new createjs.Text(message, this.conf.messageTextFont, this.conf.messageTextColor);
+	var messageText = new createjs.Text(message, this.conf.messageTextFont, Settings.get(Settings.UI_ENEMY_COLOR));
 	messageText.x = 5;
 	messageText.y = 0;
 	
@@ -49,8 +46,8 @@ c.drawFloatMessage = function(message){
 	var boxBounds = new createjs.Rectangle(0, 0, textBounds.width + 10, textBounds.height + 10);
 		
 	var messageBox = new createjs.Shape();
-	messageBox.alpha = this.conf.messageBoxAlpha;
-	messageBox.graphics.beginStroke(this.conf.messageBoxColor).beginFill(this.conf.messageBoxColor)
+	messageBox.alpha = Settings.get(Settings.UI_OPACITY);
+	messageBox.graphics.beginStroke(Settings.get(Settings.UI_BG_COLOR)).beginFill(Settings.get(Settings.UI_BG_COLOR))
 			.rect(boxBounds.x, boxBounds.y, boxBounds.width, boxBounds.height).endStroke();
 	
 	this.addChild(messageBox);
