@@ -622,19 +622,23 @@ function setPlayerTarget(unit) {
 	if(targetLine == null) {
 		targetLine = new createjs.Shape();
 		stage.addChild(targetLine);
+		
+		targetLine.update = function() {
+			this.graphics.clear();
+			this.graphics.setStrokeDash([10, 20], 10).
+					setStrokeStyle(3, "round").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
+					.moveTo(turnUnit.getUnitDisplay().x, turnUnit.getUnitDisplay().y)
+					.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
+			// give the indicator a glow
+			var glowColor = shadeColor(Settings.get(Settings.UI_ENEMY_COLOR), 0.75);
+			this.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+		}
 	}
 	else{
 		targetLine.visible = true;
-		targetLine.graphics.clear();
 	}
 	
-	targetLine.graphics.setStrokeDash([10, 20], 10).
-			setStrokeStyle(3, "round").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
-			.moveTo(turnUnit.getUnitDisplay().x, turnUnit.getUnitDisplay().y)
-			.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
-	// give the indicator a glow
-	var glowColor = shadeColor(Settings.get(Settings.UI_ENEMY_COLOR), 0.75);
-	targetLine.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+	targetLine.update();
 	targetLine.alpha = 0;
 	
 	createjs.Tween.get(targetLine)

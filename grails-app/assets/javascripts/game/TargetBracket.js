@@ -18,7 +18,7 @@ function TargetBracket() {
 }
 var c = createjs.extend(TargetBracket, createjs.Container);
 
-TargetBracket.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "11px UbuntuMono", Settings.get(Settings.UI_FG_COLOR)).getMeasuredWidth();
+TargetBracket.MAX_NUMBER_LABEL_WIDTH = new createjs.Text("99", "11px UbuntuMono", "#FFF").getMeasuredWidth();
 
 c.init = function() {
 	this.background = new createjs.Shape();

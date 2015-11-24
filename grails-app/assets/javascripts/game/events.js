@@ -901,6 +901,14 @@ function handleSettingsUpdate(settingKey) {
 				displayUnit.update();
 			}
 		});
+		
+		if(targetBracket != null) {
+			targetBracket.update();
+		}
+		
+		if(targetLine != null) {
+			targetLine.update();
+		}
 	}
 	
 	// general UI updates performed
