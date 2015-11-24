@@ -15,6 +15,7 @@ function ArmorSectionDisplay(parent, width, height, barWidth, text, startIndex) 
 	this.barWidth = barWidth;
 	this.barHeight = height - 4;
 	
+	this.outlines = [];
 	this.bars = [];
 	this.barBounds = [];
 	
@@ -24,9 +25,10 @@ var c = createjs.extend(ArmorSectionDisplay, createjs.Container);
 
 c.init = function(text, startIndex) {
 	// allow custom UI colors
-	var label = new createjs.Text(text, "11px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+	var label = new createjs.Text(text, "11px UbuntuMono");
 	label.x = (text.length * this.width - label.getMeasuredWidth())/2;
 	label.y = this.height - label.getMeasuredHeight()*2;
+	this.label = label;
 	this.addChild(label);
 	
 	this.barHeight = label.y - 4;
@@ -36,8 +38,7 @@ c.init = function(text, startIndex) {
 	var bounds = new createjs.Rectangle(
 			this.width-this.barWidth, 1+BORDER_WIDTH, 
 			this.barWidth, this.barHeight);
-	barOutline.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_FG_COLOR))
-			.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+	this.outlines[0] = barOutline;
 	this.addChild(barOutline);
 	
 	var bar = new createjs.Shape();
@@ -50,8 +51,7 @@ c.init = function(text, startIndex) {
 	var bounds2 =  new createjs.Rectangle(
 			1*this.width+BORDER_WIDTH, 1+BORDER_WIDTH+this.barHeight/2, 
 			this.barWidth, this.barHeight/2);
-	barOutline2.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_FG_COLOR))
-			.drawRect(bounds2.x, bounds2.y, bounds2.width, bounds2.height);
+	this.outlines[1] = barOutline2;
 	this.addChild(barOutline2);
 	
 	var bar2 = new createjs.Shape();
@@ -68,8 +68,7 @@ c.init = function(text, startIndex) {
 		var bounds3 =  new createjs.Rectangle(
 				2*this.width-BORDER_WIDTH, 1+BORDER_WIDTH, 
 				this.barWidth, this.barHeight);
-		barOutline3.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_FG_COLOR))
-				.drawRect(bounds3.x, bounds3.y, bounds3.width, bounds3.height);
+		this.outlines[2] = barOutline3;
 		this.addChild(barOutline3);
 		
 		var bar3 = new createjs.Shape();
@@ -78,6 +77,21 @@ c.init = function(text, startIndex) {
 		this.addChildAt(bar3, 2);
 		
 		this.setDisplayedPercent(2, 100);
+	}
+	
+	this.update();
+}
+
+c.update = function() {
+	this.label.color = Settings.get(Settings.UI_FG_COLOR);
+	
+	for(var i=0; i<this.outlines.length; i++) {
+		var barOutline = this.outlines[i];
+		var bounds = this.barBounds[i];
+		
+		barOutline.graphics.clear();
+		barOutline.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_FG_COLOR))
+			.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 }
 

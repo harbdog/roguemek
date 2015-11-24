@@ -32,7 +32,10 @@ c.init = function() {
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	this.addChild(this.background);
 	
-	// TODO: allow custom UI colors
+	// draw heat result line
+	this.heatResultLine = new createjs.Shape();
+	this.heatResultLine.alpha = 0.75
+	this.addChild(this.heatResultLine);
 	
 	// draw static heat bar with dynamic mask
 	this.staticHeatBar = new createjs.Shape();
@@ -50,30 +53,26 @@ c.init = function() {
 	this.addChild(this.staticHeatBar);
 	
 	// draw static and dynamic heat labels
-	this.staticHeatLabel = new createjs.Text("Heat", "11px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+	this.staticHeatLabel = new createjs.Text("Heat", "11px UbuntuMono");
 	this.staticHeatLabel.x = 5;
 	this.staticHeatLabel.y = 0;
 	this.addChild(this.staticHeatLabel);
 	
-	this.heatLabel = new createjs.Text("-", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+	this.heatLabel = new createjs.Text("-", "16px UbuntuMono");
 	//this.heatLabel.x = this.staticHeatLabel.x + this.staticHeatLabel.getMeasuredWidth()/2 - this.heatLabel.getMeasuredWidth()/2;
 	this.heatLabel.y = this.staticHeatLabel.x/2 + this.staticHeatLabel.getMeasuredHeight();
 	this.addChild(this.heatLabel);
 	
 	// draw static and dynamic heat gen/diss labels
-	this.staticGenDissLabel = new createjs.Text("GEN/DISS", "10px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+	this.staticGenDissLabel = new createjs.Text("GEN/DISS", "10px UbuntuMono");
 	this.staticGenDissLabel.x = this.staticHeatLabel.x*2 + this.width/3 - this.staticGenDissLabel.getMeasuredWidth()/2;
 	this.staticGenDissLabel.y = 0;
 	this.addChild(this.staticGenDissLabel);
 	
-	this.heatGenDissLabel = new createjs.Text("+ / -", "10px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+	this.heatGenDissLabel = new createjs.Text("+ / -", "10px UbuntuMono");
 	//this.heatGenDissLabel.x = this.staticGenDissLabel.x + this.staticGenDissLabel.getMeasuredWidth()/2 -this.heatGenDissLabel.getMeasuredWidth()/2 ;
 	this.heatGenDissLabel.y = this.staticGenDissLabel.y + this.staticGenDissLabel.getMeasuredHeight()*1.5;
 	this.addChild(this.heatGenDissLabel);
-	
-	// draw heat result line
-	this.heatResultLine = new createjs.Shape();
-	this.addChildAt(this.heatResultLine, 0);
 	
 	this.update();
 }
@@ -82,7 +81,12 @@ c.update = function() {
 	this.uncache();
 	this.background.graphics.clear();
 	
+	// apply any potentially updated settings
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
+	this.staticHeatLabel.color = Settings.get(Settings.UI_FG_COLOR);
+	this.heatLabel.color = Settings.get(Settings.UI_FG_COLOR);
+	this.staticGenDissLabel.color = Settings.get(Settings.UI_FG_COLOR);
+	this.heatGenDissLabel.color = Settings.get(Settings.UI_FG_COLOR);
 	
 	this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
 			.drawRect(0, 0, this.width, this.height)

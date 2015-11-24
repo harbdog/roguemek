@@ -36,7 +36,7 @@ c.init = function() {
 	var index = 0;
 	$.each(this.unit.weapons, function(id, weapon) {
 		if(!weapon.isMeleeWeapon()) {
-			var weaponText = new createjs.Text("---", "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+			var weaponText = new createjs.Text("---", "12px UbuntuMono");
 			weaponText.id = weapon.id;
 			
 			weaponsArray.push(weaponText);
@@ -75,9 +75,12 @@ c.update = function() {
 			var locationStr = getLocationText(weapon.location);
 			weaponText.text = locationStr+":"+weapon.shortName;
 			
-			// update text for when the weapon is destroyed
-			if(!weapon.isActive()) {
-				// TODO: draw a red strikethrough instead for inactive weapons
+			// update for when the weapon is active or destroyed
+			if(weapon.isActive()) {
+				weaponText.color = Settings.get(Settings.UI_FG_COLOR);
+			}
+			else {
+				// TODO: draw a strikethrough instead for inactive weapons
 				weaponText.color = "#A0A0A0";
 			}
 			

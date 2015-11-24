@@ -19,6 +19,7 @@ function WeaponDisplay(hotkey, weapon) {
 	this.selected = false;
 	
 	this.background = null;
+	this.numBackground = null;
 	this.numLabel = null;
 	this.locationLabel = null;
 	this.nameLabel = null;
@@ -37,12 +38,10 @@ c.init = function() {
 	this.addChild(this.numLabel);
 	
 	// add weapon number label background
-	var numBackground = new createjs.Shape();
-	numBackground.graphics.beginFill(Settings.get(Settings.UI_FG_COLOR))
-			.drawRect(0, BORDER_WIDTH, WeaponDisplay.MAX_NUMBER_LABEL_WIDTH,  this.height - BORDER_WIDTH);
-	numBackground.x = 0;
-	numBackground.y = 0;
-	this.addChildAt(numBackground, 0);
+	this.numBackground = new createjs.Shape();
+	this.numBackground.x = 0;
+	this.numBackground.y = 0;
+	this.addChildAt(this.numBackground, 0);
 	
 	// add weapon location label
 	var locationStr = getLocationText(this.weapon.location);
@@ -117,10 +116,23 @@ c.update = function() {
 	}
 	this.nameLabel.text = weaponInfo
 	
-	if(!weaponActive) {
+	this.numBackground.graphics.clear();
+	this.numBackground.graphics.beginFill(Settings.get(Settings.UI_FG_COLOR))
+			.drawRect(0, BORDER_WIDTH, WeaponDisplay.MAX_NUMBER_LABEL_WIDTH,  this.height - BORDER_WIDTH);
+	
+	if(weaponActive) {
+		this.numLabel.color = Settings.get(Settings.UI_BG_COLOR);
+		
+		this.locationLabel.color = Settings.get(Settings.UI_FG_COLOR);
+		this.nameLabel.color = Settings.get(Settings.UI_FG_COLOR);
+		this.toHitLabel.color = Settings.get(Settings.UI_FG_COLOR);
+	}
+	else {
+		// TODO: draw a strikethrough instead for inactive weapons
 		this.numLabel.color = "#A0A0A0";
 		this.locationLabel.color = "#A0A0A0";
 		this.nameLabel.color = "#A0A0A0";
+		this.toHitLabel.color = "#A0A0A0";
 	}
 	
 	// update to Hit percent

@@ -551,6 +551,7 @@ function updatePlayerUnitListDisplay() {
 			listUnit.y = canvas.height*(1/overlay.scaleY) - (index+1) * listUnit.getDisplayHeight();
 			
 			// update the selected status in case its the unit's turn
+			listUnit.update();
 			listUnit.setSelected(isTurnUnit(listUnit.unit));
 		}
 	});
@@ -565,6 +566,7 @@ function updateOtherUnitListDisplay() {
 	$.each(unitListDisplayArray, function(index, listUnit) {
 		if(!isPlayerUnit(listUnit.unit)) {
 			// update graphics of the display
+			listUnit.update();
 			listUnit.setSelected(true, true);
 		}
 	});

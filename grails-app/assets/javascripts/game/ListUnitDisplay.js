@@ -44,6 +44,10 @@ c.init = function() {
 	this.addChild(this.armorBar);
 	
 	this.setSelected(isTurnUnit(this.unit));
+	this.update();
+}
+
+c.update = function() {
 	this.updateArmorBar(false);
 }
 
