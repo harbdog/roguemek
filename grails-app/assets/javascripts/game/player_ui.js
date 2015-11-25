@@ -181,10 +181,15 @@ function updatePlayerUI() {
 			.drawRect(0,0, buttonSize,buttonSize);
     settingsButton.addChild(settingsBorder);
     
-    var settingsText = new createjs.Text("[?]", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
-    settingsText.x = (buttonSize - settingsText.getMeasuredWidth())/2;
-    settingsText.y = (buttonSize - settingsText.getMeasuredHeight()*1.5)/2;
-    settingsButton.addChild(settingsText);
+    // draw 3 lines for the settings icon
+    var settingsIcon = new createjs.Shape();
+    settingsIcon.graphics.setStrokeStyle(4, "round")
+    		.beginStroke(Settings.get(Settings.UI_FG_COLOR))
+    		.moveTo(buttonSize/6, 1*buttonSize/4).lineTo(5*buttonSize/6, 1*buttonSize/4)
+    		.moveTo(buttonSize/6, 2*buttonSize/4).lineTo(5*buttonSize/6, 2*buttonSize/4)
+    		.moveTo(buttonSize/6, 3*buttonSize/4).lineTo(5*buttonSize/6, 3*buttonSize/4)
+    		.endStroke();
+    settingsButton.addChild(settingsIcon);
     
     // update the fullscreen button
     fullscreenButton.x = 0;
@@ -199,15 +204,20 @@ function updatePlayerUI() {
 	fullscreenButton.addChild(fsBackground);
 	
 	var fsBorder = new createjs.Shape();
-	fsBorder.graphics.setStrokeStyle(2, "round")
+	fsBorder.graphics.setStrokeStyle(2, "square")
 			.beginStroke(Settings.get(Settings.UI_FG_COLOR))
 			.drawRect(0,0, buttonSize,buttonSize);
 	fullscreenButton.addChild(fsBorder);
 	
-	var fsText = new createjs.Text("[ ]", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
-	fsText.x = (buttonSize - fsText.getMeasuredWidth())/2;
-	fsText.y = (buttonSize - fsText.getMeasuredHeight()*1.5)/2;
-	fullscreenButton.addChild(fsText);
+	// draw rectangle with 4 arrows at the corners
+	var fsIcon = new createjs.Shape();
+	fsIcon.graphics.setStrokeStyle(4, "square")
+			.beginStroke(Settings.get(Settings.UI_FG_COLOR))
+			.moveTo(buttonSize/6, 2*buttonSize/5).lineTo(buttonSize/6, 1*buttonSize/5).lineTo(buttonSize/6 + 1*buttonSize/5, 1*buttonSize/5)
+			.moveTo(5*buttonSize/6 - 1*buttonSize/5, 1*buttonSize/5).lineTo(5*buttonSize/6, 1*buttonSize/5).lineTo(5*buttonSize/6, 2*buttonSize/5)
+			.moveTo(buttonSize/6, 3*buttonSize/5).lineTo(buttonSize/6, 4*buttonSize/5).lineTo(buttonSize/6 + 1*buttonSize/5, 4*buttonSize/5)
+			.moveTo(5*buttonSize/6 - 1*buttonSize/5, 4*buttonSize/5).lineTo(5*buttonSize/6, 4*buttonSize/5).lineTo(5*buttonSize/6, 3*buttonSize/5)
+	fullscreenButton.addChild(fsIcon);
 }
 
 /**
