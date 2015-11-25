@@ -23,11 +23,11 @@ s.init = function() {
     	autoOpen: false,
     	modal: false,
 		show: {
-			effect: "fade",
+			effect: "blind",
 			duration: 500
 		},
 		hide: {
-			effect: "clip",
+			effect: "blind",
 			duration: 250
 		}
     });
@@ -307,7 +307,10 @@ s.update = function() {
 }
 
 s.show = function() {
+	var positionOffset = (75/2) * Settings.get(Settings.UI_SCALE); 
+	
 	this.update();
+	this.settingsDialog.dialog("option", "position", {my: "left top+"+positionOffset, at: "left top", of: canvas});
 	this.settingsDialog.dialog("open");
 }
 
