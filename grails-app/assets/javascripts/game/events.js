@@ -243,11 +243,18 @@ function handleKeyPress(key) {
 	}
 	else if(key == "?"){
 		// show the settings dialog
-		settingsDisplay.show();
+		showSettingsDisplay();
 	}
 	else {
 		console.log("Unbound key pressed: " + key);
 	}
+}
+
+/**
+ * show the settings dialog
+ */
+function showSettingsDisplay() {
+	settingsDisplay.show();
 }
 
 /**
@@ -388,108 +395,6 @@ function handleComplete(event) {
 	
 	// Initialize the player UI
 	initPlayerUI();
-	
-	// Initialize FPS counter
-	var fpsDiv = document.getElementById("fpsDiv");
-	fpsDisplay = new createjs.DOMElement(fpsDiv);
-	fpsDisplay.x = -rootStage.x - 10;
-    fpsDisplay.y = -rootStage.y + 80 ;
-    overlay.addChild(fpsDisplay);
-    
-    // Initialize ping display
-	var pingDiv = document.getElementById("pingDiv");
-	pingDisplay = new createjs.DOMElement(pingDiv);
-	pingDisplay.x = -rootStage.x - 10;
-	pingDisplay.y = -rootStage.y + 100 ;
-    overlay.addChild(pingDisplay);
-    
-    // Initialize dialog display
-    dialogDisplay = $("#dialogDiv").dialog({
-    	open: function () { $(this).siblings().find(".ui-dialog-title").html("<div id='unit-title'></div>"); },
-    	autoOpen: false,
-    	modal: true,
-		show: {
-			effect: "fade",
-			duration: 500
-		},
-		hide: {
-			effect: "clip",
-			duration: 250
-		}
-    });
-    
-    dialogLoading = $("#loadingDiv").dialog({
-    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
-    	title: "Loading...",
-    	autoOpen: false,
-    	modal: true,
-		show: {
-			effect: "fade",
-			duration: 250
-		},
-		hide: {
-			effect: "explode",
-			duration: 250
-		}
-    });
-    
-    // show the board zoom in button
-    var inButton = new createjs.Container();
-    inButton.x = 0;
-    inButton.y = 0;
-    overlay.addChild(inButton);
-	
-	var inBackground = new createjs.Shape();
-	inBackground.graphics.setStrokeStyle(2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR)).beginFill(Settings.get(Settings.UI_BG_COLOR)).drawRect(0,0, 25,25);
-	inButton.addChild(inBackground);
-	
-	var inText = new createjs.Text("[+]", "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
-	inText.x = (25 - inText.getMeasuredWidth())/2;
-	inText.y = (25 - inText.getMeasuredHeight()*2)/2;
-	inButton.addChild(inText);
-	
-	inButton.on("click", handleZoomIn);
-	inButton.mouseChildren = false;
-	
-	// show the board zoom out button
-	var outButton = new createjs.Container();
-	outButton.x = 0;
-	outButton.y = 25;
-	overlay.addChild(outButton);
-	
-	var outBackground = new createjs.Shape();
-	outBackground.graphics.setStrokeStyle(2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR)).beginFill(Settings.get(Settings.UI_BG_COLOR)).drawRect(0,0, 25,25);
-	outButton.addChild(outBackground);
-	
-	var outText = new createjs.Text("[-]", "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
-	outText.x = (25 - outText.getMeasuredWidth())/2;
-	outText.y = (25 - outText.getMeasuredHeight()*2)/2;
-	outButton.addChild(outText);
-	
-	outButton.on("click", handleZoomOut);
-	outButton.mouseChildren = false;
-    
-    
-    // only show the fullscreen button if the browser supports it
-    if( fullScreenApi.supportsFullScreen || devMode ) {
-    	// TODO: find a better place for the fullscreen button
-		var fsButton = new createjs.Container();
-		fsButton.x = 0;
-		fsButton.y = 50;
-		overlay.addChild(fsButton);
-		
-		var fsBackground = new createjs.Shape();
-		fsBackground.graphics.setStrokeStyle(2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR)).beginFill(Settings.get(Settings.UI_BG_COLOR)).drawRect(0,0, 25,25);
-		fsButton.addChild(fsBackground);
-		
-		var fsText = new createjs.Text("[ ]", "12px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
-		fsText.x = (25 - fsText.getMeasuredWidth())/2;
-		fsText.y = (25 - fsText.getMeasuredHeight()*2)/2;
-		fsButton.addChild(fsText);
-		
-		fsButton.on("click", toggleFullScreen);
-		fsButton.mouseChildren = false;
-    }
     
     // begin long polling for game updates during play, starting with a ping
 	ping();

@@ -36,6 +36,7 @@ var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray
 var fpsDisplay, pingDisplay, dialogDisplay, dialogLoading;
 
 var settingsDisplay;
+var settingsButton, fullscreenButton;
 var messagingDisplay, floatingMessages;
 var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;
 
@@ -82,6 +83,70 @@ function initPlayerUI() {
 	}
 	
 	centerDisplayOnHexAt(turnUnit.getHexLocation());
+	
+	// Initialize FPS counter
+	var fpsDiv = document.getElementById("fpsDiv");
+	fpsDisplay = new createjs.DOMElement(fpsDiv);
+	fpsDisplay.x = -rootStage.x - 10;
+    fpsDisplay.y = -rootStage.y + 80 ;
+    overlay.addChild(fpsDisplay);
+    
+    // Initialize ping display
+	var pingDiv = document.getElementById("pingDiv");
+	pingDisplay = new createjs.DOMElement(pingDiv);
+	pingDisplay.x = -rootStage.x - 10;
+	pingDisplay.y = -rootStage.y + 100 ;
+    overlay.addChild(pingDisplay);
+    
+    // Initialize unit info dialog
+    dialogDisplay = $("#dialogDiv").dialog({
+    	open: function () { $(this).siblings().find(".ui-dialog-title").html("<div id='unit-title'></div>"); },
+    	autoOpen: false,
+    	modal: true,
+		show: {
+			effect: "fade",
+			duration: 500
+		},
+		hide: {
+			effect: "clip",
+			duration: 250
+		}
+    });
+    
+    // Initialize loading dialog
+    dialogLoading = $("#loadingDiv").dialog({
+    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
+    	title: "Loading...",
+    	autoOpen: false,
+    	modal: true,
+		show: {
+			effect: "fade",
+			duration: 250
+		},
+		hide: {
+			effect: "explode",
+			duration: 250
+		}
+    });
+    
+    // create the settings button
+    settingsButton = new createjs.Container();
+    overlay.addChild(settingsButton);
+	
+    settingsButton.on("click", showSettingsDisplay);
+    settingsButton.mouseChildren = false;
+    
+    // create the fullscreen button
+    fullscreenButton = new createjs.Container();
+    overlay.addChild(fullscreenButton);
+	
+	if( fullScreenApi.supportsFullScreen || devMode ) {
+		fullscreenButton.on("click", toggleFullScreen);
+		fullscreenButton.mouseChildren = false;
+	}
+	else {
+		fullscreenButton.alpha = 0.33;
+	}
 }
 
 // updates the sizings/positions of the UI overlays on the canvas
@@ -95,6 +160,54 @@ function updatePlayerUI() {
 	updateOtherUnitDisplay();
 	
 	updatePlayerUnitControls();
+	
+	// update the settings button
+	var buttonSize = 75/2;
+	
+	settingsButton.x = 0;
+	settingsButton.y = 0;
+	settingsButton.removeAllChildren();
+	
+	var settingsBackground = new createjs.Shape();
+    settingsBackground.graphics
+			.beginFill(Settings.get(Settings.UI_BG_COLOR))
+			.drawRect(0,0, buttonSize,buttonSize);
+    settingsBackground.alpha = Settings.get(Settings.UI_OPACITY);
+    settingsButton.addChild(settingsBackground);
+    
+    var settingsBorder = new createjs.Shape();
+    settingsBorder.graphics.setStrokeStyle(2, "square")
+			.beginStroke(Settings.get(Settings.UI_FG_COLOR))
+			.drawRect(0,0, buttonSize,buttonSize);
+    settingsButton.addChild(settingsBorder);
+    
+    var settingsText = new createjs.Text("[?]", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+    settingsText.x = (buttonSize - settingsText.getMeasuredWidth())/2;
+    settingsText.y = (buttonSize - settingsText.getMeasuredHeight()*1.5)/2;
+    settingsButton.addChild(settingsText);
+    
+    // update the fullscreen button
+    fullscreenButton.x = 0;
+    fullscreenButton.y = buttonSize;
+    fullscreenButton.removeAllChildren();
+    
+    var fsBackground = new createjs.Shape();
+	fsBackground.graphics
+			.beginFill(Settings.get(Settings.UI_BG_COLOR))
+			.drawRect(0,0, buttonSize,buttonSize);
+	fsBackground.alpha = Settings.get(Settings.UI_OPACITY);
+	fullscreenButton.addChild(fsBackground);
+	
+	var fsBorder = new createjs.Shape();
+	fsBorder.graphics.setStrokeStyle(2, "round")
+			.beginStroke(Settings.get(Settings.UI_FG_COLOR))
+			.drawRect(0,0, buttonSize,buttonSize);
+	fullscreenButton.addChild(fsBorder);
+	
+	var fsText = new createjs.Text("[ ]", "16px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+	fsText.x = (buttonSize - fsText.getMeasuredWidth())/2;
+	fsText.y = (buttonSize - fsText.getMeasuredHeight()*1.5)/2;
+	fullscreenButton.addChild(fsText);
 }
 
 /**
@@ -622,20 +735,20 @@ function setPlayerTarget(unit) {
 	if(targetLine == null) {
 		targetLine = new createjs.Shape();
 		stage.addChild(targetLine);
-		
-		targetLine.update = function() {
-			this.graphics.clear();
-			this.graphics.setStrokeDash([10, 20], 10).
-					setStrokeStyle(3, "round").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
-					.moveTo(turnUnit.getUnitDisplay().x, turnUnit.getUnitDisplay().y)
-					.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
-			// give the indicator a glow
-			var glowColor = shadeColor(Settings.get(Settings.UI_ENEMY_COLOR), 0.75);
-			this.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
-		}
 	}
 	else{
 		targetLine.visible = true;
+	}
+	
+	targetLine.update = function() {
+		this.graphics.clear();
+		this.graphics.setStrokeDash([10, 20], 10).
+				setStrokeStyle(3, "round").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
+				.moveTo(turnUnit.getUnitDisplay().x, turnUnit.getUnitDisplay().y)
+				.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
+		// give the indicator a glow
+		var glowColor = shadeColor(Settings.get(Settings.UI_ENEMY_COLOR), 0.75);
+		this.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
 	}
 	
 	targetLine.update();

@@ -50,8 +50,8 @@ s.init = function() {
 	
 	this.boardScaleSlider.slider({
 		value: Settings.get(Settings.BOARD_SCALE),
-	    min: 0.1,
-	    max: 4.0,
+	    min: 0.2,
+	    max: 3.0,
 	    step: 0.1,
 	    change: function(event, ui) {
 	    	boardScaleValue.text(ui.value);
@@ -81,7 +81,7 @@ s.init = function() {
 	
 	this.uiScaleSlider.slider({
 		value: Settings.get(Settings.UI_SCALE),
-	    min: 0.1,
+	    min: 0.3,
 	    max: 3.0,
 	    step: 0.05,
 	    change: function(event, ui) {
