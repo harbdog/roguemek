@@ -58,7 +58,7 @@ s.init = function() {
 	
 	///////////////////////////////////
 	// create the UI opacity setting //
-	this.bgTransSlider = SettingsDisplay.createSliderSetting(
+	var bgTransSlider = SettingsDisplay.createSliderSetting(
 			settingsDiv,
 			"bgTrans", "UI Opacity", 
 			Settings.get(Settings.UI_OPACITY),
@@ -103,6 +103,21 @@ s.init = function() {
 			"enemy", "Enemy",
 			Settings.UI_ENEMY_COLOR
 	);
+	
+	//////////////////////////////////////
+	// create the caching level setting //
+	var cachingSlider = SettingsDisplay.createTextSliderSetting(
+			settingsDiv,
+			"caching", "Graphics", 
+			Settings.get(Settings.GFX_CACHING),
+			["Performance", "Balance", "Quality"],
+			function(value) {
+				var settingKey = Settings.GFX_CACHING;
+		    	
+				Settings.set(settingKey, value);
+				handleSettingsUpdate(settingKey);
+			}
+	); 
 }
 
 s.update = function() {
@@ -179,6 +194,71 @@ SettingsDisplay.createSliderSetting = function(settingsDiv, sliderName, sliderTe
 	    }
 	});
 	settingValue.text(settingSlider.slider("value"));
+	
+	return settingSlider;
+}
+
+/**
+ * Creates a slider settings option, which has only text values as selections, and returns the slider object
+ */
+SettingsDisplay.createTextSliderSetting = function(settingsDiv, sliderName, sliderText, sliderValue, sliderValueList, callFunction) {
+	var settingOuterDiv = $("<div>", {id: sliderName+"Div"});
+	settingsDiv.append(settingOuterDiv);
+	
+	var settingLabel = $("<span>", {id: sliderName+"Label", class: "property-heading"});
+	settingLabel.text(sliderText);
+	settingOuterDiv.append(settingLabel);
+	
+	var settingValue = $("<span>", {id: sliderName+"Value", class: "property-value"});
+	settingValue.css("float", "right");
+	settingOuterDiv.append(settingValue);
+	
+	var settingInnerDiv = $("<div>", {id: sliderName+"InnerDiv", class: "sliderDiv"});
+	settingOuterDiv.append(settingInnerDiv);
+	
+	var settingSlider = $("<div>", {id: sliderName+"Slider", class: "slider property-value"});
+	
+	var slideLeftBtn = $("<button>", {id: sliderName+"SlideLeftBtn", class: "sliderButton"});
+	slideLeftBtn.button({
+		text: false,
+		icons: {primary: "ui-icon-seek-prev"}
+	});
+	slideLeftBtn.click(function() {
+		var val = settingSlider.slider("value"), step = settingSlider.slider("option", "step");
+		settingSlider.slider("value", val - step);
+	});
+	
+	var slideRightBtn = $("<button>", {id: sliderName+"SlideRightBtn", class: "sliderButton"});
+	slideRightBtn.button({
+		text: false,
+		icons: {primary: "ui-icon-seek-next"}
+	});
+	slideRightBtn.click(function() {
+		var val = settingSlider.slider("value"), step = settingSlider.slider("option", "step");
+		settingSlider.slider("value", val + step);
+	});
+	
+	settingInnerDiv.append(slideLeftBtn);
+	settingInnerDiv.append(settingSlider);
+	settingInnerDiv.append(slideRightBtn);
+	
+	settingSlider.slider({
+		value: sliderValue,
+	    min: 0,
+	    max: sliderValueList.length-1,
+	    step: 1,
+	    create: function(event, ui) {
+	    	settingValue.text(sliderValueList[sliderValue]);
+	    },
+	    change: function(event, ui) {
+	    	settingValue.text(sliderValueList[ui.value]);
+	    	callFunction(ui.value);
+	    },
+	    slide: function(event, ui) {
+	    	settingValue.text(sliderValueList[ui.value]);
+	    	callFunction(ui.value);
+	    }
+	});
 	
 	return settingSlider;
 }
