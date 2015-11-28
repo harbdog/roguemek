@@ -34,101 +34,42 @@ s.init = function() {
 	
 	////////////////////////////////////
 	// create the board scale setting //
-	var boardScaleDiv = $("<div>", {id: "boardScaleDiv"});
-	settingsDiv.append(boardScaleDiv);
-	
-	var boardScaleLabel = $("<span>", {id: "boardScaleLabel", class: "property-heading"});
-	boardScaleLabel.text("Board Scale");
-	boardScaleDiv.append(boardScaleLabel);
-	
-	var boardScaleValue = $("<span>", {id: "boardScaleValue", class: "property-value"});
-	boardScaleValue.css("float", "right");
-	boardScaleDiv.append(boardScaleValue);
-	
-	this.boardScaleSlider = $("<div>", {id: "boardScaleSlider", class: "property-value"});
-	boardScaleDiv.append(this.boardScaleSlider);
-	
-	this.boardScaleSlider.slider({
-		value: Settings.get(Settings.BOARD_SCALE),
-	    min: 0.2,
-	    max: 3.0,
-	    step: 0.1,
-	    change: function(event, ui) {
-	    	boardScaleValue.text(ui.value);
-	    },
-	    slide: function(event, ui) {
-	    	boardScaleValue.text(ui.value);
-	    	handleZoomBoard(ui.value);
-	    }
-	});
-	boardScaleValue.text(this.boardScaleSlider.slider("value"));
+	this.boardScaleSlider = SettingsDisplay.createSliderSetting(
+			settingsDiv,
+			"boardScale", "Board Scale", 
+			Settings.get(Settings.BOARD_SCALE),
+			0.2, 3.0, 0.1,
+			function(ui) {
+				handleZoomBoard(ui.value);
+			}
+	); 
 	
 	/////////////////////////////////
 	// create the UI scale setting //
-	var uiScaleDiv = $("<div>", {id: "uiScaleDiv"});
-	settingsDiv.append(uiScaleDiv);
-	
-	var uiScaleLabel = $("<span>", {id: "uiScaleLabel", class: "property-heading"});
-	uiScaleLabel.text("UI Scale");
-	uiScaleDiv.append(uiScaleLabel);
-	
-	var uiScaleValue = $("<span>", {id: "uiScaleValue", class: "property-value"});
-	uiScaleValue.css("float", "right");
-	uiScaleDiv.append(uiScaleValue);
-	
-	this.uiScaleSlider = $("<div>", {id: "uiScaleSlider", class: "property-value"});
-	uiScaleDiv.append(this.uiScaleSlider);
-	
-	this.uiScaleSlider.slider({
-		value: Settings.get(Settings.UI_SCALE),
-	    min: 0.3,
-	    max: 3.0,
-	    step: 0.05,
-	    change: function(event, ui) {
-	    	uiScaleValue.text(ui.value);
-	    },
-	    slide: function(event, ui) {
-	    	uiScaleValue.text(ui.value);
-	    	handleScaleOverlay(ui.value);
-	    }
-	});
-	uiScaleValue.text(this.uiScaleSlider.slider("value"));
+	this.uiScaleSlider = SettingsDisplay.createSliderSetting(
+			settingsDiv,
+			"uiScale", "UI Scale", 
+			Settings.get(Settings.UI_SCALE),
+			0.3, 3.0, 0.05,
+			function(ui) {
+				handleScaleOverlay(ui.value);
+			}
+	); 
 	
 	///////////////////////////////////////////////////
-	// create the UI background transparency setting //
-	var bgTransDiv = $("<div>", {id: "bgTransDiv"});
-	settingsDiv.append(bgTransDiv);
-	
-	var bgTransLabel = $("<span>", {id: "bgTransLabel", class: "property-heading"});
-	bgTransLabel.text("UI Opacity");
-	bgTransDiv.append(bgTransLabel);
-	
-	var bgTransValue = $("<span>", {id: "bgTransValue", class: "property-value"});
-	bgTransValue.css("float", "right");
-	bgTransDiv.append(bgTransValue);
-	
-	this.bgTransSlider = $("<div>", {id: "bgTransSlider", class: "property-value"});
-	bgTransDiv.append(this.bgTransSlider);
-	
-	this.bgTransSlider.slider({
-		value: Settings.get(Settings.UI_OPACITY),
-	    min: 0,
-	    max: 1,
-	    step: 0.05,
-	    change: function(event, ui) {
-	    	bgTransValue.text(ui.value);
-	    },
-	    slide: function(event, ui) {
-	    	var settingKey = Settings.UI_OPACITY;
-	    	var opacity = ui.value;
-	    	
-	    	bgTransValue.text(opacity);
-			Settings.set(settingKey, opacity);
-			
-			handleSettingsUpdate(settingKey);
-	    }
-	});
-	bgTransValue.text(this.bgTransSlider.slider("value"));
+	this.bgTransSlider = SettingsDisplay.createSliderSetting(
+			settingsDiv,
+			"bgTrans", "UI Opacity", 
+			Settings.get(Settings.UI_OPACITY),
+			0, 1, 0.05,
+			function(ui) {
+				var settingKey = Settings.UI_OPACITY;
+		    	var opacity = ui.value;
+		    	
+				Settings.set(settingKey, opacity);
+				handleSettingsUpdate(settingKey);
+			}
+	); 
 	
 	////////////////////////////////////////////
 	// create the UI background color setting //
@@ -312,6 +253,69 @@ s.show = function() {
 	this.update();
 	this.settingsDialog.dialog("option", "position", {my: "left top+"+positionOffset, at: "left top", of: canvas});
 	this.settingsDialog.dialog("open");
+}
+
+/**
+ * Creates a slider settings option and returns the slider object
+ */
+SettingsDisplay.createSliderSetting = function(settingsDiv, sliderName, sliderText, sliderValue, sliderMin, sliderMax, sliderStep, callFunction) {
+	var settingOuterDiv = $("<div>", {id: sliderName+"Div"});
+	settingsDiv.append(settingOuterDiv);
+	
+	var settingLabel = $("<span>", {id: sliderName+"Label", class: "property-heading"});
+	settingLabel.text(sliderText);
+	settingOuterDiv.append(settingLabel);
+	
+	var settingValue = $("<span>", {id: sliderName+"Value", class: "property-value"});
+	settingValue.css("float", "right");
+	settingOuterDiv.append(settingValue);
+	
+	var settingInnerDiv = $("<div>", {id: sliderName+"InnerDiv", class: "sliderDiv"});
+	settingOuterDiv.append(settingInnerDiv);
+	
+	var settingSlider = $("<div>", {id: sliderName+"Slider", class: "slider property-value"});
+	
+	var slideLeftBtn = $("<button>", {id: sliderName+"SlideLeftBtn", class: "sliderButton"});
+	slideLeftBtn.button({
+		text: false,
+		icons: {primary: "ui-icon-seek-prev"}
+	});
+	slideLeftBtn.click(function() {
+		var val = settingSlider.slider("value"), step = settingSlider.slider("option", "step");
+		settingSlider.slider("value", val - step);
+	});
+	
+	var slideRightBtn = $("<button>", {id: sliderName+"SlideRightBtn", class: "sliderButton"});
+	slideRightBtn.button({
+		text: false,
+		icons: {primary: "ui-icon-seek-next"}
+	});
+	slideRightBtn.click(function() {
+		var val = settingSlider.slider("value"), step = settingSlider.slider("option", "step");
+		settingSlider.slider("value", val + step);
+	});
+	
+	settingInnerDiv.append(slideLeftBtn);
+	settingInnerDiv.append(settingSlider);
+	settingInnerDiv.append(slideRightBtn);
+	
+	settingSlider.slider({
+		value: sliderValue,
+	    min: sliderMin,
+	    max: sliderMax,
+	    step: sliderStep,
+	    change: function(event, ui) {
+	    	settingValue.text(ui.value);
+	    	callFunction(ui);
+	    },
+	    slide: function(event, ui) {
+	    	settingValue.text(ui.value);
+	    	callFunction(ui);
+	    }
+	});
+	settingValue.text(settingSlider.slider("value"));
+	
+	return settingSlider;
 }
 
 window.SettingsDisplay = SettingsDisplay;

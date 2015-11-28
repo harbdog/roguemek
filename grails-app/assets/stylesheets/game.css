@@ -133,6 +133,20 @@ div #pingDiv {
 	margin-left: 10px;
 }
 
+#settingsDiv div.sliderDiv {
+	display: table;
+	padding: 5px 0px 10px 0px;
+}
+
+#settingsDiv div.slider {
+	display: table-cell;
+	width: 100%;
+}
+
+#settingsDiv button.sliderButton {
+	display: table-cell;
+}
+
 /* Styles for dialog contents from battleInfo.gsp */
 .ui-dialog .ui-dialog-titlebar {
 	padding: 0;
