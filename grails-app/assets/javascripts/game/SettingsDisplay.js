@@ -56,7 +56,8 @@ s.init = function() {
 			}
 	); 
 	
-	///////////////////////////////////////////////////
+	///////////////////////////////////
+	// create the UI opacity setting //
 	this.bgTransSlider = SettingsDisplay.createSliderSetting(
 			settingsDiv,
 			"bgTrans", "UI Opacity", 
@@ -73,171 +74,35 @@ s.init = function() {
 	
 	////////////////////////////////////////////
 	// create the UI background color setting //
-	var bgColorKey = Settings.UI_BG_COLOR;
-	var bgColorDiv = $("<div>", {id: "bgColorDiv"});
-	settingsDiv.append(bgColorDiv);
-	
-	var bgColorInput = $("<input>", {id: "bgColorInput", class: "property-value", value: Settings.get(bgColorKey)});
-	bgColorDiv.append(bgColorInput);
-	
-	var bgColorLabel = $("<span>", {id: "bgColorLabel", class: "property-heading"});
-	bgColorLabel.text("UI Background");
-	bgColorDiv.append(bgColorLabel);
-	
-	var bgColorUpdateFunc = function(tinycolor) {
-		var settingKey = bgColorKey;
-		var color = tinycolor.toHexString();
-		Settings.set(settingKey, color);
-		
-		handleSettingsUpdate(settingKey);
-	};
-	
-	bgColorInput.spectrum({
-		preferredFormat: "hex",
-		showInitial: true,
-		move: bgColorUpdateFunc,
-		show: function() {
-			$(this).data('changed', false);
-			$(this).data('origColor', tinycolor(Settings.get(bgColorKey)));
-		},
-		change: function(color) {
-			$(this).data('changed', true);
-		},
-		hide: function(color) {
-			if($(this).data('changed')) {
-				// changed (update would have occurred from move action)
-			} else {
-				// cancelled
-				bgColorUpdateFunc($(this).data('origColor'));
-			}
-		}
-	});
+	var enemyColorInput = SettingsDisplay.createColorSetting(
+			settingsDiv,
+			"bgColor", "UI Background",
+			Settings.UI_BG_COLOR
+	);
 	
 	////////////////////////////////////////////
 	// create the UI foreground color setting //
-	var fgColorKey = Settings.UI_FG_COLOR;
-	var fgColorDiv = $("<div>", {id: "fgColorDiv"});
-	settingsDiv.append(fgColorDiv);
-	
-	var fgColorInput = $("<input>", {id: "fgColorInput", class: "property-value", value: Settings.get(fgColorKey)});
-	fgColorDiv.append(fgColorInput);
-	
-	var fgColorLabel = $("<span>", {id: "fgColorLabel", class: "property-heading"});
-	fgColorLabel.text("UI Foreground");
-	fgColorDiv.append(fgColorLabel);
-	
-	var fgColorUpdateFunc = function(tinycolor) {
-		var settingKey = fgColorKey;
-		var color = tinycolor.toHexString();
-		Settings.set(settingKey, color);
-		
-		handleSettingsUpdate(settingKey);
-	};
-	
-	fgColorInput.spectrum({
-		preferredFormat: "hex",
-		showInitial: true,
-		move: fgColorUpdateFunc,
-		show: function() {
-			$(this).data('changed', false);
-			$(this).data('origColor', tinycolor(Settings.get(fgColorKey)));
-		},
-		change: function(color) {
-			$(this).data('changed', true);
-		},
-		hide: function(color) {
-			if($(this).data('changed')) {
-				// changed
-			} else {
-				// cancelled
-				fgColorUpdateFunc($(this).data('origColor'));
-			}
-		}
-	});
+	var enemyColorInput = SettingsDisplay.createColorSetting(
+			settingsDiv,
+			"fgColor", "UI Foreground",
+			Settings.UI_FG_COLOR
+	);
 	
 	/////////////////////////////////////
 	// create the player color setting //
-	var playerColorKey = Settings.UI_PLAYER_COLOR;
-	var playerColorDiv = $("<div>", {id: "playerColorDiv"});
-	settingsDiv.append(playerColorDiv);
-	
-	var playerColorInput = $("<input>", {id: "playerColorInput", class: "property-value", value: Settings.get(playerColorKey)});
-	playerColorDiv.append(playerColorInput);
-	
-	var playerColorLabel = $("<span>", {id: "playerColorLabel", class: "property-heading"});
-	playerColorLabel.text("Player");
-	playerColorDiv.append(playerColorLabel);
-	
-	var playerColorUpdateFunc = function(tinycolor) {
-		var settingKey = playerColorKey;
-		var color = tinycolor.toHexString();
-		Settings.set(settingKey, color);
-		
-		handleSettingsUpdate(settingKey);
-	};
-	
-	playerColorInput.spectrum({
-		preferredFormat: "hex",
-		showInitial: true,
-		move: playerColorUpdateFunc,
-		show: function() {
-			$(this).data('changed', false);
-			$(this).data('origColor', tinycolor(Settings.get(playerColorKey)));
-		},
-		change: function(color) {
-			$(this).data('changed', true);
-		},
-		hide: function(color) {
-			if($(this).data('changed')) {
-				// changed
-			} else {
-				// cancelled
-				playerColorUpdateFunc($(this).data('origColor'));
-			}
-		}
-	});
+	var playerColorInput = SettingsDisplay.createColorSetting(
+			settingsDiv,
+			"player", "Player",
+			Settings.UI_PLAYER_COLOR
+	);
 	
 	////////////////////////////////////
 	// create the enemy color setting //
-	var enemyColorKey = Settings.UI_ENEMY_COLOR;
-	var enemyColorDiv = $("<div>", {id: "enemyColorDiv"});
-	settingsDiv.append(enemyColorDiv);
-	
-	var enemyColorInput = $("<input>", {id: "enemyColorInput", class: "property-value", value: Settings.get(enemyColorKey)});
-	enemyColorDiv.append(enemyColorInput);
-	
-	var enemyColorLabel = $("<span>", {id: "enemyColorLabel", class: "property-heading"});
-	enemyColorLabel.text("Enemy");
-	enemyColorDiv.append(enemyColorLabel);
-	
-	var enemyColorUpdateFunc = function(tinycolor) {
-		var settingKey = enemyColorKey;
-		var color = tinycolor.toHexString();
-		Settings.set(settingKey, color);
-		
-		handleSettingsUpdate(settingKey);
-	};
-	
-	enemyColorInput.spectrum({
-		preferredFormat: "hex",
-		showInitial: true,
-		move: enemyColorUpdateFunc,
-		show: function() {
-			$(this).data('changed', false);
-			$(this).data('origColor', tinycolor(Settings.get(enemyColorKey)));
-		},
-		change: function(color) {
-			$(this).data('changed', true);
-		},
-		hide: function(color) {
-			if($(this).data('changed')) {
-				// changed
-			} else {
-				// cancelled
-				enemyColorUpdateFunc($(this).data('origColor'));
-			}
-		}
-	});
+	var enemyColorInput = SettingsDisplay.createColorSetting(
+			settingsDiv,
+			"enemy", "Enemy",
+			Settings.UI_ENEMY_COLOR
+	);
 }
 
 s.update = function() {
@@ -316,6 +181,51 @@ SettingsDisplay.createSliderSetting = function(settingsDiv, sliderName, sliderTe
 	settingValue.text(settingSlider.slider("value"));
 	
 	return settingSlider;
+}
+
+/**
+ * Creates a color picker settings option and returns the color input object
+ */
+SettingsDisplay.createColorSetting = function(settingsDiv, settingName, settingText, settingKey) {
+	var colorDiv = $("<div>", {id: settingName+"ColorDiv"});
+	settingsDiv.append(colorDiv);
+	
+	var colorInput = $("<input>", {id: settingName+"ColorInput", class: "property-value", value: Settings.get(settingKey)});
+	colorDiv.append(colorInput);
+	
+	var colorLabel = $("<span>", {id: settingName+"ColorLabel", class: "property-heading"});
+	colorLabel.text(settingText);
+	colorDiv.append(colorLabel);
+	
+	var colorUpdateFunc = function(tinycolor) {
+		var color = tinycolor.toHexString();
+		
+		Settings.set(settingKey, color);
+		handleSettingsUpdate(settingKey);
+	};
+	
+	colorInput.spectrum({
+		preferredFormat: "hex",
+		showInitial: true,
+		move: colorUpdateFunc,
+		show: function() {
+			$(this).data('changed', false);
+			$(this).data('origColor', tinycolor(Settings.get(settingKey)));
+		},
+		change: function(color) {
+			$(this).data('changed', true);
+		},
+		hide: function(color) {
+			if($(this).data('changed')) {
+				// changed
+			} else {
+				// cancelled
+				colorUpdateFunc($(this).data('origColor'));
+			}
+		}
+	});
+	
+	return colorInput;
 }
 
 window.SettingsDisplay = SettingsDisplay;
