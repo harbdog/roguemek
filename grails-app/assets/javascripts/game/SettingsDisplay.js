@@ -39,8 +39,8 @@ s.init = function() {
 			"boardScale", "Board Scale", 
 			Settings.get(Settings.BOARD_SCALE),
 			0.2, 3.0, 0.1,
-			function(ui) {
-				handleZoomBoard(ui.value);
+			function(value) {
+				handleZoomBoard(value);
 			}
 	); 
 	
@@ -51,8 +51,8 @@ s.init = function() {
 			"uiScale", "UI Scale", 
 			Settings.get(Settings.UI_SCALE),
 			0.3, 3.0, 0.05,
-			function(ui) {
-				handleScaleOverlay(ui.value);
+			function(value) {
+				handleScaleOverlay(value);
 			}
 	); 
 	
@@ -63,9 +63,9 @@ s.init = function() {
 			"bgTrans", "UI Opacity", 
 			Settings.get(Settings.UI_OPACITY),
 			0, 1, 0.05,
-			function(ui) {
+			function(value) {
 				var settingKey = Settings.UI_OPACITY;
-		    	var opacity = ui.value;
+		    	var opacity = value;
 		    	
 				Settings.set(settingKey, opacity);
 				handleSettingsUpdate(settingKey);
@@ -171,11 +171,11 @@ SettingsDisplay.createSliderSetting = function(settingsDiv, sliderName, sliderTe
 	    step: sliderStep,
 	    change: function(event, ui) {
 	    	settingValue.text(ui.value);
-	    	callFunction(ui);
+	    	callFunction(ui.value);
 	    },
 	    slide: function(event, ui) {
 	    	settingValue.text(ui.value);
-	    	callFunction(ui);
+	    	callFunction(ui.value);
 	    }
 	});
 	settingValue.text(settingSlider.slider("value"));
