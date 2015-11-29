@@ -146,7 +146,7 @@ c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 }
 
 c.doCache = function() {
-	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_PERFORMANCE){
 		// caching only at the lowest gfx setting
 		this.cache(0,0, this.width,this.height);
 	}

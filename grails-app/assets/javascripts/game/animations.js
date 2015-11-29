@@ -350,7 +350,12 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			// TODO: make Projectile use the new class methods similar to Laser/Lightning
 			var projectile = new Projectile(weaponPoint.x, weaponPoint.y);
 			projectile.visible = false;
-			projectile.shadow = new createjs.Shadow("#FFCC00", 0, 0, 10);
+			
+			if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
+				// shadows only at the highest gfx setting
+				projectile.shadow = new createjs.Shadow("#FFCC00", 0, 0, 10);
+			}
+			
 			projectile.graphics.setStrokeStyle(projectileWidth).beginStroke("#FFD700").moveTo(0, 0).lineTo(point.x, point.y).endStroke();
 			stage.addChild(projectile);
 			

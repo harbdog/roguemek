@@ -112,7 +112,7 @@ c.setSelectedWeaponIndices = function(weaponIndices) {
 }
 
 c.doCache = function() {
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching only at the highest gfx setting
 		this.cache(0,0, this.width,this.height);
 	}

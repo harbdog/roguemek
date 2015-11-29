@@ -42,7 +42,7 @@ c.update = function() {
 	this.drawLevel();
 	
 	// cache the object based on settings since caching makes text blurry, but not caching is a big performance hit
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
 		if(useIsometric && this.getHex() != null) {
 			if(this.getHex().getElevation() >= 0) {

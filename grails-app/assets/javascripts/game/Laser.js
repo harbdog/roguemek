@@ -11,7 +11,6 @@ function Laser(config) {
 		glowWidth: 3,
 		laserWidth: 3,
 		laserColor: "#990000",
-		glow: true,
 		glowColor: "#FF0000"
 	};
 	this.setup(config);
@@ -33,7 +32,8 @@ s.show = function(startX, startY, endX, endY){
 	this.drawLaser(startX, startY, endX, endY);
 	this.doCache(startX, startY, endX, endY);
 	
-	if(this.conf.glow) {
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
+		// shadows only at the highest gfx setting
 		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, 10);
 	}
 };
@@ -64,7 +64,7 @@ s.doCache = function(startX, startY, endX, endY) {
 		cacheH = startY - endY;
 	}
 	
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
 		this.cache(cacheX, cacheY, cacheW, cacheH);
 	}

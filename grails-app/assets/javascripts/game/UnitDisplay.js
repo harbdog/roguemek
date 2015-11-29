@@ -65,7 +65,9 @@ c.init = function() {
 	this.x = this.getUpdatedDisplayX(this.unit.coords);
 	this.y = this.getUpdatedDisplayY(this.unit.coords);
 	this.rotateContainer.rotation = this.getUpdatedDisplayRotation(this.unit.heading);
-	this.shadowUnitImage.rotation = this.rotateContainer.rotation;
+	if(this.shadowUnitImage != null) {
+		this.shadowUnitImage.rotation = this.rotateContainer.rotation;
+	}
 }
 
 c.update = function() {
@@ -138,25 +140,46 @@ c.positionUpdate = function(callFunction) {
 		this.unitImage.visible = showUnitImage;
 	}
 	
+	if(showUnitImage) {
+		if(this.unit.jumping) {
+			var rotateContainerY = -hexHeight/4;
+			
+			if(this.rotateContainer.y != rotateContainerY){
+				createjs.Tween.get(this.rotateContainer)
+				.to({y: rotateContainerY}, aTime)
+				.call(function() {
+					update = true;
+				})
+				.addEventListener("change", function() {
+					update = true;
+				});
+			}
+		}
+		else {
+			var rotateContainerY = 0;
+			
+			if(this.rotateContainer.y != rotateContainerY){
+				createjs.Tween.get(this.rotateContainer)
+						.to({y: rotateContainerY}, aTime)
+						.call(function() {
+							update = true;
+						})
+						.addEventListener("change", function() {
+							update = true;
+						});
+			}
+		}
+	}
+	
 	if(this.shadowUnitImage != null) {
 		this.shadowUnitImage.visible = showUnitImage;
 		
 		if(showUnitImage) {
 			if(showJumpShadow) {
 				// show the shadow and unit image in different locations to convey being above ground
-				var rotateContainerY = -hexHeight/4;
 				var shadowUnitImageY = hexHeight/8;
 				
-				if(this.rotateContainer.y != rotateContainerY){
-					createjs.Tween.get(this.rotateContainer)
-							.to({y: rotateContainerY}, aTime)
-							.call(function() {
-								update = true;
-							})
-							.addEventListener("change", function() {
-								update = true;
-							});
-					
+				if(this.shadowUnitImage.y != shadowUnitImageY){
 					createjs.Tween.get(this.shadowUnitImage)
 							.to({y: shadowUnitImageY, scaleX: this.unitImage.scaleX * 0.75, scaleY: this.unitImage.scaleY * 0.75}, aTime)
 							.call(function() {
@@ -168,19 +191,9 @@ c.positionUpdate = function(callFunction) {
 				}
 			}
 			else{
-				var rotateContainerY = 0;
 				var shadowUnitImageY = 3;
 				
-				if(this.rotateContainer.y != rotateContainerY){
-					createjs.Tween.get(this.rotateContainer)
-							.to({y: rotateContainerY}, aTime)
-							.call(function() {
-								update = true;
-							})
-							.addEventListener("change", function() {
-								update = true;
-							});
-			
+				if(this.shadowUnitImage.y != shadowUnitImageY){
 					createjs.Tween.get(this.shadowUnitImage)
 							.to({y: shadowUnitImageY, scaleX: this.unitImage.scaleX * 1.0, scaleY: this.unitImage.scaleY * 1.0}, aTime)
 							.call(function() {
@@ -260,13 +273,18 @@ c.drawImage = function(scale) {
 	this.unitImage.regX = this.image.width/2;
 	this.unitImage.regY = this.image.height/2;
 	
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
 		this.unitImage.cache(0, 0, this.image.width, this.image.height);
 	}
 }
 
 c.drawShadowImage = function() {
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_PERFORMANCE){
+		// no shadows only at the lowest gfx setting
+		return
+	}
+	
 	if(this.shadowUnitImage == null) {
 		this.shadowUnitImage = new createjs.Bitmap(this.image);
 		//load the unit image again and apply alpha color filter
@@ -284,7 +302,7 @@ c.drawShadowImage = function() {
 	this.shadowUnitImage.regY = this.unitImage.regY;
 	this.shadowUnitImage.rotation = this.rotateContainer.rotation;
 	
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
 		this.shadowUnitImage.cache(0, 0, this.image.width, this.image.height);
 	}
@@ -306,7 +324,7 @@ c.drawAlphaImage = function() {
 	this.alphaUnitImage.regX = this.unitImage.regX;
 	this.alphaUnitImage.regY = this.unitImage.regY;
 	
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
 		this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
 	}
@@ -326,7 +344,10 @@ c.loadJumpJets = function() {
 	this.jumpJetSprite.scaleX = this.jumpJetSprite.scaleY = 25/114;
 	this.jumpJetSprite.x = 0;
 	this.jumpJetSprite.y = -hexHeight/4;
-	this.addChildAt(this.jumpJetSprite, 1);
+	
+	
+	var jetSpriteIndex = (this.shadowUnitImage != null) ? 1 : 0;
+	this.addChildAt(this.jumpJetSprite, jetSpriteIndex);
 	// do not cache animated sprites
 }
 
@@ -416,7 +437,7 @@ c.animateUpdateDisplay = function(coords, heading, callFunction) {
 	// cancel any currently acting tweens
 	createjs.Tween.removeTweens(this);
 	createjs.Tween.removeTweens(this.rotateContainer);
-	createjs.Tween.removeTweens(this.shadowUnitImage);
+	if(this.shadowUnitImage != null) createjs.Tween.removeTweens(this.shadowUnitImage);
 	
 	var self = this;
 	createjs.Tween.get(this)
@@ -526,8 +547,11 @@ c.updateHeadingIndicator = function() {
 				.lineTo(iW/2, -hexHeight/2 + iH)
 				.endStroke();
 	}
-	// TODO: add setting for shadows/glows to be disabled across all elements
-	this.header.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+	// add setting for shadows/glows to be disabled across all elements
+	if(Settings.get(Settings.GFX_CACHING) > Settings.GFX_PERFORMANCE){
+		// no shadows only at the lowest gfx setting
+		this.header.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+	}
 }
 
 c.updateUnitIndicator = function() {
@@ -565,8 +589,11 @@ c.updateUnitIndicator = function() {
 		}
 		
 		// give the indicator a glow
-		var glowColor = shadeColor(color, 0.75);
-		this.indicator.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+		if(Settings.get(Settings.GFX_CACHING) > Settings.GFX_PERFORMANCE){
+			// no shadows only at the lowest gfx setting
+			var glowColor = shadeColor(color, 0.75);
+			this.indicator.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+		}
 		
 		this.rotateContainer.addChildAt(this.indicator, 1);
 		
@@ -589,8 +616,11 @@ c.showTurnDisplay = function(show) {
 	}
 	
 	// give the indicator a glow
-	var glowColor = shadeColor(color, 0.75);
-	this.indicator.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+	if(Settings.get(Settings.GFX_CACHING) > Settings.GFX_PERFORMANCE){
+		// no shadows only at the lowest gfx setting
+		var glowColor = shadeColor(color, 0.75);
+		this.indicator.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+	}
 	
 	this.rotateContainer.addChildAt(this.indicator, 1);
 	
@@ -603,7 +633,7 @@ c.showTurnDisplay = function(show) {
 }
 
 c.doCache = function() {
-	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_PERFORMANCE){
 		// caching only at the lowest gfx setting
 		this.cache(-hexWidth/2-5,-hexHeight/2-5, hexWidth+5,hexHeight+5);
 	}

@@ -758,7 +758,11 @@ function setPlayerTarget(unit) {
 				.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
 		// give the indicator a glow
 		var glowColor = shadeColor(Settings.get(Settings.UI_ENEMY_COLOR), 0.75);
-		this.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+		
+		if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
+			// shadows only at the highest gfx setting
+			this.shadow = new createjs.Shadow(glowColor, 0, 0, 5);
+		}
 	}
 	
 	targetLine.update();

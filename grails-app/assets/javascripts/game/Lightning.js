@@ -18,7 +18,6 @@ function Lightning(config) {
 		glowWidth: 3,
 		boltWidth: 3,
 		boltColor: "#0066CC",
-		glow: true,
 		glowColor: "#4D94DB",
 		glowAlpha: 0.1
 	};
@@ -40,7 +39,8 @@ s.show = function(startX, startY, endX, endY){
 	this.drawLightning(startX, startY, endX, endY, this.conf.displace);
 	this.doCache(startX, startY, endX, endY, this.conf.displace);
 	
-	if(this.conf.glow) {
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
+		// shadows only at the highest gfx setting
 		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, 10);
 	}
 };
@@ -103,7 +103,7 @@ s.doCache = function(startX, startY, endX, endY, displace) {
 		cacheH = startY - endY;
 	}
 	
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
 		this.cache(cacheX - displace, cacheY - displace, cacheW + displace, cacheH + displace);
 	}

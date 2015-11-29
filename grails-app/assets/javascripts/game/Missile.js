@@ -48,7 +48,12 @@ c.update = function() {
 	var burner = new createjs.Shape();
 	var burnLength = -1*(this.conf.burnerRadius);
 	var burnDestination = getMovementDestination(0, 0, burnLength, this.angle);
-	burner.shadow = new createjs.Shadow(this.conf.burnerGlowColor, burnDestination.x, burnDestination.y, this.conf.burnerLength);
+	
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
+		// shadows only at the highest gfx setting
+		burner.shadow = new createjs.Shadow(this.conf.burnerGlowColor, burnDestination.x, burnDestination.y, this.conf.burnerLength);
+	}
+	
 	burner.graphics.beginStroke(this.conf.burnerColor).beginFill(this.conf.burnerColor).drawCircle(0, 0, this.conf.burnerRadius).endStroke();
 	this.addChild(burner);
 	
@@ -69,7 +74,7 @@ c.doCache = function(startX, startY, endX, endY) {
 		cacheH = startY - endY;
 	}
 	
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
 		this.cache(cacheX, cacheY, cacheW, cacheH);
 	}

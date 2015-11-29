@@ -11,7 +11,6 @@ function FloatMessage(message, config) {
 	this.message = message;
 	// TODO: allow customization of colors in floating messages
 	this.conf = {
-		glow: false,
 		glowSize: 3,
 		glowColor: "#333333",
 		messageTextFont: "Bold 18px UbuntuMono"
@@ -27,7 +26,8 @@ c.setup = function(message, config) {
 	}
 	
 	// ready to draw
-	if(this.conf.glow) {
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
+		// shadows only at the highest gfx setting
 		this.shadow = new createjs.Shadow(this.conf.glowColor, 0, 0, this.conf.glowSize);
 	}
 	this.drawFloatMessage(message);
@@ -56,7 +56,7 @@ c.drawFloatMessage = function(message){
 	this.width = boxBounds.width;
 	this.height = boxBounds.height;
 	
-	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
 		this.cache(boxBounds.x, boxBounds.y, boxBounds.width, boxBounds.height);
 	}
