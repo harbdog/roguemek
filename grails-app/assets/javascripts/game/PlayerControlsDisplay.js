@@ -130,7 +130,7 @@ c.update = function() {
 		this.jump.update();
 	}
 	
-	//this.doCache();
+	this.doCache();
 }
 
 c.updateMoveActionPoints = function() {
@@ -191,7 +191,7 @@ c.drawCenterAsFireButton = function(drawAsFire) {
 	
 	this.center.drawCenterAsFireButton(drawAsFire, false);
 	
-	//this.doCache();
+	this.doCache();
 }
 
 c.drawButtonAsActive = function(controlType, active) {
@@ -221,13 +221,16 @@ c.drawButtonAsActive = function(controlType, active) {
 		control.drawButtonAsActive(active);
 	}
 	
-	//this.doCache();
+	this.doCache();
 	
 	return control;
 }
 
 c.doCache = function() {
-	this.cache(0,0, this.width,this.height);
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+		// caching only at the lowest gfx setting
+		this.cache(0,0, this.width,this.height);
+	}
 }
 
 window.PlayerControlsDisplay = createjs.promote(PlayerControlsDisplay, "Container");

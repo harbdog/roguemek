@@ -93,7 +93,7 @@ c.update = function() {
 			.setStrokeStyle(BORDER_WIDTH/2, "round").beginStroke(Settings.get(Settings.UI_FG_COLOR))
 			.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 	
-	//this.doCache();
+	this.doCache();
 }
 
 c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
@@ -142,11 +142,14 @@ c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 	this.heatResultLine.graphics.beginFill(heatResultColor)
 			.drawRect(0, 0, this.width * (heatResult / MAX_HEAT), this.height);
 	
-	//this.doCache();
+	this.doCache();
 }
 
 c.doCache = function() {
-	this.cache(0,0, this.width,this.height);
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+		// caching only at the lowest gfx setting
+		this.cache(0,0, this.width,this.height);
+	}
 }
 
 window.MechHeatDisplay = createjs.promote(MechHeatDisplay, "Container");

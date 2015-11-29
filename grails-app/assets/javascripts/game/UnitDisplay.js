@@ -4,9 +4,6 @@
 (function() {
 "use strict";
 
-// TODO: add option for turning caching on for better framerate on slower devices
-var cacheUnits = false;
-
 function UnitDisplay(unit) {
 	this.Container_constructor();
 	
@@ -262,7 +259,11 @@ c.drawImage = function(scale) {
 	// adjust the rotation around its own center (which also adjusts its x/y reference point)
 	this.unitImage.regX = this.image.width/2;
 	this.unitImage.regY = this.image.height/2;
-	this.unitImage.cache(0, 0, this.image.width, this.image.height);
+	
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+		// no caching at the highest gfx setting
+		this.unitImage.cache(0, 0, this.image.width, this.image.height);
+	}
 }
 
 c.drawShadowImage = function() {
@@ -282,7 +283,11 @@ c.drawShadowImage = function() {
 	this.shadowUnitImage.regX = this.unitImage.regX;
 	this.shadowUnitImage.regY = this.unitImage.regY;
 	this.shadowUnitImage.rotation = this.rotateContainer.rotation;
-	this.shadowUnitImage.cache(0, 0, this.image.width, this.image.height);
+	
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+		// no caching at the highest gfx setting
+		this.shadowUnitImage.cache(0, 0, this.image.width, this.image.height);
+	}
 }
 
 c.drawAlphaImage = function() {
@@ -300,7 +305,11 @@ c.drawAlphaImage = function() {
 	this.alphaUnitImage.scaleY = this.unitImage.scaleY;
 	this.alphaUnitImage.regX = this.unitImage.regX;
 	this.alphaUnitImage.regY = this.unitImage.regY;
-	this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
+	
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+		// no caching at the highest gfx setting
+		this.alphaUnitImage.cache(0, 0, this.image.width, this.image.height);
+	}
 }
 
 c.loadJumpJets = function() {
@@ -594,7 +603,10 @@ c.showTurnDisplay = function(show) {
 }
 
 c.doCache = function() {
-	if(cacheUnits) this.cache(-hexWidth/2-5,-hexHeight/2-5, hexWidth+5,hexHeight+5);
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+		// caching only at the lowest gfx setting
+		this.cache(-hexWidth/2-5,-hexHeight/2-5, hexWidth+5,hexHeight+5);
+	}
 }
 
 c.toString = function() {

@@ -72,7 +72,10 @@ s.hide = function() {
 };
 
 s.doCache = function() {
-	this.cache(0, 0, this.width, this.height);
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+		// no caching only at the highest gfx setting
+		this.cache(0, 0, this.width, this.height);
+	}
 };
 
 window.StatusIcon = createjs.promote(StatusIcon, "Shape");

@@ -112,7 +112,7 @@ c.update = function() {
 		}
 	}
 	
-	//this.doCache();
+	this.doCache();
 }
 
 /**
@@ -174,7 +174,10 @@ c.resetStatusInfo = function() {
 }
 
 c.doCache = function() {
-	this.cache(0,0, this.width,this.height);
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+		// caching only at the lowest gfx setting
+		this.cache(0,0, this.width,this.height);
+	}
 }
 
 window.MechInfoDisplay = createjs.promote(MechInfoDisplay, "Container");

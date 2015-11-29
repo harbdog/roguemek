@@ -143,7 +143,7 @@ c.update = function() {
 	this.toHitLabel.text = toHitAsPercent;
 	this.toHitLabel.x = this.width - this.toHitLabel.getMeasuredWidth() - 5;
 	
-	//this.doCache();
+	this.doCache();
 }
 
 c.drawSelected = function() {
@@ -173,12 +173,15 @@ c.setSelected = function(selected) {
 	this.selected = selected;
 	this.drawSelected();
 	
-	//this.doCache();
+	this.doCache();
 }
 
 
 c.doCache = function() {
-	this.cache(0,0, this.width,this.height);
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+		// caching only at the lowest gfx setting
+		this.cache(0,0, this.width,this.height);
+	}
 }
 
 c.toString = function() {

@@ -103,7 +103,10 @@ s.doCache = function(startX, startY, endX, endY, displace) {
 		cacheH = startY - endY;
 	}
 	
-	this.cache(cacheX - displace, cacheY - displace, cacheW + displace, cacheH + displace);
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+		// no caching at the highest gfx setting
+		this.cache(cacheX - displace, cacheY - displace, cacheW + displace, cacheH + displace);
+	}
 };
 
 window.Lightning = createjs.promote(Lightning, "Shape");

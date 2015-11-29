@@ -41,9 +41,9 @@ c.update = function() {
 	this.drawIsometric();
 	this.drawLevel();
 	
-	// TODO: cache the object based on settings, since caching makes text blurry
-	var useCache = true;
-	if(useCache) {
+	// cache the object based on settings since caching makes text blurry, but not caching is a big performance hit
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+		// no caching at the highest gfx setting
 		if(useIsometric && this.getHex() != null) {
 			if(this.getHex().getElevation() >= 0) {
 				this.cache(0, 0, hexWidth, hexHeight + (elevationHeight * this.getHex().getElevation()));

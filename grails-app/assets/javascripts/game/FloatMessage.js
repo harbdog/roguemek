@@ -55,7 +55,11 @@ c.drawFloatMessage = function(message){
 	
 	this.width = boxBounds.width;
 	this.height = boxBounds.height;
-	this.cache(boxBounds.x, boxBounds.y, boxBounds.width, boxBounds.height);
+	
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+		// no caching at the highest gfx setting
+		this.cache(boxBounds.x, boxBounds.y, boxBounds.width, boxBounds.height);
+	}
 };
 
 c.toString = function() {

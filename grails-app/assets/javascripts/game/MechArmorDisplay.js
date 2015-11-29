@@ -94,7 +94,7 @@ c.setSectionPercent = function(section, index, percent, doAnimate) {
 	section.setDisplayedPercent(index, percent, doAnimate);
 	
 	if(doCache) {
-		//this.doCache();
+		this.doCache();
 	}
 }
 
@@ -113,11 +113,14 @@ c.update = function() {
 		section.update();
 	});
 	
-	//this.doCache();
+	this.doCache();
 }
 
 c.doCache = function() {
-	this.cache(0,0, this.width,this.height);
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+		// caching only at the lowest gfx setting
+		this.cache(0,0, this.width,this.height);
+	}
 }
 
 window.MechArmorDisplay = createjs.promote(MechArmorDisplay, "Container");

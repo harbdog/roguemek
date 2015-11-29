@@ -154,8 +154,11 @@ c.getDisplayHeight = function() {
 }
 
 c.doCache = function() {
-	this.cache(-BORDER_WIDTH, -BORDER_WIDTH, 
-			BORDER_WIDTH + this.image.width, BORDER_WIDTH + this.image.height);
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY) {
+		// no caching at only the highest quality setting
+		this.cache(-BORDER_WIDTH, -BORDER_WIDTH, 
+				BORDER_WIDTH + this.image.width, BORDER_WIDTH + this.image.height);
+	}
 }
 
 c.toString = function() {

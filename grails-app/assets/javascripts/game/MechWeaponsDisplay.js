@@ -118,7 +118,7 @@ c.update = function() {
 		this.addChildAt(this.background, 0);
 	}
 	
-	//this.doCache();
+	this.doCache();
 }
 
 c.setSelectedWeapons = function(weaponsArray) {
@@ -129,11 +129,14 @@ c.setSelectedWeapons = function(weaponsArray) {
 		unitWeaponDisplay.setSelected(selected);
 	});
 	
-	//this.doCache();
+	this.doCache();
 }
 
 c.doCache = function() {
-	this.cache(0,0, this.width,this.height);
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_CACHING_PERFORMANCE){
+		// caching only at the lowest gfx setting
+		this.cache(0,0, this.width,this.height);
+	}
 }
 
 window.MechWeaponsDisplay = createjs.promote(MechWeaponsDisplay, "Container");

@@ -30,7 +30,10 @@ s.doCache = function(startX, startY, endX, endY) {
 		cacheH = startY - endY;
 	}
 	
-	this.cache(cacheX, cacheY, cacheW, cacheH);
+	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_CACHING_QUALITY){
+		// no caching at the highest gfx setting
+		this.cache(cacheX, cacheY, cacheW, cacheH);
+	}
 };
 
 window.Projectile = createjs.promote(Projectile, "Shape");

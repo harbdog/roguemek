@@ -815,6 +815,14 @@ function handleSettingsUpdate(settingKey) {
 			targetLine.update();
 		}
 	}
+	else if(settingKey = Settings.GFX_CACHING) {
+		updateHexDisplayObjects();
+		
+		$.each(units, function(index, thisUnit) {
+			var displayUnit = thisUnit.getUnitDisplay();
+			displayUnit.update();
+		});
+	}
 	
 	// general UI updates performed
 	updatePlayerUI();
