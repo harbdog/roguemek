@@ -132,7 +132,7 @@ function initPlayerUI() {
     // create the settings button
     settingsButton = new createjs.Container();
     overlay.addChild(settingsButton);
-	
+    
     settingsButton.on("click", showSettingsDisplay);
     settingsButton.mouseChildren = false;
     
@@ -191,6 +191,11 @@ function updatePlayerUI() {
     		.endStroke();
     settingsButton.addChild(settingsIcon);
     
+    // create hit area
+	var settingsHit = new createjs.Shape();
+	settingsHit.graphics.beginFill("#000000").drawRect(0, 0, buttonSize, buttonSize).endStroke();
+	settingsButton.hitArea = settingsHit;
+    
     // update the fullscreen button
     fullscreenButton.x = 0;
     fullscreenButton.y = buttonSize;
@@ -218,6 +223,11 @@ function updatePlayerUI() {
 			.moveTo(buttonSize/6, 3*buttonSize/5).lineTo(buttonSize/6, 4*buttonSize/5).lineTo(buttonSize/6 + 1*buttonSize/5, 4*buttonSize/5)
 			.moveTo(5*buttonSize/6 - 1*buttonSize/5, 4*buttonSize/5).lineTo(5*buttonSize/6, 4*buttonSize/5).lineTo(5*buttonSize/6, 3*buttonSize/5)
 	fullscreenButton.addChild(fsIcon);
+	
+	// create hit area
+	var fsHit = new createjs.Shape();
+	fsHit.graphics.beginFill("#000000").drawRect(0, 0, buttonSize, buttonSize).endStroke();
+	fullscreenButton.hitArea = fsHit;
 }
 
 /**
