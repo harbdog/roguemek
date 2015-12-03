@@ -282,6 +282,11 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			stage.addChild(laser);
 			
 			createjs.Tween.get(laser).wait(initialDelay).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, laser);
+			
+			if(hit) {
+				// instantly create the laser's particle hit effect on the target if it hit
+				var emitter = new LaserHitEmitter(weaponEndPoint.x, weaponEndPoint.y);
+			}
 		}
 		else if(wName == Weapon.WeaponPPC) {
 			// create a PPC projectile as lightning

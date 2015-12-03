@@ -8,6 +8,7 @@
 //= require spectrum-1.7.1.js
 //= require createjs-2015.05.21.min.js
 //= require amplify-1.1.2.js
+//= require proton-1.0.0.js
 //= require fullscreen-api.js
 //= require game/roguemek.js
 //= require_self

@@ -707,8 +707,6 @@ function handleZoomBoard(newScale) {
 	var doAnimate = true;
 	
 	if(newScale > 0 && newScale <= 4) {
-		console.log("board scale="+newScale);
-		
 		// put the new scale in local storage
 		Settings.set(Settings.BOARD_SCALE, newScale);
 		
@@ -771,8 +769,6 @@ function handleScaleDown() {
  */
 function handleScaleOverlay(newScale) {
 	if(newScale > 0 && newScale <= 3) {
-		console.log("overlay scale="+newScale);
-		
 		// put the new scale in local storage
 		Settings.set(Settings.UI_SCALE, newScale);
 		
