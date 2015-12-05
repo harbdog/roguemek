@@ -327,6 +327,7 @@ function loadGameElements() {
 		  manifest.push({id:"particle-yellow", src:"assets/ui/particle-yellow.png"});
 		  manifest.push({id:"particle-orange", src:"assets/ui/particle-orange.png"});
 		  manifest.push({id:"particle-blue", src:"assets/ui/particle-blue.png"});
+		  manifest.push({id:"particle-smoke", src:"assets/ui/particle-smoke.png"});
 		  
 		  manifest.push({id:"spark-white", src:"assets/ui/spark-white.png"});
 		  manifest.push({id:"spark-yellow", src:"assets/ui/spark-yellow.png"});

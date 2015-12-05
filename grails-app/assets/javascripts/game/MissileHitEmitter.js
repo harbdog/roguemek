@@ -14,6 +14,9 @@ function MissileHitEmitter(impactPoint, msDuration) {
 	this.proton = null;
 	this.emitter = null;
 	
+	this.smoke = null;
+	this.smokeEmitter = null;
+	
 	this.setup();
 }
 var c = createjs.extend(MissileHitEmitter, createjs.Container);
@@ -22,6 +25,7 @@ c.setup = function() {
 	
 	stage.addChild(this);
 	
+	// create the explosion particles
 	var colors = [
   	    new createjs.Bitmap(queue.getResult("particle-red")),
   	    new createjs.Bitmap(queue.getResult("particle-orange")),
@@ -53,12 +57,39 @@ c.setup = function() {
 	this.proton = proton;
 	this.emitter = emitter;
 	
+  	// create the smoke that is also created with the explosions
+  	var smoke = new Proton();
+  	var smokeEmitter = new Proton.Emitter();
+  	//set Rate
+  	smokeEmitter.rate = new Proton.Rate(Proton.getSpan(2, 3), 0.05);
+  	//add Initialize
+  	smokeEmitter.addInitialize(new Proton.ImageTarget(new createjs.Bitmap(queue.getResult("particle-smoke"))));
+  	smokeEmitter.addInitialize(new Proton.Life(1, 2));
+  	smokeEmitter.addInitialize(new Proton.Velocity(0.2, Proton.getSpan(0, 360), 'polar'));
+  	//add Behaviour
+  	smokeEmitter.addBehaviour(new Proton.Alpha(0.75, 0.5));
+  	smokeEmitter.addBehaviour(new Proton.Scale(new Proton.Span(0.2, 0.3), 0.1));
+  	
+  	//set emitter position
+  	smokeEmitter.p.x = 0;
+  	smokeEmitter.p.y = 0;
+  	smokeEmitter.emit(this.duration*2);
+  	//add emitter to the proton
+  	smoke.addEmitter(smokeEmitter);
+  	// add canvas renderer
+  	var renderer = new Proton.Renderer('easeljs', smoke, this);
+  	renderer.start();
+  	
+  	this.smoke = smoke;
+  	this.smokeEmitter = smokeEmitter;
+	
 	this.on("tick", this.update);
 };
 
 c.update = function() {
 	if(this.proton) {
 		this.proton.update();
+		this.smoke.update();
 	}
 };
 
