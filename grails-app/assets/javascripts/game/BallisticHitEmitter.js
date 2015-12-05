@@ -23,8 +23,8 @@ c.setup = function() {
 	stage.addChild(this);
 	
 	var colors = [
-  	    new createjs.Bitmap(queue.getResult("particle-yellow")),
-  	    new createjs.Bitmap(queue.getResult("particle-white"))
+  	    new createjs.Bitmap(queue.getResult("spark-yellow")),
+  	    new createjs.Bitmap(queue.getResult("spark-white"))
   	];
 	
 	var proton = new Proton();
@@ -36,7 +36,6 @@ c.setup = function() {
 	emitter.addInitialize(new Proton.Life(0.15, 0.3));
 	emitter.addInitialize(new Proton.Velocity(1.0, Proton.getSpan(0, 360), 'polar'));
 	//add Behaviour
-	emitter.addBehaviour(new Proton.Alpha(1, 0.75));
 	emitter.addBehaviour(new Proton.Scale(new Proton.Span(0.1, 0.2), 0.1));
 	
 	//set emitter position

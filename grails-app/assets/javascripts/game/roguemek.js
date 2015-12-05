@@ -318,12 +318,19 @@ function loadGameElements() {
 		  manifest.push({id:"missile", src:"assets/ui/missiles.png"});
 		  manifest.push({id:"melee", src:"assets/ui/melee.png"});
 		  
+		  manifest.push({id:"shell-yellow", src:"assets/ui/shell-yellow.png"});
+		  
 		  manifest.push({id:"jumpjet", src:"assets/ui/jumpjet_sprite.png"});
+		  
 		  manifest.push({id:"particle-white", src:"assets/ui/particle-white.png"});
 		  manifest.push({id:"particle-red", src:"assets/ui/particle-red.png"});
 		  manifest.push({id:"particle-yellow", src:"assets/ui/particle-yellow.png"});
 		  manifest.push({id:"particle-orange", src:"assets/ui/particle-orange.png"});
 		  manifest.push({id:"particle-blue", src:"assets/ui/particle-blue.png"});
+		  
+		  manifest.push({id:"spark-white", src:"assets/ui/spark-white.png"});
+		  manifest.push({id:"spark-yellow", src:"assets/ui/spark-yellow.png"});
+		  manifest.push({id:"spark-blue", src:"assets/ui/spark-blue.png"});
 		  
 		  manifest.push({id:"wreck.mech.light", src:"assets/units/wrecks/light.gif"});
 		  manifest.push({id:"wreck.mech.medium", src:"assets/units/wrecks/medium.gif"});

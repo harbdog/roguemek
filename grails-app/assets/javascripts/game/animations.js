@@ -367,6 +367,14 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			
 			createjs.Tween.get(projectile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, projectile);
 			
+			// add shell casing ejection animation
+			setTimeout(
+				function() {
+					var casings = new BallisticShellEmitter(weaponPoint, 50);
+				}, 
+				initialDelay
+			);
+			
 			if(hit) {
 				// delay the particle hit effect until after the initial delay and projectile travel time
 				setTimeout(
@@ -376,8 +384,6 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 					initialDelay + projectileTime
 				);
 			}
-			
-			// TODO: add shell casing ejection animation
 		}
 	}
 	else if(weapon.isMissileWeapon()) {
