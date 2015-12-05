@@ -245,6 +245,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			switch(wName) {
 				case Weapon.WeaponSLAS:
 					laserConf = {
+						laserDuration: 300,
 						laserWidth: 1,
 						laserColor: "#990000",
 						glowWidth: 2,
@@ -254,6 +255,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 					
 				case Weapon.WeaponMLAS:
 					laserConf = {
+						laserDuration: 500,
 						laserWidth: 2,
 						laserColor: "#00FF00",
 						glowWidth: 2,
@@ -263,6 +265,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 					
 				case Weapon.WeaponLLAS:
 					laserConf = {
+						laserDuration: 700,
 						laserWidth: 2,
 						laserColor: "#0000FF",
 						glowWidth: 3,
@@ -281,21 +284,28 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			laser.show(weaponPoint.x, weaponPoint.y, weaponEndPoint.x, weaponEndPoint.y);
 			stage.addChild(laser);
 			
-			createjs.Tween.get(laser).wait(initialDelay).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, laser);
+			createjs.Tween.get(laser).wait(initialDelay).to({visible:true}).wait(laser.getDuration()).to({alpha:0}, 200).call(removeThisFromStage, null, laser);
 			
 			if(hit) {
 				// instantly create the laser's particle hit effect on the target if it hit
-				var emitter = new LaserHitEmitter(weaponEndPoint.x, weaponEndPoint.y);
+				var emitter = new LaserHitEmitter(laser, laser.getDuration());
 			}
 		}
 		else if(wName == Weapon.WeaponPPC) {
+			var ppcDuration = 500;
+			
 			// create a PPC projectile as lightning
 			var lightning = new Lightning();
 			lightning.visible = false;
 			lightning.show(weaponPoint.x, weaponPoint.y, weaponEndPoint.x, weaponEndPoint.y);
 			stage.addChild(lightning);
 			
-			createjs.Tween.get(lightning).wait(initialDelay).to({visible:true}).wait(500).to({alpha:0}, 200).call(removeThisFromStage, null, lightning);
+			createjs.Tween.get(lightning).wait(initialDelay).to({visible:true}).wait(ppcDuration).to({alpha:0}, 200).call(removeThisFromStage, null, lightning);
+			
+			if(hit) {
+				// instantly create the laser's particle hit effect on the target if it hit
+				var emitter = new PPCHitEmitter(lightning, ppcDuration);
+			}
 		}
 		else if(wName == Weapon.WeaponFlamer) {
 			// create a Flamer projectile
@@ -350,21 +360,22 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 				projectileLength = 5;
 			}
 			
-			var point = getMovementDestination(0, 0, projectileLength, angle);
-			
-			// TODO: make Projectile use the new class methods similar to Laser/Lightning
-			var projectile = new Projectile(weaponPoint.x, weaponPoint.y);
+			// create an autocannon projectile
+			var projectile = new Projectile(weaponPoint, projectileWidth, projectileLength, angle);
 			projectile.visible = false;
-			
-			if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
-				// shadows only at the highest gfx setting
-				projectile.shadow = new createjs.Shadow("#FFCC00", 0, 0, 10);
-			}
-			
-			projectile.graphics.setStrokeStyle(projectileWidth).beginStroke("#FFD700").moveTo(0, 0).lineTo(point.x, point.y).endStroke();
 			stage.addChild(projectile);
 			
 			createjs.Tween.get(projectile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, projectile);
+			
+			if(hit) {
+				// delay the particle hit effect until after the initial delay and projectile travel time
+				setTimeout(
+					function() {
+						var emitter = new BallisticHitEmitter(weaponEndPoint, 100);
+					}, 
+					initialDelay + projectileTime
+				);
+			}
 			
 			// TODO: add shell casing ejection animation
 		}
@@ -405,6 +416,16 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		stage.addChild(missile);
 		
 		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, missile);
+		
+		if(hit) {
+			// delay the particle hit effect until after the initial delay and missile travel time
+			setTimeout(
+				function() {
+					var emitter = new MissileHitEmitter(weaponEndPoint, 100);
+				}, 
+				initialDelay + projectileTime
+			);
+		}
 	}
 	
 	var projectileEndPoint = new Point(weaponEndPoint.x, weaponEndPoint.y);

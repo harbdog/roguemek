@@ -1,23 +1,22 @@
 /**
- * Creates a proton particle emitter for the effect of being hit by a laser
+ * Creates a proton particle emitter for the effect of being hit by a missile
  */
 (function() {
 "use strict";
 
-function LaserHitEmitter(laser, msDuration) {
+function MissileHitEmitter(impactPoint, msDuration) {
 	this.Container_constructor();
 	
-	this.laser = laser;
 	this.duration = (msDuration/1000);
 	
-	this.x = laser.endX;
-	this.y = laser.endY;
+	this.x = impactPoint.x;
+	this.y = impactPoint.y;
 	this.proton = null;
 	this.emitter = null;
 	
 	this.setup();
 }
-var c = createjs.extend(LaserHitEmitter, createjs.Container);
+var c = createjs.extend(MissileHitEmitter, createjs.Container);
 
 c.setup = function() {
 	
@@ -25,21 +24,21 @@ c.setup = function() {
 	
 	var colors = [
   	    new createjs.Bitmap(queue.getResult("particle-red")),
-  	    new createjs.Bitmap(queue.getResult("particle-orange"))
+  	    new createjs.Bitmap(queue.getResult("particle-orange")),
+  	    new createjs.Bitmap(queue.getResult("particle-yellow"))
   	];
 	
 	var proton = new Proton();
 	var emitter = new Proton.Emitter();
 	//set Rate
-	emitter.rate = new Proton.Rate(Proton.getSpan(5, 10), 0.05);
+	emitter.rate = new Proton.Rate(Proton.getSpan(5, 10), 0.01);
 	//add Initialize
 	emitter.addInitialize(new Proton.ImageTarget(colors));
-	emitter.addInitialize(new Proton.Life(0.5, 1));
-	emitter.addInitialize(new Proton.Velocity(0.35, Proton.getSpan(0, 360), 'polar'));
+	emitter.addInitialize(new Proton.Life(0.35, 0.75));
+	emitter.addInitialize(new Proton.Velocity(0.4, Proton.getSpan(0, 360), 'polar'));
 	//add Behaviour
 	emitter.addBehaviour(new Proton.Alpha(1, 0.75));
-	emitter.addBehaviour(new Proton.Scale(new Proton.Span(0.15, 0.25), 0.1));
-	emitter.addBehaviour(new Proton.G(0.5));
+	emitter.addBehaviour(new Proton.Scale(new Proton.Span(0.3, 0.4), 0.1));
 	
 	//set emitter position
 	emitter.p.x = 0;
@@ -61,12 +60,7 @@ c.update = function() {
 	if(this.proton) {
 		this.proton.update();
 	}
-	
-	if(this.emitter && this.laser) {
-		this.emitter.p.x = this.laser.endX - this.x;
-		this.emitter.p.y = this.laser.endY - this.y;
-	}
 };
 
-window.LaserHitEmitter = createjs.promote(LaserHitEmitter, "Container");
+window.MissileHitEmitter = createjs.promote(MissileHitEmitter, "Container");
 }());

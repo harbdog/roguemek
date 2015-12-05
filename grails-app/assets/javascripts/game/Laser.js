@@ -8,6 +8,7 @@ function Laser(config) {
 	this.Shape_constructor();
 	
 	this.conf = {
+		laserDuration: 500,
 		glowWidth: 3,
 		laserWidth: 3,
 		laserColor: "#990000",
@@ -24,13 +25,30 @@ s.setup = function(config) {
 	for(var opt in config){
 		this.conf[opt] = config[opt];
 	}
+	
+	// determine direction for the laser beam sweep randomly using a direction matrix
+	var directions = [
+	    [0, 1], [1, 0], [1, 1],
+	    [0, -1], [-1, 0], [-1, -1],
+	    [1, -1], [-1, 1]
+	];
+	
+	var directionArray = directions[getDieRollTotal(1, directions.length) - 1];
+	this.directionX = directionArray[0];
+	this.directionY = directionArray[1];
 };
 
+s.getDuration = function() {
+	return this.conf.laserDuration;
+}
+
 s.show = function(startX, startY, endX, endY){
-	this.uncache();
 	
-	this.drawLaser(startX, startY, endX, endY);
-	this.doCache(startX, startY, endX, endY);
+	this.startX = startX;
+	this.startY = startY;
+	this.endX = endX;
+	this.endY = endY;
+	this.on("tick", this.update);
 	
 	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
 		// shadows only at the highest gfx setting
@@ -38,12 +56,29 @@ s.show = function(startX, startY, endX, endY){
 	}
 };
 
+s.update = function(event) {
+	//this.uncache();
+	
+	// use the delta and path projection to determine new X and Y end values for the laser sweep
+	var motion = (event.delta / this.getDuration()) * (hexWidth/6);
+	
+	this.endX += (motion * this.directionX);
+	this.endY += (motion * this.directionY);
+	
+	this.drawLaser(this.startX, this.startY, this.endX, this.endY);
+	
+	//this.doCache(this.startX, this.startY, this.endX, this.endY);
+}
+
 s.hide = function(){
 	this.visible = false;
 };
 
 s.drawLaser = function(x1, y1, x2, y2){
-	if(this.conf.glow) {
+	this.g.clear();
+	
+	if(Settings.get(Settings.GFX_CACHING) > Settings.GFX_PERFORMANCE){
+		// do not show the laser glow only on the performance level
 		this.g.setStrokeStyle(this.conf.glowWidth, "round").beginStroke(this.conf.glowColor).moveTo(x1, y1).lineTo(x2, y2).endStroke();
 	}
 	

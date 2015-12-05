@@ -4,13 +4,27 @@
 (function() {
 "use strict";
 
-function Projectile(x, y) {
+function Projectile(weaponPoint, projectileWidth, projectileLength, projectileAngle) {
 	this.Shape_constructor();
 	
-	this.x = x;
-	this.y = y;
+	this.x = weaponPoint.x;
+	this.y = weaponPoint.y;
+	
+	this.projectilePoint = getMovementDestination(0, 0, projectileLength, projectileAngle);
+	this.projectileWidth = projectileWidth;
+	
+	this.setup();
 }
 var s = createjs.extend(Projectile, createjs.Shape);
+
+s.setup = function() {
+	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
+		// shadows only at the highest gfx setting
+		this.shadow = new createjs.Shadow("#FFCC00", 0, 0, 10);
+	}
+	
+	this.graphics.setStrokeStyle(this.projectileWidth).beginStroke("#FFD700").moveTo(0, 0).lineTo(this.projectilePoint.x, this.projectilePoint.y).endStroke();
+}
 
 s.hide = function(){
 	this.visible = false;

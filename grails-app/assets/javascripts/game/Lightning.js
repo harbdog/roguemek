@@ -35,6 +35,11 @@ s.setup = function(config) {
 };
 
 s.show = function(startX, startY, endX, endY){
+	this.startX = startX;
+	this.startY = startY;
+	this.endX = endX;
+	this.endY = endY;
+	
 	this.uncache();
 	this.drawLightning(startX, startY, endX, endY, this.conf.displace);
 	this.doCache(startX, startY, endX, endY, this.conf.displace);
@@ -52,9 +57,9 @@ s.hide = function(){
 s.drawLightning = function(x1, y1, x2, y2, displace){
 	if(displace < this.conf.detail)
 	{	
-		if(this.conf.glow)
+		if(Settings.get(Settings.GFX_CACHING) > Settings.GFX_PERFORMANCE)
 		{
-			//glow around lightning
+			//glow around lightning only when not on performance setting
 			//ctx.lineCap = "round";
 			//ctx.strokeStyle = "#fff";
 			//ctx.globalAlpha = conf.glowAlpha;
@@ -105,7 +110,7 @@ s.doCache = function(startX, startY, endX, endY, displace) {
 	
 	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
-		this.cache(cacheX - displace, cacheY - displace, cacheW + displace, cacheH + displace);
+		this.cache(cacheX - displace, cacheY - displace, cacheW + (displace*2), cacheH + (displace*2));
 	}
 };
 
