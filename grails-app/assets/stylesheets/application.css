@@ -9,5 +9,7 @@
 *
 *= require main
 *= require mobile
+*= require jquery-ui.min
+*= require spectrum
 *= require_self
 */

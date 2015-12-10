@@ -585,7 +585,7 @@ c.updateUnitIndicator = function() {
 		}
 		else{
 			color = Settings.get(Settings.UI_ENEMY_COLOR);
-			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/3, 3, 0.5, -90).endStroke();
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/3-1, 3, 0.5, -90).endStroke();
 		}
 		
 		// give the indicator a glow

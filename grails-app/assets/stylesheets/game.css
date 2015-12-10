@@ -1,29 +1,13 @@
 /*
-* This is a manifest file that'll be compiled into application.css, which will include all the files
-* listed below.
+* This file contains definitions for tags specifically used by the RogueMek game
 *
-* Any CSS file within this directory can be referenced here using a relative path.
-*
-* You're free to add application-wide styles to this file and they'll appear at the top of the
-* compiled file, but it's generally better to create a new file per style scope.
-*
-*= require main
-*= require mobile
-*= require spectrum
+*= require application
 *= require_self
 */
 
 @font-face {
 	font-family: 'UbuntuMono';
 	src: url('images/UbuntuMono.ttf');
-}
-
-html {
-	background-color: #000000;
-	background-image: -moz-linear-gradient(center top, #000000, #404040);
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #000000), color-stop(1, #404040));
-	background-image: linear-gradient(top, #000000, #404040);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#000000', EndColorStr = '#404040');
 }
 
 html * {

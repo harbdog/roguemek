@@ -1,3 +1,9 @@
+/*
+* This file contains the main and grails related definitions
+*= require roguemek
+*= require_self
+*/
+
 /* FONT STACK */
 body,
 input, select, textarea {
@@ -11,12 +17,13 @@ h1, h2, h3, h4, h5, h6 {
 /* BASE LAYOUT */
 
 html {
-	background-color: #ddd;
-	background-image: -moz-linear-gradient(center top, #aaa, #ddd);
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(1, #ddd));
-	background-image: linear-gradient(top, #aaa, #ddd);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#aaaaaa', EndColorStr = '#dddddd');
+	background-color: #000000;
+	background-image: -moz-linear-gradient(center top, #000000, #404040);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #000000), color-stop(1, #404040));
+	background-image: linear-gradient(top, #000000, #404040);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#000000', EndColorStr = '#404040');
 	background-repeat: no-repeat;
+	background-attachment: fixed;
 	height: 100%;
 	/* change the box model to exclude the padding from the calculation of 100% height (IE8+) */
 	-webkit-box-sizing: border-box;
@@ -37,25 +44,31 @@ html * {
 }
 
 body {
-	background: #ffffff;
-	color: #333333;
+	/*background: #404040;*/
+	color: #F0F0F0;
 	margin: 0 auto;
 	max-width: 960px;
 	overflow-x: hidden; /* prevents box-shadow causing a horizontal scrollbar in firefox when viewport < 960px wide */
-	   -moz-box-shadow: 0 0 0.3em #255b17;
-	-webkit-box-shadow: 0 0 0.3em #255b17;
-	        box-shadow: 0 0 0.3em #255b17;
+	   -moz-box-shadow: 0 0 0.3em #3498DB;
+	-webkit-box-shadow: 0 0 0.3em #3498DB;
+	        box-shadow: 0 0 0.3em #3498DB;
+}
+
+img.unit-image {
+	-ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg); /* Safari */
+    transform: rotate(180deg);
 }
 
 #grailsLogo {
-	background-color: #000000;
+	background: #000 url("images/ui-bg_loop_25_000000_21x21.png") 50% 50% repeat;
 }
 
 /* replace with .no-boxshadow body if you have modernizr available */
 .ie6 body,
 .ie7 body,
 .ie8 body {
-	border-color: #255b17;
+	border-color: #3498DB;
 	border-style: solid;
 	border-width: 0 1px;
 }
@@ -65,7 +78,7 @@ body {
 }
 
 a:link, a:visited, a:hover {
-	color: #003d77;
+	color: #3498DB;
 }
 
 a:hover, a:active {
@@ -73,7 +86,7 @@ a:hover, a:active {
 }
 
 h1 {
-	color: #003d77;
+	color: #3498DB;
 	font-weight: normal;
 	font-size: 1.25em;
 	margin: 0.8em 0 0.3em 0;
@@ -108,8 +121,7 @@ img {
 }
 
 .footer {
-	background: #000000;
-	color: #FFF;
+	color: #F0F0F0;
 	clear: both;
 	font-size: 0.8em;
 	margin-top: 1.5em;
@@ -118,7 +130,7 @@ img {
 }
 
 .footer a {
-	color: #003d77;
+	color: #3498DB;
 }
 
 .spinner {
@@ -135,7 +147,7 @@ img {
 /* NAVIGATION MENU */
 
 .nav {
-	background-color: #efefef;
+	background-color: #707070;
 	padding: 0.5em 0.75em;
 	   -moz-box-shadow: 0 0 3px 1px #aaaaaa;
 	-webkit-box-shadow: 0 0 3px 1px #aaaaaa;
@@ -158,7 +170,7 @@ img {
 }
 
 .nav a {
-	color: #666666;
+	color: #D0D0D0;
 	display: block;
 	padding: 0.25em 0.7em;
 	text-decoration: none;
@@ -168,7 +180,7 @@ img {
 }
 
 .nav a:active, .nav a:visited {
-	color: #666666;
+	color: #D0D0D0;
 }
 
 .nav a:focus, .nav a:hover {
@@ -225,7 +237,7 @@ fieldset,
 
 .fieldcontain label,
 .fieldcontain .property-label {
-	color: #666666;
+	color: #A0A0A0;
 	text-align: right;
 	width: 25%;
 }
@@ -246,10 +258,11 @@ label {
 }
 
 input, select, textarea {
-	background-color: #fcfcfc;
+	color: #F0F0F0;
+	background-color: #404040;
 	border: 1px solid #cccccc;
 	font-size: 1em;
-	padding: 0.2em 0.4em;
+	/*padding: 0.2em 0.4em;*/
 }
 
 select {
@@ -425,12 +438,12 @@ td, th {
 }
 
 th {
-	background-color: #efefef;
-	background-image: -moz-linear-gradient(top, #ffffff, #eaeaea);
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #eaeaea));
-	    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#ffffff', EndColorStr = '#eaeaea');
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#eaeaea')";
-	color: #666666;
+	background-color: #707070;
+	background-image: -moz-linear-gradient(top, #707070, #A0A0A0);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #707070), color-stop(1, #A0A0A0));
+	    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr = '#707070', EndColorStr = '#A0A0A0');
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#707070', EndColorStr='#A0A0A0')";
+	color: #F0F0F0;
 	font-weight: bold;
 	line-height: 1.7em;
 	padding: 0.2em 0.6em;
@@ -446,7 +459,7 @@ th a {
 }
 
 th a:link, th a:visited {
-	color: #666666;
+	color: #F0F0F0;
 }
 
 th a:hover, th a:focus {
@@ -468,15 +481,15 @@ th.desc a {
 }
 
 .odd {
-	background: #f7f7f7;
+	background: #424242;
 }
 
 .even {
-	background: #ffffff;
+	background: #404040;
 }
 
 th:hover, tr:hover {
-	background: #E1F2B6;
+	background: #304050;
 }
 
 /* PAGINATION */
@@ -489,12 +502,12 @@ th:hover, tr:hover {
 	   -moz-box-shadow: 0 0 3px 1px #AAAAAA;
 	-webkit-box-shadow: 0 0 3px 1px #AAAAAA;
 	        box-shadow: 0 0 3px 1px #AAAAAA;
-	background-color: #EFEFEF;
+	background-color: #707070;
 }
 
 .pagination a,
 .pagination .currentStep {
-	color: #666666;
+	color: #A0A0A0;
 	display: inline-block;
 	margin: 0 0.1em;
 	padding: 0.25em 0.7em;
@@ -522,7 +535,7 @@ th:hover, tr:hover {
 /* ACTION BUTTONS */
 
 .buttons {
-	background-color: #efefef;
+	background-color: #707070;
 	overflow: hidden;
 	padding: 0.3em;
 	   -moz-box-shadow: 0 0 3px 1px #aaaaaa;
@@ -536,7 +549,7 @@ th:hover, tr:hover {
 .buttons a {
 	background-color: transparent;
 	border: 0;
-	color: #666666;
+	color: #D0D0D0;
 	cursor: pointer;
 	display: inline-block;
 	margin: 0 0.25em 0;

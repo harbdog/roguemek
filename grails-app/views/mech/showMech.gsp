@@ -30,7 +30,7 @@
 							def mechImage = roguemek.game.BattleMech.initMechImage(mechInstance)
 						 %>
 						<g:if test="${mechImage}">
-							<span class="property-value" aria-labelledby="mech-label"><asset:image src="${mechImage}"/></span>
+							<span class="property-value" aria-labelledby="name-label"><asset:image class="unit-image" src="${mechImage}" /></span>
 						</g:if>
 				</li>
 				</g:if>

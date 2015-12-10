@@ -26,7 +26,7 @@
  		<div id="unit-image">
 	 		<g:if test="${battleMechInstance?.image}">
 				<%-- show stored byte array as an image on the page --%>
-				<img src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': battleMechInstance.id])}"/>
+				<img class="unit-image" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': battleMechInstance.id])}"/>
 			</g:if>
 		</div>
 		<div id="unit-pilot">
