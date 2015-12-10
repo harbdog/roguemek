@@ -165,14 +165,18 @@ class BattleMech extends BattleUnit {
 		String weightClass = mech.getWeightClass()
 		mechImage = "default_"+ weightClass +"."+imagesExtension
 		
-		// TODO: for now just matching by mech name (all lower case, no spaces), but should also extend to try chassis+variant first
-		String testImage = mech.name.toLowerCase().replaceAll(" ", "") + "."+imagesExtension
-		InputStream imageFile = ContextHelper.getContextAsset("images/"+imagesBasePath + testImage)//new File(ContextHelper.getContextAssetsDir(), "images/"+imagesBasePath + testImage)
+		try{
+			// TODO: for now just matching by mech name (all lower case, no spaces), but should also extend to try chassis+variant first
+			String testImage = mech.name.toLowerCase().replaceAll(" ", "") + "."+imagesExtension
+			InputStream imageFile = ContextHelper.getContextAsset("images/"+imagesBasePath + testImage)
 		
-		log.info("testImage:"+testImage+", available="+imageFile.available())
-		
-		if(imageFile.available()) {
-			mechImage = testImage
+			log.info("testImage:"+testImage+", available="+imageFile.available())
+			
+			if(imageFile.available()) {
+				mechImage = testImage
+			}
+		} catch(Exception e) {
+			// no specific image found, use default
 		}
 		
 		return imagesBasePath + mechImage
