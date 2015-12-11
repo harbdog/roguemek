@@ -40,7 +40,7 @@
 		<g:message code="mech.mass.label" default="Tonnage" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select name="mass" from="${20..100}" class="range" required="" value="${fieldValue(bean: mechInstance, field: 'mass')}"/>
+	<g:select name="mass" from="${(20..100).step(5)}" class="range" required="" value="${fieldValue(bean: mechInstance, field: 'mass')}"/>
 
 </div>
 

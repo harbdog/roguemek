@@ -287,7 +287,7 @@ input[type=checkbox], input[type=radio] {
 }
 
 input:focus, select:focus, textarea:focus {
-	background-color: #ffffff;
+	background-color: #909090;
 	border: 1px solid #eeeeee;
 	outline: 0;
 	   -moz-box-shadow: 0 0 0.5em #ffffff;
@@ -398,7 +398,7 @@ fieldset.embedded legend {
 /* same effects for browsers that support HTML5 client-side validation (these have to be specified separately or IE will ignore the entire rule) */
 
 input:invalid, select:invalid, textarea:invalid {
-	background: #fff3f3;
+	background: #424242;
 	border-color: #ffaaaa;
 	color: #cc0000;
 }
