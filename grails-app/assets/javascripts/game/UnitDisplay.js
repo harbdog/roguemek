@@ -585,7 +585,7 @@ c.updateUnitIndicator = function() {
 		}
 		else{
 			color = Settings.get(Settings.UI_ENEMY_COLOR);
-			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/3-1, 3, 0.5, -90).endStroke();
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/3-1, 3, 0, -90).endStroke();
 		}
 		
 		// give the indicator a glow
@@ -609,10 +609,25 @@ c.showTurnDisplay = function(show) {
 	if(isPlayerUnit(this.unit)) {
 		color = Settings.get(Settings.UI_PLAYER_COLOR);
 		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke(color).drawCircle(0, 0 ,hexWidth/10).endStroke();
+		
+		// indicate player turn by scaling the circle out in a looping animation
+		createjs.Tween.get(this.indicator, { loop: true})
+				.to({alpha: 0.75, scaleX: 2.5, scaleY: 2.5}, 750)
+				.to({alpha: 0.25, scaleX: 3.5, scaleY: 3.5}, 500)
+				.addEventListener("change", function() {
+					update = true;
+				});
 	}
 	else {
 		color = Settings.get(Settings.UI_ENEMY_COLOR);
-		this.indicator.graphics.setStrokeStyle(2, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/8, 3, 0.5, -90).endStroke();
+		this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/3-1, 3, 0, -90).endStroke();
+		
+		// indicate enemy turn by spinning the triangle in a looping animation
+		createjs.Tween.get(this.indicator, { loop: true})
+				.to({rotation: 360}, 3000)
+				.addEventListener("change", function() {
+					update = true;
+				});
 	}
 	
 	// give the indicator a glow
@@ -623,13 +638,6 @@ c.showTurnDisplay = function(show) {
 	}
 	
 	this.rotateContainer.addChildAt(this.indicator, 1);
-	
-	createjs.Tween.get(this.indicator, { loop: true})
-		.to({alpha: 0.75, scaleX: 2.5, scaleY: 2.5}, 750)
-		.to({alpha: 0.25, scaleX: 3.5, scaleY: 3.5}, 500)
-		.addEventListener("change", function() {
-			update = true;
-		});
 }
 
 c.doCache = function() {
