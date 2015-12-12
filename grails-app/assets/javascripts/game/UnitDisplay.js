@@ -7,6 +7,8 @@
 function UnitDisplay(unit) {
 	this.Container_constructor();
 	
+	this.ready = false;
+	
 	this.unit = unit;
 	this.id = unit.id;
 	
@@ -16,9 +18,16 @@ function UnitDisplay(unit) {
 		var base64 = _arrayBufferToBase64(imageArr);
 		  
 		var img = new Image();
-		img.src = "data:image/gif;base64," + base64;
-		  
 		this.image = img;
+		
+		// initialization needs to wait until the image is fully loaded
+		var u = this;
+		img.onload = function() {
+			u.init();
+			u.ready = true;
+		}
+		
+		img.src = "data:image/gif;base64," + base64;
 	}
 	
 	this.rotateContainer = null;
