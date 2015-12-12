@@ -319,6 +319,7 @@ function loadGameElements() {
 		  manifest.push({id:"melee", src:"assets/ui/melee.png"});
 		  
 		  manifest.push({id:"shell-yellow", src:"assets/ui/shell-yellow.png"});
+		  manifest.push({id:"ejection-pod", src:"assets/ui/ejection-pod.png"});
 		  
 		  manifest.push({id:"jumpjet", src:"assets/ui/jumpjet_sprite.png"});
 		  
@@ -1068,6 +1069,9 @@ function updateGameData(data) {
 			// determine location of message and create it
 			var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);
 			createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+			
+			// show ejection pod from the unit
+			animateEjectionPod(u);
 		}
 		
 		// re-initialize unit display to show as destroyed

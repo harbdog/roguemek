@@ -10,6 +10,24 @@ var PROJECTILE_SPEED_AC = 700;
 var PROJECTILE_SPEED_MG = 400;
 var PROJECTILE_SPEED_FLAMER = 400;
 
+var EJECTION_POD_SPEED = 150;
+
+function animateEjectionPod(srcUnit) {
+	var point = new Point(srcUnit.getUnitDisplay().x, srcUnit.getUnitDisplay().y);
+	
+	// create the ejection pod
+	var pod = new EjectionPod(point);
+	stage.addChild(pod);
+	
+	// determine duration time based on y distance to the out of bounds area
+	var duration = getProjectileTime((hexHeight*4) + point.y, EJECTION_POD_SPEED);
+	
+	createjs.Tween.get(pod).to({y:(-hexHeight*4)}, duration).call(removeThisFromStage, null, pod);
+	
+	// show smoke trail emitter for the pod
+	var emitter = new EjectionPodEmitter(pod, duration);
+}
+
 /**
  * Returns the time (ms) it will take to travel the given distance (px) at the given speed (px/ms)
  * @param distance
