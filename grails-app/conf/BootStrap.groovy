@@ -184,7 +184,7 @@ class BootStrap {
 		}
 		
 		// and a 2nd mech for the admin pilot
-		def battleMechB = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Assassin"), x: 1, y: 0, heading: 3, rgb: [255, 105, 105])
+		def battleMechB = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Firestarter"), x: 1, y: 0, heading: 3, rgb: [255, 105, 105])
 		if(!battleMechB.validate()) {
 			log.error("Errors with battle mech "+battleMechB.mech?.name+":\n")
 			battleMechB.errors.allErrors.each {

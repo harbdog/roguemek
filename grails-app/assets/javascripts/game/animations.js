@@ -334,6 +334,16 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			stage.addChild(flames);
 			
 			createjs.Tween.get(flames).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).to({alpha:0}, 100).call(removeThisFromStage, null, flames);
+			
+			if(hit) {
+				// delay the particle hit effect until after the initial delay and missile travel time
+				setTimeout(
+					function() {
+						var emitter = new FlamerHitEmitter(weaponEndPoint, 400);
+					}, 
+					initialDelay + projectileTime
+				);
+			}
 		}
 	}
 	else if(weapon.isBallisticWeapon()) {
