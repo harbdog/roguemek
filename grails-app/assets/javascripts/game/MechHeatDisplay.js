@@ -122,11 +122,11 @@ c.setDisplayedHeat = function(heat, heatGen, heatDiss) {
 	this.heatMask.graphics.drawRect(0, 0, this.width * (heat / 40), this.height);
 	
 	// draw the end of turn heat gen/diss result line
-	var heatResultColor = "#FFFFFF";
-	if(heatGen < heatDiss) {
+	var heatResultColor;
+	if(heatGen <= heatDiss) {
 		heatResultColor = "#3399FF";
 	}
-	else if(heatGen > heatDiss) {
+	else {
 		heatResultColor = "#FF0000";
 	}
 	
