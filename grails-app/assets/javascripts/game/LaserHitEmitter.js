@@ -65,6 +65,12 @@ c.update = function() {
 	if(this.emitter && this.laser) {
 		this.emitter.p.x = this.laser.endX - this.x;
 		this.emitter.p.y = this.laser.endY - this.y;
+		
+		if(this.emitter.emitTime > this.emitter.emitTotalTimes
+				&& this.emitter.particles.length == 0) {
+			stage.removeChild(this);
+			this.removeAllEventListeners();
+		}
 	}
 };
 

@@ -42,7 +42,8 @@ function animateAmmoExplosion(srcUnit, ammoObj) {
 	});
 	
 	if(ammoWeaponObj != null) {
-		var point = new Point(srcUnit.getUnitDisplay().x, srcUnit.getUnitDisplay().y);
+		var targetPoint = new Point(srcUnit.getUnitDisplay().x, srcUnit.getUnitDisplay().y);
+		var point = getPositionFromLocationAngle(targetPoint, srcUnit.heading, ammoObj.location);
 		
 		var durationMs = 100 * ammoObj.ammoRemaining;
 		if(durationMs > 1000) {
@@ -51,12 +52,19 @@ function animateAmmoExplosion(srcUnit, ammoObj) {
 		
 		if(ammoWeaponObj.weaponType == WEAPON_BALLISTIC) {
 			var casings = new BallisticShellEmitter(point, durationMs);
+			
 			var emitter = new BallisticHitEmitter(point, durationMs);
+			emitter.emitter.addBehaviour(new Proton.RandomDrift(10, 10, .05));
+			
 			var explosionEmitter = new MissileHitEmitter(point, durationMs/4);
+			explosionEmitter.emitter.addBehaviour(new Proton.RandomDrift(10, 10, .05));
 		}
 		else if(ammoWeaponObj.weaponType == WEAPON_MISSILE) {
 			var emitter = new BallisticHitEmitter(point, durationMs);
+			emitter.emitter.addBehaviour(new Proton.RandomDrift(10, 10, .05));
+			
 			var explosionEmitter = new MissileHitEmitter(point, durationMs/2);
+			explosionEmitter.emitter.addBehaviour(new Proton.RandomDrift(10, 10, .05));
 		}
 		else {
 			console.error("Ammo explosion animation not defined for weapon type "+ammoWeaponObj.weaponType);

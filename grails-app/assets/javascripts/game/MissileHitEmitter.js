@@ -21,6 +21,12 @@ function MissileHitEmitter(impactPoint, msDuration) {
 }
 var c = createjs.extend(MissileHitEmitter, createjs.Container);
 
+MissileHitEmitter.DIRECTIONS = [
+    [0, 1], [1, 0], [1, 1],
+    [0, -1], [-1, 0], [-1, -1],
+    [1, -1], [-1, 1]
+];
+
 c.setup = function() {
 	
 	stage.addChild(this);
@@ -88,8 +94,26 @@ c.setup = function() {
 
 c.update = function() {
 	if(this.proton) {
+		// add some random emitter movement around the impact point for effect
+      	var directionArray = MissileHitEmitter.DIRECTIONS[getDieRollTotal(1, MissileHitEmitter.DIRECTIONS.length) - 1];
+      	var directionX = directionArray[0];
+      	var directionY = directionArray[1];
+      	
+		this.emitter.p.x = (directionX * getDieRollTotal(1, hexWidth/16));
+		this.emitter.p.y = (directionY * getDieRollTotal(1, hexWidth/16));
+
+		this.smokeEmitter.p.x = this.emitter.p.x;
+		this.smokeEmitter.p.y = this.emitter.p.y;
+		
 		this.proton.update();
 		this.smoke.update();
+		
+		if(this.emitter.emitTime > this.emitter.emitTotalTimes
+				&& this.emitter.particles.length == 0
+				&& this.smokeEmitter.particles.length == 0) {
+			stage.removeChild(this);
+			this.removeAllEventListeners();
+		}
 	}
 };
 

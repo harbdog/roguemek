@@ -60,6 +60,12 @@ c.update = function() {
 	if(this.smokeEmitter && this.pod) {
 		this.smokeEmitter.p.x = this.pod.x - this.x;
 		this.smokeEmitter.p.y = this.pod.y - this.y + this.pod.image.height;
+		
+		if(this.smokeEmitter.emitTime > this.smokeEmitter.emitTotalTimes
+				&& this.smokeEmitter.particles.length == 0) {
+			stage.removeChild(this);
+			this.removeAllEventListeners();
+		}
 	}
 };
 

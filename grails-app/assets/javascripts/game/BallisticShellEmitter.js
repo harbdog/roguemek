@@ -60,6 +60,12 @@ c.setup = function() {
 c.update = function() {
 	if(this.proton) {
 		this.proton.update();
+		
+		if(this.emitter.emitTime > this.emitter.emitTotalTimes
+				&& this.emitter.particles.length == 0) {
+			stage.removeChild(this);
+			this.removeAllEventListeners();
+		}
 	}
 };
 

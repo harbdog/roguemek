@@ -18,6 +18,12 @@ function BallisticHitEmitter(impactPoint, msDuration) {
 }
 var c = createjs.extend(BallisticHitEmitter, createjs.Container);
 
+BallisticHitEmitter.DIRECTIONS = [
+    [0, 1], [1, 0], [1, 1],
+    [0, -1], [-1, 0], [-1, -1],
+    [1, -1], [-1, 1]
+];
+
 c.setup = function() {
 	
 	stage.addChild(this);
@@ -56,7 +62,21 @@ c.setup = function() {
 
 c.update = function() {
 	if(this.proton) {
+		// add some random emitter movement around the impact point for effect
+      	var directionArray = BallisticHitEmitter.DIRECTIONS[getDieRollTotal(1, BallisticHitEmitter.DIRECTIONS.length) - 1];
+      	var directionX = directionArray[0];
+      	var directionY = directionArray[1];
+      	
+		this.emitter.p.x = (directionX * getDieRollTotal(1, hexWidth/16));
+		this.emitter.p.y = (directionY * getDieRollTotal(1, hexWidth/16));
+		
 		this.proton.update();
+		
+		if(this.emitter.emitTime > this.emitter.emitTotalTimes
+				&& this.emitter.particles.length == 0) {
+			stage.removeChild(this);
+			this.removeAllEventListeners();
+		}
 	}
 };
 
