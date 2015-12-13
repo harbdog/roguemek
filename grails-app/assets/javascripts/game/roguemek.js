@@ -553,27 +553,6 @@ function initUnitsDisplay() {
 		displayUnit.on("click", handleUnitClick);
 		displayUnit.mouseChildren = false;
 	});
-		
-	(function waitForReadyLoop() {
-		setTimeout(function() {
-			var allReady = true;
-			$.each(units, function(index, thisUnit) {
-				if(!thisUnit.getUnitDisplay().ready) {
-					allReady = false;
-				}
-			});
-			
-			if(allReady) {
-				// ready to continue updating display objects
-				arrangeUnitsDisplay();
-				updateUnitDisplayObjects();
-			}
-			else {
-				// keep waiting
-				waitForReadyLoop();
-			}
-		}, 1);
-	})();
 }
 
 /**

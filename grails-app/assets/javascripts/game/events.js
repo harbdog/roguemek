@@ -393,18 +393,40 @@ function handleComplete(event) {
 	// Initialize the units display objects
 	initUnitsDisplay();
 	
-	// Initialize the player UI
-	initPlayerUI();
-    
-    // begin long polling for game updates during play, starting with a ping
-	ping();
-    
-    // resize the canvas and adjust the board to the canvas on first load
-	initializing = false;
-	resize_canvas();
-    
-    update = true;
-    firstUpdate = false;
+	// Need to wait for the unit display objects to finish loading images before the UI can finish initializing
+	(function waitForReadyLoop() {
+		setTimeout(function() {
+			var allReady = true;
+			$.each(units, function(index, thisUnit) {
+				if(!thisUnit.getUnitDisplay().ready) {
+					allReady = false;
+				}
+			});
+			
+			if(allReady) {
+				// ready to continue updating display objects
+				arrangeUnitsDisplay();
+				updateUnitDisplayObjects();
+				
+				// Initialize the player UI
+				initPlayerUI();
+				
+				// begin long polling for game updates during play, starting with a ping
+				ping();
+			    
+			    // resize the canvas and adjust the board to the canvas on first load
+				initializing = false;
+				resize_canvas();
+			    
+			    update = true;
+			    firstUpdate = false;
+			}
+			else {
+				// keep waiting
+				waitForReadyLoop();
+			}
+		}, 100);
+	})();
 }
 
 /**
