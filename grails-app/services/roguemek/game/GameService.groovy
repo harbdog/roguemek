@@ -2929,6 +2929,7 @@ class GameService {
 					def data = [
 						unit: unit.id,
 						target: unit.id,
+						ammoExploded: bAmmo.id,
 						damage: ammoExplosionDamage,
 						hitLocation: hitLocation,
 						armorHit: unit.armor,

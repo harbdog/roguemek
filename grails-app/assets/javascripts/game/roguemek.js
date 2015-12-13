@@ -1316,6 +1316,14 @@ function updateGameData(data) {
 		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
 	}
 	
+	if(data.ammoExploded != null) {
+		// show effects resulting from ammo explosion
+		var ammoId = data.ammoExploded;
+		var ammoObj = getCritObjectById(u, ammoId);
+		
+		animateAmmoExplosion(u, ammoObj);
+	}
+	
 	if(data.heat != null) {
 		u.heat = data.heat;
 		

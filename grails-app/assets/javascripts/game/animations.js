@@ -28,6 +28,46 @@ function animateEjectionPod(srcUnit) {
 	var emitter = new EjectionPodEmitter(pod, duration);
 }
 
+function animateAmmoExplosion(srcUnit, ammoObj) {
+	var ammoId = ammoObj.id;
+	
+	var ammoWeaponObj = null;
+	// find the type of weapon the ammo belonged to for determining effect of explosion
+	$.each(srcUnit.weapons, function(key, w) {
+		if(w.ammo != null 
+				&& w.ammo[ammoId] != null
+				&& ammoWeaponObj == null) {
+			ammoWeaponObj = w;
+		}
+	});
+	
+	if(ammoWeaponObj != null) {
+		var point = new Point(srcUnit.getUnitDisplay().x, srcUnit.getUnitDisplay().y);
+		
+		var durationMs = 100 * ammoObj.ammoRemaining;
+		if(durationMs > 1000) {
+			durationMs = 1000;
+		}
+		
+		if(ammoWeaponObj.weaponType == WEAPON_BALLISTIC) {
+			var casings = new BallisticShellEmitter(point, durationMs);
+			var emitter = new BallisticHitEmitter(point, durationMs);
+			var explosionEmitter = new MissileHitEmitter(point, durationMs/4);
+		}
+		else if(ammoWeaponObj.weaponType == WEAPON_MISSILE) {
+			var emitter = new BallisticHitEmitter(point, durationMs);
+			var explosionEmitter = new MissileHitEmitter(point, durationMs/2);
+		}
+		else {
+			console.error("Ammo explosion animation not defined for weapon type "+ammoWeaponObj.weaponType);
+		}
+	}
+	else {
+		console.error("Could not find corresponding weapon for exploded ammo "
+					+ammoObj.shortName+" ["+ammoId+"] on "+srcUnit);
+	}
+}
+
 /**
  * Returns the time (ms) it will take to travel the given distance (px) at the given speed (px/ms)
  * @param distance
