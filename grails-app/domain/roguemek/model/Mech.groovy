@@ -113,26 +113,20 @@ class Mech extends Unit {
 	public static final ASSAULT = "assault"
 
 	static void init() {
+		// TODO: instead, determine on a per mech basis whether it already exists or needs to be created
 		def defaultMech = Mech.findByName("Atlas")
 		if(defaultMech != null) {
 			return
 		}
 		
-		InputStream mtfMechsList = ContextHelper.getContextSource("mtf/mechs.list")
+		Set<String> mechPaths = ContextHelper.getResourcePaths("/src/mtf/mechs/")
 		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(mtfMechsList))
-		String line
-		while((line = reader.readLine()) != null) {
-			line = line.trim()
-			if(line.toUpperCase().endsWith(".MTF")) {
-				InputStream mtfFile = ContextHelper.getContextSource("mtf/mechs/"+line)
-				if(mtfFile.available()) {
-					MechMTF.createMechFromMTF(mtfFile)
-				}
+		for(String path in mechPaths) {
+			InputStream mtfFile = ContextHelper.getResource(path)
+			if(mtfFile.available()) {
+				MechMTF.createMechFromMTF(mtfFile)
 			}
 		}
-		
-		mtfMechsList.close()
 	}
 	
 	/**
