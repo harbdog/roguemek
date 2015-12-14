@@ -230,6 +230,213 @@ function updatePlayerUI() {
 	fullscreenButton.hitArea = fsHit;
 }
 
+
+/**
+ * Initializes the display of the board hex map on the stage
+ */
+function initHexMapDisplay() {
+	if(hexMap == null){return;}
+	
+	if(firstUpdate) {
+		// Add events for using the mouse to interact with the canvas/stage
+		stage.on("pressmove", handleStageDrag);
+		stage.on("pressup", handleStageDrag);
+		
+		canvas.addEventListener("DOMMouseScroll", handleMouseWheel, false); // for Firefox
+		canvas.addEventListener("mousewheel", handleMouseWheel, false); 	// for everyone else
+	}
+	
+	// first, lay down series of hexes to act as the out of bounds area
+	for(var y=-5; y<numRows+5; y++){
+		for(var x=-5; x<numCols+5; x++){
+			// only place these hexes outside of where normal hexes will be placed
+			if(y < 0 || y >= numRows || x < 0 || x >= numCols) {
+				var hexImg;
+				if((x < numCols/2 && y < numRows/2) || (x > numCols/2 && y > numRows/2)) {
+					hexImg = new createjs.Bitmap(queue.getResult("out1"));
+				}
+				else {
+					hexImg = new createjs.Bitmap(queue.getResult("out2"));
+				}
+				
+				var hex = new Hex(x, y, 0, null, null);
+				var hexDisplay = new HexDisplay(hex);
+				hexImg.scaleX = hexScale;
+				hexImg.scaleY = hexScale;
+				hexDisplay.addChild(hexImg);
+				
+				hexDisplay.update();
+				
+				stage.addChild(hexDisplay);
+			}
+		}
+	}
+		
+	for(var y=0; y<numRows; y++){
+		
+		var thisHexRow = hexMap[y];
+		if(thisHexRow == null){
+			continue;
+		}
+		
+		for(var x=0; x<numCols; x++){
+			
+			var thisHex = thisHexRow[x];
+			if(thisHex == null){
+				continue;
+			}
+			
+			var hexDisplay = thisHex.getHexDisplay();
+			if(thisHex.getHexDisplay() == null) {
+				// Create the HexDisplay object and add references between it and the Hex
+				var hexDisplay = new HexDisplay(thisHex);
+				thisHex.setHexDisplay(hexDisplay);
+				
+				// add mouse listener
+				hexDisplay.on("click", handleHexClick);
+				hexDisplay.mouseChildren = false;
+			}
+			else{
+				// clear the children so they can be recreated
+				hexDisplay.removeAllChildren();
+			}
+			
+			var thisHexImages = thisHex.getImages();
+			$.each(thisHexImages, function(i, img){
+				// add the hex images to the stage
+				var hexImg = new createjs.Bitmap(queue.getResult(img));
+				hexImg.scaleX = hexScale;
+				hexImg.scaleY = hexScale;
+				hexDisplay.addChild(hexImg);
+			});
+			
+			// so they won't overlap incorrectly, add to the stage only the evenX columns first, later will add oddX
+			if(!thisHex.isXOdd()) {
+				if(firstUpdate) stage.addChild(hexDisplay);
+			}
+		}
+		
+		// now add to the stage only the oddX columns in this row
+		for(var x=1; x<numCols; x+=2){
+			
+			var thisHex = thisHexRow[x];
+			if(thisHex == null){
+				continue;
+			}
+			
+			// TODO: add the HexDisplay objects to the stage in ascending elevation order, in addition to evenX before oddX columns
+			var hexDisplay = thisHex.getHexDisplay();
+			if(firstUpdate) stage.addChild(hexDisplay);
+		}
+	}
+	
+	updateHexDisplayObjects();
+}
+
+/**
+ * Runs the update call on each HexDisplay object
+ */
+function updateHexDisplayObjects() {
+	if(hexMap == null){return;}
+	
+	for(var y=0; y<numRows; y++){
+			
+		var thisHexRow = hexMap[y];
+		if(thisHexRow == null){
+			continue;
+		}
+		
+		if(y == 0) {
+			if(useIsometric) {
+				// screen boundary padding is needed for isometric view to see the 
+				// top of high elevation hexes at the top of the screen 
+				var highestElevation = 0;
+				for(var x=0; x<numCols; x++){
+					var thisHex = thisHexRow[x];
+					if(thisHex == null){
+						continue;
+					}
+					
+					if(thisHex.getElevation() > highestElevation) {
+						highestElevation = thisHex.getElevation();
+					}
+				}
+				
+				isometricPadding = elevationHeight * highestElevation;
+			}
+			else{
+				// isometric is off, no screen boundary padding needed
+				isometricPadding = 0;
+			}
+		}
+		
+		for(var x=0; x<numCols; x++){
+			
+			var thisHex = thisHexRow[x];
+			if(thisHex == null){
+				continue;
+			}
+			
+			var hexDisplay = thisHex.getHexDisplay();
+			hexDisplay.update();
+		}
+	}
+}
+
+/**
+ * Initializes the display of each unit in the game on the stage
+ */
+function initUnitsDisplay() {
+	if(units == null){return;}
+	
+	$.each(units, function(index, thisUnit) {
+		var displayUnit = new UnitDisplay(thisUnit);
+		thisUnit.setUnitDisplay(displayUnit);
+		
+		// add mouse event listener
+		displayUnit.on("click", handleUnitClick);
+		displayUnit.mouseChildren = false;
+	});
+}
+
+/**
+ * Removes and adds each unit display such that destroyed units are drawn first and not be on top
+ */
+function arrangeUnitsDisplay() {
+	// add destroyed units displays first
+	$.each(units, function(index, thisUnit) {
+		if(thisUnit.isDestroyed()) {
+			var displayUnit = thisUnit.getUnitDisplay();
+			stage.removeChild(displayUnit);
+			stage.addChild(displayUnit);
+		}
+	});
+	
+	// then active units displays
+	$.each(units, function(index, thisUnit) {
+		if(!thisUnit.isDestroyed()) {
+			var displayUnit = thisUnit.getUnitDisplay();
+			stage.removeChild(displayUnit);
+			stage.addChild(displayUnit);
+		}
+	});
+}
+
+/**
+ * Runs the update call on each UnitDisplay object
+ */
+function updateUnitDisplayObjects() {
+	if(units == null){return;}
+	
+	$.each(units, function(index, thisUnit) {
+		var displayUnit = thisUnit.getUnitDisplay();
+		if(displayUnit != null) {
+			displayUnit.update();
+			displayUnit.positionUpdate();
+		}
+	});
+}
+
 /**
  * Create each other unit UI elements, such as armor and weapons
  */
