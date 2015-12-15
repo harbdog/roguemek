@@ -1467,7 +1467,25 @@ class GameService {
 			if(unit.jpMoved < 0) {
 				// set indicator for jumping
 				unit.jpMoved = 0
+				
+				// apply initial heat for jumping
+				def heatGen = (3 / game.turnsPerRound)
+				unit.heat += heatGen
+				
 				unit.save flush: true, deepValidate: false
+				
+				def data = [
+					unit: unit.id,
+					jpMoved: unit.jpMoved,
+					jumping: jumping
+				]
+				
+				def jumpMessage = "game.unit.jumping"
+				Object[] messageArgs = [unit.toString()]
+				Date update = GameMessage.addMessageUpdate(
+								game,
+								jumpMessage,
+								messageArgs, data)
 			}
 		}
 		else{
@@ -1498,6 +1516,7 @@ class GameService {
 			moveAP: moveAP,
 			jpMoved: unit.jpMoved,
 			jumping: jumping,
+			heat: unit.heat,
 			jumpCapable: (unit.jumpPoints > 0 && (unit.apMoved == 0 || unit.jpMoved >= 0))
 		]
 		

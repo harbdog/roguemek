@@ -150,7 +150,7 @@ c.positionUpdate = function(callFunction) {
 	}
 	
 	if(showUnitImage) {
-		if(this.unit.jumping) {
+		if(showJumpJets) {
 			var rotateContainerY = -hexHeight/4;
 			
 			if(this.rotateContainer.y != rotateContainerY){
