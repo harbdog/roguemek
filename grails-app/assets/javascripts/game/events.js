@@ -780,13 +780,16 @@ function handleSettingsUpdate(settingKey) {
 			targetLine.update();
 		}
 	}
-	else if(settingKey = Settings.GFX_CACHING) {
+	else if(settingKey == Settings.GFX_CACHING) {
 		updateHexDisplayObjects();
 		
 		$.each(units, function(index, thisUnit) {
 			var displayUnit = thisUnit.getUnitDisplay();
 			displayUnit.update();
 		});
+	}
+	else if(settingKey == Settings.GFX_FRAMERATE) {
+		createjs.Ticker.setFPS(Settings.get(Settings.GFX_FRAMERATE));
 	}
 	
 	// general UI updates performed

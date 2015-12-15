@@ -118,6 +118,22 @@ s.init = function() {
 				handleSettingsUpdate(settingKey);
 			}
 	); 
+	
+	//////////////////////////////////
+	// create the framerate setting //
+	var framerateSlider = SettingsDisplay.createSliderSetting(
+			settingsDiv,
+			"framerate", "Target Framerate", 
+			Settings.get(Settings.GFX_FRAMERATE),
+			20, 120, 1,
+			function(value) {
+				var settingKey = Settings.GFX_FRAMERATE;
+		    	var framerate = value;
+		    	
+				Settings.set(settingKey, framerate);
+				handleSettingsUpdate(settingKey);
+			}
+	);
 }
 
 s.update = function() {

@@ -25,7 +25,8 @@ Settings.init = function() {
 	Settings.default(Settings.UI_ENEMY_COLOR, "#FF0000");
 	
 	// the graphics quality
-	Settings.default(Settings.GFX_CACHING, Settings.GFX_PERFORMANCE);
+	Settings.default(Settings.GFX_CACHING, Settings.GFX_BALANCE);
+	Settings.default(Settings.GFX_FRAMERATE, 30);
 }
 
 // STATIC key names of settings for the game
@@ -38,6 +39,7 @@ Settings.UI_PLAYER_COLOR = "UI_PLAYER_COLOR";
 Settings.UI_FRIENDLY_COLOR = "UI_FRIENDLY_COLOR";
 Settings.UI_ENEMY_COLOR = "UI_ENEMY_COLOR";
 Settings.GFX_CACHING = "GFX_CACHING";
+Settings.GFX_FRAMERATE = "GFX_FRAMERATE";
 
 // static key values for certain settings
 Settings.GFX_PERFORMANCE = 0;
