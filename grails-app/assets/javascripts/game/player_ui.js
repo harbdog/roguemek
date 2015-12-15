@@ -47,6 +47,8 @@ var targetDisplayBounds = {};
 
 var activeControl, unitControls, targetBracket, targetLine;
 
+var outOfBoundsHexes;
+
 //initialize canvas based UI overlay
 function initPlayerUI() {
 	// create the settings menu
@@ -247,6 +249,7 @@ function initHexMapDisplay() {
 	}
 	
 	// first, lay down series of hexes to act as the out of bounds area
+	outOfBoundsHexes = [];
 	for(var y=-5; y<numRows+5; y++){
 		for(var x=-5; x<numCols+5; x++){
 			// only place these hexes outside of where normal hexes will be placed
@@ -268,6 +271,8 @@ function initHexMapDisplay() {
 				hexDisplay.update();
 				
 				stage.addChild(hexDisplay);
+				
+				outOfBoundsHexes.push(hexDisplay);
 			}
 		}
 	}
@@ -331,6 +336,69 @@ function initHexMapDisplay() {
 	}
 	
 	updateHexDisplayObjects();
+}
+
+
+/**
+ * Updates the visible HexDisplay objects that are rendered on screen or off
+ */
+function updateHexMapDisplay() {
+	var startX = - stage.x;
+    var startY = - stage.y;
+    
+    var canvasX = startX + canvas.width;
+    var canvasY = startY + canvas.height;
+    
+    var hexScale = stage.scaleX;
+    
+    var scaledHexWidth = hexWidth * hexScale;
+    var scaledHexHeight = hexHeight * hexScale;
+    
+    var determineHexVisibility = function(thisDisplayHex) {
+    	var xOffset = thisDisplayHex.x * hexScale;
+		var yOffset = thisDisplayHex.y * hexScale;
+		
+		// TODO: handle pop-out of hexes at the top of the screen when using isometric mode
+		
+		if((xOffset + scaledHexWidth < startX || xOffset > canvasX) 
+				|| (yOffset + scaledHexHeight < startY || yOffset > canvasY)) {
+			// hex object is outside of the view area
+			thisDisplayHex.visible = false;
+		}
+		else {
+			thisDisplayHex.visible = true;
+		}
+    };
+    
+    for(var y=0; y<numRows; y++){
+		
+		var thisHexRow = hexMap[y];
+		if(thisHexRow == null){
+			continue;
+		}
+		
+		for(var x=0; x<numCols; x++){
+			
+			var thisHex = thisHexRow[x];
+			if(thisHex == null){
+				continue;
+			}
+			
+			var thisDisplayHex = thisHex.hexDisplay;
+			if(thisDisplayHex == null){
+				continue;
+			}
+			
+			determineHexVisibility(thisDisplayHex);
+		}
+    }
+    
+    if(outOfBoundsHexes != null) {
+	    for(var i=0; i<outOfBoundsHexes.length; i++) {
+	    	var thisDisplayHex = outOfBoundsHexes[i];
+	    	determineHexVisibility(thisDisplayHex);
+	    }
+    }
 }
 
 /**

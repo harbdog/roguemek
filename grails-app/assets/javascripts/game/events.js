@@ -324,59 +324,6 @@ function resize_canvas(){
 	}
 }
 
-/**
- * Updates the visible HexDisplay objects that are rendered on screen or off
- */
-function updateHexMapDisplay() {
-	var startX = - stage.x;
-    var startY = - stage.y;
-    
-    var canvasX = startX + canvas.width;
-    var canvasY = startY + canvas.height;
-    
-    var scaledHexWidth = hexWidth * stage.scaleX;
-    var scaledHexHeight = hexHeight * stage.scaleY;
-    
-    for(var y=0; y<numRows; y++){
-		
-		var thisHexRow = hexMap[y];
-		if(thisHexRow == null){
-			continue;
-		}
-		
-		for(var x=0; x<numCols; x++){
-			
-			var thisHex = thisHexRow[x];
-			if(thisHex == null){
-				continue;
-			}
-			
-			var thisDisplayHex = thisHex.hexDisplay;
-			if(thisDisplayHex == null){
-				continue;
-			}
-			
-			// start with making it visible until the location checks prove it is not
-			thisDisplayHex.visible = true;
-			
-			var xOffset = x * (3 * scaledHexWidth / 4);
-			var yOffset = y * scaledHexHeight;
-			
-			if(thisDisplayHex.isXOdd()){
-				yOffset = (scaledHexHeight / 2) + (y * scaledHexHeight);
-			}
-			
-			// TODO: handle pop-in of hexes at the bottom of the screen when using isometric mode
-			
-			if((xOffset + scaledHexWidth < startX || xOffset > canvasX) 
-					|| (yOffset + scaledHexHeight < startY || yOffset > canvasY)) {
-				// hex object is outside of the view area
-				thisDisplayHex.visible = false;
-			}
-		}
-    }
-}
-
 function handleProgress(event) {
 	progress.css("width", (100*event.progress)+"%");
 }
@@ -695,7 +642,7 @@ function handleMouseWheel(evt) {
 	
 	// need to handle different browsers differently based on event and property type defined when mouse scroll is used
 	if (!evt) evt = event;
-	var direction = (evt.detail < 0 || evt.wheelDelta > 0) ? 2 : -1;
+	var direction = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1;
 	
 	var mouseX = evt.clientX - stage.x;
 	var mouseY = evt.clientY - stage.y;
@@ -707,14 +654,14 @@ function handleMouseWheel(evt) {
 }
 
 function handleZoomIn() {
-	var newScale = Settings.get(Settings.BOARD_SCALE) + 0.2;
+	var newScale = Settings.get(Settings.BOARD_SCALE) + 0.25;
 	handleZoomBoard(newScale);
 	
 	// update in settings in case it is showing
 	settingsDisplay.update();
 }
 function handleZoomOut() {
-	var newScale = Settings.get(Settings.BOARD_SCALE) - 0.1;
+	var newScale = Settings.get(Settings.BOARD_SCALE) - 0.25;
 	handleZoomBoard(newScale);
 	
 	// update in settings in case it is showing
