@@ -2140,16 +2140,16 @@ class GameService {
 						thisCause = thisHit.isDestroyed() 
 							? PilotingModifier.Modifier.GYRO_DESTROYED : PilotingModifier.Modifier.GYRO_HIT
 					}
-					else if(MechMTF.MTF_CRIT_UP_LEG_ACT == thisHit.getName()) {
+					else if(MechMTF.MTF_CRIT_UP_LEG_ACT == thisHit.getName() && thisHit.isDestroyed()) {
 						thisCause = PilotingModifier.Modifier.UP_LEG_ACTUATOR_DESTROYED
 					}
-					else if(MechMTF.MTF_CRIT_LOW_LEG_ACT == thisHit.getName()) {
+					else if(MechMTF.MTF_CRIT_LOW_LEG_ACT == thisHit.getName() && thisHit.isDestroyed()) {
 						thisCause = PilotingModifier.Modifier.LOW_LEG_ACTUATOR_DESTROYED
 					}
-					else if(MechMTF.MTF_CRIT_FOOT_ACT == thisHit.getName()) {
+					else if(MechMTF.MTF_CRIT_FOOT_ACT == thisHit.getName() && thisHit.isDestroyed()) {
 						thisCause = PilotingModifier.Modifier.FT_ACTUATOR_DESTROYED
 					}
-					else if(MechMTF.MTF_CRIT_HIP == thisHit.getName()) {
+					else if(MechMTF.MTF_CRIT_HIP == thisHit.getName() && thisHit.isDestroyed()) {
 						thisCause = PilotingModifier.Modifier.HIP_DESTROYED
 					}
 				}
@@ -2557,6 +2557,7 @@ class GameService {
 		}
 	
 		boolean critChance = false
+		boolean critLocationDestroyed = false
 		while(damage > 0 && unit.internals[critLocation] > 0) {
 			unit.internals[critLocation] --
 			damage --
@@ -2565,11 +2566,16 @@ class GameService {
 			
 			unit.damageTaken ++
 			
-			
 			// check to see if the limb was just removed, if so add to critsHitList
 			if(unit.internals[critLocation] == 0) {
-				critsHitList.push(critLocation)
+				critLocationDestroyed = true
 			}
+		}
+		
+		if(critLocationDestroyed) {
+			// destroy the location and set equipment in the location as damaged or destroyed
+			def critsApplied = destroyLocation(game, unit, critLocation)
+			critsHitList = (critsHitList << critsApplied).flatten()
 		}
 		
 		if(critChance) {
@@ -2647,7 +2653,7 @@ class GameService {
 			}
 		}
 		
-		if(unit.internals[Mech.HEAD] == 0) {
+		if(critLocationDestroyed && critLocation == Mech.HEAD) {
 			// if head or center internal are gone, the unit is dead
 			//debug.log("Head internal destroyed!");
 			unit.status = BattleUnit.STATUS_DESTROYED
@@ -2663,7 +2669,7 @@ class GameService {
 			
 			return critsHitList
 		}
-		else if(unit.internals[Mech.CENTER_TORSO] == 0) {
+		else if(critLocationDestroyed && critLocation == Mech.CENTER_TORSO) {
 			// if head or center internal are gone, the unit is dead
 			//debug.log("CT internal destroyed!");
 			unit.status = BattleUnit.STATUS_DESTROYED
@@ -2679,7 +2685,8 @@ class GameService {
 			
 			return critsHitList
 		}
-		else if(unit.internals[Mech.LEFT_LEG] == 0 && unit.internals[Mech.RIGHT_LEG] == 0) {
+		else if(critLocationDestroyed && (critLocation == Mech.LEFT_LEG || critLocation == Mech.RIGHT_LEG) 
+				&& unit.internals[Mech.LEFT_LEG] == 0 && unit.internals[Mech.RIGHT_LEG] == 0) {
 			// if both of the legs internal are gone, the unit is dead
 			//debug.log("Both legs destroyed!");
 			unit.status = BattleUnit.STATUS_DESTROYED
@@ -2696,16 +2703,16 @@ class GameService {
 			return critsHitList
 		}
 		
-		if(unit.internals[Mech.LEFT_TORSO] == 0) {
+		if(critLocationDestroyed && critLocation ==  Mech.LEFT_TORSO) {
 			// the LEFT_ARM and REAR needs to be gone if the torso is gone
-			destroyLocation(unit, Mech.LEFT_TORSO)
-			destroyLocation(unit, Mech.LEFT_ARM)
+			def critsApplied = destroyLocation(game, unit, Mech.LEFT_ARM)
+			critsHitList = (critsHitList << critsApplied).flatten()
 		}
 		
-		if(unit.internals[Mech.RIGHT_TORSO] == 0) {
+		if(critLocationDestroyed && critLocation == Mech.RIGHT_TORSO) {
 			// the RIGHT_ARM and REAR needs to be gone if the torso is gone
-			destroyLocation(unit, Mech.RIGHT_TORSO)
-			destroyLocation(unit, Mech.RIGHT_ARM)
+			def critsApplied = destroyLocation(game, unit, Mech.RIGHT_ARM)
+			critsHitList = (critsHitList << critsApplied).flatten()
 		}
 		
 		// TODO: update any destroyed weapons in locations with no remaining internal armor
@@ -2741,13 +2748,44 @@ class GameService {
 		return false
 	}
 	
-	private void destroyLocation(BattleUnit unit, int hitLocation) {
+	/**
+	 * Sets the location's internal armor to zero and damages/destroys equipment in the location
+	 * @param unit
+	 * @param hitLocation
+	 * @return list of damaged equipment and location indices that were destroyed
+	 */
+	private def destroyLocation(Game game, BattleUnit unit, int hitLocation) {
+		def critsHitList = []
+		
 		if(unit instanceof BattleMech) {
 			unit.internals[hitLocation] = 0
+			
+			critsHitList.push(hitLocation)
+			
+			BattleEquipment[] critSection = unit.getCritSection(hitLocation)
+			for(BattleEquipment critEquip in critSection) {
+				if(critEquip.isEmpty()) {
+					continue
+				}
+				else if(critEquip.isActive()) {
+					critEquip.status = BattleEquipment.STATUS_DAMAGED
+					critEquip.save flush:true
+					
+					critsHitList.push(critEquip)
+					
+					// include data in the message for the damaged/destroyed equipment
+					def criticalHitData = [id: critEquip.id, status: String.valueOf(critEquip.status)]
+					def data = [target: unit.id, criticalHit: criticalHitData]
+					
+					Date update = GameMessage.addMessageUpdate(game, null, null, data)
+				}
+			}
 		}
 		else{
 			log.debug("BattleUnit instance "+unit+" unable to have location "+hitLocation+" destroyed")
 		}
+		
+		return critsHitList
 	}
 	
 	/**
@@ -2781,7 +2819,8 @@ class GameService {
 				if(hitLocation == Mech.HEAD || hitLocation == Mech.LEFT_ARM || hitLocation == Mech.RIGHT_ARM 
 						|| hitLocation == Mech.LEFT_LEG || hitLocation == Mech.RIGHT_LEG) {
 					// limb blown off!
-					destroyLocation(unit, hitLocation)
+					def critsApplied = destroyLocation(game, unit, hitLocation)
+					critsHitList = (critsHitList << critsApplied).flatten()
 					
 					// TODO: include data in the update for the lost limb
 					def data = [:]
