@@ -11,6 +11,8 @@ class Game {
 	static mapping= {
 		id generator: 'uuid'
 	}
+	
+	String description
 
 	MekUser ownerUser
 	
@@ -34,6 +36,7 @@ class Game {
 	public static final GAME_OVER = 'O'
 	
     static constraints = {
+		description nullable: false
 		ownerUser nullable: false
 		unitTurn min: 0
 		gameTurn min: 0

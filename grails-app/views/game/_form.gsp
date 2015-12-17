@@ -1,6 +1,13 @@
 <%@ page import="roguemek.game.Game" %>
 
+<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'description', 'error')} required">
+    <label for="description">
+        <g:message code="game.description.label" default="Description" />
+        <span class="required-indicator">*</span>
+    </label>
+    <g:textField name="description" required="" value="${gameInstance?.description}"/>
 
+</div>
 
 <div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'gameState', 'error')} required">
 	<label for="gameState">
@@ -8,6 +15,7 @@
 		<span class="required-indicator">*</span>
 	</label>
 	
+	<g:radio name="gameState" value="${Game.GAME_INIT}" checked="${gameInstance?.gameState == Game.GAME_INIT}"/>Init
 	<g:radio name="gameState" value="${Game.GAME_ACTIVE}" checked="${gameInstance?.gameState == Game.GAME_ACTIVE}"/>Active
 	<g:radio name="gameState" value="${Game.GAME_PAUSED}" checked="${gameInstance?.gameState == Game.GAME_PAUSED}"/>Paused
 	<g:radio name="gameState" value="${Game.GAME_OVER}" checked="${gameInstance?.gameState == Game.GAME_OVER}"/>Game Over

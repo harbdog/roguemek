@@ -92,6 +92,11 @@ h1 {
 	margin: 0.8em 0 0.3em 0;
 }
 
+h1.greeting {
+	color: #F0F0F0;
+	margin-left: 1.25em;
+}
+
 ul {
 	padding: 0;
 }

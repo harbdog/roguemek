@@ -24,7 +24,7 @@
 			<thead>
 					<tr>
 					
-						<g:sortableColumn property="id" title="${message(code: 'game.id.label', default: 'ID')}" />
+						<g:sortableColumn property="id" title="${message(code: 'game.description.label', default: 'Description')}" />
 						
 						<g:sortableColumn property="ownerUser" title="${message(code: 'game.ownerUser.label', default: 'Owner User')}" />
 					
@@ -40,7 +40,7 @@
 				<g:each in="${gameInstanceList}" status="i" var="gameInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td><g:link action="show" id="${gameInstance.id}">${fieldValue(bean: gameInstance, field: "id")}</g:link></td>
+						<td><g:link action="show" id="${gameInstance.id}">${fieldValue(bean: gameInstance, field: "description")}</g:link></td>
 						
 						<td><g:link controller="mekUser" action="show" id="${gameInstance.ownerUser.id}">${fieldValue(bean: gameInstance, field: "ownerUser")}</g:link></td>
 						

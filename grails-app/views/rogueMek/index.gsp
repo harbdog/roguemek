@@ -8,46 +8,122 @@
 		<title>RogueMek</title>
 	</head>
 	<body id="body">
-		<div id="show-user" class="content scaffold-show" role="main">
-			<h1>Select a game to play</h1>
-			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
-			</g:if>
+	    <g:if test="${flash.message}">
+            <div class="message" role="status">${flash.message}</div>
+        </g:if>
+        
+        <g:if test="${mekUserInstance?.callsign}">
+            <h1 class="greeting"><g:message code="default.greeting.label" args="[mekUserInstance.callsign]" /></h1>
+        </g:if>
+        
+		<div id="show-battles" class="content scaffold-show" role="main">
+			<h1>Battles</h1>
 			
 			<ol class="property-list user">
 			
-				<g:if test="${mekUserInstance?.callsign}">
+			<g:if test="${mekUserInstance?.pilots}">
+			<%
+                // find all games the user's pilots are in
+                def gameList
+				def initGames = []
+				def activeGames = []
+				def pausedGames = []
+				def finishedGames = []
+                   
+                def pilotIdList = []
+                for(def p in mekUserInstance.pilots) {
+                    pilotIdList.add(p.id)
+                }
+                   
+                if(pilotIdList.size() > 0) {
+	                def c = Game.createCriteria()
+	                gameList = c.listDistinct {
+		                or {
+			                pilots {
+			                  'in'("id", pilotIdList)
+			                }
+		                }
+		                order("updateDate", "desc")
+	                }
+						
+					for(Game g in gameList) {
+						switch(g.gameState) {
+							case Game.GAME_INIT:
+								initGames.add(g)
+								break
+								
+							case Game.GAME_ACTIVE:
+								activeGames.add(g)
+								break
+							
+							case Game.GAME_PAUSED:
+								pausedGames.add(g)
+								break
+								
+							case Game.GAME_OVER:
+								finishedGames.add(g)
+								break
+								
+							default: break
+						}
+					}
+                }
+            %>
+                
+                
+                <g:if test="${initGames.size() > 0}" >
 				<li class="fieldcontain">
-					<span id="callsign-label" class="property-label"><g:message code="user.callsign.label" default="Callsign" /></span>
+					<span id="init-label" class="property-label"><g:message code="games.init.label" default="Planned" /></span>
 					
-						<span class="property-value" aria-labelledby="callsign-label"><g:fieldValue bean="${mekUserInstance}" field="callsign"/></span>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${mekUserInstance?.pilots}">
-				<li class="fieldcontain">
-					<span id="pilots-label" class="property-label"><g:message code="user.pilots.label" default="Pilots" /></span>
-					
-						<g:each in="${mekUserInstance.pilots}" var="p">
-						<%
-							// TODO: The findByPilots query was failing, so doing it the dumb way just to get past, fix it later?
-							def gameList = Game.getAll()
-							def g = null
-							gameList.each { thisGame ->
-								if(thisGame.pilots?.contains(p)){
-									g = thisGame
-									return
-								}
-							}
-						%>
-							<g:if test="${g}">
-								<span class="property-value" aria-labelledby="pilots-label"><g:link action="playGame" params='[game:"${g.id}"]'>${p?.firstName+" "+p?.lastName} - Game ID:${g.id}</g:link></span>
+						<g:each in="${gameList}" var="g">
+							<g:if test="${g.isInit()}">
+								<span class="property-value" aria-labelledby="init-label"><g:link action="playGame" params='[game:"${g.id}"]'>${g.description}</g:link></span>
 							</g:if>
 						</g:each>
 					
 				</li>
 				</g:if>
+				
+				<g:if test="${activeGames.size() > 0}" >
+				<li class="fieldcontain">
+                    <span id="active-label" class="property-label"><g:message code="games.active.label" default="Active" /></span>
+                    
+                        <g:each in="${gameList}" var="g">
+                            <g:if test="${g.isActive()}">
+                                <span class="property-value" aria-labelledby="active-label"><g:link action="playGame" params='[game:"${g.id}"]'>${g.description}</g:link></span>
+                            </g:if>
+                        </g:each>
+                    
+                </li>
+                </g:if>
+                
+                <g:if test="${pausedGames.size() > 0}" >
+                <li class="fieldcontain">
+                    <span id="paused-label" class="property-label"><g:message code="games.paused.label" default="Paused" /></span>
+                    
+                        <g:each in="${gameList}" var="g">
+                            <g:if test="${g.isPaused()}">
+                                <span class="property-value" aria-labelledby="paused-label"><g:link action="playGame" params='[game:"${g.id}"]'>${g.description}</g:link></span>
+                            </g:if>
+                        </g:each>
+                    
+                </li>
+                </g:if>
+                
+                <g:if test="${finishedGames.size() > 0}" >
+                <li class="fieldcontain">
+                    <span id="finished-label" class="property-label"><g:message code="games.finished.label" default="Finished" /></span>
+                    
+                        <g:each in="${gameList}" var="g">
+                            <g:if test="${g.isOver()}">
+                                <span class="property-value" aria-labelledby="finished-label"><g:link action="playGame" params='[game:"${g.id}"]'>${g.description}</g:link></span>
+                            </g:if>
+                        </g:each>
+                    
+                </li>
+				</g:if>
+				
+			</g:if>
 			
 			</ol>
 		</div>

@@ -40,8 +40,11 @@
                 action="index">BattleMechs</g:link></li>
        
        <li><g:link controller="mech"
-                action="index">Mech List</g:link></li>
-       
+                action="index">Mechs</g:link></li>
+                
+       <li><g:link controller="weapon"
+                action="index">Weapons</g:link></li>
+                
        <li><g:link controller="game"
                 action="list">Games</g:link></li>
     </sec:ifAnyGranted>
