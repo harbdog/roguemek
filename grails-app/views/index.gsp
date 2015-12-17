@@ -5,9 +5,6 @@
 		<title>RogueMek</title>
 	</head>
 	<body id="body">
-		<div>
-			<h1>Prepare for <g:link controller="rogueMek" action="index">Battle!</g:link></h1>
-			<p>Mechwarrior, are you ready?</p>
-		</div>
+	   <%-- TODO: Any main page content that always appears whether logged in or not --%>
 	</body>
 </html>

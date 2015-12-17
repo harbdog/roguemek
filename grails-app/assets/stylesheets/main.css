@@ -155,6 +155,13 @@ img {
 	zoom: 1;
 }
 
+.nav.logout {
+    border-left: 2px solid #404040;
+       -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+            box-shadow: none;
+}
+
 .nav ul {
 	overflow: hidden;
 	padding-left: 0;
@@ -196,10 +203,15 @@ img {
 	text-decoration: underline;
 }
 
-.nav a.home, .nav a.list, .nav a.create {
+.nav a.dropship, .nav a.home, .nav a.list, .nav a.create {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
+}
+
+.nav a.dropship {
+	background-image: url(../images/ui/dropship.png);
+	background-size: 20px;
 }
 
 .nav a.home {

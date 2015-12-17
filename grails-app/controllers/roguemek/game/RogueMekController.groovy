@@ -10,8 +10,6 @@ class RogueMekController {
 	transient springSecurityService
 	
 	def index() {
-		log.info('Starting the index action...')
-		
 		def userInstance = currentUser()
 		if(userInstance) {
 			respond userInstance

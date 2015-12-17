@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'userRole.label', default: 'UserRole')}" />
+		<g:set var="entityName" value="${message(code: 'userRole.label', default: 'Role')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -31,7 +31,7 @@
 					</tr>
 				</thead>
 				<tbody>
-				<g:each in="${userRoleInstanceList}" status="i" var="userRoleInstance">
+				<g:each in="${mekUserRoleInstanceList}" status="i" var="userRoleInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
 						<td>${userRoleInstance?.role?.authority}</td>
