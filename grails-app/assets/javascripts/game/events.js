@@ -129,8 +129,7 @@ function handleKeyPress(key) {
 		// toggle jump jets
 		if(isPlayerUnitTurn()) {
 			setControlActive(PlayerControl.TYPE_JUMP, true);
-			turnUnit.jumping = !turnUnit.jumping;
-			jump(turnUnit.jumping);
+			jump(!turnUnit.jumping);
 		}
 	}
 	else if(key == "p") {
@@ -427,8 +426,7 @@ function handleControls(event) {
 			
 		case PlayerControl.TYPE_JUMP:
 			// toggle jumping
-			turnUnit.jumping = !turnUnit.jumping;
-			jump(turnUnit.jumping);
+			jump(!turnUnit.jumping);
 			
 			break;
 	}

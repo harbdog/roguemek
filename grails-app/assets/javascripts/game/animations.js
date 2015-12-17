@@ -28,6 +28,36 @@ function animateEjectionPod(srcUnit) {
 	var emitter = new EjectionPodEmitter(pod, duration);
 }
 
+function animateFallingMech(srcUnit) {
+	var srcUnitDisplay = srcUnit.getUnitDisplay();
+	var point = new Point(srcUnitDisplay.x, srcUnitDisplay.y);
+	
+	var srcUnitDisplayIndex = stage.getChildIndex(srcUnitDisplay);
+	
+	var emitter = new DustCloudEmitter(point, 500, 0.5, 1);
+	if(srcUnitDisplayIndex == -1) {
+		stage.addChild(emitter);
+	}
+	else{
+		stage.addChildAt(emitter, srcUnitDisplayIndex);
+	}
+}
+
+function animateJumpingMech(srcUnit) {
+	var srcUnitDisplay = srcUnit.getUnitDisplay();
+	var point = new Point(srcUnitDisplay.x, srcUnitDisplay.y);
+	
+	var srcUnitDisplayIndex = stage.getChildIndex(srcUnitDisplay);
+	
+	var emitter = new DustCloudEmitter(point, 250, 0.75, 0.75);
+	if(srcUnitDisplayIndex == -1) {
+		stage.addChild(emitter);
+	}
+	else{
+		stage.addChildAt(emitter, srcUnitDisplayIndex);
+	}
+}
+
 function animateAmmoExplosion(srcUnit, ammoObj) {
 	var ammoId = ammoObj.id;
 	

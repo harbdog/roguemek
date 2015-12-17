@@ -900,6 +900,11 @@ function updateGameData(data) {
 		var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);
 		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
 		
+		if(u.prone) {
+			// show animation indicating the unit has fallen as a cloud of dust
+			animateFallingMech(u);
+		}
+		
 		// update the UI on being prone or not
 		updateUnitDisplay = true;
 		
@@ -938,6 +943,8 @@ function updateGameData(data) {
 	}
 	
 	if(data.jumping != null) {
+		var jumpingChanging = (u.jumping != data.jumping);
+		
 		u.jumping = data.jumping;
 		
 		if(isPlayerU) {
@@ -946,6 +953,10 @@ function updateGameData(data) {
 		}
 		else{
 			u.getUnitDisplay().positionUpdate();
+		}
+		
+		if(u.jumping && jumpingChanging) {
+			animateJumpingMech(u);
 		}
 		
 		// update unit info display to show as jumping
