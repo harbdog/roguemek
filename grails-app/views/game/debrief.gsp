@@ -8,11 +8,7 @@
 	</head>
 	<body>
 		<a href="#show-game" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-		<div class="nav" role="navigation">
-			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-			</ul>
-		</div>
+
 		<div id="show-game" class="content scaffold-show" role="main">
 			<h1><g:message code="game.over.debriefing.label" /></h1>
 			<g:if test="${flash.message}">

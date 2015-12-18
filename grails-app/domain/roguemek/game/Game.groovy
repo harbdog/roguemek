@@ -36,11 +36,12 @@ class Game {
 	public static final GAME_OVER = 'O'
 	
     static constraints = {
-		description nullable: false
+		description blank: false
 		ownerUser nullable: false
 		unitTurn min: 0
 		gameTurn min: 0
 		gameState nullable: false
+		board nullable: true
     }
 	
 	def beforeInsert() {

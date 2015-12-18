@@ -62,6 +62,15 @@
 						
 					</li>
 				</g:if>
+				
+				<g:if test="${gameInstance?.board}">
+				<li class="fieldcontain">
+					<span id="board-label" class="property-label"><g:message code="game.board.label" default="Board" /></span>
+					
+						<span class="property-value" aria-labelledby="board-label"><g:fieldValue bean="${gameInstance}" field="board"/></span>
+					
+				</li>
+				</g:if>
 			
 				<g:if test="${gameInstance?.startDate}">
 				<li class="fieldcontain">
@@ -81,15 +90,6 @@
 				</li>
 				</g:if>
 				
-				<g:if test="${gameInstance?.board}">
-				<li class="fieldcontain">
-					<span id="board-label" class="property-label"><g:message code="game.board.label" default="Board" /></span>
-					
-						<span class="property-value" aria-labelledby="board-label"><g:fieldValue bean="${gameInstance}" field="board"/></span>
-					
-				</li>
-				</g:if>
-			
 			</ol>
 			<g:form url="[resource:gameInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">

@@ -29,10 +29,12 @@
 						<g:sortableColumn property="ownerUser" title="${message(code: 'game.ownerUser.label', default: 'Owner User')}" />
 					
 						<g:sortableColumn property="gameState" title="${message(code: 'game.gameState.label', default: 'Game State')}" />
+						
+						<g:sortableColumn property="board" title="${message(code: 'game.board.label', default: 'Map')}" />
 					
-						<g:sortableColumn property="startDate" title="${message(code: 'game.startDate.label', default: 'Start Date')}" />
+						<g:sortableColumn property="startDate" title="${message(code: 'game.startDate.label', default: 'Started')}" />
 					
-						<g:sortableColumn property="updateDate" title="${message(code: 'game.updateDate.label', default: 'Update Date')}" />
+						<g:sortableColumn property="updateDate" title="${message(code: 'game.updateDate.label', default: 'Updated')}" />
 					
 					</tr>
 				</thead>
@@ -45,6 +47,8 @@
 						<td><g:link controller="mekUser" action="show" id="${gameInstance.ownerUser.id}">${fieldValue(bean: gameInstance, field: "ownerUser")}</g:link></td>
 						
 						<td>${fieldValue(bean: gameInstance, field: "gameState")}</td>
+						
+						<td>${fieldValue(bean: gameInstance, field: "board")}</td>
 					
 						<td><g:formatDate date="${gameInstance.startDate}" /></td>
 					

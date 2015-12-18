@@ -7,6 +7,8 @@ class HexMap {
 		id generator: 'uuid'
 	}
 
+	String name
+	
 	Integer numCols
 	Integer numRows
 	
@@ -14,16 +16,66 @@ class HexMap {
 	static hasMany = [hexMap: String]
 	
     static constraints = {
+		name blank: false
 		numRows min: 0
 		numCols min: 0
     }
 	
 	/**
-	 * Loads a board file into the hexMap array
+	 * Reads the given board file until it finds the number of rows and colums
+	 * @param boardStream
+	 * @return def map (numCols: x, numRows: y)
+	 */
+	public static def getBoardSize(InputStream boardStream) {
+		def numCols = 0
+		def numRows = 0
+		
+		try {
+			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(boardStream))
+			st.eolIsSignificant(true)
+			st.commentChar((int)'#')
+			st.quoteChar((int)'"')
+			st.wordChars((int)'_', (int)'_')
+			
+			int x_pos = 1
+			int y_pos = 1
+			
+			while (st.nextToken() != StreamTokenizer.TT_EOF) {
+				if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("size")) {
+					// read rest of line
+					String[] args = [ "0", "0" ]
+					
+					int i = 0
+					while ((st.nextToken() == StreamTokenizer.TT_WORD)
+							|| (st.ttype == '"')
+							|| (st.ttype == StreamTokenizer.TT_NUMBER)) {
+						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval
+					}
+					numCols = Integer.parseInt(args[0])
+					numRows = Integer.parseInt(args[1])
+					
+					break;
+				}
+			}
+		} catch (IOException ex) {
+			System.err.println("i/o error reading board")
+			System.err.println(ex)
+		} finally {
+			if(boardStream != null) {
+				boardStream.close()
+			}
+		}
+		
+		return [numCols: numCols, numRows: numRows]
+	}
+	
+	/**
+	 * Loads a board file into a new HexMap object
+	 * @param boardName
 	 * @param boardFile
 	 * @return
 	 */
-	public static HexMap loadBoardFile(InputStream boardStream) {
+	public static HexMap loadBoardFile(String boardName, InputStream boardStream) {
 		def numCols = 0
 		def numRows = 0
 		
@@ -123,7 +175,7 @@ class HexMap {
 		}*/
 		
 		if(numCols > 0 && numRows > 0) {
-			HexMap board = new HexMap(numCols: numCols, numRows: numRows, hexMap: hexMap)
+			HexMap board = new HexMap(name: boardName, numCols: numCols, numRows: numRows, hexMap: hexMap)
 			if(!board.validate()) {
 				board.errors.allErrors.each {
 					log.error(it)
@@ -170,5 +222,10 @@ class HexMap {
 		int x = Integer.parseInt(hexNum.substring(0, hexNum.length() - substringDiff)) - 1
 		int y = Integer.parseInt(hexNum.substring(hexNum.length() - substringDiff)) - 1
 		return (y * width) + x
+	}
+	
+	@Override
+	public String toString() {
+		return this.name
 	}
 }
