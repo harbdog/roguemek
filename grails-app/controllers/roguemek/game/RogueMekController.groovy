@@ -66,13 +66,13 @@ class RogueMekController {
 			redirect action: 'index'
 		}
 		
-		if(game == null || !game.isInit()) {
-			log.info("why are we here")
-			log.info(game)
+		if(game == null) {
 			redirect controller: "RogueMek"
 		}
+		else if(game.isOver()) {
+			redirect mapping: "debriefGame", id: game.id
+		}
 		else {
-			log.info("we're here")
 			respond game
 		}
 	}
