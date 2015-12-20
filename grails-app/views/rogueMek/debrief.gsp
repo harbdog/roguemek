@@ -1,5 +1,5 @@
-
 <%@ page import="roguemek.game.Game" %>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -7,10 +7,9 @@
 		<title><g:message code="game.over.debriefing.label" /></title>
 	</head>
 	<body>
-		<a href="#show-game" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
 
 		<div id="show-game" class="content scaffold-show" role="main">
-			<h1><g:message code="game.over.debriefing.label" /></h1>
+			<h1><g:message code="game.over.debriefing.label" /> - ${gameInstance?.description}</h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>

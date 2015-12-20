@@ -98,7 +98,7 @@
 					
 						<g:each in="${initGames}" var="g">
 							<g:if test="${g.isInit()}">
-								<span class="property-value" aria-labelledby="init-label"><g:link action="playGame" params='[game:"${g.id}"]'>${g.description}</g:link></span>
+								<span class="property-value" aria-labelledby="init-label"><link:stagingGame id="${g.id}">${g.description}</link:stagingGame></span>
 							</g:if>
 						</g:each>
 					
@@ -111,7 +111,7 @@
                     
                         <g:each in="${activeGames}" var="g">
                             <g:if test="${g.isActive()}">
-                                <span class="property-value" aria-labelledby="active-label"><g:link action="playGame" params='[game:"${g.id}"]'>${g.description}</g:link></span>
+                                <span class="property-value" aria-labelledby="active-label"><link:startGame game="${g.id}">${g.description}</link:startGame></span>
                             </g:if>
                         </g:each>
                     
@@ -124,7 +124,7 @@
                     
                         <g:each in="${pausedGames}" var="g">
                             <g:if test="${g.isPaused()}">
-                                <span class="property-value" aria-labelledby="paused-label"><g:link action="playGame" params='[game:"${g.id}"]'>${g.description}</g:link></span>
+                                <span class="property-value" aria-labelledby="paused-label"><link:startGame game="${g.id}">${g.description}</link:startGame></span>
                             </g:if>
                         </g:each>
                     
@@ -137,7 +137,7 @@
                     
                         <g:each in="${finishedGames}" var="g">
                             <g:if test="${g.isOver()}">
-                                <span class="property-value" aria-labelledby="finished-label"><g:link action="playGame" params='[game:"${g.id}"]'>${g.description}</g:link></span>
+                                <span class="property-value" aria-labelledby="finished-label"><link:debriefGame id="${g.id}">${g.description}</link:debriefGame></span>
                             </g:if>
                         </g:each>
                     

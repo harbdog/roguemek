@@ -181,6 +181,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/logout/**':					['permitAll'],
 	
 	'/battle/**':					['ROLE_USER'],
+	'/staging/**':					['ROLE_USER'],
 	'/rogueMek/**':					['ROLE_USER'],
 	'/game/**':						['ROLE_USER'],
 	'/battleMech/battleInfo/**':	['ROLE_USER'],

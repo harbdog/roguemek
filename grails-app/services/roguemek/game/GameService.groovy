@@ -132,7 +132,7 @@ class GameService {
 		def gameOverHeader = messageSource.getMessage("game.over.debriefing.header", null, LocaleContextHolder.locale)
 		def gameOverMessage = messageSource.getMessage("game.over.debriefing", null, LocaleContextHolder.locale)
 		def gameOverLabel = messageSource.getMessage("game.over.debriefing.label", null, LocaleContextHolder.locale)
-		def gameOverURL = grailsLinkGenerator.link(action: 'debrief', id: game.id)
+		def gameOverURL = grailsLinkGenerator.link(controller: 'rogueMek', action: 'debrief', id: game.id)
 		
 		def endGameData = [
 			game: game.id,

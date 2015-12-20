@@ -25,9 +25,19 @@ class UrlMappings {
 			}
 		}
 		
-		name playGame: "/dropship"{
+		name dropship: "/dropship"{
 			controller = 'rogueMek'
 			action = 'index'
+		}
+		
+		name stagingGame: "/staging/$id"{
+			controller='rogueMek'
+			action = 'staging'
+		}
+		
+		name startGame: "/startBattle"{
+			controller = 'rogueMek'
+			action = 'startBattle'
 		}
 		
 		name battleGame: "/battle"{
@@ -36,7 +46,7 @@ class UrlMappings {
 		}
 		
 		name debriefGame: "/debrief/$id"{
-			controller = 'game'
+			controller = 'rogueMek'
 			action = 'debrief'
 		}
 		

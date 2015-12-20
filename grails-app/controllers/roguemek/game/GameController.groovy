@@ -36,12 +36,13 @@ class GameController {
 						gameService.initializeGame(g)
 					}
 					else {
-						// TODO: give participant pilots a screen showing they are waiting for the owner to start
+						// give participant pilots a screen showing they are waiting for the owner to start
+						redirect controller: "rogueMek", action: "staging", id: g.id
 					}
 				}
 				else if(g.isOver()) {
 					// give a screen that the game is over with some results
-					redirect action: "debrief", id: g.id
+					redirect controller: "rogueMek", action: "debrief", id: g.id
 				}
 				else {
 					log.info("User "+user?.username+" joining Game("+g.id+")")
@@ -185,18 +186,6 @@ class GameController {
 		
 		render gameResponse as JSON
 	}
-	
-	@Transactional(readOnly = true)
-	def debrief(Game game) {
-		// only show debriefing if the game is actually over
-		if(game == null || !game.isOver()) {
-			redirect controller: "RogueMek"
-		}
-		else{
-			respond game
-		}
-	}
-	
 
 	@Transactional(readOnly = true)
 	@Secured(['ROLE_ADMIN'])
