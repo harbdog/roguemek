@@ -50,6 +50,11 @@ class UrlMappings {
 			action = 'debrief'
 		}
 		
+		name abortGame: "/abort/$id"{
+			controller = 'rogueMek'
+			action = 'abort'
+		}
+		
 		"/"(view:"/index")
         "500"(view:'/error')
 	}

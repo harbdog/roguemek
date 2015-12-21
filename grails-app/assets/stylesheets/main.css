@@ -107,6 +107,18 @@ img {
 
 /* GENERAL */
 
+.right {
+	float: right;
+}
+
+.left {
+	float: left;
+}
+
+.paragraph {
+	margin: 1em 1em 1em 2em;
+}
+
 #grailsLogo a {
 	display: inline-block;
 	margin: 1em;
@@ -168,6 +180,7 @@ img {
 }
 
 .nav.logout {
+	float: right;
     border-left: 2px solid #404040;
        -moz-box-shadow: none;
     -webkit-box-shadow: none;

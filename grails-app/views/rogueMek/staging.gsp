@@ -28,10 +28,18 @@
                 		</g:each>
                 	</li>
                 </g:each>
-			
-				<h2><link:startGame game="${gameInstance.id}">Launch</link:startGame></h2>
-			
 			</ol>
+		</div>
+		
+		<div class="buttons">
+			<span class="left"><link:startGame game="${gameInstance.id}"><g:message code="default.button.launch.label" /></link:startGame></span>
+			
+			<g:if test="${gameInstance.ownerUser == userInstance}">
+				<span class="right"><link:abortGame id="${gameInstance.id}"><g:message code="default.button.abort.label" /></link:abortGame></span>
+			</g:if>
+			<g:else>
+				<span class="right"><link:dropship><g:message code="default.button.leave.label" /></link:dropship></span>
+			</g:else>
 		</div>
 	</body>
 </html>

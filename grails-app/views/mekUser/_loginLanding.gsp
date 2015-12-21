@@ -3,7 +3,7 @@
 	<%-- Hide login box while registering --%>
 </g:if>
 <g:else>
-		<div class="nav logout" role="navigation" style="float:right;">
+		<div class="nav logout" role="navigation">
 			<li><%-- <g:link controller="mekUser" action="profile">Profile</g:link> | --%><g:link controller="logout">Logout</g:link></li>
 		</div>
 		

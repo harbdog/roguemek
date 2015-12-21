@@ -11,6 +11,7 @@ class RogueMekController {
 	
 	transient springSecurityService
 	
+	@Transactional(readOnly = true)
 	def index() {
 		def userInstance = currentUser()
 		if(userInstance) {
@@ -25,6 +26,7 @@ class RogueMekController {
 	 * Makes sure the authenticated user can play the provided game and pilot instances, 
 	 * then forwards to the game with them in the session
 	 */
+	@Transactional(readOnly = true)
 	def startBattle() {
 		def user = currentUser()
 		
@@ -38,7 +40,7 @@ class RogueMekController {
 			redirect controller: 'game'
 		}
 		else {
-			redirect action: 'index'
+			redirect mapping:"dropship"
 		}
 	}
 	
@@ -46,6 +48,7 @@ class RogueMekController {
 	 * Generates the info needed to create a new battle
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	def create() {
 		def userInstance = currentUser()
 		if(userInstance) {
@@ -60,6 +63,7 @@ class RogueMekController {
 	 * Shows the game staging page
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	def staging(Game game) {
 		def userInstance = currentUser()
 		if(!userInstance) {
@@ -67,10 +71,34 @@ class RogueMekController {
 		}
 		
 		if(game == null) {
-			redirect controller: "RogueMek"
+			redirect mapping:"dropship"
 		}
 		else if(game.isOver()) {
 			redirect mapping: "debriefGame", id: game.id
+		}
+		else {
+			respond game, model:[userInstance:userInstance]
+		}
+	}
+	
+	/**
+	 * Shows the abort confirmation page
+	 * @param game
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	def abort(Game game) {
+		def userInstance = currentUser()
+		if(!userInstance) {
+			redirect action: 'index'
+		}
+		
+		if(game == null || !game.isInit()) {
+			// TODO: allow a game to be aborted while in progress?
+			redirect mapping:"dropship"
+		}
+		else if(game.ownerUser != userInstance) {
+			redirect mapping: "stagingGame", id: game.id
 		}
 		else {
 			respond game
@@ -86,7 +114,7 @@ class RogueMekController {
 	def debrief(Game game) {
 		// only show debriefing if the game is actually over
 		if(game == null || !game.isOver()) {
-			redirect controller: "RogueMek"
+			redirect mapping:"dropship"
 		}
 		else{
 			respond game
@@ -121,10 +149,39 @@ class RogueMekController {
 
 		request.withFormat {
 			form multipartForm {
-				flash.message = message(code: 'default.created.message', args: [message(code: 'game.label', default: 'Game'), gameInstance.description])
-				redirect action: 'index'
+				flash.message = message(code: 'default.created.message', args: [message(code: 'battle.label', default: 'Battle'), gameInstance.description])
+				redirect mapping: 'stagingGame', id: gameInstance.id
 			}
 			'*' { respond gameInstance, [status: CREATED] }
+		}
+	}
+	
+	/**
+	 * Allows the game owner only to delete the game instance
+	 * @param gameInstance
+	 * @return
+	 */
+	@Secured(['ROLE_USER'])
+	def delete(Game gameInstance) {
+		
+		if (gameInstance == null || !gameInstance.isInit()) {
+			notFound()
+			return
+		}
+		
+		def userInstance = currentUser()
+		if(!userInstance || gameInstance.ownerUser != userInstance) {
+			redirect mapping:"dropship"
+		}
+		
+		gameInstance.delete flush:true
+	
+		request.withFormat {
+			form multipartForm {
+				flash.message = message(code: 'default.deleted.message', args: [message(code: 'battle.label', default: 'Battle'), gameInstance.description])
+				redirect mapping:"dropship", method:"GET"
+			}
+			'*'{ render status: NO_CONTENT }
 		}
 	}
 	
