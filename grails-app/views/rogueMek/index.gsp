@@ -111,7 +111,7 @@
                     
                         <g:each in="${activeGames}" var="g">
                             <g:if test="${g.isActive()}">
-                                <span class="property-value" aria-labelledby="active-label"><link:startGame game="${g.id}">${g.description}</link:startGame></span>
+                                <span class="property-value" aria-labelledby="active-label"><link:stagingGame id="${g.id}">${g.description}</link:stagingGame></span>
                             </g:if>
                         </g:each>
                     
@@ -124,7 +124,7 @@
                     
                         <g:each in="${pausedGames}" var="g">
                             <g:if test="${g.isPaused()}">
-                                <span class="property-value" aria-labelledby="paused-label"><link:startGame game="${g.id}">${g.description}</link:startGame></span>
+                                <span class="property-value" aria-labelledby="paused-label"><link:stagingGame id="${g.id}">${g.description}</link:stagingGame></span>
                             </g:if>
                         </g:each>
                     
