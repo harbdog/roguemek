@@ -54,6 +54,6 @@
 		<g:message code="game.board.label" default="Board" />
 		
 	</label>
-	<g:select name="board" from="${roguemek.game.HexMap.list()}" optionKey="id" value="${gameInstance?.board?.id}"/>
+	<g:select name="board" from="${roguemek.model.HexMap.list()}" optionKey="id" value="${gameInstance?.board?.id}"/>
 
 </div>

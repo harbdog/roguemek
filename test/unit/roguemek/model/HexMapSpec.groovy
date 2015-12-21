@@ -1,4 +1,4 @@
-package roguemek.game
+package roguemek.model
 
 import grails.test.mixin.TestFor
 import spock.lang.Specification

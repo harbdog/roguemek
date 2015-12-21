@@ -3,6 +3,7 @@ package roguemek.game
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+import roguemek.model.Hex;
 import roguemek.model.Terrain
 import roguemek.game.BattleUnit
 

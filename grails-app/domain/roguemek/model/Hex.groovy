@@ -1,8 +1,7 @@
-package roguemek.game
+package roguemek.model
 
 import org.grails.plugins.csv.CSVMapReader
 
-import roguemek.model.Terrain
 import roguemek.assets.HexTileset
 
 class Hex {

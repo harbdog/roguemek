@@ -3,7 +3,7 @@ package roguemek.assets
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 
-import roguemek.game.Hex
+import roguemek.model.Hex;
 import roguemek.model.Terrain
 import roguemek.assets.ContextHelper
 

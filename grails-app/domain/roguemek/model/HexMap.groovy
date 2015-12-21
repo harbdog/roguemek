@@ -1,4 +1,4 @@
-package roguemek.game
+package roguemek.model
 
 class HexMap {
 	
