@@ -637,7 +637,7 @@ class GameService {
 	 * @return
 	 */
 	public def getHexMapRender(Game game) {
-		HexMap board = game?.board
+		HexMap board = game?.board?.getHexMap()
 		
 		def hexList = []
 		board.hexMap?.each { hexId ->
@@ -1307,7 +1307,7 @@ class GameService {
 	 * @return
 	 */
 	public static Coords getForwardCoords(Game game, Coords fromCoords, int heading) {
-		HexMap board = game?.board;
+		HexMap board = game?.board?.getHexMap()
 		if(board == null) return null
 		
 		def x = fromCoords.x;

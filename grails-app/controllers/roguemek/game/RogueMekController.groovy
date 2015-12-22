@@ -137,6 +137,13 @@ class RogueMekController {
 			redirect action: 'index'
 		}
 		
+		if(gameInstance.board == null) {
+			BattleHexMap battleMap = new BattleHexMap()
+			battleMap.save flush:true
+			
+			gameInstance.board = battleMap
+		}
+		
 		gameInstance.ownerUser = userInstance
 		gameInstance.validate()
 

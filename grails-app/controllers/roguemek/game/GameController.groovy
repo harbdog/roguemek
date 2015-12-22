@@ -75,7 +75,7 @@ class GameController {
 			return
 		}
 		
-		HexMap b = g?.board
+		HexMap b = g?.board?.getHexMap()
 		if(g == null || b == null) {
 			return
 		}

@@ -26,7 +26,7 @@ class Game {
 	Integer gameTurn = 0
 	Character gameState = GAME_INIT
 	
-	HexMap board
+	BattleHexMap board
 	
 	Date startDate = NULL_DATE
 	Date updateDate = NULL_DATE
@@ -43,7 +43,7 @@ class Game {
 		unitTurn min: 0
 		gameTurn min: 0
 		gameState nullable: false
-		board nullable: true
+		board nullable: false
     }
 	
 	def beforeInsert() {

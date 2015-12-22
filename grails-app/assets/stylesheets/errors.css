@@ -48,6 +48,7 @@ h2 {
 }
 
 .error-details dt {
+	color: #FF0000;
 	clear: left;
 	float: left;
 	font-weight: bold;
@@ -59,6 +60,7 @@ h2 {
 }
 
 .error-details dd {
+	color: #404040;
 	display: block;
 }
 
@@ -71,6 +73,7 @@ h2 {
 
 /* code snippet */
 .snippet {
+	color: #404040;
 	background-color: #fff;
 	font-family: monospace;
 }

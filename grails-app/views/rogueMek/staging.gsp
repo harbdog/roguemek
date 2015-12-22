@@ -31,7 +31,7 @@
 					<li class="fieldcontain">
 						<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
 						
-							<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.name}</span>
+							<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.name()}</span>
 					</li>
 				
 					<g:each in="${gameInstance?.getUnitsByUser()}" var="entry">
@@ -52,7 +52,7 @@
 					<li class="fieldcontain">
 						<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
 						
-							<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.name}</span>
+							<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.name()}</span>
 					</li>
 					
 					<li class="fieldcontain">
