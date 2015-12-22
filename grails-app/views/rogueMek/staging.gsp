@@ -86,17 +86,12 @@
 		</div>
 		
 		<div class="buttons">
-			<g:if test="${gameInstance?.ownerUser == userInstance}">
-				<span class="left"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.init.battle.label" /></link:startGame></span>
-			</g:if>
-			<g:else>
-				<span class="left"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.launch.label" /></link:startGame></span>
-			</g:else>
-			
 			<g:if test="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}">
+				<span class="left"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.init.battle.label" /></link:startGame></span>
 				<span class="right"><link:abortGame id="${gameInstance?.id}"><g:message code="default.button.abort.label" /></link:abortGame></span>
 			</g:if>
 			<g:else>
+				<span class="left"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.launch.label" /></link:startGame></span>
 				<span class="right"><link:dropship><g:message code="default.button.leave.label" /></link:dropship></span>
 			</g:else>
 		</div>
