@@ -181,7 +181,10 @@ class RogueMekController {
 			redirect mapping:"dropship"
 		}
 		
+		BattleHexMap battleMap = gameInstance.board
+		
 		gameInstance.delete flush:true
+		battleMap.delete flush:true
 	
 		request.withFormat {
 			form multipartForm {
