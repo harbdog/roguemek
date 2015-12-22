@@ -4,6 +4,8 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
+		<asset:stylesheet src="staging.css"/>
+		<asset:javascript src="staging.js"/>
 		<title><g:message code="game.init.staging.label" /></title>
 	</head>
 	<body>
@@ -28,10 +30,17 @@
 				</li>
 			
 				<g:if test="${gameInstance?.isInit()}">
+					<g:if test="${gameInstance?.board?.name() != null}">
+						<g:set var="mapName" value="${gameInstance?.board?.name()}" />
+					</g:if>
+					<g:else>
+						<g:set var="mapName" value="${g.message(code: 'default.button.random.label')}" />
+					</g:else>
+					
 					<li class="fieldcontain">
 						<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
 						
-							<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.name()}</span>
+							<span id="map-button" aria-labelledby="map-label">${mapName}</span>
 					</li>
 				
 					<g:each in="${gameInstance?.getUnitsByUser()}" var="entry">
