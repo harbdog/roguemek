@@ -3,6 +3,7 @@ package roguemek.game
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 
+import roguemek.MekUser
 import roguemek.assets.ContextHelper
 import roguemek.game.Coords
 import roguemek.game.EntityImage
@@ -21,6 +22,7 @@ class BattleUnit {
 		tablePerHierarchy false
 	}
 
+	MekUser owner
 	Pilot pilot	// pilot can be a Pilot other than the owner of the unit
 	
 	Integer x = 0
@@ -61,6 +63,7 @@ class BattleUnit {
 	public static String imagesExtension = "gif"
 	
     static constraints = {
+		owner nullable: true
 		pilot nullable: true
 		
 		x nullable: true

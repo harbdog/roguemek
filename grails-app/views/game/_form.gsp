@@ -31,12 +31,21 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'pilots', 'error')} ">
-	<label for="pilots">
-		<g:message code="game.pilots.label" default="Pilots" />
+<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'spectators', 'error')} ">
+	<label for="spectators">
+		<g:message code="game.spectators.label" default="Spectators" />
 		
 	</label>
-	<g:select name="pilots" from="${roguemek.game.Pilot.list()}" multiple="multiple" optionKey="id" size="5" value="${gameInstance?.pilots*.id}" class="many-to-many"/>
+	<g:select name="spectators" from="${roguemek.MekUser.list()}" multiple="multiple" optionKey="id" size="3" value="${gameInstance?.spectators*.id}" class="many-to-many"/>
+
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'users', 'error')} ">
+	<label for="users">
+		<g:message code="game.users.label" default="Users" />
+		
+	</label>
+	<g:select name="users" from="${roguemek.MekUser.list()}" multiple="multiple" optionKey="id" size="5" value="${gameInstance?.users*.id}" class="many-to-many"/>
 
 </div>
 
@@ -45,7 +54,7 @@
 		<g:message code="game.units.label" default="Units" />
 		
 	</label>
-	<g:select name="units" from="${roguemek.game.BattleUnit.list()}" multiple="multiple" optionKey="id" size="5" value="${gameInstance?.units*.id}" class="many-to-many"/>
+	<g:select name="units" from="${roguemek.game.BattleUnit.list()}" multiple="multiple" optionKey="id" size="7" value="${gameInstance?.units*.id}" class="many-to-many"/>
 
 </div>
 

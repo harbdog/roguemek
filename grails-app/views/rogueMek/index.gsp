@@ -52,44 +52,39 @@
 					}
 				}
                    
-                def pilotIdList = []
-                for(def p in mekUserInstance.pilots) {
-                    pilotIdList.add(p.id)
-                }
-                   
-                if(pilotIdList.size() > 0) {
-	                def c = Game.createCriteria()
-	                gameList = c.listDistinct {
-		                or {
-			                pilots {
-			                  'in'("id", pilotIdList)
-			                }
+                def userIdList = [mekUserInstance.id]
+                
+                def c = Game.createCriteria()
+                gameList = c.listDistinct {
+	                or {
+		                users {
+		                  'in'("id", userIdList)
 		                }
-		                order("updateDate", "desc")
 	                }
-						
-					for(Game g in gameList) {
-						switch(g.gameState) {
-							case Game.GAME_INIT:
-								if(!initGames.contains(g)) initGames.add(g)
-								break
-								
-							case Game.GAME_ACTIVE:
-								activeGames.add(g)
-								break
-							
-							case Game.GAME_PAUSED:
-								pausedGames.add(g)
-								break
-								
-							case Game.GAME_OVER:
-								finishedGames.add(g)
-								break
-								
-							default: break
-						}
-					}
+	                order("updateDate", "desc")
                 }
+					
+				for(Game g in gameList) {
+					switch(g.gameState) {
+						case Game.GAME_INIT:
+							if(!initGames.contains(g)) initGames.add(g)
+							break
+							
+						case Game.GAME_ACTIVE:
+							activeGames.add(g)
+							break
+						
+						case Game.GAME_PAUSED:
+							pausedGames.add(g)
+							break
+							
+						case Game.GAME_OVER:
+							finishedGames.add(g)
+							break
+							
+						default: break
+					}
+				}
             %>
                 
                 <g:if test="${initGames.size() > 0}" >

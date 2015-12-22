@@ -245,6 +245,23 @@ class GameController {
             notFound()
             return
         }
+		
+		// clear and recreate users, spectators and units lists 
+		// otherwise they can duplicate or not remove previous entries
+		gameInstance.users.clear()
+		gameInstance.spectators.clear()
+		gameInstance.units.clear()
+		
+		if(params.users instanceof String) params.users = [params.users]
+		params.users.each { it -> gameInstance.users.add(MekUser.read(it)) }
+		
+		if(params.spectators instanceof String) params.spectators = [params.spectators]
+		params.spectators.each { it -> gameInstance.spectators.add(MekUser.read(it)) }
+		
+		if(params.units instanceof String) params.units = [params.units]
+		params.units.each { it -> gameInstance.units.add(BattleUnit.read(it)) }
+		
+		gameInstance.validate()
 
         if (gameInstance.hasErrors()) {
             respond gameInstance.errors, view:'edit'

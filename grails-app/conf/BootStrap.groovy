@@ -231,7 +231,7 @@ class BootStrap {
 		BattleHexMap battleBoardMap = new BattleHexMap(map: boardMap)
 		battleBoardMap.save flush:true
 		
-		Game sampleGame = new Game(ownerUser: adminUser, description: "The Battle of Wits", pilots: [adminPilot, testPilot, samplePilot], units: [battleMech, battleMechB, battleMech2, battleMech3], board: battleBoardMap)
+		Game sampleGame = new Game(ownerUser: adminUser, description: "The Battle of Wits", users: [adminUser, testUser], spectators: [sampleUser], units: [battleMech, battleMechB, battleMech2, battleMech3], board: battleBoardMap)
 		
 		if(!sampleGame.validate()) {
 			log.error("Errors with game:\n")

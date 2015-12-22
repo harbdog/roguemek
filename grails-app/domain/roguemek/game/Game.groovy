@@ -1,8 +1,8 @@
 package roguemek.game
 
 import roguemek.MekUser
-import roguemek.model.Hex;
-import roguemek.model.HexMap;
+import roguemek.model.Hex
+import roguemek.model.HexMap
 
 class Game {
 	private static final Date NULL_DATE = new Date(0)
@@ -15,14 +15,14 @@ class Game {
 	}
 	
 	String description
-
 	MekUser ownerUser
 	
-	List pilots
+	List users
+	List spectators
 	List units
-	static hasMany = [pilots:Pilot, units:BattleUnit]
-	Integer unitTurn = 0
+	static hasMany = [users:MekUser, spectators:MekUser, units:BattleUnit]
 	
+	Integer unitTurn = 0
 	Integer gameTurn = 0
 	Character gameState = GAME_INIT
 	
@@ -32,17 +32,17 @@ class Game {
 	Date updateDate = NULL_DATE
 	
 	// STATIC value mappings
-	public static final GAME_INIT = 'I'
-	public static final GAME_ACTIVE = 'A'
-	public static final GAME_PAUSED = 'P'
-	public static final GAME_OVER = 'O'
+	public static final Character GAME_INIT = 'I'
+	public static final Character GAME_ACTIVE = 'A'
+	public static final Character GAME_PAUSED = 'P'
+	public static final Character GAME_OVER = 'O'
 	
     static constraints = {
 		description blank: false
 		ownerUser nullable: false
 		unitTurn min: 0
 		gameTurn min: 0
-		gameState nullable: false
+		gameState inList: [GAME_INIT, GAME_ACTIVE, GAME_PAUSED, GAME_OVER]
 		board nullable: false
     }
 	
@@ -130,11 +130,13 @@ class Game {
 	 */
 	public Pilot getPrimaryPilotForUser(MekUser user) {
 		if(user == null) return null
-		for(Pilot pilot in pilots) {
-			if(user == pilot.ownerUser) {
-				return pilot
+		
+		for(BattleUnit unit in units) {
+			if(unit.pilot?.ownerUser == user) {
+				return unit.pilot
 			}
 		}
+		
 		return null
 	}
 	
@@ -146,14 +148,12 @@ class Game {
 	public BattleUnit getPrimaryUnitForUser(MekUser user) {
 		if(user == null) return null
 		
-		// find using the primary pilot
-		Pilot pilot = getPrimaryPilotForUser(user)
-		if(pilot == null) return null
 		for(BattleUnit unit in units) {
-			if(pilot.id == unit.pilot.id) {
+			if(unit.pilot?.ownerUser == user) {
 				return unit
 			}
 		}
+		
 		return null
 	}
 	

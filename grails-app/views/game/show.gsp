@@ -40,13 +40,24 @@
 					
 				</li>
 				</g:if>
-			
-				<g:if test="${gameInstance?.pilots}">
+				
+				<g:if test="${gameInstance?.spectators}">
 				<li class="fieldcontain">
-					<span id="pilots-label" class="property-label"><g:message code="game.pilots.label" default="Pilots" /></span>
+					<span id="spectators-label" class="property-label"><g:message code="game.spectators.label" default="Spectators" /></span>
 					
-						<g:each in="${gameInstance.pilots}" var="p">
-						<span class="property-value" aria-labelledby="pilots-label"><g:link controller="pilot" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></span>
+						<g:each in="${gameInstance.spectators}" var="u">
+						<span class="property-value" aria-labelledby="spectators-label"><g:link controller="mekUser" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
+						</g:each>
+					
+				</li>
+				</g:if>
+			
+				<g:if test="${gameInstance?.users}">
+				<li class="fieldcontain">
+					<span id="users-label" class="property-label"><g:message code="game.users.label" default="Users" /></span>
+					
+						<g:each in="${gameInstance.users}" var="u">
+						<span class="property-value" aria-labelledby="users-label"><g:link controller="mekUser" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
 						</g:each>
 					
 				</li>
