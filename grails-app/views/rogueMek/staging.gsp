@@ -9,6 +9,8 @@
 		<title><g:message code="game.init.staging.label" /></title>
 	</head>
 	<body>
+		<div id="mapSelectDiv"></div>
+		<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
 	
 		<div id="show-game" class="content scaffold-show" role="main">
 			<h1><g:message code="game.init.staging.label" /> - ${gameInstance?.description}</h1>
@@ -30,8 +32,16 @@
 				</li>
 			
 				<g:if test="${gameInstance?.isInit()}">
+					<%-- store the selected HexMap ID where the javascript can get to it later --%>
+					<g:if test="${gameInstance?.board?.mapId()}">
+						<script type="text/javascript">var selectedMapId = "${gameInstance?.board?.mapId()}";</script>
+					</g:if>
+					<g:else>
+						<script type="text/javascript">var selectedMapId = null;</script>
+					</g:else>
+				
 					<g:if test="${gameInstance?.board?.name() != null}">
-						<g:set var="mapName" value="${gameInstance?.board?.name()}" />
+						<g:set var="mapName" value="${gameInstance?.board?.toString()}" />
 					</g:if>
 					<g:else>
 						<g:set var="mapName" value="${g.message(code: 'default.button.random.label')}" />

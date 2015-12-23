@@ -226,6 +226,6 @@ class HexMap {
 	
 	@Override
 	public String toString() {
-		return this.name
+		return this.name +" ("+this.numCols +"x"+ this.numRows+")"
 	}
 }

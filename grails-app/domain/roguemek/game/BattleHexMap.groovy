@@ -24,6 +24,10 @@ class BattleHexMap {
 		return map?.name
 	}
 	
+	public String mapId() {
+		return map?.id
+	}
+	
 	public Integer numCols() {
 		return map ? map.numCols : 0
 	}
@@ -56,6 +60,6 @@ class BattleHexMap {
 	
 	@Override
 	public String toString() {
-		return map?.name
+		return map?.toString()
 	}
 }

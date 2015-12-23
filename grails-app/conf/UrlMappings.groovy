@@ -35,6 +35,11 @@ class UrlMappings {
 			action = 'staging'
 		}
 		
+		name stagingMapSelect: "/staging/mapSelect"{
+			controller='rogueMek'
+			action='mapSelect'
+		}
+		
 		name startGame: "/startBattle"{
 			controller = 'rogueMek'
 			action = 'startBattle'

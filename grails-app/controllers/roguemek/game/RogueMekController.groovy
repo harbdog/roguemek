@@ -195,6 +195,20 @@ class RogueMekController {
 		}
 	}
 	
+	/**
+	 * Gets names and information about the available maps
+	 * @render JSON object containing the names and info about each map
+	 */
+	def mapSelect() {
+		def userInstance = currentUser()
+		if(userInstance) {
+			respond userInstance
+		}
+		else {
+			redirect url: "/"
+		}
+	}
+	
 	private MekUser currentUser() {
 		return MekUser.get(springSecurityService.principal.id)
 	}

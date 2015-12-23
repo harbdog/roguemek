@@ -3,3 +3,15 @@
 	margin: 0 0 0.1em 1em;
 	font-size: 1em;
 }
+
+div #spinner {
+	background: url(../images/hex-spinner.gif) no-repeat transparent;
+	background-size: 64px;
+	width: 64px;
+	height: 64px;
+    padding: 0.5em;
+    position: absolute;
+    top: calc(50% - 32px);
+    left: calc(50% - 32px);
+	text-indent: -9999px;
+}

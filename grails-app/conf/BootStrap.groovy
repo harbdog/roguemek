@@ -164,10 +164,12 @@ class BootStrap {
 		
 		
 		// Initialize a sample HexMap board
-		//File boardFile = new File("src/boards/battletech.board")
 		InputStream boardFile = ContextHelper.getContextSource("boards/80x17_Benj_7.board")
 		HexMap boardMap = HexMap.loadBoardFile("Benj_7", boardFile)
-		log.info('Loaded sample Board')
+		
+		InputStream boardFile2 = ContextHelper.getContextSource("boards/battletech.board")
+		HexMap boardMap2 = HexMap.loadBoardFile("Battletech", boardFile2)
+		log.info('Loaded sample Boards')
 		
 		// Initialize a sample BattleMech
 		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Stalker"), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
