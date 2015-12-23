@@ -52,19 +52,7 @@ c.init = function() {
 	
 	var unitId = this.unit.id;
 	this.on("click", function() {
-		// show a loading dialog while waiting to get the info display from the server
-		dialogLoading.dialog("open");
-		
-		// introduce a small delay so the animation doesn't look weird if the response is very fast
-		setTimeout(function(){
-			dialogDisplay.load("battleMech/battleInfo/"+unitId, function() {
-				dialogLoading.dialog("close");
-				dialogDisplay.dialog("open");
-				
-		    	// move the header to the title area of the dialog
-		    	$(".unit-header").appendTo("#unit-title");
-		    });
-		},250);
+		showUnitInfoDisplay(unitId);
 	});
 	
 	var hit = new createjs.Shape();
