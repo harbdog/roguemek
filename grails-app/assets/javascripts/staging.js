@@ -84,10 +84,21 @@ function showMapSelect() {
 
 function ajaxUpdateMapSelection() {
 	selectedMapId = $("input[type='radio'][name='map-radio']:checked").val();
-	console.log("mapId="+selectedMapId);
 	
 	var selectedMapName = $($("input[type='radio'][name='map-radio']:checked").prop("labels")).text();
+	var inputMap = {mapId: selectedMapId};
 	
-	$("#map-button").button("option", "label", selectedMapName);
-	mapSelectDialog.dialog( "close" );
+	$.getJSON("mapUpdate", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				$("#map-button").button("option", "label", selectedMapName);
+			}
+		})
+		.always(function() {
+			mapSelectDialog.dialog( "close" );
+		});
 }

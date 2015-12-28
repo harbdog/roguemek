@@ -50,7 +50,12 @@
 					<li class="fieldcontain">
 						<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
 						
+						<g:if test="${gameInstance?.ownerUser == userInstance}">
 							<span id="map-button" aria-labelledby="map-label">${mapName}</span>
+						</g:if>
+						<g:else>
+							<span class="property-value" aria-labelledby="map-label">${mapName}</span>
+						</g:else>
 					</li>
 				
 					<g:each in="${gameInstance?.getUnitsByUser()}" var="entry">
@@ -71,7 +76,7 @@
 					<li class="fieldcontain">
 						<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
 						
-							<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.name()}</span>
+							<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.toString()}</span>
 					</li>
 					
 					<li class="fieldcontain">

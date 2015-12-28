@@ -77,6 +77,8 @@ class RogueMekController {
 			redirect mapping: "debriefGame", id: game.id
 		}
 		else {
+			session["game"] = game.id
+			
 			respond game, model:[userInstance:userInstance]
 		}
 	}
@@ -207,6 +209,40 @@ class RogueMekController {
 		else {
 			redirect url: "/"
 		}
+	}
+	
+	/**
+	 * Updates the selected map for a game
+	 * @return
+	 */
+	def mapUpdate() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		// map can only be updated in the Init stage
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		// make sure only the game owner can update the map
+		if(game.ownerUser != userInstance) return
+		
+		if(params.mapId == null) return
+		HexMap map = HexMap.get(params.mapId)
+		if(map == null) return
+		
+		BattleHexMap b = game.board
+		b.map = map
+		b.validate()
+		
+		if(b.hasErrors()) {
+			render b.errors
+			return
+		}
+		
+		b.save flush:true
+		
+		def result = [updated:true]
+		render result as JSON
 	}
 	
 	private MekUser currentUser() {

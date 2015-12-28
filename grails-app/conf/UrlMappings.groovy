@@ -40,6 +40,11 @@ class UrlMappings {
 			action='mapSelect'
 		}
 		
+		name stagingMapUpdate: "/staging/mapUpdate"{
+			controller='rogueMek'
+			action='mapUpdate'
+		}
+		
 		name startGame: "/startBattle"{
 			controller = 'rogueMek'
 			action = 'startBattle'

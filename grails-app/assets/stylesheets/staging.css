@@ -15,3 +15,39 @@ div #spinner {
     left: calc(50% - 32px);
 	text-indent: -9999px;
 }
+
+label {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    padding-left: 25px;
+    margin-right: 15px;
+}
+
+input[type=radio] {
+    display: none;
+}
+
+label:before {
+    content: "";
+    display: inline-block;
+ 
+    width: 18px;
+    height: 18px;
+ 
+    margin-right: 10px;
+    position: absolute;
+    left: 0;
+    bottom: 1px;
+    background-image: url("images/ui-icons_222222_256x240.png");
+    background-position: -16px -192px;	/* .ui-icon-circle-minus */
+}
+
+.radio label:before {
+    border-radius: 8px;
+}
+
+input[type=radio]:checked + label:before {
+    background-image: url("images/ui-icons_4b8e0b_256x240.png");
+    background-position: -112px -192px; /* .ui-icon-circle-arrow-e */
+}
