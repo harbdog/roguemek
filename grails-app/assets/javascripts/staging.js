@@ -33,7 +33,7 @@ function initStaging() {
 		buttons: {
 			"Select": ajaxUpdateMapSelection,
 			Cancel: function() {
-				mapSelectDialog.dialog( "close" );
+				mapSelectDialog.dialog("close");
 			}
 		}
     });
@@ -58,6 +58,7 @@ function initStaging() {
 function loadMapSelect() {
 	
 	// show a loading dialog while waiting to get the info display from the server
+	dialogLoading.dialog("option", "position", {my: "left top", at: "left top", of: $("#map-button")});
 	dialogLoading.dialog("open");
 	
 	// introduce a small delay so the animation doesn't look weird if the response is very fast
@@ -88,6 +89,11 @@ function ajaxUpdateMapSelection() {
 	var selectedMapName = $($("input[type='radio'][name='map-radio']:checked").prop("labels")).text();
 	var inputMap = {mapId: selectedMapId};
 	
+	dialogLoading.dialog("option", "position", {my: "left top", at: "left top", of: $("#map-button")});
+	
+	mapSelectDialog.dialog("close");
+	dialogLoading.dialog("open");
+	
 	$.getJSON("mapUpdate", inputMap)
 		.fail(function(jqxhr, textStatus, error) {
 			var err = textStatus + ", " + error;
@@ -99,6 +105,6 @@ function ajaxUpdateMapSelection() {
 			}
 		})
 		.always(function() {
-			mapSelectDialog.dialog( "close" );
+			dialogLoading.dialog("close");
 		});
 }

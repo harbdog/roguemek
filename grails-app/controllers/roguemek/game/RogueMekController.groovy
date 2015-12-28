@@ -241,6 +241,8 @@ class RogueMekController {
 		
 		b.save flush:true
 		
+		b.loadMap()
+		
 		def result = [updated:true]
 		render result as JSON
 	}

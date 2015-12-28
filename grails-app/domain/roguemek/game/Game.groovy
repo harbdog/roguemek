@@ -157,6 +157,10 @@ class Game {
 		return null
 	}
 	
+	public def loadMap() {
+		return board.loadMap()
+	}
+	
 	public boolean isInit() {
 		return (this.gameState == Game.GAME_INIT)
 	}

@@ -57,12 +57,3 @@
 	<g:select name="units" from="${roguemek.game.BattleUnit.list()}" multiple="multiple" optionKey="id" size="7" value="${gameInstance?.units*.id}" class="many-to-many"/>
 
 </div>
-
-<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'board', 'error')} ">
-	<label for="board">
-		<g:message code="game.board.label" default="Board" />
-		
-	</label>
-	<g:select name="board" from="${roguemek.game.BattleHexMap.list()}" optionKey="id" value="${gameInstance?.board?.id}"/>
-
-</div>

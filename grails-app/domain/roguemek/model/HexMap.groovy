@@ -1,5 +1,8 @@
 package roguemek.model
 
+import roguemek.assets.ContextHelper
+import roguemek.board.MapBoard
+
 class HexMap {
 	
 	String id
@@ -8,6 +11,9 @@ class HexMap {
 	}
 
 	String name
+	String path
+	
+	Boolean mapLoaded = false
 	
 	Integer numCols
 	Integer numRows
@@ -17,178 +23,27 @@ class HexMap {
 	
     static constraints = {
 		name blank: false
+		path blank: false
+		mapLoaded nullable: false
 		numRows min: 0
 		numCols min: 0
     }
 	
-	/**
-	 * Reads the given board file until it finds the number of rows and colums
-	 * @param boardStream
-	 * @return def map (numCols: x, numRows: y)
-	 */
-	public static def getBoardSize(InputStream boardStream) {
-		def numCols = 0
-		def numRows = 0
+	public static void init() {
+		Set<String> boardPaths = ContextHelper.getResourcePaths("/src/boards/")
 		
-		try {
-			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(boardStream))
-			st.eolIsSignificant(true)
-			st.commentChar((int)'#')
-			st.quoteChar((int)'"')
-			st.wordChars((int)'_', (int)'_')
-			
-			int x_pos = 1
-			int y_pos = 1
-			
-			while (st.nextToken() != StreamTokenizer.TT_EOF) {
-				if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("size")) {
-					// read rest of line
-					String[] args = [ "0", "0" ]
-					
-					int i = 0
-					while ((st.nextToken() == StreamTokenizer.TT_WORD)
-							|| (st.ttype == '"')
-							|| (st.ttype == StreamTokenizer.TT_NUMBER)) {
-						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval
-					}
-					numCols = Integer.parseInt(args[0])
-					numRows = Integer.parseInt(args[1])
-					
-					break;
-				}
-			}
-		} catch (IOException ex) {
-			System.err.println("i/o error reading board")
-			System.err.println(ex)
-		} finally {
-			if(boardStream != null) {
-				boardStream.close()
-			}
+		for(String path in boardPaths) {
+			MapBoard.initBoardFromPath(path)
 		}
-		
-		return [numCols: numCols, numRows: numRows]
 	}
 	
-	/**
-	 * Loads a board file into a new HexMap object
-	 * @param boardName
-	 * @param boardFile
-	 * @return
-	 */
-	public static HexMap loadBoardFile(String boardName, InputStream boardStream) {
-		def numCols = 0
-		def numRows = 0
-		
-		String[] hexMap
-		
-		try {
-			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(boardStream))
-			st.eolIsSignificant(true)
-			st.commentChar((int)'#')
-			st.quoteChar((int)'"')
-			st.wordChars((int)'_', (int)'_')
-			
-			int x_pos = 1
-			int y_pos = 1
-			
-			while (st.nextToken() != StreamTokenizer.TT_EOF) {
-				if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("size")) {
-					// read rest of line
-					String[] args = [ "0", "0" ]
-					
-					int i = 0
-					while ((st.nextToken() == StreamTokenizer.TT_WORD)
-							|| (st.ttype == '"')
-							|| (st.ttype == StreamTokenizer.TT_NUMBER)) {
-						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval
-					}
-					numCols = Integer.parseInt(args[0])
-					numRows = Integer.parseInt(args[1])
-					
-					hexMap = new String[numCols*numRows]
-					
-				} else if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("option")) {
-					// TODO: read rest of line
-					/*String[] args = [ "", "" ];
-					int i = 0;
-					while ((st.nextToken() == StreamTokenizer.TT_WORD)
-							|| (st.ttype == '"')
-							|| (st.ttype == StreamTokenizer.TT_NUMBER)) {
-						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval;
-					}
-					// Only expect certain options.
-					if (args[0].equalsIgnoreCase("exit_roads_to_pavement")) {
-						if (args[1].equalsIgnoreCase("false")) {
-							roadsAutoExit = false;
-						} else {
-							roadsAutoExit = true;
-						}
-					}*/ // End exit_roads_to_pavement-option
-						
-				} else if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("hex")) {
-					// read rest of line
-					String[] args = [ "", "0", "", "" ]
-					
-					int i = 0
-					while ((st.nextToken() == StreamTokenizer.TT_WORD)
-							|| (st.ttype == '"')
-							|| (st.ttype == StreamTokenizer.TT_NUMBER)) {
-							
-						args[i++] = st.ttype == StreamTokenizer.TT_NUMBER ? (int) st.nval + "" : st.sval
-					}
-							
-					String hexCoords = args[0]
-					int elevation = Integer.parseInt(args[1])
-					String terrains = args[2]
-					String theme = args[3]
-					
-					int newIndex = indexFor(args[0], numCols, y_pos);
-					Hex hex = Hex.createHex(x_pos-1, y_pos-1, elevation, terrains, theme)
-					hexMap[newIndex] = hex?.id
-					//nd[newIndex] = new Hex(elevation, args[2], args[3], new Coords(x_pos-1,y_pos-1));
-					
-					x_pos++;
-					if (x_pos > numCols) {
-						y_pos++
-						x_pos = 1
-					}
-					
-				} else if ((st.ttype == StreamTokenizer.TT_WORD) && st.sval.equalsIgnoreCase("end")) {
-					break
-				}
-			}
-		} catch (IOException ex) {
-			System.err.println("i/o error reading board")
-			System.err.println(ex)
-		} finally {
-			if(boardStream != null) {
-				boardStream.close()
-			}
+	public def loadMap() {
+		if(mapLoaded) {
+			return this
 		}
-		
-	
-		// TODO: if there are any nulls, the board file is invalid
-		/*for (int i = 0; i < nd.length; i++) {
-			if (nd[i] == null) {
-				nd[i] = new Hex();
-			}
-		}*/
-		
-		if(numCols > 0 && numRows > 0) {
-			HexMap board = new HexMap(name: boardName, numCols: numCols, numRows: numRows, hexMap: hexMap)
-			if(!board.validate()) {
-				board.errors.allErrors.each {
-					log.error(it)
-				}
-				return null
-			}
-			else {
-				board.save flush:true
-				return board
-			}
+		else {
+			return MapBoard.loadBoard(this)
 		}
-		
-		return null
 	}
 	
 	/**
@@ -205,23 +60,6 @@ class HexMap {
 		}
 		
 		return Hex.get(hexId)
-	}
-	
-	/**
-	 * Used to generate the single dimension array index for a two dimensional board
-	 * @param hexNum
-	 * @param width
-	 * @param row
-	 * @return
-	 */
-	private static int indexFor(String hexNum, int width, int row) {
-		int substringDiff = 2
-		if (row > 99) {
-			substringDiff = Integer.toString(width).length()
-		}
-		int x = Integer.parseInt(hexNum.substring(0, hexNum.length() - substringDiff)) - 1
-		int y = Integer.parseInt(hexNum.substring(hexNum.length() - substringDiff)) - 1
-		return (y * width) + x
 	}
 	
 	@Override

@@ -40,6 +40,10 @@ class BattleHexMap {
 		return map
 	}
 	
+	public def loadMap() {
+		return map?.loadMap()
+	}
+	
 	/**
 	 * Gets the Hex object at the given x, y board coordinates
 	 * @param x

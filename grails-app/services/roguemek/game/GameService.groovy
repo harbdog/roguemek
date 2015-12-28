@@ -67,6 +67,11 @@ class GameService {
 	public def initializeGame(Game game) {
 		if(game.gameState != Game.GAME_INIT) return
 		
+		// TODO: if the board is null, pick a random map
+		
+		// load the board in case is not loaded already
+		game.loadMap()
+		
 		game.gameState = Game.GAME_ACTIVE
 		game.gameTurn = 0
 		

@@ -112,10 +112,18 @@
 		<div class="buttons">
 			<g:if test="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}">
 				<span class="left"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.init.battle.label" /></link:startGame></span>
+				
 				<span class="right"><link:abortGame id="${gameInstance?.id}"><g:message code="default.button.abort.label" /></link:abortGame></span>
 			</g:if>
 			<g:else>
-				<span class="left"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.launch.label" /></link:startGame></span>
+				<g:if test="${gameInstance?.isActive()}">
+					<span class="left"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.launch.label" /></link:startGame></span>
+				</g:if>
+				<g:else>
+					<%-- For now, just a link just to refresh page --%>
+					<span class="left"><link:stagingGame id="${gameInstance?.id}"><g:message code="default.button.refresh.label" /></link:stagingGame></span>
+				</g:else>
+				
 				<span class="right"><link:dropship><g:message code="default.button.leave.label" /></link:dropship></span>
 			</g:else>
 		</div>

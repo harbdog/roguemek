@@ -2,6 +2,7 @@ import javax.servlet.ServletContext
 
 import roguemek.*
 import roguemek.assets.*
+import roguemek.board.*
 import roguemek.game.*
 import roguemek.model.*
 
@@ -164,12 +165,12 @@ class BootStrap {
 		
 		
 		// Initialize a sample HexMap board
-		InputStream boardFile = ContextHelper.getContextSource("boards/80x17_Benj_7.board")
-		HexMap boardMap = HexMap.loadBoardFile("Benj_7", boardFile)
+		HexMap.init()
+		log.info('Initialized Maps')
 		
-		InputStream boardFile2 = ContextHelper.getContextSource("boards/battletech.board")
-		HexMap boardMap2 = HexMap.loadBoardFile("Battletech", boardFile2)
-		log.info('Loaded sample Boards')
+		HexMap boardMap = HexMap.findByName("Battletech")
+		boardMap.loadMap()
+		log.info('Preloaded sample Board')
 		
 		// Initialize a sample BattleMech
 		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Stalker"), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
