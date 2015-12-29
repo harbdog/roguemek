@@ -58,8 +58,9 @@ function initStaging() {
 			.click(loadMapSelect);
     
     
-    // setup draggable items
+    // setup editable items
     if(playersEditable) {
+    	// setup draggable/droppable elements
 	    var teams = $(".team");
 	    var players = $(".player");
 	    
@@ -67,16 +68,37 @@ function initStaging() {
 	    	revert: "invalid",
 	    	containment: "document",
 	    	helper: "clone",
-	    	cursor: "move"
+	    	cursor: "move",
+	    	scroll: true
 	    });
 	    
 	    teams.droppable({
 	    	accept: ".player",
 	    	hoverClass: "ui-state-active",
+	    	tolerance: "pointer",
 	    	drop: function(event, ui) {
 	    		transferPlayer(ui.draggable, $(this));
 	    	}
 	    });
+	    
+	    // setup unit add/delete buttons
+	    $("button.unit-delete").button({
+	    	icons: {
+    			primary: "ui-icon-trash"
+	    	},
+	        text: false
+	    });
+	    
+	    $("button.unit-add").button({
+	    	icons: {
+	    		primary: "ui-icon-plusthick"
+	    	}
+	    })
+    }
+    else {
+    	// hide the unit add/delete buttons
+    	$("button.unit-delete").hide();
+    	$("button.unit-add").hide();
     }
 }
 

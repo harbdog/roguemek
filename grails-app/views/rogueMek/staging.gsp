@@ -51,7 +51,7 @@
 						<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
 						
 						<g:if test="${gameInstance?.ownerUser == userInstance}">
-							<span id="map-button" aria-labelledby="map-label">${mapName}</span>
+							<button id="map-button" aria-labelledby="map-label">${mapName}</button>
 						</g:if>
 						<g:else>
 							<span class="property-value" aria-labelledby="map-label">${mapName}</span>

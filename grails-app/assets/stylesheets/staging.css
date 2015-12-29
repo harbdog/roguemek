@@ -4,6 +4,10 @@
 	font-size: 1em;
 }
 
+#map-button .ui-button-text {
+	display: initial;
+}
+
 div #spinner {
 	background: url(../images/hex-spinner.gif) no-repeat transparent;
 	background-size: 64px;
@@ -65,7 +69,7 @@ input[type=radio]:checked + label:before {
 }
 
 .team {
-	display: inline-block;
+	display: inline-table;
 	margin: 0 0.5em 0.5em 0;
 	padding-bottom: 1em;
 	border: 3px solid #3399FF;
@@ -96,4 +100,17 @@ img.unit-image {
 
 span.unit-name {
 	margin: 0.5em 0.5em 0 0 ;
+}
+
+/* Unit buttons */
+button.unit-delete {
+	width: 1.5em;
+	height: 1.5em;
+	top: 0.25em;
+	left: 0.25em;
+}
+
+button.unit-add {
+	margin: 0.5em 0 0.5em 0.25em;
+	font-size: 0.75em;
 }
