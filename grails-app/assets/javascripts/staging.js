@@ -79,7 +79,7 @@ function initStaging() {
 			.click(loadMapSelect);
     
     
-    // setup editable items
+    // setup editable player teams
     if(playersEditable) {
     	// setup draggable/droppable elements
 	    var teams = $(".team");
@@ -101,8 +101,11 @@ function initStaging() {
 	    		transferPlayer(ui.draggable, $(this));
 	    	}
 	    });
-	    
-	    // setup unit add/delete buttons
+    }
+    
+    // setup editable units
+    if(unitsEditable) {
+    	// setup unit add/delete buttons
 	    $("button.unit-delete").button({
 	    	icons: {
     			primary: "ui-icon-closethick"

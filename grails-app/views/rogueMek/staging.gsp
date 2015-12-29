@@ -85,6 +85,7 @@
 		<div id="teams">
 			<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
 			<script type="text/javascript">var playersEditable = ${isEditable};</script>
+			<script type="text/javascript">var unitsEditable = ${gameInstance?.isInit()};</script>
 			
 			<g:each in="${gameInstance?.users}" var="thisUser">
 				<div class="team">
