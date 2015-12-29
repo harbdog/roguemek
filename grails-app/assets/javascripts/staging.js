@@ -11,11 +11,10 @@ $(window).ready(function(){
 var dialogLoading;
 var mapSelectDialog;
 
+/**
+ * Prepares staging page on load
+ */
 function initStaging() {
-	// prepare staging page on load
-	
-	$("#map-button").button()
-					.click(loadMapSelect);
 	
 	// Initialize map selection dialog
 	mapSelectDialog = $("#mapSelectDiv").dialog({
@@ -53,6 +52,40 @@ function initStaging() {
 			duration: 250
 		}
     });
+    
+    // add buttons and their actions
+    $("#map-button").button()
+			.click(loadMapSelect);
+    
+    
+    // setup draggable items
+    if(playersEditable) {
+	    var teams = $(".team");
+	    var players = $(".player");
+	    
+	    players.draggable({
+	    	revert: "invalid",
+	    	containment: "document",
+	    	helper: "clone",
+	    	cursor: "move"
+	    });
+	    
+	    teams.droppable({
+	    	accept: ".player",
+	    	hoverClass: "ui-state-active",
+	    	drop: function(event, ui) {
+	    		transferPlayer(ui.draggable, $(this));
+	    	}
+	    });
+    }
+}
+
+function transferPlayer($playerDiv, $teamDiv) {
+	$playerDiv.fadeOut(function() {
+		$playerDiv.appendTo($teamDiv).fadeIn();
+	})
+	
+	// TODO: implement teams in the game and update the database data from the drop
 }
 
 function loadMapSelect() {

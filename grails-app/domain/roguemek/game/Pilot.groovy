@@ -9,10 +9,13 @@ class Pilot {
 	static mapping= {
 		id generator: 'uuid'
 	}
+	
+	MekUser ownerUser
 
 	String firstName
 	String lastName
-	MekUser ownerUser
+	String callsign
+	
 	Character status
 	
 	static hasMany = [ownedUnits:BattleUnit]
@@ -25,15 +28,20 @@ class Pilot {
 	static Character STATUS_RETIRED = 'R'
 	
     static constraints = {
+		ownerUser nullable: false
+		
 		firstName blank: false
 		lastName blank: false
-		ownerUser nullable: false
+		callsign nullable: true
 		
 		status inList: [STATUS_ACTIVE, STATUS_DECEASED, STATUS_RETIRED]
     }
 	
 	@Override
 	public String toString() {
-		return firstName + " \""+ownerUser.toString()+"\" " + lastName
+		if(callsign != null) {
+			firstName + " \""+callsign+"\" " + lastName
+		}
+		return firstName + " " + lastName
 	}
 }

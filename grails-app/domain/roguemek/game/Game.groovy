@@ -58,6 +58,25 @@ class Game {
 	}
 	
 	/**
+	 * Gets a list of units owned by the given user
+	 * @return
+	 */
+	public def getUnitsForUser(MekUser userInstance) {
+		def unitsForUser = []
+		
+		if(userInstance == null) return unitsForUser
+		
+		for(BattleUnit unit in units) {
+			MekUser user = unit.pilot?.ownerUser
+			if(user.id == userInstance.id) {
+				unitsForUser << unit
+			}
+		}
+		
+		return unitsForUser
+	}
+	
+	/**
 	 * Gets a map of users with list of units controller by that user
 	 */
 	public def getUnitsByUser() {

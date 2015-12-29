@@ -16,6 +16,7 @@ div #spinner {
 	text-indent: -9999px;
 }
 
+/* Map selection radio button decoration */
 label {
     display: inline-block;
     cursor: pointer;
@@ -50,4 +51,49 @@ label:before {
 input[type=radio]:checked + label:before {
     background-image: url("images/ui-icons_4b8e0b_256x240.png");
     background-position: -112px -192px; /* .ui-icon-circle-arrow-e */
+}
+
+/* Player staging area */
+#teams {
+	padding: 0.5em 1em 1em 1em;
+}
+
+.team > h2 {
+	text-align: center;
+	font-size: 1.25em;
+	margin: 0.25em 0.25em 0.25em 0.25em;
+}
+
+.team {
+	display: inline-block;
+	margin: 0 0.5em 0.5em 0;
+	padding-bottom: 1em;
+	border: 3px solid #3399FF;
+			   -moz-border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	        border-radius: 0.5em;
+}
+
+.player {
+	margin: 0.5em 0.5em 0.5em 0.5em;
+	border: 1px solid #CCCCCC;
+		   -moz-border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;
+	        border-radius: 0.3em;
+}
+
+.player-name {
+	border-bottom: 1px solid #CCCCCC;
+}
+
+.player-unit {
+	display: flex;
+}
+
+img.unit-image {
+	width: 40px;
+}
+
+span.unit-name {
+	margin: 0.5em 0.5em 0 0 ;
 }
