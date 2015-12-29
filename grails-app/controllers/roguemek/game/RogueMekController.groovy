@@ -199,7 +199,7 @@ class RogueMekController {
 	
 	/**
 	 * Gets names and information about the available maps
-	 * @render JSON object containing the names and info about each map
+	 * @respond object containing the names and info about each map
 	 */
 	def mapSelect() {
 		def userInstance = currentUser()
@@ -248,6 +248,75 @@ class RogueMekController {
 	}
 	
 	/**
+	 * Gets names and information about the available units
+	 * @respond object containing the names and info about each unit
+	 */
+	def unitSelect() {
+		def userInstance = currentUser()
+		if(userInstance) {
+			respond userInstance
+		}
+		else {
+			redirect url: "/"
+		}
+	}
+	
+	/**
+	 * Adds the selected unit to the game
+	 * @return
+	 */
+	def addUnit() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		// map can only be updated in the Init stage
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.unitId == null) return
+		Unit unitInstance = Unit.get(params.unitId)
+		if(unitInstance == null) return
+		
+		// create the BattleUnit instance to load into the game
+		BattleUnit battleUnitInstance
+		if(unitInstance instanceof Mech) {
+			// TODO: create pilots with random names, but eventually show pilot selection to player
+			def testPilot = userInstance.pilots.first()
+			
+			// TODO: set the unit color to the color selected by the player
+			battleUnitInstance = new BattleMech(pilot: testPilot, mech: unitInstance, x: 0, y: 0, heading: 3, rgb: [255, 255, 255])
+		}
+		
+		if(battleUnitInstance == null) return
+		
+		if(!battleUnitInstance.validate()) {
+			log.error("Errors with battle unit "+battleUnitInstance.mech?.name+":\n")
+			battleUnitInstance.errors.allErrors.each {
+				log.error(it)
+			}
+			
+			return
+		}
+		else {
+			battleUnitInstance.save flush:true
+		
+			log.info('Initialized battle unit '+battleUnitInstance.mech?.name+" with ID="+battleUnitInstance.id)
+		}
+		
+		game.units.add(battleUnitInstance)
+		
+		if(game.hasErrors()) {
+			render game.errors
+			return
+		}
+		
+		game.save flush:true
+		
+		def result = [updated:true]
+		render result as JSON
+	}
+	
+	/**
 	 * Removes the selected unit from the game
 	 * @return
 	 */
@@ -267,6 +336,12 @@ class RogueMekController {
 		if(!unitInstance.isUsedBy(userInstance)) return
 		
 		game.units.remove(unitInstance)
+		
+		if(game.hasErrors()) {
+			render game.errors
+			return
+		}
+		
 		game.save flush:true
 		
 		def result = [updated:true]

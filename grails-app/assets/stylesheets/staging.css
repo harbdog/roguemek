@@ -20,7 +20,7 @@ div #spinner {
 	text-indent: -9999px;
 }
 
-/* Map selection radio button decoration */
+/* Map/Unit selection radio button decoration */
 label {
     display: inline-block;
     cursor: pointer;

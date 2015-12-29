@@ -326,6 +326,6 @@ class Mech extends Unit {
 	
 	@Override
 	public String toString() {
-		return "<Mech:"+name+" "+chassis+"-"+variant+">"
+		return name+" "+chassis+"-"+variant
 	}
 }

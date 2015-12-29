@@ -3,7 +3,6 @@
  %>
  
 <%
- 	def maps = []
 	def hexMapList = HexMap.list(sort:"name")
 %>
 

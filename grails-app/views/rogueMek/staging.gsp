@@ -10,6 +10,7 @@
 	</head>
 	<body>
 		<div id="mapSelectDiv"></div>
+		<div id="unitSelectDiv"></div>
 		<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
 	
 		<div id="show-game" class="content scaffold-show" role="main">

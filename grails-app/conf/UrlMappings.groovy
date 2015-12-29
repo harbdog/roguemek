@@ -45,6 +45,16 @@ class UrlMappings {
 			action='mapUpdate'
 		}
 		
+		name stagingUnitSelect: "/staging/unitSelect"{
+			controller='rogueMek'
+			action='unitSelect'
+		}
+		
+		name stagingAddUnit: "/staging/addUnit"{
+			controller='rogueMek'
+			action='addUnit'
+		}
+		
 		name stagingRemoveUnit: "/staging/removeUnit"{
 			controller='rogueMek'
 			action='removeUnit'

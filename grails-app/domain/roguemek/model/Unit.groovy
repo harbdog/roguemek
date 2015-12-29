@@ -52,7 +52,7 @@ class Unit {
 	
 	@Override
 	public String toString() {
-		return "<Unit:"+name+">"
+		return name
 	}
 	
 }

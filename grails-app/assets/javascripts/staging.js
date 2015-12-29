@@ -36,6 +36,27 @@ function initStaging() {
 			}
 		}
     });
+	
+	// Initialize unit selection dialog
+	unitSelectDialog = $("#unitSelectDiv").dialog({
+		title: "Select Unit",
+    	autoOpen: false,
+    	modal: true,
+		show: {
+			effect: "blind",
+			duration: 350
+		},
+		hide: {
+			effect: "blind",
+			duration: 250
+		},
+		buttons: {
+			"Select": ajaxAddUnit,
+			Cancel: function() {
+				unitSelectDialog.dialog("close");
+			}
+		}
+    });
     
     // Initialize loading dialog
     dialogLoading = $("#loadingDiv").dialog({
@@ -93,7 +114,7 @@ function initStaging() {
 	    	icons: {
 	    		primary: "ui-icon-plusthick"
 	    	}
-	    }).click(addUnit);
+	    }).click(loadUnitSelect);
     }
     else {
     	// hide the unit add/delete buttons
@@ -145,10 +166,56 @@ function ajaxDeleteUnit(unitId, $this) {
 		});
 }
 
-function addUnit() {
-	// TODO: create dialog for selecting units
-	var userId = $(this).prop("id");
-	console.log(userId);
+function loadUnitSelect() {
+	
+	// show a loading dialog while waiting to get the info display from the server
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+	
+	// introduce a small delay so the animation doesn't look weird if the response is very fast
+	setTimeout(function(){
+		unitSelectDialog.load("unitSelect", function() {
+			dialogLoading.dialog("close");
+			showUnitSelect();
+	    });
+	},250);
+}
+
+function showUnitSelect() {
+	var windowWidth = $(window).width();
+	var windowHeight = $(window).height();
+	
+	unitSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
+	unitSelectDialog.dialog("option", "width", windowWidth/2);
+	unitSelectDialog.dialog("option", "height", windowHeight);
+	unitSelectDialog.dialog("open");
+}
+
+function ajaxAddUnit() {
+	// add selected unit to the battle
+	var selectedUnitId = $("input[type='radio'][name='unit-radio']:checked").val();
+	var selectedUnitName = $($("input[type='radio'][name='unit-radio']:checked").prop("labels")).text();
+	var inputMap = {unitId: selectedUnitId};
+	
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	
+	unitSelectDialog.dialog("close");
+	dialogLoading.dialog("open");
+	
+	$.getJSON("addUnit", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				// TODO: update the elements on the page without forcing reload
+				location.reload();
+			}
+		})
+		.always(function() {
+			dialogLoading.dialog("close");
+		});
 }
 
 function transferPlayer($playerDiv, $teamDiv) {
