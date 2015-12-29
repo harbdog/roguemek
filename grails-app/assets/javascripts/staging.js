@@ -84,22 +84,71 @@ function initStaging() {
 	    // setup unit add/delete buttons
 	    $("button.unit-delete").button({
 	    	icons: {
-    			primary: "ui-icon-trash"
+    			primary: "ui-icon-closethick"
 	    	},
 	        text: false
-	    });
+	    }).click(deleteUnit);
 	    
 	    $("button.unit-add").button({
 	    	icons: {
 	    		primary: "ui-icon-plusthick"
 	    	}
-	    })
+	    }).click(addUnit);
     }
     else {
     	// hide the unit add/delete buttons
     	$("button.unit-delete").hide();
     	$("button.unit-add").hide();
     }
+}
+
+function deleteUnit() {
+	// ask user to confirm deletion
+	var $this = $(this);
+	var unitId = $this.prop("id");
+	
+	$("<div style='font-size:0.8em;'>Are you sure you want to remove this unit from battle?</div>").dialog({	// TODO: i18n for deletion message
+		title: "Remove Unit",
+		resizable: false,
+		modal: true,
+		buttons: {
+			"Remove": function() {
+				$(this).dialog("close");
+				ajaxDeleteUnit(unitId, $this);
+			},
+			Cancel: function() {
+				$(this).dialog("close");
+			}
+		},
+		position: {my: "left top", at: "left bottom", of: $this}
+	});
+}
+
+function ajaxDeleteUnit(unitId, $this) {
+	dialogLoading.dialog("option", "position", {my: "left top", at: "left bottom", of: $this});
+	dialogLoading.dialog("open");
+
+	var inputMap = {unitId: unitId};
+	
+	$.getJSON("removeUnit", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				$this.parent("div.player-unit").fadeOut();
+			}
+		})
+		.always(function() {
+			dialogLoading.dialog("close");
+		});
+}
+
+function addUnit() {
+	// TODO: create dialog for selecting units
+	var userId = $(this).prop("id");
+	console.log(userId);
 }
 
 function transferPlayer($playerDiv, $teamDiv) {

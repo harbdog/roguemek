@@ -45,6 +45,11 @@ class UrlMappings {
 			action='mapUpdate'
 		}
 		
+		name stagingRemoveUnit: "/staging/removeUnit"{
+			controller='rogueMek'
+			action='removeUnit'
+		}
+		
 		name startGame: "/startBattle"{
 			controller = 'rogueMek'
 			action = 'startBattle'

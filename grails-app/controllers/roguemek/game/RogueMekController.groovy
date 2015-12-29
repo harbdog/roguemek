@@ -247,6 +247,32 @@ class RogueMekController {
 		render result as JSON
 	}
 	
+	/**
+	 * Removes the selected unit from the game
+	 * @return
+	 */
+	def removeUnit() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		// map can only be updated in the Init stage
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.unitId == null) return
+		BattleUnit unitInstance = BattleUnit.get(params.unitId)
+		if(unitInstance == null) return
+		
+		// make sure only the unit owner can remove the unit
+		if(!unitInstance.isUsedBy(userInstance)) return
+		
+		game.units.remove(unitInstance)
+		game.save flush:true
+		
+		def result = [updated:true]
+		render result as JSON
+	}
+	
 	private MekUser currentUser() {
 		return MekUser.get(springSecurityService.principal.id)
 	}

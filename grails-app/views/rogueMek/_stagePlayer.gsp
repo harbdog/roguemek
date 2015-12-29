@@ -7,7 +7,9 @@
 	<div class="player-name">${user}</div>
 	<g:each in="${gameInstance?.getUnitsForUser(user)}" var="unit">
 		<div class="player-unit">
-			<g:if test="${userInstance?.id == user?.id}"><button class="unit-delete" id="${unit?.id}"></button></g:if>
+			<g:if test="${userInstance?.id == user?.id}">
+				<button class="unit-delete" id="${unit?.id}"></button>
+			</g:if>
 			
 			<div id="unit-image">
 		 		<g:if test="${unit?.image}">

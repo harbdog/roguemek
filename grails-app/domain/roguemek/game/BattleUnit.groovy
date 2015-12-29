@@ -135,6 +135,24 @@ class BattleUnit {
 		return pilot.ownerUser.callsign
 	}
 	
+	/**
+	 * Returns true if the pilot is controlled by the given User
+	 * @param user
+	 * @return
+	 */
+	public boolean isUsedBy(MekUser user) {
+		return (pilot?.ownerUser?.id == user.id)
+	}
+	
+	/**
+	 * Returns true if the owner is the given User
+	 * @param user
+	 * @return
+	 */
+	public boolean isOwnedBy(MekUser user) {
+		return (owner?.id == user.id)
+	}
+	
 	public static byte[] initUnitImage(BattleUnit unit) {
 		if(unit == null) return null;
 		
