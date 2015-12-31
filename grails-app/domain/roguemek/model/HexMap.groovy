@@ -8,6 +8,9 @@ class HexMap {
 	String id
 	static mapping= {
 		id generator: 'uuid'
+		
+		// Model classes do not change values, versioning not needed
+		version false
 	}
 
 	String name

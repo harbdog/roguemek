@@ -1,7 +1,5 @@
 package roguemek.model
 
-import java.io.File
-
 import org.grails.plugins.csv.CSVMapReader
 import roguemek.assets.ContextHelper
 
@@ -14,6 +12,11 @@ class Faction {
 		name blank: false
 		description nullable: true
     }
+	
+	static mapping = {
+		// Model classes do not change values, versioning not needed
+		version false
+	}
 	
 	static void init() {
 		def defaultFaction = Faction.findByName("Lone Wolf")

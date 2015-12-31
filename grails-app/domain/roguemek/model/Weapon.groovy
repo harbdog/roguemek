@@ -40,6 +40,11 @@ class Weapon extends Equipment {
 		longRange min: 0
     }
 	
+	static mapping = {
+		// Model classes do not change values, versioning not needed
+		version false
+	}
+	
 	static void init() {
 		def defaultWeapon = Weapon.findByName("Small Laser")
 		if(defaultWeapon != null) {

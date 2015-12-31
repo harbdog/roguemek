@@ -14,6 +14,11 @@ class Terrain {
 		terrainFactor nullable: false
 	}
 	
+	static mapping = {
+		// Model classes do not change values, versioning not needed
+		version false
+	}
+	
 	public static final int LEVEL_NONE = Integer.MIN_VALUE;
 	public static final int WILDCARD = Integer.MAX_VALUE;
 	

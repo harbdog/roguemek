@@ -1,7 +1,5 @@
 package roguemek.model
 
-import java.io.File
-
 import org.grails.plugins.csv.CSVMapReader
 import roguemek.assets.ContextHelper
 
@@ -16,6 +14,11 @@ class Ammo extends Equipment {
 		ammoPerTon min: 1
 		explosiveDamage nullable: false, min: 0
     }
+	
+	static mapping = {
+		// Model classes do not change values, versioning not needed
+		version false
+	}
 	
 	static void init() {
 		def defaultAmmo = Ammo.findByName("Auto Cannon 20 Ammo")

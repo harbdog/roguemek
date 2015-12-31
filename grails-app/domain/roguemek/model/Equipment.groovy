@@ -1,7 +1,5 @@
 package roguemek.model
 
-import java.io.File
-
 import org.grails.plugins.csv.CSVMapReader
 import roguemek.assets.ContextHelper
 
@@ -33,6 +31,8 @@ class Equipment {
 	static mapping = {
 		// All extending classes will get their own tables
 		tablePerHierarchy false
+		// Model classes do not change values, versioning not needed
+		version false
 	}
 
     static constraints = {
