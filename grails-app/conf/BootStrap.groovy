@@ -1,4 +1,5 @@
 import javax.servlet.ServletContext
+import grails.util.Environment
 
 import roguemek.*
 import roguemek.assets.*
@@ -9,6 +10,17 @@ import roguemek.model.*
 class BootStrap {
 
     def init = { ServletContext servletContext ->
+		
+		/* Sample code for determining environment from grails.util.Environment
+		if (Environment.current == Environment.DEVELOPMENT) {
+            // insert Development environment specific code here
+        } else 
+        if (Environment.current == Environment.TEST) {
+            // insert Test environment specific code here
+        } else 
+        if (Environment.current == Environment.PRODUCTION) {
+            // insert Production environment specific code here
+        } */
 		
 		// Initialize the Context helping for determining location of resource with or without using the war
 		ContextHelper.setContext(servletContext)
@@ -142,6 +154,17 @@ class BootStrap {
 		assert MekUserRole.count() == 5
 		assert Pilot.count() == 3
 		
+		// Initialize names
+		Name.init()
+		Surname.init()
+		log.info('Initialized Names/Surnames')
+		
+		// random query name test
+		log.info('Random query names test:')
+		log.info("R: "+ Name.getRandom().name)
+		log.info("F: "+ Name.getRandom(Name.GENDER_FEMALE).name)
+		log.info("M: "+ Name.getRandom(Name.GENDER_MALE).name)
+		log.info("S: "+ Surname.getRandom().surname)
 		
 		// Initialize factions
 		Faction.init()
