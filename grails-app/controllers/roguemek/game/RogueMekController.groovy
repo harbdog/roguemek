@@ -281,7 +281,8 @@ class RogueMekController {
 		BattleUnit battleUnitInstance
 		if(unitInstance instanceof Mech) {
 			// TODO: create pilots with random names, but eventually show pilot selection to player
-			def testPilot = userInstance.pilots.first()
+			def testPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: userInstance, status: Pilot.STATUS_ACTIVE)
+			testPilot.save flush: true
 			
 			// TODO: set the unit color to the color selected by the player
 			battleUnitInstance = new BattleMech(pilot: testPilot, mech: unitInstance, x: 0, y: 0, heading: 3, rgb: [255, 255, 255])
@@ -343,6 +344,8 @@ class RogueMekController {
 		}
 		
 		game.save flush:true
+		
+		// TODO: remove the BattleUnit from the database, if it is not owned (also remove the pilot if not owned)
 		
 		def result = [updated:true]
 		render result as JSON
