@@ -104,6 +104,19 @@ span.unit-name {
 	margin: 0.5em 0.5em 0 0 ;
 }
 
+/* User buttons */
+button.user-delete {
+	width: 1.5em;
+	height: 1.5em;
+	left: 0.25em;
+}
+
+button.user-join{
+	float: right;
+	margin: 0.5em 0.5em 0.5em 0;
+	font-size: 0.75em;
+}
+
 /* Unit buttons */
 button.unit-delete {
 	width: 1.5em;

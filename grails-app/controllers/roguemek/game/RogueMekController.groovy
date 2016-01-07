@@ -269,7 +269,7 @@ class RogueMekController {
 		def userInstance = currentUser()
 		if(userInstance == null) return
 		
-		// map can only be updated in the Init stage
+		// units can only be updated in the Init stage
 		Game game = Game.get(session.game)
 		if(game == null || !game.isInit()) return
 		
@@ -325,7 +325,7 @@ class RogueMekController {
 		def userInstance = currentUser()
 		if(userInstance == null) return
 		
-		// map can only be updated in the Init stage
+		// units can only be updated in the Init stage
 		Game game = Game.get(session.game)
 		if(game == null || !game.isInit()) return
 		
@@ -346,6 +346,77 @@ class RogueMekController {
 		game.save flush:true
 		
 		// TODO: remove the BattleUnit from the database, if it is not owned (also remove the pilot if not owned)
+		
+		def result = [updated:true]
+		render result as JSON
+	}
+	
+	/**
+	 * Adds the current User to the game
+	 * @return
+	 */
+	def addUser() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		// users can only be updated in the Init stage
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(!game.users.contains(userInstance)){
+			game.users.add(userInstance)
+			
+			if(game.hasErrors()) {
+				render game.errors
+				return
+			}
+			
+			game.save flush:true
+		}
+		
+		def result = [updated:true]
+		render result as JSON
+	}
+	
+	/**
+	 * Removes the selected user from the game
+	 * @return
+	 */
+	def removeUser() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		// users can only be updated in the Init stage
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.userId == null) return
+		MekUser userToRemove = MekUser.read(params.userId)
+		if(userToRemove == null) return
+		
+		// make sure only the user or the game owner can remove the user
+		if(userInstance != game.ownerUser && userInstance != userToRemove) return
+
+		game.users.remove(userToRemove)
+		
+		// remove any of the user's units from the game also
+		def unitsToRemove = []
+		for(BattleUnit unitInstance in game.units) {
+			if(unitInstance.isUsedBy(userToRemove)) {
+				unitsToRemove << unitInstance
+			}
+		}
+		
+		unitsToRemove.each { unitInstance ->
+			game.units.remove(unitInstance)
+		}
+		
+		if(game.hasErrors()) {
+			render game.errors
+			return
+		}
+		
+		game.save flush:true
 		
 		def result = [updated:true]
 		render result as JSON

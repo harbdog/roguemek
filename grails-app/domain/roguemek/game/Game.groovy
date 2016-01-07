@@ -176,6 +176,23 @@ class Game {
 		return null
 	}
 	
+	/**
+	 * Checks to see if the given user is in the game already (by id compare)
+	 * @param user
+	 * @return
+	 */
+	public boolean hasUser(MekUser user) {
+		if(user == null) return false
+		
+		for(MekUser chkUser in users) {
+			if(user.id == chkUser.id) {
+				return true
+			}
+		}
+		
+		return false
+	}
+	
 	public def loadMap() {
 		return board.loadMap()
 	}

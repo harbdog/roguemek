@@ -84,6 +84,7 @@
 		
 		<div id="teams">
 			<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
+			<g:set var="showJoin" value="${!gameInstance?.hasUser(userInstance) && gameInstance?.isInit()}" />
 			<script type="text/javascript">var playersEditable = ${isEditable};</script>
 			<script type="text/javascript">var unitsEditable = ${gameInstance?.isInit()};</script>
 			
@@ -92,8 +93,23 @@
 					<h2>Team ${thisUser}</h2>
 					
 					<g:render template="stagePlayer" bean="${thisUser}" var="user" />
+					
+					<g:if test="${showJoin}">
+						<button class="user-join"><g:message code="default.button.join.label" /></button>
+					</g:if>
 				</div>
 			</g:each>
+			
+			<%-- TODO: only show the "new team" option when at least one team has >1 members --%>
+			<g:if test="${showJoin || (gameInstance?.ownerUser == userInstance && gameInstance?.isInit())}">
+				<div class="team">
+					<h2>New Team</h2>
+						
+					<g:if test="${showJoin}">
+						<button class="user-join"><g:message code="default.button.join.label" /></button>
+					</g:if>
+				</div>
+			</g:if>
 		</div>
 			
 		<div class="buttons">

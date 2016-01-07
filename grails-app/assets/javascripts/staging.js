@@ -75,8 +75,12 @@ function initStaging() {
     });
     
     // add buttons and their actions
-    $("#map-button").button()
-			.click(loadMapSelect);
+    $("#map-button").button({
+    	icons: {
+    		primary: "ui-icon-carat-1-e",
+    		secondary: "ui-icon-carat-1-w"
+    	}
+    }).click(loadMapSelect);
     
     
     // setup editable player teams
@@ -103,27 +107,109 @@ function initStaging() {
 	    });
     }
     
-    // setup editable units
+    // setup editable users/units
     if(unitsEditable) {
+    	// setup user join button
+    	$("button.user-join").button({
+    		icons: {
+    			secondary: "ui-icon-arrowreturnthick-1-n"
+	    	}
+    	}).click(addUser);
+    	
+    	// setup user add/delete buttons
+	    $("button.user-delete").button({
+	    	icons: {
+    			primary: "ui-icon-closethick"
+	    	},
+	        text: false
+	    }).click(deleteUser);
+    	
     	// setup unit add/delete buttons
+	    $("button.unit-add").button({
+	    	icons: {
+	    		primary: "ui-icon-plusthick"
+	    	}
+	    }).click(loadUnitSelect);
+	    
 	    $("button.unit-delete").button({
 	    	icons: {
     			primary: "ui-icon-closethick"
 	    	},
 	        text: false
 	    }).click(deleteUnit);
-	    
-	    $("button.unit-add").button({
-	    	icons: {
-	    		primary: "ui-icon-plusthick"
-	    	}
-	    }).click(loadUnitSelect);
     }
     else {
+    	// hide the user add/delete buttons
+    	$("button.user-delete").hide();
+    	$("button.user-add").hide();
+    	
     	// hide the unit add/delete buttons
     	$("button.unit-delete").hide();
     	$("button.unit-add").hide();
     }
+}
+
+function addUser() {
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+	
+	$.getJSON("addUser", null)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				// TODO: update the elements on the page without forcing reload
+				location.reload();
+			}
+		})
+		.always(function() {
+			dialogLoading.dialog("close");
+		});
+}
+
+function deleteUser() {
+	// ask user to confirm deletion
+	var $this = $(this);
+	var userId = $this.prop("id");
+	
+	$("<div style='font-size:0.8em;'>Are you sure you want to remove this player from battle?</div>").dialog({	// TODO: i18n for deletion message
+		title: "Remove Player",
+		resizable: false,
+		modal: true,
+		buttons: {
+			"Remove": function() {
+				$(this).dialog("close");
+				ajaxDeleteUser(userId, $this);
+			},
+			Cancel: function() {
+				$(this).dialog("close");
+			}
+		},
+		position: {my: "left top", at: "left bottom", of: $this}
+	});
+}
+
+function ajaxDeleteUser(userId, $this) {
+	dialogLoading.dialog("option", "position", {my: "left top", at: "left bottom", of: $this});
+	dialogLoading.dialog("open");
+
+	var inputMap = {userId: userId};
+	
+	$.getJSON("removeUser", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				$this.closest("div.player").fadeOut();
+			}
+		})
+		.always(function() {
+			dialogLoading.dialog("close");
+		});
 }
 
 function deleteUnit() {
@@ -161,7 +247,7 @@ function ajaxDeleteUnit(unitId, $this) {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				$this.parent("div.player-unit").fadeOut();
+				$this.closest("div.player-unit").fadeOut();
 			}
 		})
 		.always(function() {

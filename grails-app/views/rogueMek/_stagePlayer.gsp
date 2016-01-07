@@ -4,7 +4,12 @@
 %>
 
 <div class="player">
-	<div class="player-name">${user}</div>
+	<div class="player-name">
+		${user}
+		<g:if test="${gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id}">
+			<button class="user-delete" id="${user?.id}"></button>
+		</g:if>
+	</div>
 	<g:each in="${gameInstance?.getUnitsForUser(user)}" var="unit">
 		<div class="player-unit">
 			<g:if test="${userInstance?.id == user?.id}">
