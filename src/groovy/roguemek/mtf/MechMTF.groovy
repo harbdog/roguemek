@@ -27,6 +27,12 @@ class MechMTF {
 	public static final String MTF_CRIT_COCKPIT = "Cockpit"
 	public static final String MTF_CRIT_AMMO = "Ammo"
 	
+	public static final String MTF_SHORT_HATCHET = "HATCHET"
+	public static final String MTF_SHORT_PUNCH = "PUNCH"
+	public static final String MTF_SHORT_KICK = "KICK"
+	public static final String MTF_SHORT_CHARGE = "CHARGE"
+	public static final String MTF_SHORT_DFA = "DFA"
+	
 	/**
 	 * Generates a Mech instance from an MTF format file
 	 * @param mtfFile
@@ -192,7 +198,7 @@ class MechMTF {
 				int subIndex = 0
 				mtf[mtfSection].each { String line ->
 					// add crits
-					addCriticalsFromMTF(map.crits, line, mtfSection, subIndex ++)
+					addCriticalsFromMTF(map.mass, map.crits, line, mtfSection, subIndex ++)
 				}
 			}
 		}
@@ -213,7 +219,7 @@ class MechMTF {
 		return mech
 	}
 	
-	private static void addCriticalsFromMTF(List crits, String line, String mtfSectionIndex, int subSectionIndex){
+	private static void addCriticalsFromMTF(def unitMass, List crits, String line, String mtfSectionIndex, int subSectionIndex){
 		// one crit is listed per line and in order, just push each entry after determining what it is
 		if(crits == null || line == null || line.length() == 0) {
 			return
@@ -307,17 +313,33 @@ class MechMTF {
 			def foundEquip = Equipment.findByName(critName)
 			
 			if(foundEquip) {
-				thisCrit = foundEquip
+				if(MTF_SHORT_HATCHET.equals(foundEquip.shortName)) {
+					// if this is a hatchet, make sure the correct one is chosen based on mech tonnage
+					def foundAllEquip = Equipment.findAllByName(critName)
+					for(Equipment thisEquip in foundAllEquip) {
+						thisCrit = findCorrectHatchet(unitMass)
+						break
+					}
+				}
+				else{
+					thisCrit = foundEquip
+				}
 			}
 			else {
 				// TODO: The findByAliases queries were all failing, so doing it the dumb way just to get past this part, fix it later!
 				//def thisEquip = Equipment.findByAliases(critName)
 				def equipList = Equipment.getAll()
 	
-				equipList.each { thisEquip ->
+				for(Equipment thisEquip in equipList) {
 					if(thisEquip.aliases?.contains(critName)){
-						thisCrit = thisEquip
-						return
+						if(MTF_SHORT_HATCHET.equals(thisEquip.shortName)) {
+							thisCrit = findCorrectHatchet(unitMass)
+							break
+						}
+						else{
+							thisCrit = thisEquip
+							break
+						}
 					}
 				}
 				
@@ -328,7 +350,7 @@ class MechMTF {
 							shortName:critName,
 							mass:0,
 							crits:1,
-							tech:Mech.IS,
+							tech:Mech.TECH_IS,
 							year:2014,
 							cbills:0,
 							battleValue:0])
@@ -340,5 +362,25 @@ class MechMTF {
 		}
 		
 		crits[critStart + subSectionIndex] = thisCrit.id
+	}
+	
+	/**
+	 * Gets the correct sized hatched based on the unit mass
+	 * @param unitMass
+	 * @return
+	 */
+	private static Equipment findCorrectHatchet(def unitMass) {
+		def hatchetMass = Math.ceil(unitMass / 15)
+		
+		def foundAllEquip = Equipment.findAllByShortName(MTF_SHORT_HATCHET)
+		for(Equipment thisEquip in foundAllEquip) {
+			
+			if(thisEquip.mass == hatchetMass) {
+				return thisEquip
+			}
+		}
+		
+		
+		return null
 	}
 }

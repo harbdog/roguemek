@@ -92,6 +92,11 @@ class BattleMech extends BattleUnit {
 					}
 					else if(thisEquip instanceof Weapon) {
 						bEquip = new BattleWeapon(newEquipMap)
+						
+						if(bEquip.isHatchet()) {
+							bEquip.actualDamage = Math.ceil(mech.mass / 5)
+						}
+						
 						bEquip.save flush:true
 					}
 					else if(thisEquip instanceof Ammo) {
@@ -313,7 +318,7 @@ class BattleMech extends BattleUnit {
 	 * @return Array of BattleWeapon objects
 	 */
 	@Override
-	public BattleWeapon[] getWeapons() {
+	public def getWeapons() {
 		def weapons = []
 		
 		for(String equipId in physical) {

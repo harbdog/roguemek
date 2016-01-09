@@ -1,5 +1,7 @@
 package roguemek.game
 
+import roguemek.mtf.MechMTF
+
 /**
  * Represents the owned Weapon that can be taken into battle and be fired
  */
@@ -73,28 +75,23 @@ class BattleWeapon extends BattleEquipment {
 	}
 	
 	public boolean isHatchet() {
-		// TODO: come up with a better way to determine if a weapon is a Hatchet
-		return this.getShortName().startsWith("HATCHET")
+		return MechMTF.MTF_SHORT_HATCHET.equals(this.getShortName())
 	}
 	
 	public boolean isPunch() {
-		// TODO: come up with a better way to determine if a weapon is a Punch
-		return this.getShortName().startsWith("PUNCH")
+		return MechMTF.MTF_SHORT_PUNCH.equals(this.getShortName())
 	}
 	
 	public boolean isKick() {
-		// TODO: come up with a better way to determine if a weapon is a Kick
-		return this.getShortName().startsWith("KICK")
+		return MechMTF.MTF_SHORT_KICK.equals(this.getShortName())
 	}
 	
 	public boolean isCharge() {
-		// TODO: come up with a better way to determine if a weapon is a Charge
-		return this.getShortName().startsWith("CHARGE")
+		return MechMTF.MTF_SHORT_CHARGE.equals(this.getShortName())
 	}
 	
 	public boolean isDFA() {
-		// TODO: come up with a better way to determine if a weapon is a DFA
-		return this.getShortName().startsWith("DFA")
+		return MechMTF.MTF_SHORT_DFA.equals(this.getShortName())
 	}
 	
 	public def getAmmoTypes() {

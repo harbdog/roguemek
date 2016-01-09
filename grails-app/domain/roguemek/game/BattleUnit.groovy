@@ -167,7 +167,7 @@ class BattleUnit {
 	 * Gets all weapons currently equipped (must be overridden by BattleUnit subclasses)
 	 * @return Array of BattleWeapon objects
 	 */
-	public BattleWeapon[] getWeapons() {
+	public def getWeapons() {
 		return new BattleWeapon[0]
 	}
 	

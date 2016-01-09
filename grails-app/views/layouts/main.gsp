@@ -18,7 +18,7 @@
 		<g:layoutHead/>
 	</head>
 	<body>
-		<div id="grailsLogo" role="banner"><a href="/RogueMek"><asset:image src="roguemek_logo.png" alt="Grails"/></a></div>
+		<div id="grailsLogo" role="banner"><a href="/RogueMek"><asset:image src="roguemek_logo.png" alt="RogueMek"/></a></div>
 		
 		<div id="loginBox" class="loginBox">
 			<sec:ifLoggedIn>
