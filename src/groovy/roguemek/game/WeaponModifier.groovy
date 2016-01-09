@@ -84,7 +84,7 @@ class WeaponModifier {
 				// check if the mech has no Lower Arm or Hand actuators in BOTH arms, as it can reverse/flip the arms to fire in rear arc
 				def armCrits = srcUnit.getCritSection(weapon.location)
 				
-				for(thisCrit in armCrits) {
+				for(BattleEquipment thisCrit in armCrits) {
 					if(MechMTF.MTF_CRIT_LOW_ARM_ACT == thisCrit.getName()
 							|| MechMTF.MTF_CRIT_HAND_ACT == thisCrit.getName()){
 						// actuator found, flipping arms not possible
@@ -96,6 +96,7 @@ class WeaponModifier {
 			
 			if(isArmWeapon && canFlipArms) {
 				// allow flippable arms to fire in rear arc
+				// TODO: Total Warfare (pg. 106) does not mention if flipping the arm is not possible when shoulder or upper arm actuator are destroyed?
 			}
 			else if(weapon.location != Mech.RIGHT_REAR
 					&& weapon.location != Mech.CENTER_REAR
@@ -207,6 +208,16 @@ class WeaponModifier {
 					// melee attacks can not hit mechs at more than 1 elevation difference
 					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 					return toHitMods
+				}
+				
+				// hatchets require a functioning hand actuator in its carrying arm
+				def armCrits = srcUnit.getCritSection(weapon.location)
+				for(BattleEquipment thisCrit in armCrits) {
+					if(MechMTF.MTF_CRIT_HAND_ACT == thisCrit.getName()
+							&& !thisCrit.isActive()){ 
+						toHitMods.push(new WeaponModifier(Modifier.CRIT, AUTO_MISS))
+						return toHitMods
+					}
 				}
 				
 				// hatchets have a -1 base modifier
