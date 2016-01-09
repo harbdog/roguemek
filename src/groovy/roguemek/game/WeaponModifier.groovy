@@ -210,10 +210,11 @@ class WeaponModifier {
 					return toHitMods
 				}
 				
-				// hatchets require a functioning hand actuator in its carrying arm
+				// hatchets require a functioning shoulder and hand actuator in its carrying arm
 				def armCrits = srcUnit.getCritSection(weapon.location)
 				for(BattleEquipment thisCrit in armCrits) {
-					if(MechMTF.MTF_CRIT_HAND_ACT == thisCrit.getName()
+					if((MechMTF.MTF_CRIT_HAND_ACT == thisCrit.getName()
+						|| MechMTF.MTF_CRIT_SHOULDER== thisCrit.getName())
 							&& !thisCrit.isActive()){ 
 						toHitMods.push(new WeaponModifier(Modifier.CRIT, AUTO_MISS))
 						return toHitMods
