@@ -72,6 +72,9 @@ class GameService {
 		// load the board in case is not loaded already
 		game.loadMap()
 		
+		// clear any staging data that was used during initialization
+		game.clearStagingData()
+		
 		game.gameState = Game.GAME_ACTIVE
 		game.gameTurn = 0
 		
@@ -81,6 +84,12 @@ class GameService {
 		
 		// get the first unit ready for its turn
 		initializeTurnUnit(game)
+		
+		game.validate()
+		if(game.hasErrors()) {
+			log.error(game.errors)
+			return
+		}
 		
 		game.save flush: true
 	}

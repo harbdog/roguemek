@@ -1,11 +1,39 @@
 <%@ page 
 	import="roguemek.MekUser"
-	import="roguemek.game.BattleUnit"  
+	import="roguemek.game.BattleUnit"
+	import="roguemek.game.Game"
 %>
 
 <div class="player">
 	<div class="player-name">
 		${user}
+		
+		<g:set var="startingLocation" value="${gameInstance?.getStartingLocationForUser(user)}" />
+		<select name="location" class="location" id="${user?.id}">
+			<g:each in="${Game.STARTING_LOCATIONS}" var="location">
+				<g:if test="${startingLocation == location}">
+					<g:set var="selected" value="selected='selected'" />
+				</g:if>
+				<g:else>
+					<g:set var="selected" value="" />
+				</g:else>
+				
+				<g:if test="${Game.STARTING_NW == location}"><g:set var="iconClass" value="ui-icon-carat-1-nw"/></g:if>
+				<g:elseif test="${Game.STARTING_N == location}"><g:set var="iconClass" value="ui-icon-carat-1-n"/></g:elseif>
+				<g:elseif test="${Game.STARTING_NE == location}"><g:set var="iconClass" value="ui-icon-carat-1-ne"/></g:elseif>
+				<g:elseif test="${Game.STARTING_E == location}"><g:set var="iconClass" value="ui-icon-carat-1-e"/></g:elseif>
+				<g:elseif test="${Game.STARTING_SE == location}"><g:set var="iconClass" value="ui-icon-carat-1-se"/></g:elseif>
+				<g:elseif test="${Game.STARTING_S == location}"><g:set var="iconClass" value="ui-icon-carat-1-s"/></g:elseif>
+				<g:elseif test="${Game.STARTING_SW == location}"><g:set var="iconClass" value="ui-icon-carat-1-sw"/></g:elseif>
+				<g:elseif test="${Game.STARTING_W == location}"><g:set var="iconClass" value="ui-icon-carat-1-w"/></g:elseif>
+				<g:elseif test="${Game.STARTING_CENTER == location}"><g:set var="iconClass" value="ui-icon-radio-off"/></g:elseif>
+				<g:elseif test="${Game.STARTING_RANDOM == location}"><g:set var="iconClass" value="ui-icon-help"/></g:elseif>
+				
+				<option value="${location}" data-class="${iconClass}" ${selected}>${location}</option>
+				
+			</g:each>
+		</select>
+		
 		<g:if test="${gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id}">
 			<button class="user-delete" id="${user?.id}"></button>
 		</g:if>

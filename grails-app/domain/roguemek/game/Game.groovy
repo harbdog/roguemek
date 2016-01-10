@@ -4,7 +4,12 @@ import roguemek.MekUser
 import roguemek.model.Hex
 import roguemek.model.HexMap
 
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+
 class Game {
+	private static Log log = LogFactory.getLog(this)
+	
 	private static final Date NULL_DATE = new Date(0)
 	
 	private static final int turnsPerRound = 4
@@ -20,7 +25,10 @@ class Game {
 	List users
 	List spectators
 	List units
-	static hasMany = [users:MekUser, spectators:MekUser, units:BattleUnit]
+	
+	static hasMany = [users:MekUser, spectators:MekUser, units:BattleUnit,
+						// "staging" references exist only temporarily while the game is still being staged
+						stagingUsers: StagingUser]
 	
 	Integer unitTurn = 0
 	Integer gameTurn = 0
@@ -36,6 +44,22 @@ class Game {
 	public static final Character GAME_ACTIVE = 'A'
 	public static final Character GAME_PAUSED = 'P'
 	public static final Character GAME_OVER = 'O'
+	
+	public static final String STARTING_N = "N"
+	public static final String STARTING_NE = "NE"
+	public static final String STARTING_E = "E"
+	public static final String STARTING_SE = "SE"
+	public static final String STARTING_S = "S"
+	public static final String STARTING_SW = "SW"
+	public static final String STARTING_W = "W"
+	public static final String STARTING_NW = "NW"
+	public static final String STARTING_CENTER = "C"
+	public static final String STARTING_RANDOM = "R"
+	
+	public static final def STARTING_LOCATIONS = [STARTING_NW, STARTING_N, STARTING_NE,
+													STARTING_E, STARTING_SE, STARTING_S, 
+													STARTING_SW, STARTING_W, STARTING_CENTER,
+													STARTING_RANDOM]
 	
     static constraints = {
 		description blank: false
@@ -55,6 +79,64 @@ class Game {
 	
 	def beforeUpdate() {
 		updateDate = new Date()
+	}
+	
+	/**
+	 * Gets the starting location for the user based on staging data
+	 * @param userInstance
+	 * @return
+	 */
+	public String getStartingLocationForUser(MekUser userInstance) {
+		for(StagingUser stagingData in stagingUsers) {
+			if(stagingData.user.id == userInstance?.id) {
+				return stagingData.startingLocation
+			}
+		}
+		
+		return STARTING_RANDOM
+	}
+	
+	/**
+	 * Sets the starting location for the user based on staging data
+	 * @param game
+	 * @param userInstance
+	 * @param location
+	 * @return
+	 */
+	public boolean setStartingLocationForUser(Game game, MekUser userInstance, String location) {
+		StagingUser thisStagingData
+		
+		for(StagingUser stagingData in stagingUsers) {
+			if(stagingData.user.id == userInstance?.id) {
+				thisStagingData = stagingData
+				break
+			}
+		}
+		
+		if(thisStagingData == null) {
+			thisStagingData = new StagingUser(user: userInstance, game: game, startingLocation: location)
+			stagingUsers.add(thisStagingData)
+		}
+		else{
+			thisStagingData.startingLocation = location
+		}
+		
+		thisStagingData.validate()
+		if(thisStagingData.hasErrors()) {
+			log.error(thisStagingData.errors)
+			return false
+		}
+		
+		thisStagingData.save flush:true
+		
+		return true
+	}
+	
+	/**
+	 * Clears staging data for when the game goes from staging to active play
+	 */
+	public void clearStagingData() {
+		stagingUsers = []
 	}
 	
 	/**

@@ -15,6 +15,24 @@ var mapSelectDialog;
  * Prepares staging page on load
  */
 function initStaging() {
+	// setup code to render custom icons on a dropdown menu
+	$.widget( "custom.iconselectmenu", $.ui.selectmenu, {
+	      _renderItem: function( ul, item ) {
+	        var li = $( "<li>", { text: item.label } );
+	 
+	        if ( item.disabled ) {
+	          li.addClass( "ui-state-disabled" );
+	        }
+	 
+	        $( "<span>", {
+	          style: item.element.attr( "data-style" ),
+	          "class": "ui-icon " + item.element.attr( "data-class" )
+	        })
+	          .appendTo( li );
+	 
+	        return li.appendTo( ul );
+	      }
+	    });
 	
 	// Initialize map selection dialog
 	mapSelectDialog = $("#mapSelectDiv").dialog({
@@ -109,6 +127,12 @@ function initStaging() {
     
     // setup editable users/units
     if(unitsEditable) {
+    	// setup starting location menu
+    	$( ".location" )
+	        .iconselectmenu()
+	        .iconselectmenu( "menuWidget" )
+	          .addClass( "ui-menu-icons" );
+    	
     	// setup user join button
     	$("button.user-join").button({
     		icons: {

@@ -129,3 +129,19 @@ button.unit-add {
 	margin: 0.5em 0 0.5em 0.25em;
 	font-size: 0.75em;
 }
+ 
+/* Starting position menu */
+.player-name span.ui-selectmenu-button{
+	margin: 0 0 -0.5em 0;
+	height: 1.5em;
+}
+
+.player-name span.ui-selectmenu-text{
+	padding: 0.25em 0 0.25em 0;
+	font-size: 0.75em;
+	text-align: center;
+}
+
+.player-name span.ui-selectmenu-button span.ui-icon.ui-icon-triangle-1-s{
+	right: 0;
+}
