@@ -154,9 +154,15 @@ function animateWeaponFire(srcUnit, weapon, tgtUnit, hitLocations) {
 		// only show a MISS if the weapon missed entirely
 		if(firstHitLocation == null || damage != null){
 			// TODO: make the messages play nicer with each other in positioning
-			// create the floating message to display the results above the first projectile that landed
-			var floatMessagePoint = new Point(firstLocationEndPoint.x, firstLocationEndPoint.y - 20);
-			var floatMessageStr = (damage != null) ? getLocationText(loc) + " -" + damage : "MISS";
+			// create the floating message to display the results above the first projectile that missed, or in the simple location position of the hit
+			var floatMessagePoint = (damage != null) ? 
+					getSimplePositionForLocation(new Point(tgtUnit.getUnitDisplay().x, tgtUnit.getUnitDisplay().y), loc) 
+					: new Point(firstLocationEndPoint.x, firstLocationEndPoint.y - 20);
+					
+			var floatMessageStr = (damage != null) 
+					? getLocationText(loc) + " -" + damage 
+					: "MISS";
+					
 			createFloatMessage(floatMessagePoint, floatMessageStr, null, firstLocationEndPoint.projectileTime, 1.0, false);
 		}
 	});
@@ -572,7 +578,7 @@ function createFloatMessage(srcPoint, message, color, delay, durationMultiplier,
 		});
 		
 		// modify the source point if existing messages are going to be in the way
-		var floatBox = new createjs.Rectangle(srcPoint.x, srcPoint.y, floatMessageBox.width, floatMessageBox.height);
+		var floatBox = new createjs.Rectangle(srcPoint.x - floatMessageBox.width/2, srcPoint.y - floatMessageBox.height/2, floatMessageBox.width, floatMessageBox.height);
 		for(var i=0; i<sortedFloatingMessages.length; i++) {
 			var thisFloater = sortedFloatingMessages[i];
 			if(thisFloater != null) {

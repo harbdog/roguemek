@@ -1080,7 +1080,19 @@ function updateGameData(data) {
 			animateWeaponFire(u, weapon, t, hitLocations);
 		}
 		else{
-			console.log("Weapon null? Weapon ID:"+id);
+			console.error("Weapon null? Weapon ID:"+id);
+			console.log(data.weaponFire);
+			
+			$.each(hitLocations, function(loc, damage) {
+				if(damage != null) {
+					var tgtPoint = new Point(t.displayUnit.x, t.displayUnit.y);
+					
+					var floatMessagePoint = getSimplePositionForLocation(tgtPoint, loc);
+					var floatMessageStr = getLocationText(loc) + " -" + damage;
+					
+					createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+				}
+			});
 		}
 		
 		if(isPlayerU) updateWeapons = true;
@@ -1094,7 +1106,7 @@ function updateGameData(data) {
 		var srcUnit = (t != null) ? t : u;
 		var srcPoint = new Point(srcUnit.displayUnit.x, srcUnit.displayUnit.y);
 		
-		var floatMessagePoint = getPositionFromLocationAngle(srcPoint, srcUnit.heading, data.hitLocation);
+		var floatMessagePoint = getSimplePositionForLocation(srcPoint, data.hitLocation);
 		var floatMessageStr = getLocationText(hitLocation) + " -" + damage;
 		
 		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);

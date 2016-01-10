@@ -1529,17 +1529,55 @@ function getAngleToTarget(sourceX, sourceY, targetX, targetY){
 	return angle;
 }
 
+/**
+ * Using the Point object of center reference and a mech limb location, returns the Point on screen where it should be.
+ * e.g. to display the damage to the left arm, it should be to the left of the given center reference point.
+ * @param p
+ * @param location
+ */
+function getSimplePositionForLocation(p, location) {
+	
+	var x = p.x;
+	var y = p.y;
+	
+	switch(parseInt(location)){
+		case LEFT_ARM:
+			x -= hexWidth/2;
+			break;
+			
+		case LEFT_TORSO:
+		case LEFT_REAR:
+		case LEFT_LEG:
+			x -= hexWidth/3;
+			break;
+		
+		case RIGHT_ARM:
+			x += hexWidth/2;
+			break;
+			
+		case RIGHT_TORSO:
+		case RIGHT_REAR:
+		case RIGHT_LEG:
+			x += hexWidth/3;
+			break;
+			
+		default: break;
+	}
+	
+	return new Point(x, y);
+}
+
 /** 
  * Using the Point object of center reference, mech heading, and a mech limb location will return the Point on screen from where it should be.
  * e.g. to display the weapon fire coming from the left arm, it should be 90 degrees counter clockwise from the heading
  */ 
 function getPositionFromLocationAngle(p, heading, location){
 	// TODO: determine radius based on size of mech image
-	var radius = 15;
+	var radius = hexWidth/5;
 	var headingAngle = 0;
 	var locationAngle = 0;
 	
-	switch(heading){
+	switch(parseInt(heading)){
 		case 0: //"N"
 			headingAngle = 270;
 			break;
@@ -1565,7 +1603,7 @@ function getPositionFromLocationAngle(p, heading, location){
 			break;
 	}
 	
-	switch(location){
+	switch(parseInt(location)){
 		case LEFT_ARM:
 			locationAngle = -90;
 			break;
