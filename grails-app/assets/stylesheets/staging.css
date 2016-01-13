@@ -86,7 +86,8 @@ input[type=radio]:checked + label:before {
 	        border-radius: 0.3em;
 }
 
-.player-name {
+.player-info {
+	cursor: default;
 	border-bottom: 1px solid #CCCCCC;
 	font-size: 1.15em;
 	padding: 0.25em 0 0.25em 0.25em;
@@ -130,18 +131,24 @@ button.unit-add {
 	font-size: 0.75em;
 }
  
-/* Starting position menu */
-.player-name span.ui-selectmenu-button{
+/* Starting position menu/button */
+.player-info label.location {
+	cursor: default;
+	margin: 0 0 0 0.25em;
+	font-size: 0.8em;
+}
+
+.player-info span.ui-selectmenu-button {
 	margin: 0 0 -0.5em 0;
 	height: 1.5em;
 }
 
-.player-name span.ui-selectmenu-text{
+.player-info span.ui-selectmenu-text {
 	padding: 0.25em 0 0.25em 0;
 	font-size: 0.75em;
 	text-align: center;
 }
 
-.player-name span.ui-selectmenu-button span.ui-icon.ui-icon-triangle-1-s{
+.player-info span.ui-selectmenu-button span.ui-icon.ui-icon-triangle-1-s {
 	right: 0;
 }

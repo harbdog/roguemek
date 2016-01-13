@@ -422,6 +422,34 @@ class RogueMekController {
 		render result as JSON
 	}
 	
+	/**
+	 * Updates the starting location of the user
+	 * @return
+	 */
+	def locationUpdate() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		String startingLocation = params.location
+		if(startingLocation == null || !Game.STARTING_LOCATIONS.contains(startingLocation)) return
+		
+		// users can only be updated in the Init stage
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.userId == null) return
+		MekUser userToUpdate = MekUser.read(params.userId)
+		if(userToUpdate == null) return
+		
+		// make sure only the user or the game owner can update the user
+		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
+		
+		def locationUpdated = game.setStartingLocationForUser(userInstance, startingLocation)
+		
+		def result = [updated:locationUpdated]
+		render result as JSON
+	}
+	
 	private MekUser currentUser() {
 		return MekUser.get(springSecurityService.principal.id)
 	}

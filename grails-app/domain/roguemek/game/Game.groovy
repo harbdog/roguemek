@@ -103,7 +103,7 @@ class Game {
 	 * @param location
 	 * @return
 	 */
-	public boolean setStartingLocationForUser(Game game, MekUser userInstance, String location) {
+	public boolean setStartingLocationForUser(MekUser userInstance, String location) {
 		StagingUser thisStagingData
 		
 		for(StagingUser stagingData in stagingUsers) {
@@ -114,7 +114,7 @@ class Game {
 		}
 		
 		if(thisStagingData == null) {
-			thisStagingData = new StagingUser(user: userInstance, game: game, startingLocation: location)
+			thisStagingData = new StagingUser(user: userInstance, game: this, startingLocation: location)
 			stagingUsers.add(thisStagingData)
 		}
 		else{

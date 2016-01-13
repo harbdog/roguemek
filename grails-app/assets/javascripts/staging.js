@@ -100,6 +100,8 @@ function initStaging() {
     	}
     }).click(loadMapSelect);
     
+    $("button.disabled").button();
+    
     
     // setup editable player teams
     if(playersEditable) {
@@ -112,7 +114,8 @@ function initStaging() {
 	    	containment: "document",
 	    	helper: "clone",
 	    	cursor: "move",
-	    	scroll: true
+	    	scroll: true,
+	    	cancel: ".ui-widget"
 	    });
 	    
 	    teams.droppable({
@@ -128,10 +131,9 @@ function initStaging() {
     // setup editable users/units
     if(unitsEditable) {
     	// setup starting location menu
-    	$( ".location" )
-	        .iconselectmenu()
-	        .iconselectmenu( "menuWidget" )
-	          .addClass( "ui-menu-icons" );
+    	$( "select.location" ).iconselectmenu({change: updateLocation})
+    			.iconselectmenu("menuWidget")
+    			.addClass("ui-menu-icons");
     	
     	// setup user join button
     	$("button.user-join").button({
@@ -171,6 +173,29 @@ function initStaging() {
     	$("button.unit-delete").hide();
     	$("button.unit-add").hide();
     }
+}
+
+function updateLocation(event, data) {
+	var $this = $(this);
+	var userId = $this.prop("id");
+	
+	var locationValue = data.item.value;
+	
+	var inputMap = {
+		userId: userId,
+		location: locationValue
+	};
+	
+	$.getJSON("locationUpdate", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				console.log("updated location: "+locationValue)
+			}
+		});
 }
 
 function addUser() {
