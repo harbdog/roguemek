@@ -444,7 +444,7 @@ class RogueMekController {
 		// make sure only the user or the game owner can update the user
 		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
 		
-		def locationUpdated = game.setStartingLocationForUser(userInstance, startingLocation)
+		def locationUpdated = game.setStartingLocationForUser(userToUpdate, startingLocation)
 		
 		def result = [updated:locationUpdated]
 		render result as JSON

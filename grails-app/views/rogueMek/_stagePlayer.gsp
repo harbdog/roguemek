@@ -10,7 +10,8 @@
 		
 		<g:set var="startingLocation" value="${gameInstance?.getStartingLocationForUser(user)}" />
 		
-		<g:if test="${gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id}">
+		<g:if test="${gameInstance?.isInit() 
+				&& (gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id)}">
 			<select name="location" class="location" id="${user?.id}">
 				<g:each in="${Game.STARTING_LOCATIONS}" var="location">
 					<g:if test="${startingLocation == location}">

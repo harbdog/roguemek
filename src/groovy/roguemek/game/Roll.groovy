@@ -28,4 +28,12 @@ class Roll {
 		}
 		return total
 	}
+	
+	public static int getDieRollTotal(int numRolls, int numSides) {
+		int total = 0
+		for(int i=0; i<numRolls; i++) {
+			total += randomInt(numSides, 1)
+		}
+		return total
+	}
 }

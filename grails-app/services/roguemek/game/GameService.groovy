@@ -72,6 +72,9 @@ class GameService {
 		// load the board in case is not loaded already
 		game.loadMap()
 		
+		// use staging data to set up the game elements
+		StagingHelper.stageGame(game)
+		
 		// clear any staging data that was used during initialization
 		game.clearStagingData()
 		
@@ -357,6 +360,8 @@ class GameService {
 						
 						// perform piloting check on target if certain criticals received damage from weapons fire
 						checkCriticalsHitPilotSkill(game, unit, ammoCritsHitList)
+						
+						// TODO: figure out why the unit may not getting conveyed as destroyed from start of turn ammo explosion to the UI
 					}
 				}
 			}

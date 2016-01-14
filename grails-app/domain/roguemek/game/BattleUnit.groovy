@@ -145,6 +145,14 @@ class BattleUnit {
 	}
 	
 	/**
+	 * Returns the user that is controlling the pilot
+	 * @return
+	 */
+	public MekUser getPlayerUser() {
+		return pilot?.ownerUser
+	}
+	
+	/**
 	 * Returns true if the owner is the given User
 	 * @param user
 	 * @return

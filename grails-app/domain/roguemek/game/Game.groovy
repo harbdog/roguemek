@@ -136,6 +136,7 @@ class Game {
 	 * Clears staging data for when the game goes from staging to active play
 	 */
 	public void clearStagingData() {
+		// TODO: figure out how to actually delete this data from the database table
 		stagingUsers = []
 	}
 	
@@ -194,6 +195,23 @@ class Game {
 	 */
 	public BattleUnit getTurnUnit() {
 		return units[unitTurn]
+	}
+	
+	/**
+	 * Returns true if any unit occupies the given Coords
+	 * @return
+	 */
+	public boolean isHexOccupied(Coords c) {
+		return (getUnitsAt(c).length > 0)
+	}
+	
+	/**
+	 * Gets all units found at the given Coords
+	 * @param c
+	 * @return
+	 */
+	public BattleUnit[] getUnitsAt(Coords c) {
+		return getUnitsAt(c?.x, c?.y)
 	}
 	
 	/**
