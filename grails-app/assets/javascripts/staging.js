@@ -1,6 +1,7 @@
 //= require jquery
 //= require jquery-ui.min.js
 //= require jquery.form.js
+//= require spectrum-1.7.1.js
 //= require_self
 
 //Wait for DOM to load and init functions
@@ -10,6 +11,8 @@ $(window).ready(function(){
 
 var dialogLoading;
 var mapSelectDialog;
+var unitSelectDialog;
+var camoSelectDialog;
 
 /**
  * Prepares staging page on load
@@ -75,6 +78,30 @@ function initStaging() {
 			}
 		}
     });
+	
+	// Initialize camo selection dialog
+	camoSelectDialog = $("#camoSelectDiv").dialog({
+		title: "Select Camo",
+    	autoOpen: false,
+    	modal: true,
+		show: {
+			effect: "blind",
+			duration: 350
+		},
+		hide: {
+			effect: "blind",
+			duration: 250
+		},
+		buttons: {
+			"Close": function() {
+				// TODO: update the elements on the page without forcing reload
+				
+				// apply selected camo to player units on server
+				location.reload();
+				camoSelectDialog.dialog("close");
+			}
+		}
+    });
     
     // Initialize loading dialog
     dialogLoading = $("#loadingDiv").dialog({
@@ -130,6 +157,15 @@ function initStaging() {
     
     // setup editable users/units
     if(unitsEditable) {
+    	// setup camo button
+    	$("button.player-camo").button({
+    		icons: {
+    			primary: "ui-icon-blank"
+    		},
+    		text: false
+    	}).click(loadCamoSelect);
+    	//.css("background", "red");
+    	
     	// setup starting location menu
     	$( "select.location" ).iconselectmenu({change: updateLocation})
     			.iconselectmenu("menuWidget")
@@ -142,7 +178,7 @@ function initStaging() {
 	    	}
     	}).click(addUser);
     	
-    	// setup user add/delete buttons
+    	// setup user delete button
 	    $("button.user-delete").button({
 	    	icons: {
     			primary: "ui-icon-closethick"
@@ -173,6 +209,59 @@ function initStaging() {
     	$("button.unit-delete").hide();
     	$("button.unit-add").hide();
     }
+}
+
+function loadCamoSelect() {
+	
+	var $this = $(this);
+	var userId = $this.prop("id");
+	
+	var inputMap = {
+		userId: userId
+	};
+	
+	// show a loading dialog while waiting to get the info display from the server
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+	
+	// introduce a small delay so the animation doesn't look weird if the response is very fast
+	setTimeout(function(){
+		camoSelectDialog.load("camoSelect", inputMap, function() {
+			dialogLoading.dialog("close");
+			showCamoSelect();
+	    });
+	},250);
+}
+
+function showCamoSelect() {
+	var windowWidth = $(window).width();
+	var windowHeight = $(window).height();
+	
+	camoSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
+	camoSelectDialog.dialog("option", "width", windowWidth/2);
+	camoSelectDialog.dialog("option", "height", windowHeight/2);
+	
+	$("#color-input").spectrum({
+		preferredFormat: "hex",
+		showInitial: true,
+		show: function() {
+			//$(this).data('changed', false);
+			//$(this).data('origColor', tinycolor(Settings.get(settingKey)));
+		},
+		change: function(color) {
+			//$(this).data('changed', true);
+		},
+		hide: function(color) {
+			/*if($(this).data('changed')) {
+				// changed
+			} else {
+				// cancelled
+				colorUpdateFunc($(this).data('origColor'));
+			}*/
+		}
+	});
+	
+	camoSelectDialog.dialog("open");
 }
 
 function updateLocation(event, data) {

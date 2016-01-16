@@ -264,8 +264,8 @@ class BootStrap {
 				units: [battleMech, battleMechB, battleMech2, battleMech3], 
 				board: battleBoardMap)
 		
-		StagingUser stagingAdmin = new StagingUser(game: sampleGame, user: adminUser, startingLocation: Game.STARTING_NW)
-		StagingUser stagingTester = new StagingUser(game: sampleGame, user: testUser, startingLocation: Game.STARTING_N)
+		StagingUser stagingAdmin = new StagingUser(game: sampleGame, user: adminUser, startingLocation: Game.STARTING_NW, rgbCamo: [255, 0, 0])
+		StagingUser stagingTester = new StagingUser(game: sampleGame, user: testUser, startingLocation: Game.STARTING_N, rgbCamo: [0, 0, 255])
 		sampleGame.stagingUsers = [stagingAdmin, stagingTester]
 		
 		if(!sampleGame.validate()) {

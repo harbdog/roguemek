@@ -82,6 +82,21 @@ class Game {
 	}
 	
 	/**
+	 * Gets the camo for the user based on staging data
+	 * @param userInstance
+	 * @return
+	 */
+	public def getCamoForUser(MekUser userInstance) {
+		for(StagingUser stagingData in stagingUsers) {
+			if(stagingData.user.id == userInstance?.id) {
+				return stagingData.rgbCamo
+			}
+		}
+		
+		return null
+	}
+	
+	/**
 	 * Gets the starting location for the user based on staging data
 	 * @param userInstance
 	 * @return

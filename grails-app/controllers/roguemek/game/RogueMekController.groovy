@@ -450,6 +450,28 @@ class RogueMekController {
 		render result as JSON
 	}
 	
+	/**
+	 * Gets the camo selection page ready
+	 * @respond
+	 */
+	def camoSelect() {
+		def userInstance = currentUser()
+		
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.userId == null) return
+		MekUser userToUpdate = MekUser.read(params.userId)
+		if(userToUpdate == null) return
+		
+		if(userToUpdate) {
+			respond game, model:[userInstance:userToUpdate]
+		}
+		else {
+			redirect url: "/"
+		}
+	}
+	
 	private MekUser currentUser() {
 		return MekUser.get(springSecurityService.principal.id)
 	}

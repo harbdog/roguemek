@@ -6,6 +6,17 @@
 
 <div class="player">
 	<div class="player-info">
+		<g:set var="userCamo" value="${gameInstance?.getCamoForUser(user)}" />
+	
+		<g:if test="${userCamo != null && userCamo instanceof Short[]}">
+			<g:set var="rgbCamoBackground" value="rgb(${userCamo[0]}, ${userCamo[1]}, ${userCamo[2]})" />
+		</g:if>
+		<g:else>
+			<g:set var="rgbCamoBackground" value="rgb(255, 255, 255)" />
+		</g:else>
+	
+		<button class="player-camo" id="${user?.id}" style="background: ${rgbCamoBackground};"></button>
+	
 		<span class="player-name">${user}</span>
 		
 		<g:set var="startingLocation" value="${gameInstance?.getStartingLocationForUser(user)}" />

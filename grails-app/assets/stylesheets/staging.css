@@ -109,7 +109,6 @@ span.unit-name {
 button.user-delete {
 	width: 1.5em;
 	height: 1.5em;
-	left: 0.25em;
 }
 
 button.user-join{
@@ -151,4 +150,10 @@ button.unit-add {
 
 .player-info span.ui-selectmenu-button span.ui-icon.ui-icon-triangle-1-s {
 	right: 0;
+}
+
+/* Camo selection items */
+button.player-camo {
+	width: 1.5em;
+	height: 1.5em;
 }

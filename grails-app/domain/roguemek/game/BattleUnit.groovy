@@ -165,7 +165,6 @@ class BattleUnit {
 		if(unit == null) return null;
 		
 		InputStream stream = ContextHelper.getContextAsset("images/" + unit.imageFile)
-		log.info("Creating EntityImage with "+stream.available()+", "+unit.rgb)
 		
 		EntityImage entity = new EntityImage(stream, unit.rgb)
 		return entity.toByteArray()
