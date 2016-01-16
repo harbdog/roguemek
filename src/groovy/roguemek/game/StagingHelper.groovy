@@ -31,9 +31,9 @@ class StagingHelper {
 		for(BattleUnit unit in game.units.reverse()) {
 			MekUser playerUser = unit.getPlayerUser()
 			
-			def startingLocation = game.getStartingLocationForUser(playerUser)
+			def startingLocation = StagingHelper.getStartingLocationForUser(game, playerUser)
 			
-			generateUnitStartingPosition(game, unit, startingLocation)
+			StagingHelper.generateUnitStartingPosition(game, unit, startingLocation)
 		}
 	}
 	
@@ -163,5 +163,113 @@ class StagingHelper {
 		unit.y = genLocation.y
 		
 		unit.save flush:true
+	}
+	
+	/**
+	 * Gets the camo for the user based on staging data
+	 * @param game
+	 * @param userInstance
+	 * @return
+	 */
+	public static def getCamoForUser(Game game, MekUser userInstance) {
+		for(StagingUser stagingData in game?.stagingUsers) {
+			if(stagingData.user.id == userInstance?.id) {
+				return stagingData.rgbCamo
+			}
+		}
+		
+		return null
+	}
+	
+	/**
+	 * Sets the camo for the user staging
+	 * @param game
+	 * @param userInstance
+	 * @param camo
+	 * @return
+	 */
+	public static boolean setCamoForUser(Game game, MekUser userInstance, def camo) {
+		if(game == null || userInstance == null) return false
+		
+		StagingUser thisStagingData
+		
+		for(StagingUser stagingData in game.stagingUsers) {
+			if(stagingData.user.id == userInstance?.id) {
+				thisStagingData = stagingData
+				break
+			}
+		}
+		
+		if(thisStagingData == null) {
+			thisStagingData = new StagingUser(user: userInstance, game: this, rgbCamo: camo)
+			game.stagingUsers.add(thisStagingData)
+		}
+		else{
+			thisStagingData.rgbCamo = camo
+		}
+		
+		thisStagingData.validate()
+		if(thisStagingData.hasErrors()) {
+			log.error(thisStagingData.errors)
+			return false
+		}
+		
+		thisStagingData.save flush:true
+		
+		return true
+	}
+	
+	/**
+	 * Gets the starting location for the user staging
+	 * @param game
+	 * @param userInstance
+	 * @return
+	 */
+	public static String getStartingLocationForUser(Game game, MekUser userInstance) {
+		for(StagingUser stagingData in game?.stagingUsers) {
+			if(stagingData.user.id == userInstance?.id) {
+				return stagingData.startingLocation
+			}
+		}
+		
+		return Game.STARTING_RANDOM
+	}
+	
+	/**
+	 * Sets the starting location for the user based on staging data
+	 * @param game
+	 * @param userInstance
+	 * @param location
+	 * @return
+	 */
+	public static boolean setStartingLocationForUser(Game game, MekUser userInstance, String location) {
+		if(game == null || userInstance == null) return false
+		
+		StagingUser thisStagingData
+		
+		for(StagingUser stagingData in game.stagingUsers) {
+			if(stagingData.user.id == userInstance?.id) {
+				thisStagingData = stagingData
+				break
+			}
+		}
+		
+		if(thisStagingData == null) {
+			thisStagingData = new StagingUser(user: userInstance, game: this, startingLocation: location)
+			game.stagingUsers.add(thisStagingData)
+		}
+		else{
+			thisStagingData.startingLocation = location
+		}
+		
+		thisStagingData.validate()
+		if(thisStagingData.hasErrors()) {
+			log.error(thisStagingData.errors)
+			return false
+		}
+		
+		thisStagingData.save flush:true
+		
+		return true
 	}
 }

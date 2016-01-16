@@ -13,6 +13,7 @@ var dialogLoading;
 var mapSelectDialog;
 var unitSelectDialog;
 var camoSelectDialog;
+var camoSelectUserID;
 
 /**
  * Prepares staging page on load
@@ -92,12 +93,20 @@ function initStaging() {
 			effect: "blind",
 			duration: 250
 		},
-		buttons: {
-			"Close": function() {
-				// TODO: update the elements on the page without forcing reload
+		close: function() {
+			var origColor = $("button#color-revert").val();
+			var inputColor = $("#color-input").val();
+			if(origColor != inputColor) {
+				// TODO: apply selected camo to all player units on server
 				
-				// apply selected camo to player units on server
+				// TODO: update the elements on the page without forcing reload
 				location.reload();
+			}
+			
+			camoSelectUserID = null;
+		},
+		buttons: {
+			"OK": function() {
 				camoSelectDialog.dialog("close");
 			}
 		}
@@ -237,31 +246,67 @@ function showCamoSelect() {
 	var windowWidth = $(window).width();
 	var windowHeight = $(window).height();
 	
+	camoSelectUserID = $(".camo-selection").prop("id");
+	
 	camoSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
 	camoSelectDialog.dialog("option", "width", windowWidth/2);
 	camoSelectDialog.dialog("option", "height", windowHeight/2);
 	
 	$("#color-input").spectrum({
-		preferredFormat: "hex",
+		preferredFormat: "rgb",
 		showInitial: true,
+		clickoutFiresChange: false,
 		show: function() {
-			//$(this).data('changed', false);
-			//$(this).data('origColor', tinycolor(Settings.get(settingKey)));
+			$(this).data('changed', false);
+			$(this).data('origColor', tinycolor($("#color-input").val()));
 		},
 		change: function(color) {
-			//$(this).data('changed', true);
+			$(this).data('changed', true);
 		},
 		hide: function(color) {
-			/*if($(this).data('changed')) {
+			if($(this).data('changed')) {
 				// changed
+				ajaxUpdateCamoColorSelection(camoSelectUserID, tinycolor($("#color-input").val()));
 			} else {
 				// cancelled
-				colorUpdateFunc($(this).data('origColor'));
-			}*/
+			}
+		}
+	});
+	
+	$("button#color-revert").click(function() {
+		var origColor = $("button#color-revert").val();
+		var inputColor = $("#color-input").val();
+		if(origColor != inputColor) {
+			$("#color-input").spectrum("set", origColor);
+			ajaxUpdateCamoColorSelection(camoSelectUserID, tinycolor(origColor));
 		}
 	});
 	
 	camoSelectDialog.dialog("open");
+}
+
+function ajaxUpdateCamoColorSelection(userId, rgbTinyColor) {
+	var inputMap = {
+			userId: userId, 
+			rgbCamo: rgbTinyColor.toRgb()
+	};
+	
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+	
+	$.getJSON("camoUpdate", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				//console.log("Camo updated!");
+			}
+		})
+		.always(function() {
+			dialogLoading.dialog("close");
+		});
 }
 
 function updateLocation(event, data) {

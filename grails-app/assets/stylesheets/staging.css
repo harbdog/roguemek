@@ -157,3 +157,21 @@ button.player-camo {
 	width: 1.5em;
 	height: 1.5em;
 }
+
+div#color-revert-div {
+	display: inline-block;
+	padding: 4px;
+	border-right: solid 1px #999;
+	vertical-align: middle;
+}
+
+button#color-revert {
+	cursor: pointer;
+	width: 25px;
+	height: 20px;
+	border: solid 1px #999;
+}
+
+div.sp-picker-container {
+	border: none;
+}

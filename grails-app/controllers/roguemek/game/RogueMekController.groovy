@@ -444,7 +444,7 @@ class RogueMekController {
 		// make sure only the user or the game owner can update the user
 		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
 		
-		def locationUpdated = game.setStartingLocationForUser(userToUpdate, startingLocation)
+		def locationUpdated = StagingHelper.setStartingLocationForUser(game, userToUpdate, startingLocation)
 		
 		def result = [updated:locationUpdated]
 		render result as JSON
@@ -470,6 +470,43 @@ class RogueMekController {
 		else {
 			redirect url: "/"
 		}
+	}
+	
+	/**
+	 * Updates the camo selection of the user
+	 * @return
+	 */
+	def camoUpdate() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		Short[] rgbCamo
+		
+		try{
+			def rgbR = params["rgbCamo[r]"].toShort()
+			def rgbG = params["rgbCamo[g]"].toShort()
+			def rgbB = params["rgbCamo[b]"].toShort()
+			
+			rgbCamo = [rgbR, rgbG, rgbB]
+		}catch(Exception e){}
+		
+		if(rgbCamo == null) return
+		
+		// users can only be updated in the Init stage
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.userId == null) return
+		MekUser userToUpdate = MekUser.read(params.userId)
+		if(userToUpdate == null) return
+		
+		// make sure only the user or the game owner can update the user
+		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
+		
+		def locationUpdated = StagingHelper.setCamoForUser(game, userToUpdate, rgbCamo)
+		
+		def result = [updated:locationUpdated]
+		render result as JSON
 	}
 	
 	private MekUser currentUser() {

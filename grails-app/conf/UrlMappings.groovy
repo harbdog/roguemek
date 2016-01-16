@@ -45,6 +45,7 @@ class UrlMappings {
 			"/removeUser" (controller:'rogueMek', action:'removeUser')
 			"/locationUpdate" (controller:'rogueMek', action:'locationUpdate')
 			"/camoSelect" (controller:'rogueMek', action:'camoSelect')
+			"/camoUpdate" (controller:'rogueMek', action:'camoUpdate')
 		}
 		
 		name startGame: "/startBattle"{

@@ -2,11 +2,12 @@
 	import="roguemek.MekUser"
 	import="roguemek.game.BattleUnit"
 	import="roguemek.game.Game"
+	import="roguemek.game.StagingHelper"
 %>
 
 <div class="player">
 	<div class="player-info">
-		<g:set var="userCamo" value="${gameInstance?.getCamoForUser(user)}" />
+		<g:set var="userCamo" value="${StagingHelper.getCamoForUser(gameInstance, user)}" />
 	
 		<g:if test="${userCamo != null && userCamo instanceof Short[]}">
 			<g:set var="rgbCamoBackground" value="rgb(${userCamo[0]}, ${userCamo[1]}, ${userCamo[2]})" />
@@ -19,7 +20,7 @@
 	
 		<span class="player-name">${user}</span>
 		
-		<g:set var="startingLocation" value="${gameInstance?.getStartingLocationForUser(user)}" />
+		<g:set var="startingLocation" value="${StagingHelper.getStartingLocationForUser(gameInstance, user)}" />
 		
 		<g:if test="${gameInstance?.isInit() 
 				&& (gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id)}">
