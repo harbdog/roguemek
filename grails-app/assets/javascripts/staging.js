@@ -85,22 +85,13 @@ function initStaging() {
 		title: "Select Camo",
     	autoOpen: false,
     	modal: true,
-		show: {
-			effect: "blind",
-			duration: 350
-		},
-		hide: {
-			effect: "blind",
-			duration: 250
-		},
+    	// not using show/hide effects since it causes the css spinning preview to start over when finished, making it look jittery
 		close: function() {
 			var origColor = $("button#color-revert").val();
 			var inputColor = $("#color-input").val();
 			if(origColor != inputColor) {
-				// TODO: apply selected camo to all player units on server
-				
-				// TODO: update the elements on the page without forcing reload
-				location.reload();
+				// apply selected camo to all player units on server
+				ajaxApplyUnitCamoSelection(camoSelectUserID);
 			}
 			
 			camoSelectUserID = null;
@@ -301,7 +292,36 @@ function ajaxUpdateCamoColorSelection(userId, rgbTinyColor) {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				//console.log("Camo updated!");
+				if(data.image != null) {
+					// update the preview unit image
+					var base64 = _arrayBufferToBase64(data.image);
+					
+					$("img.unit-preview").attr("src", "data:image/gif;base64," + base64);
+				}
+			}
+		})
+		.always(function() {
+			dialogLoading.dialog("close");
+		});
+}
+
+function ajaxApplyUnitCamoSelection(userId) {
+	var inputMap = {
+			userId: userId, 
+	};
+	
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+	
+	$.getJSON("camoApply", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				// TODO: update the elements on the page without forcing reload
+				location.reload();
 			}
 		})
 		.always(function() {
@@ -551,3 +571,14 @@ function ajaxUpdateMapSelection() {
 			dialogLoading.dialog("close");
 		});
 }
+
+//http://stackoverflow.com/a/9458996/128597
+function _arrayBufferToBase64(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+};

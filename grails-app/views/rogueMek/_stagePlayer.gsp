@@ -13,7 +13,7 @@
 			<g:set var="rgbCamoBackground" value="rgb(${userCamo[0]}, ${userCamo[1]}, ${userCamo[2]})" />
 		</g:if>
 		<g:else>
-			<g:set var="rgbCamoBackground" value="rgb(255, 255, 255)" />
+			<g:set var="rgbCamoBackground" value="rgb(155, 155, 155)" />
 		</g:else>
 	
 		<button class="player-camo" id="${user?.id}" style="background: ${rgbCamoBackground};"></button>

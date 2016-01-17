@@ -95,6 +95,9 @@ input[type=radio]:checked + label:before {
 
 .player-unit {
 	display: flex;
+	margin: 2px 2px 2px 2px;
+	border-radius: 5px;
+	background-color: rgba(255, 255, 255, 0.25);
 }
 
 img.unit-image {
@@ -153,6 +156,27 @@ button.unit-add {
 }
 
 /* Camo selection items */
+div#camoSelectDiv {
+	overflow: hidden;
+}
+
+div.camo-selection {
+	display: flex;
+	height: 100%;
+	width: 100%;	
+}
+
+div#color-selection {
+	width: 50%;
+}
+
+div#camo-preview {
+	position: relative;
+	width: 50%;
+	border-left: 1px solid #999;
+	background-color: rgba(255, 255, 255, 0.25);
+}
+
 button.player-camo {
 	width: 1.5em;
 	height: 1.5em;
@@ -175,3 +199,19 @@ button#color-revert {
 div.sp-picker-container {
 	border: none;
 }
+
+img.unit-preview {
+	position: absolute;
+	margin: auto;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	-webkit-animation:spin 8s linear infinite;
+    -moz-animation:spin 8s linear infinite;
+    animation:spin 8s linear infinite;
+}
+/* http://stackoverflow.com/a/16771693/854696 */
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }

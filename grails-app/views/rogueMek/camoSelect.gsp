@@ -22,5 +22,10 @@
 	</div>
 	
 	<div id="camo-preview">
+		<g:set var="previewUnit" value="${gameInstance?.getPrimaryUnitForUser(userInstance)}" />
+		<g:if test="${previewUnit != null && previewUnit.image != null}">
+			<%-- show stored byte array as an image on the page --%>
+			<img class="unit-preview" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': previewUnit?.id])}"/>
+		</g:if>
 	</div>
 </div>

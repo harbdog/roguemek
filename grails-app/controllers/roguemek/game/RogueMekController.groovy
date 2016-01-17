@@ -503,9 +503,74 @@ class RogueMekController {
 		// make sure only the user or the game owner can update the user
 		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
 		
-		def locationUpdated = StagingHelper.setCamoForUser(game, userToUpdate, rgbCamo)
+		def camoUpdated = StagingHelper.setCamoForUser(game, userToUpdate, rgbCamo)
 		
-		def result = [updated:locationUpdated]
+		// apply the new camo to the first unit for the user so it can be displayed as a preview
+		BattleUnit u = game.getPrimaryUnitForUser(userToUpdate)
+		if(u != null) {
+			u.rgb = rgbCamo
+			u.image = BattleUnit.initUnitImage(u)
+			
+			u.save flush:true
+		}
+		
+		def result = [
+			updated:camoUpdated,
+			image: u?.image
+		]
+		
+		render result as JSON
+	}
+	
+	/**
+	 * Applies the camo selection to all units for the user
+	 * @return
+	 */
+	def camoApply() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		// units can only be updated in the Init stage
+		Game game = Game.get(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.userId == null) return
+		MekUser userToUpdate = MekUser.read(params.userId)
+		if(userToUpdate == null) return
+		
+		// make sure only the user or the game owner can update the user
+		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
+		
+		def camoApplied = true
+		def camoToApply = StagingHelper.getCamoForUser(game, userToUpdate)
+		
+		if(camoToApply != null) {
+			// apply the new camo to the each unit for the user so it can be displayed as a preview
+			for(BattleUnit u in game.getUnitsForUser(userToUpdate)) {
+				if(camoToApply instanceof Short[]){
+					// groovy list "equals" only works if cast as int[] array 
+					if(u.rgb != null 
+							&& (camoToApply as int[]).equals(u.rgb as int[])){
+						// nothing to change
+						continue
+					}
+					
+					u.rgb = camoToApply
+				}
+				
+				u.image = BattleUnit.initUnitImage(u)
+				
+				u.save flush:true
+			}
+		}
+		else {
+			camoApplied = false
+		}
+		
+		def result = [
+			updated:camoApplied,
+		]
+		
 		render result as JSON
 	}
 	
