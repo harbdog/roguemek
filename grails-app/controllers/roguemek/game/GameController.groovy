@@ -156,7 +156,6 @@ class GameController {
 		def isPing = params.ping;
 		if(isPing){
 			def gameResponse = [ping: "pong"]
-			log.debug("Pinged by user: "+currentUser())
 			render gameResponse as JSON
 			return;
 		}

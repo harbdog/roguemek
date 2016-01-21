@@ -209,6 +209,9 @@ function initStaging() {
     	$("button.unit-delete").hide();
     	$("button.unit-add").hide();
     }
+    
+    // begin polling for updates
+    poll();
 }
 
 function loadCamoSelect() {
@@ -570,6 +573,80 @@ function ajaxUpdateMapSelection() {
 		.always(function() {
 			dialogLoading.dialog("close");
 		});
+}
+
+/**
+ * Long polling to retrieve updates from staging asynchronously
+ */
+function poll() {
+    $.getJSON("poll", null)
+	.fail(function(jqxhr, textStatus, error) {
+		var err = textStatus + ", " + error;
+		console.log( "Request Failed: " + err );
+	})
+	.done(function(data){
+    	
+		if(data.terminated) {
+			console.log("poll terminated, starting over");
+		}
+		else if(data.date) {
+			// call the method that updates the client based on the polled return data
+	    	console.log("polled date: "+data.date);
+	        pollUpdate(data.updates);
+		}
+		
+    })
+	.always(function() {
+		// poll again!
+		poll();
+	});
+}
+
+/**
+ * Perform updates based on poll data
+ * @param updates
+ */
+function pollUpdate(updates) {
+	if(updates == null) return;
+	
+	$.each(updates, function(i, thisUpdate) {
+		
+		// Add the message from the update to the message display area
+		var t = new Date(thisUpdate.time);
+		var data = thisUpdate;
+		
+		if(thisUpdate.message != null) {
+			if(thisUpdate.message.length > 0) {
+				// only show a message if it had something to say
+				console.log("MESSAGE: ["+t.toLocaleTimeString()+"] "+thisUpdate.message);
+				//addMessageUpdate("["+t.toLocaleTimeString()+"] "+thisUpdate.message);
+			}
+			if(thisUpdate.data != null) {
+				// the data payload from a transmitted message is in its own key "data"
+				data = thisUpdate.data;
+			}
+		}
+		
+		if(data != null) {
+			updateStagingData(data);
+		}
+	});
+}
+
+/**
+ * Handle all staging updates resulting from server actions
+ * @param data
+ */
+function updateStagingData(data) {
+	console.log(data);
+	
+	if(data.map != null) {
+		var effectOptions = {color: "#3399FF"};
+		
+		// since only the game owner can select using #map-button, others will get updates on the span #map-selection
+		$("#map-selection").text(data.map)
+				.effect("highlight", effectOptions, 2000);
+	}
 }
 
 //http://stackoverflow.com/a/9458996/128597

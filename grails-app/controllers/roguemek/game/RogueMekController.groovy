@@ -241,6 +241,14 @@ class RogueMekController {
 		
 		b.save flush:true
 		
+		def data = [
+			user: userInstance.id,
+			map: b.toString()
+		]
+		Object[] messageArgs = [b.name()]
+		Date update = GameMessage.addMessageUpdate(game, "staging.map.changed", messageArgs, data)
+		
+		// TODO: make the map load asynchronously, then if launched too soon just make the players wait until it is loaded?
 		b.loadMap()
 		
 		def result = [updated:true]

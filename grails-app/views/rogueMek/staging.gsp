@@ -56,7 +56,7 @@
 							<button id="map-button" aria-labelledby="map-label">${mapName}</button>
 						</g:if>
 						<g:else>
-							<span class="property-value" aria-labelledby="map-label">${mapName}</span>
+							<span id="map-selection" class="property-value" aria-labelledby="map-label">${mapName}</span>
 						</g:else>
 					</li>
 				</g:if>
