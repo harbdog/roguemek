@@ -461,6 +461,15 @@ class RogueMekController {
 		
 		def locationUpdated = StagingHelper.setStartingLocationForUser(game, userToUpdate, startingLocation)
 		
+		if(locationUpdated) {
+			def data = [
+				user: userToUpdate.id,
+				location: startingLocation
+			]
+			Object[] messageArgs = [userToUpdate.toString(), startingLocation]
+			Date update = GameMessage.addMessageUpdate(game, "staging.location.changed", messageArgs, data)
+		}
+		
 		def result = [updated:locationUpdated]
 		render result as JSON
 	}

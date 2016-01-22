@@ -6,7 +6,8 @@
 %>
 
 <div class="player">
-	<div class="player-info">
+	<%-- TODO: Do not use the user ID as the ID for multiple elements, instead form into classes? --%>
+	<div class="player-info" id="${user?.id}">
 		<g:set var="userCamo" value="${StagingHelper.getCamoForUser(gameInstance, user)}" />
 	
 		<g:if test="${userCamo != null && userCamo instanceof Short[]}">

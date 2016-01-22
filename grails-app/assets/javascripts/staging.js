@@ -167,7 +167,7 @@ function initStaging() {
     	//.css("background", "red");
     	
     	// setup starting location menu
-    	$( "select.location" ).iconselectmenu({change: updateLocation})
+    	$("select.location").iconselectmenu({change: updateLocation})
     			.iconselectmenu("menuWidget")
     			.addClass("ui-menu-icons");
     	
@@ -640,12 +640,27 @@ function pollUpdate(updates) {
 function updateStagingData(data) {
 	console.log(data);
 	
+	var effectOptions = {color: "#3399FF"};
+	var userId = data.user;
+	
 	if(data.map != null) {
-		var effectOptions = {color: "#3399FF"};
-		
 		// since only the game owner can select using #map-button, others will get updates on the span #map-selection
 		$("#map-selection").text(data.map)
 				.effect("highlight", effectOptions, 2000);
+		
+		// show highlight effect if button showing
+		$("#map-button").effect("highlight", effectOptions, 2000);
+	}
+	else if(data.location != null && userId != null) {
+		// update if it is a select menu
+		$("div#"+userId+" select.location").val(data.location).iconselectmenu("refresh")
+				.iconselectmenu("widget").effect("highlight", effectOptions, 2000);
+		
+		// update if it is a label
+		$("div#"+userId+" label.location").text(data.location)
+				.effect("highlight", effectOptions, 2000);
+		
+		
 	}
 }
 
