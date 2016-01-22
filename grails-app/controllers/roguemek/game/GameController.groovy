@@ -167,8 +167,8 @@ class GameController {
 		if(game == null) return
 
 		def pollResponse = gameControllerService.performPoll(game, user)
-		def gameResponse = pollResponse.terminated ? pollResponse : [date: pollResponse.date]
-		if(pollResponse.messageUpdates != null) {
+		def gameResponse = pollResponse?.terminated ? pollResponse : [date: pollResponse?.date]
+		if(pollResponse?.messageUpdates != null) {
 			gameResponse.updates = []
 			
 			int index = 0

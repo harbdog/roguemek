@@ -7,7 +7,7 @@
 
 <div class="player">
 	<%-- TODO: Do not use the user ID as the ID for multiple elements, instead form into classes? --%>
-	<div class="player-info" id="${user?.id}">
+	<div class="player-info" data-userid="${user?.id}">
 		<g:set var="userCamo" value="${StagingHelper.getCamoForUser(gameInstance, user)}" />
 	
 		<g:if test="${userCamo != null && userCamo instanceof Short[]}">
@@ -17,7 +17,7 @@
 			<g:set var="rgbCamoBackground" value="rgb(155, 155, 155)" />
 		</g:else>
 	
-		<button class="player-camo" id="${user?.id}" style="background: ${rgbCamoBackground};"></button>
+		<button class="player-camo" data-userid="${user?.id}" style="background: ${rgbCamoBackground};"></button>
 	
 		<span class="player-name">${user}</span>
 		
@@ -25,7 +25,7 @@
 		
 		<g:if test="${gameInstance?.isInit() 
 				&& (gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id)}">
-			<select name="location" class="location" id="${user?.id}">
+			<select name="location" class="location" data-userid="${user?.id}">
 				<g:each in="${Game.STARTING_LOCATIONS}" var="location">
 					<g:if test="${startingLocation == location}">
 						<g:set var="selected" value="selected='selected'" />
@@ -50,7 +50,7 @@
 				</g:each>
 			</select>
 		
-			<button class="user-delete" id="${user?.id}"></button>
+			<button class="user-delete" data-userid="${user?.id}"></button>
 		</g:if>
 		<g:else>
 			<label class="location">${startingLocation}</label>
@@ -58,9 +58,9 @@
 	</div>
 	
 	<g:each in="${gameInstance?.getUnitsForUser(user)}" var="unit">
-		<div class="player-unit">
+		<div class="player-unit" data-unitid="${unit?.id}">
 			<g:if test="${userInstance?.id == user?.id}">
-				<button class="unit-delete" id="${unit?.id}"></button>
+				<button class="unit-delete" data-unitid="${unit?.id}"></button>
 			</g:if>
 			
 			<div id="unit-image">
@@ -77,6 +77,6 @@
 	
 	<g:if test="${userInstance?.id == user?.id}">
 		<g:set var="entityName" value="${message(code: 'game.unit.label', default: 'Unit')}" />
-		<button class="unit-add" id="${user?.id}"><g:message code="default.add.label" args="[entityName]" /></button>
+		<button class="unit-add" data-userid="${user?.id}"><g:message code="default.add.label" args="[entityName]" /></button>
 	</g:if>
 </div>

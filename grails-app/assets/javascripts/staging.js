@@ -217,7 +217,7 @@ function initStaging() {
 function loadCamoSelect() {
 	
 	var $this = $(this);
-	var userId = $this.prop("id");
+	var userId = $this.attr("data-userid");
 	
 	var inputMap = {
 		userId: userId
@@ -240,7 +240,7 @@ function showCamoSelect() {
 	var windowWidth = $(window).width();
 	var windowHeight = $(window).height();
 	
-	camoSelectUserID = $(".camo-selection").prop("id");
+	camoSelectUserID = $(".camo-selection").attr("data-userid");
 	
 	camoSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
 	camoSelectDialog.dialog("option", "width", windowWidth/2);
@@ -310,7 +310,7 @@ function ajaxUpdateCamoColorSelection(userId, rgbTinyColor) {
 
 function ajaxApplyUnitCamoSelection(userId) {
 	var inputMap = {
-			userId: userId, 
+		userId: userId, 
 	};
 	
 	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
@@ -334,7 +334,7 @@ function ajaxApplyUnitCamoSelection(userId) {
 
 function updateLocation(event, data) {
 	var $this = $(this);
-	var userId = $this.prop("id");
+	var userId = $this.attr("data-userid");
 	
 	var locationValue = data.item.value;
 	
@@ -378,7 +378,7 @@ function addUser() {
 function deleteUser() {
 	// ask user to confirm deletion
 	var $this = $(this);
-	var userId = $this.prop("id");
+	var userId = $this.attr("data-userid");
 	
 	$("<div style='font-size:0.8em;'>Are you sure you want to remove this player from battle?</div>").dialog({	// TODO: i18n for deletion message
 		title: "Remove Player",
@@ -421,7 +421,7 @@ function ajaxDeleteUser(userId, $this) {
 function deleteUnit() {
 	// ask user to confirm deletion
 	var $this = $(this);
-	var unitId = $this.prop("id");
+	var unitId = $this.attr("data-unitid");
 	
 	$("<div style='font-size:0.8em;'>Are you sure you want to remove this unit from battle?</div>").dialog({	// TODO: i18n for deletion message
 		title: "Remove Unit",
@@ -583,6 +583,8 @@ function poll() {
 	.fail(function(jqxhr, textStatus, error) {
 		var err = textStatus + ", " + error;
 		console.log( "Request Failed: " + err );
+		
+		// TODO: if the failure occurs because of 404, need to stop polling, show message and link to user to go somewhere else
 	})
 	.done(function(data){
     	
@@ -653,14 +655,44 @@ function updateStagingData(data) {
 	}
 	else if(data.location != null && userId != null) {
 		// update if it is a select menu
-		$("div#"+userId+" select.location").val(data.location).iconselectmenu("refresh")
+		$("div[data-userid='"+userId+"'] select.location").val(data.location).iconselectmenu("refresh")
 				.iconselectmenu("widget").effect("highlight", effectOptions, 2000);
 		
 		// update if it is a label
-		$("div#"+userId+" label.location").text(data.location)
+		$("div[data-userid='"+userId+"'] label.location").text(data.location)
 				.effect("highlight", effectOptions, 2000);
+	}
+	else if(data.rgbCamo != null && userId != null) {
+		console.log(data.rgbCamo);
 		
+		// TODO: update the units on the page without forcing reload
+		location.reload();
+	}
+	else if(data.unitAdded != null) {
+		console.log(data.unitAdded );
 		
+		// TODO: update the units on the page without forcing reload
+		location.reload();
+	}
+	else if(data.unitRemoved != null) {
+		$("div[data-unitid='"+data.unitRemoved+"']").closest("div.player-unit").fadeOut();
+	}
+	else if(data.userAdded != null) {
+		console.log(data.userAdded );
+		
+		// TODO: update the users on the page without forcing reload
+		location.reload();
+	}
+	else if(data.userRemoved != null) {
+		$("div[data-userid='"+data.userRemoved+"']").closest("div.player").fadeOut();
+	}
+	else if(data.gameState != null) {
+		if(data.gameState == 'A') {
+			console.log("The game is now active");
+		}
+		
+		// TODO: update the game state on the page without forcing reload
+		location.reload();
 	}
 }
 

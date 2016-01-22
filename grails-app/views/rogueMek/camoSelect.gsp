@@ -3,7 +3,7 @@
 		 import="roguemek.game.StagingHelper"
  %>
 
-<div class="camo-selection" id="${userInstance?.id}">
+<div class="camo-selection" data-userid="${userInstance?.id}">
 	<div id="color-selection">
 		<g:set var="userCamo" value="${StagingHelper.getCamoForUser(gameInstance, userInstance)}" />
 		

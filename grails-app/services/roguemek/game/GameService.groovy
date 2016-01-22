@@ -94,6 +94,12 @@ class GameService {
 			return
 		}
 		
+		def data = [
+			gameState: String.valueOf(game.gameState)
+		]
+		Object[] messageArgs = []
+		Date update = GameMessage.addMessageUpdate(game, "staging.game.started", messageArgs, data)
+		
 		game.save flush: true
 	}
 	

@@ -183,6 +183,16 @@ class RogueMekController {
 			redirect mapping:"dropship"
 		}
 		
+		// delete any staging data
+		def stagingUsers = []
+		for(def stageUser in gameInstance.stagingUsers) {
+			stagingUsers.add(stageUser)
+		}
+		gameInstance.stagingUsers = []
+		for(StagingUser stageUser in stagingUsers) {
+			stageUser.delete flush:true
+		}
+		
 		BattleHexMap battleMap = gameInstance.board
 		
 		gameInstance.delete flush:true
@@ -326,6 +336,13 @@ class RogueMekController {
 			return
 		}
 		
+		def data = [
+			user: userInstance.id,
+			unitAdded: unitInstance.id
+		]
+		Object[] messageArgs = [userInstance.toString(), unitInstance.toString()]
+		Date update = GameMessage.addMessageUpdate(game, "staging.unit.added", messageArgs, data)
+		
 		game.save flush:true
 		
 		def result = [updated:true]
@@ -362,6 +379,13 @@ class RogueMekController {
 		
 		// TODO: remove the BattleUnit from the database, if it is not owned (also remove the pilot if not owned)
 		
+		def data = [
+			user: userInstance.id,
+			unitRemoved: unitInstance.id
+		]
+		Object[] messageArgs = [userInstance.toString(), unitInstance.toString()]
+		Date update = GameMessage.addMessageUpdate(game, "staging.unit.removed", messageArgs, data)
+		
 		def result = [updated:true]
 		render result as JSON
 	}
@@ -387,6 +411,13 @@ class RogueMekController {
 			}
 			
 			game.save flush:true
+			
+			def data = [
+				user: userInstance.id,
+				userAdded: userInstance.id
+			]
+			Object[] messageArgs = [userInstance.toString()]
+			Date update = GameMessage.addMessageUpdate(game, "staging.user.added", messageArgs, data)
 		}
 		
 		def result = [updated:true]
@@ -432,6 +463,13 @@ class RogueMekController {
 		}
 		
 		game.save flush:true
+		
+		def data = [
+			user: userInstance.id,
+			userRemoved: userToRemove.id
+		]
+		Object[] messageArgs = [userToRemove.toString()]
+		Date update = GameMessage.addMessageUpdate(game, "staging.user.removed", messageArgs, data)
 		
 		def result = [updated:true]
 		render result as JSON
@@ -589,6 +627,16 @@ class RogueMekController {
 		}
 		else {
 			camoApplied = false
+		}
+		
+		if(camoApplied 
+				&& camoToApply instanceof Short[]) {
+			def data = [
+				user: userToUpdate.id,
+				rgbCamo: [camoToApply[0], camoToApply[1], camoToApply[2]]
+			]
+			Object[] messageArgs = [userToUpdate.toString()]
+			Date update = GameMessage.addMessageUpdate(game, "staging.camo.color.changed", messageArgs, data)
 		}
 		
 		def result = [
