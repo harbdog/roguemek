@@ -1,4 +1,4 @@
-//= require jquery
+//= require jquery.min.js
 //= require jquery-ui.min.js
 //= require jquery.form.js
 //= require spectrum-1.7.1.js

@@ -66,7 +66,6 @@ grails.project.dependency.resolution = {
         // plugins needed at runtime but not for compilation
         runtime ":hibernate4:4.3.5.4"
         runtime ":database-migration:1.4.0"
-        runtime ":jquery:1.11.1"
 		
 		// plugins added manually
 		//runtime ":elasticsearch:0.0.3.2"
