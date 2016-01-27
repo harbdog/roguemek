@@ -93,7 +93,7 @@
 				<div class="team">
 					<h2>Team ${thisUser}</h2>
 					
-					<g:render template="stagePlayer" bean="${thisUser}" var="user" />
+					<g:render template="stageUser" model="[user: thisUser]" />
 					
 					<g:if test="${showJoin}">
 						<button class="user-join"><g:message code="default.button.join.label" /></button>

@@ -129,76 +129,129 @@ function initStaging() {
     
     $("button.disabled").button();
     
+    // setup any dynamic UI pieces present at init
+    setupDynamicUI();
     
-    // setup editable player teams
+    // begin polling for updates
+    poll();
+}
+
+/**
+ * Sets up any parts of the UI that may be added or removed with ajax
+ */
+function setupDynamicUI() {
+	
+	// setup editable player teams
     if(playersEditable) {
     	// setup draggable/droppable elements
 	    var teams = $(".team");
 	    var players = $(".player");
 	    
-	    players.draggable({
-	    	revert: "invalid",
-	    	containment: "document",
-	    	helper: "clone",
-	    	cursor: "move",
-	    	scroll: true,
-	    	cancel: ".ui-widget"
+	    players.each(function() {
+	    	if($(this).draggable("instance") != null) return
+	    	
+	    	$(this).draggable({
+		    	revert: "invalid",
+		    	containment: "document",
+		    	helper: "clone",
+		    	cursor: "move",
+		    	scroll: true,
+		    	cancel: ".ui-widget"
+		    });
 	    });
 	    
-	    teams.droppable({
-	    	accept: ".player",
-	    	hoverClass: "ui-state-active",
-	    	tolerance: "pointer",
-	    	drop: function(event, ui) {
-	    		transferPlayer(ui.draggable, $(this));
-	    	}
+	    teams.each(function(){
+	    	if($(this).droppable("instance") != null) return
+	    	
+	    	$(this).droppable({
+		    	accept: ".player",
+		    	hoverClass: "ui-state-active",
+		    	tolerance: "pointer",
+		    	drop: function(event, ui) {
+		    		transferPlayer(ui.draggable, $(this));
+		    	}
+		    });
 	    });
     }
     
     // setup editable users/units
     if(unitsEditable) {
     	// setup camo button
-    	$("button.player-camo").button({
-    		icons: {
-    			primary: "ui-icon-blank"
-    		},
-    		text: false
-    	}).click(loadCamoSelect);
-    	//.css("background", "red");
+    	$("button.player-camo").each(function() {
+    		if($(this).button("instance") != null) return
+    		
+    		$(this).button({
+        		icons: {
+        			primary: "ui-icon-pencil"
+        		},
+        		text: false
+        	}).click(loadCamoSelect);
+    	});
+    	
+    	$("span.player-camo").each(function() {
+    		if($(this).button("instance") != null) return
+    		
+    		$(this).button({
+        		icons: {
+        			primary: "ui-icon-blank"
+        		},
+        		text: false
+        	});
+    	});
     	
     	// setup starting location menu
-    	$("select.location").iconselectmenu({change: updateLocation})
-    			.iconselectmenu("menuWidget")
-    			.addClass("ui-menu-icons");
+    	$("select.location").each(function() {
+    		if($(this).iconselectmenu("instance") != null) return
+    		
+    		$(this).iconselectmenu({change: updateLocation})
+				.iconselectmenu("menuWidget")
+				.addClass("ui-menu-icons");
+    	});
     	
     	// setup user join button
-    	$("button.user-join").button({
-    		icons: {
-    			secondary: "ui-icon-arrowreturnthick-1-n"
-	    	}
-    	}).click(addUser);
+    	$("button.user-join").each(function() {
+    		if($(this).button("instance") != null) return
+    		
+    		$(this).button({
+        		icons: {
+        			secondary: "ui-icon-arrowreturnthick-1-n"
+    	    	}
+        	}).click(addUser);
+    	});
     	
     	// setup user delete button
-	    $("button.user-delete").button({
-	    	icons: {
-    			primary: "ui-icon-closethick"
-	    	},
-	        text: false
-	    }).click(deleteUser);
+    	$("button.user-delete").each(function() {
+    		if($(this).button("instance") != null) return
+    		
+    		$(this).button({
+    	    	icons: {
+    				primary: "ui-icon-closethick"
+    	    	},
+    	        text: false
+    	    }).click(deleteUser);
+    	});
     	
     	// setup unit add/delete buttons
-	    $("button.unit-add").button({
-	    	icons: {
-	    		primary: "ui-icon-plusthick"
-	    	}
-	    }).click(loadUnitSelect);
+	    $("button.unit-add").each(function() {
+	    	if($(this).button("instance") != null) return
+    		
+    		$(this).button({
+		    	icons: {
+		    		primary: "ui-icon-plusthick"
+		    	}
+		    }).click(loadUnitSelect);
+	    });
 	    
-	    $("button.unit-delete").button({
-	    	icons: {
-    			primary: "ui-icon-closethick"
-	    	},
-	        text: false
-	    }).click(deleteUnit);
+	    $("button.unit-delete").each(function() {
+	    	if($(this).button("instance") != null) return
+    		
+    		$(this).button({
+		    	icons: {
+	    			primary: "ui-icon-closethick"
+		    	},
+		        text: false
+		    }).click(deleteUnit);
+	    });
     }
     else {
     	// hide the user add/delete buttons
@@ -209,9 +262,6 @@ function initStaging() {
     	$("button.unit-delete").hide();
     	$("button.unit-add").hide();
     }
-    
-    // begin polling for updates
-    poll();
 }
 
 function loadCamoSelect() {
@@ -355,6 +405,29 @@ function updateLocation(event, data) {
 		});
 }
 
+function ajaxStageUser(userId, $this) {
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+
+	var inputMap = {
+		userId: userId
+	};
+	
+	$this.load("stageUser", inputMap, function() {
+		// TODO: implement actual Teams
+		var tempTeamHeader = $("<h2>");
+		tempTeamHeader.text("Team Temp");
+		$this.prepend(tempTeamHeader);
+		
+		setupDynamicUI();
+		
+		var effectOptions = {color: "#3399FF"};
+		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
+		
+		dialogLoading.dialog("close");
+    });
+}
+
 function addUser() {
 	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
 	dialogLoading.dialog("open");
@@ -486,6 +559,33 @@ function showUnitSelect() {
 	unitSelectDialog.dialog("open");
 }
 
+function ajaxStageUnit(unitId, userId, $tempDiv) {
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+
+	var inputMap = {
+		userId: userId,
+		unitId: unitId
+	};
+	
+	$tempDiv.load("stageUnit", inputMap, function() {
+		// move the unit content to the player area
+		var playerDiv = $("div.player[data-userid='"+userId+"']");
+		$tempDiv.children().appendTo(playerDiv);
+		$tempDiv.remove();
+		
+		// may need to move the "add unit" button back down to the bottom
+		$("button.unit-add[data-userid='"+userId+"']").appendTo(playerDiv);
+		
+		setupDynamicUI();
+		
+		var effectOptions = {color: "#3399FF"};
+		$("div.player-unit[data-unitid='"+unitId+"']").effect("highlight", effectOptions, 2000);
+		
+		dialogLoading.dialog("close");
+    });
+}
+
 function ajaxAddUnit() {
 	// add selected unit to the battle
 	var selectedUnitId = $("input[type='radio'][name='unit-radio']:checked").val();
@@ -504,8 +604,11 @@ function ajaxAddUnit() {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				// TODO: update the elements on the page without forcing reload
-				location.reload();
+				var userId = data.user;
+				
+				// add the unit on the page without forcing reload, starting with a temporary div to hold it
+				var tempUnitDiv = $("<div>", {class: "player-unit"});
+				ajaxStageUnit(selectedUnitId, userId, tempUnitDiv);
 			}
 		})
 		.always(function() {
@@ -614,23 +717,27 @@ function pollUpdate(updates) {
 	$.each(updates, function(i, thisUpdate) {
 		
 		// Add the message from the update to the message display area
-		var t = new Date(thisUpdate.time);
-		var data = thisUpdate;
-		
-		if(thisUpdate.message != null) {
-			if(thisUpdate.message.length > 0) {
-				// only show a message if it had something to say
-				console.log("MESSAGE: ["+t.toLocaleTimeString()+"] "+thisUpdate.message);
-				//addMessageUpdate("["+t.toLocaleTimeString()+"] "+thisUpdate.message);
+		if(thisUpdate != null) {
+			
+			var data = thisUpdate;
+			
+			if(thisUpdate.message != null) {
+				var t = new Date(thisUpdate.time);
+				
+				if(thisUpdate.message.length > 0) {
+					// only show a message if it had something to say
+					console.log("MESSAGE: ["+t.toLocaleTimeString()+"] "+thisUpdate.message);
+					//addMessageUpdate("["+t.toLocaleTimeString()+"] "+thisUpdate.message);
+				}
+				if(thisUpdate.data != null) {
+					// the data payload from a transmitted message is in its own key "data"
+					data = thisUpdate.data;
+				}
 			}
-			if(thisUpdate.data != null) {
-				// the data payload from a transmitted message is in its own key "data"
-				data = thisUpdate.data;
+			
+			if(data != null) {
+				updateStagingData(data);
 			}
-		}
-		
-		if(data != null) {
-			updateStagingData(data);
 		}
 	});
 }
@@ -640,51 +747,57 @@ function pollUpdate(updates) {
  * @param data
  */
 function updateStagingData(data) {
-	console.log(data);
-	
 	var effectOptions = {color: "#3399FF"};
 	var userId = data.user;
 	
 	if(data.map != null) {
+		var mapName = data.map;
 		// since only the game owner can select using #map-button, others will get updates on the span #map-selection
-		$("#map-selection").text(data.map)
+		$("#map-selection").text(mapName)
 				.effect("highlight", effectOptions, 2000);
 		
 		// show highlight effect if button showing
 		$("#map-button").effect("highlight", effectOptions, 2000);
 	}
 	else if(data.location != null && userId != null) {
+		var location = data.location;
+		
 		// update if it is a select menu
-		$("div[data-userid='"+userId+"'] select.location").val(data.location).iconselectmenu("refresh")
+		$("div[data-userid='"+userId+"'] select.location").val(location).iconselectmenu("refresh")
 				.iconselectmenu("widget").effect("highlight", effectOptions, 2000);
 		
 		// update if it is a label
-		$("div[data-userid='"+userId+"'] label.location").text(data.location)
+		$("div[data-userid='"+userId+"'] label.location").text(location)
 				.effect("highlight", effectOptions, 2000);
 	}
 	else if(data.rgbCamo != null && userId != null) {
-		console.log(data.rgbCamo);
-		
-		// TODO: update the units on the page without forcing reload
-		location.reload();
+		// update the units on the page without forcing reload
+		var teamDiv = $("div.player[data-userid='"+userId+"']");
+		ajaxStageUser(userId, teamDiv);
 	}
 	else if(data.unitAdded != null) {
-		console.log(data.unitAdded );
+		var unitId = data.unitAdded;
 		
-		// TODO: update the units on the page without forcing reload
-		location.reload();
+		// add the unit on the page without forcing reload, starting with a temporary div to hold it
+		var tempUnitDiv = $("<div>", {class: "player-unit"});
+		ajaxStageUnit(unitId, userId, tempUnitDiv);
 	}
 	else if(data.unitRemoved != null) {
-		$("div[data-unitid='"+data.unitRemoved+"']").closest("div.player-unit").fadeOut();
+		var unitId = data.unitRemoved;
+		$("div[data-unitid='"+unitId+"']").closest("div.player-unit").fadeOut();
 	}
 	else if(data.userAdded != null) {
-		console.log(data.userAdded );
+		var userId = data.userAdded;
 		
-		// TODO: update the users on the page without forcing reload
-		location.reload();
+		// create a new temporary team div for the player until teams are introduced to the game
+		var tempTeamDiv = $("<div>", {class: "team"});
+		$("div#teams").append(tempTeamDiv);
+		
+		ajaxStageUser(userId, tempTeamDiv);
 	}
 	else if(data.userRemoved != null) {
-		$("div[data-userid='"+data.userRemoved+"']").closest("div.player").fadeOut();
+		var userId = data.userRemoved;
+		$("div.player[data-userid='"+userId+"']").fadeOut();
 	}
 	else if(data.gameState != null) {
 		if(data.gameState == 'A') {

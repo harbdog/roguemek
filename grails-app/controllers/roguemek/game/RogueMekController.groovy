@@ -280,6 +280,28 @@ class RogueMekController {
 	}
 	
 	/**
+	 * Allows for individual calls to render a user's unit on the stage
+	 * @return
+	 */
+	def stageUnit() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		Game gameInstance = Game.get(session.game)
+		if(gameInstance == null) return
+		
+		if(params.userId == null) return
+		MekUser thisUser = MekUser.read(params.userId)
+		if(thisUser == null) return
+		
+		if(params.unitId == null) return
+		BattleUnit thisUnit = BattleUnit.read(params.unitId)
+		if(thisUnit == null) return
+		
+		render ( template: 'stageUnit', model: [unit: thisUnit, showUnitDelete: (userInstance?.id == thisUser?.id)])
+	}
+	
+	/**
 	 * Adds the selected unit to the game
 	 * @return
 	 */
@@ -338,9 +360,9 @@ class RogueMekController {
 		
 		def data = [
 			user: userInstance.id,
-			unitAdded: unitInstance.id
+			unitAdded: battleUnitInstance.id
 		]
-		Object[] messageArgs = [userInstance.toString(), unitInstance.toString()]
+		Object[] messageArgs = [userInstance.toString(), battleUnitInstance.toString()]
 		Date update = GameMessage.addMessageUpdate(game, "staging.unit.added", messageArgs, data)
 		
 		game.save flush:true
@@ -388,6 +410,24 @@ class RogueMekController {
 		
 		def result = [updated:true]
 		render result as JSON
+	}
+	
+	/**
+	 * Allows for individual calls to render a user on the stage
+	 * @return
+	 */
+	def stageUser() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		Game gameInstance = Game.get(session.game)
+		if(gameInstance == null) return
+		
+		if(params.userId == null) return
+		MekUser thisUser = MekUser.read(params.userId)
+		if(thisUser == null) return
+		
+		render ( template: 'stageUser', model: [gameInstance: gameInstance, userInstance: userInstance, user: thisUser])
 	}
 	
 	/**

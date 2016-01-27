@@ -37,15 +37,15 @@ label:before {
     content: "";
     display: inline-block;
  
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
  
     margin-right: 10px;
     position: absolute;
     left: 0;
     bottom: 1px;
     background-image: url("images/ui-icons_222222_256x240.png");
-    background-position: -16px -192px;	/* .ui-icon-circle-minus */
+    background-position: 16px 16px;	/* .ui-icon-blank */
 }
 
 .radio label:before {
@@ -177,9 +177,13 @@ div#camo-preview {
 	background-color: rgba(255, 255, 255, 0.25);
 }
 
-button.player-camo {
+button.player-camo, span.player-camo {
 	width: 1.5em;
 	height: 1.5em;
+}
+
+span.player-camo {
+	cursor: unset;
 }
 
 div#color-revert-div {

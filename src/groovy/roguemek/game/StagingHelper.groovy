@@ -200,9 +200,13 @@ class StagingHelper {
 			}
 		}
 		
+		def saveGameNeeded = false
+		
 		if(thisStagingData == null) {
-			thisStagingData = new StagingUser(user: userInstance, game: this, rgbCamo: camo)
+			thisStagingData = new StagingUser(user: userInstance, game: game, rgbCamo: camo)
 			game.stagingUsers.add(thisStagingData)
+			
+			saveGameNeeded = true
 		}
 		else{
 			thisStagingData.rgbCamo = camo
@@ -215,6 +219,10 @@ class StagingHelper {
 		}
 		
 		thisStagingData.save flush:true
+		
+		if(saveGameNeeded) {
+			game.save flush:true
+		}
 		
 		return true
 	}

@@ -5,8 +5,7 @@
 	import="roguemek.game.StagingHelper"
 %>
 
-<div class="player">
-	<%-- TODO: Do not use the user ID as the ID for multiple elements, instead form into classes? --%>
+<div class="player" data-userid="${user?.id}">
 	<div class="player-info" data-userid="${user?.id}">
 		<g:set var="userCamo" value="${StagingHelper.getCamoForUser(gameInstance, user)}" />
 	
@@ -17,7 +16,13 @@
 			<g:set var="rgbCamoBackground" value="rgb(155, 155, 155)" />
 		</g:else>
 	
-		<button class="player-camo" data-userid="${user?.id}" style="background: ${rgbCamoBackground};"></button>
+		<g:if test="${gameInstance?.isInit() 
+				&& (gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id)}">
+			<button class="player-camo" data-userid="${user?.id}" style="background: ${rgbCamoBackground};"></button>
+		</g:if>
+		<g:else>
+			<span class="player-camo" style="background: ${rgbCamoBackground};"></span>
+		</g:else>
 	
 		<span class="player-name">${user}</span>
 		
@@ -58,21 +63,7 @@
 	</div>
 	
 	<g:each in="${gameInstance?.getUnitsForUser(user)}" var="unit">
-		<div class="player-unit" data-unitid="${unit?.id}">
-			<g:if test="${userInstance?.id == user?.id}">
-				<button class="unit-delete" data-unitid="${unit?.id}"></button>
-			</g:if>
-			
-			<div id="unit-image">
-		 		<g:if test="${unit?.image}">
-					<%-- show stored byte array as an image on the page --%>
-					<img class="unit-image" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': unit?.id])}"/>
-				</g:if>
-			</div>
-			
-			<g:set var="pilot" value="${unit?.pilot}" />
-			<span class="unit-name">${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}</span>
-		</div>
+		<g:render template="stageUnit" model="[unit: unit, showUnitDelete: (userInstance?.id == user?.id)]" />
 	</g:each>
 	
 	<g:if test="${userInstance?.id == user?.id}">
