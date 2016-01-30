@@ -136,7 +136,7 @@ log4j.main = {
     fatal 'org.hibernate.tool.hbm2ddl.SchemaExport'
 		   
     // Set level for all application artifacts
-    info "grails.app", "roguemek"
+    info "grails.app", "roguemek", "org.atmosphere"
 	
 	// Set for a specific controller in the default package
 	//debug "grails.app.controllers.YourController"
@@ -180,6 +180,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/login/**':          			['permitAll'],
 	'/logout/**':					['permitAll'],
 	
+	'/atmosphere/**':				['ROLE_USER'],
 	'/battle/**':					['ROLE_USER'],
 	'/staging/**':					['ROLE_USER'],
 	'/abort/**':					['ROLE_USER'],

@@ -7,6 +7,9 @@ grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
 
+// Tomcat NIO required for atmosphere-meteor
+grails.tomcat.nio = true
+
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
     //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
@@ -72,6 +75,7 @@ grails.project.dependency.resolution = {
 		compile ":csv:0.3.1"
 		compile ":spring-security-core:2.0-RC4"
 		compile ":mail:1.0.7"
+		compile ":atmosphere-meteor:1.0.4"
 		
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.7.4"

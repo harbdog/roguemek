@@ -13,12 +13,19 @@
 		<div id="unitSelectDiv"></div>
 		<div id="camoSelectDiv"></div>
 		<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
+		
+		
 	
 		<div id="show-game" class="content scaffold-show" role="main">
 			<h1><g:message code="game.init.staging.label" /> - ${gameInstance?.description}</h1>
 			<g:if test="${flash.message}">
-			<div class="message" role="status">${flash.message}</div>
+				<div class="message" role="status">${flash.message}</div>
 			</g:if>
+			
+			<%-- testing atmosphere with simple chat --%>
+			<button id="chat-subscribe">Subscribe</button>
+			<div id="chat-window"></div>
+			<input id="chat-input" type="text"/>
 			
 			<ol class="property-list game">
 			

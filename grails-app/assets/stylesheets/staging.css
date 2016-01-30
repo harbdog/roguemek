@@ -20,6 +20,30 @@ div #spinner {
 	text-indent: -9999px;
 }
 
+/* Chat window/input decoration */
+#chat-subscribe {
+	position: relative;
+	left: 15%;
+}
+
+#chat-window {
+	position: relative;
+	height: 100px;
+	width: 70%;
+	left: 15%;
+	border: 1px solid black;
+	margin-top: 1em;
+	overflow: auto;
+}
+
+#chat-input {
+	position: relative;
+	width: 70%;
+	left: 15%;
+	margin-top: 1em;
+	border: 1px solid black;
+}
+
 /* Map/Unit selection radio button decoration */
 label {
     display: inline-block;
