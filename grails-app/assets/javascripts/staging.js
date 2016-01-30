@@ -373,8 +373,7 @@ function ajaxApplyUnitCamoSelection(userId) {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				// TODO: update the elements on the page without forcing reload
-				location.reload();
+				// the polling will update the user and units
 			}
 		})
 		.always(function() {
@@ -405,7 +404,7 @@ function updateLocation(event, data) {
 		});
 }
 
-function ajaxStageUser(userId, $this) {
+function ajaxStageUser(userId) {
 	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
 	dialogLoading.dialog("open");
 
@@ -413,12 +412,36 @@ function ajaxStageUser(userId, $this) {
 		userId: userId
 	};
 	
-	$this.load("stageUser", inputMap, function() {
-		// TODO: implement actual Teams
+	var $tempDiv = $("<div>", {class: "player"});
+	
+	var playerDiv = $("div.player[data-userid='"+userId+"']");
+	
+	var $this = null;
+	if(playerDiv != null) {
+		$this = $("div.player[data-userid='"+userId+"']").parents('div').eq(0);
+	}
+	
+	if($this == null || $this.length == 0) {
+		// create a new temporary team div for the player until teams are introduced to the game
+		$this = $("<div>", {class: "team"});
+		$("div#teams").append($this);
+		
 		var tempTeamHeader = $("<h2>");
 		tempTeamHeader.text("Team Temp");
 		$this.prepend(tempTeamHeader);
+	}
+	
+	$tempDiv.load("stageUser", inputMap, function() {
 		
+		if(playerDiv != null) {
+			playerDiv.remove();
+		}
+		
+		// move the unit content to the player area
+		$tempDiv.children().appendTo($this);
+		$tempDiv.remove();
+		
+		// TODO: implement actual Teams
 		setupDynamicUI();
 		
 		var effectOptions = {color: "#3399FF"};
@@ -439,8 +462,7 @@ function addUser() {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				// TODO: update the elements on the page without forcing reload
-				location.reload();
+				// the polling will add the user
 			}
 		})
 		.always(function() {
@@ -559,7 +581,7 @@ function showUnitSelect() {
 	unitSelectDialog.dialog("open");
 }
 
-function ajaxStageUnit(unitId, userId, $tempDiv) {
+function ajaxStageUnit(unitId, userId) {
 	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
 	dialogLoading.dialog("open");
 
@@ -567,6 +589,8 @@ function ajaxStageUnit(unitId, userId, $tempDiv) {
 		userId: userId,
 		unitId: unitId
 	};
+	
+	var $tempDiv = $("<div>", {class: "player-unit"});
 	
 	$tempDiv.load("stageUnit", inputMap, function() {
 		// move the unit content to the player area
@@ -604,11 +628,7 @@ function ajaxAddUnit() {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				var userId = data.user;
-				
-				// add the unit on the page without forcing reload, starting with a temporary div to hold it
-				var tempUnitDiv = $("<div>", {class: "player-unit"});
-				ajaxStageUnit(selectedUnitId, userId, tempUnitDiv);
+				// the polling will add the unit
 			}
 		})
 		.always(function() {
@@ -772,15 +792,13 @@ function updateStagingData(data) {
 	}
 	else if(data.rgbCamo != null && userId != null) {
 		// update the units on the page without forcing reload
-		var teamDiv = $("div.player[data-userid='"+userId+"']");
-		ajaxStageUser(userId, teamDiv);
+		ajaxStageUser(userId);
 	}
 	else if(data.unitAdded != null) {
 		var unitId = data.unitAdded;
 		
-		// add the unit on the page without forcing reload, starting with a temporary div to hold it
-		var tempUnitDiv = $("<div>", {class: "player-unit"});
-		ajaxStageUnit(unitId, userId, tempUnitDiv);
+		// add the unit on the page without forcing reload
+		ajaxStageUnit(unitId, userId);
 	}
 	else if(data.unitRemoved != null) {
 		var unitId = data.unitRemoved;
@@ -789,11 +807,7 @@ function updateStagingData(data) {
 	else if(data.userAdded != null) {
 		var userId = data.userAdded;
 		
-		// create a new temporary team div for the player until teams are introduced to the game
-		var tempTeamDiv = $("<div>", {class: "team"});
-		$("div#teams").append(tempTeamDiv);
-		
-		ajaxStageUser(userId, tempTeamDiv);
+		ajaxStageUser(userId);
 	}
 	else if(data.userRemoved != null) {
 		var userId = data.userRemoved;

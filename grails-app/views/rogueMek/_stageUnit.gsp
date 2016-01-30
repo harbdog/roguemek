@@ -6,7 +6,8 @@
 	<div id="unit-image">
  		<g:if test="${unit?.image}">
 			<%-- show stored byte array as an image on the page --%>
-			<img class="unit-image" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': unit?.id])}"/>
+			<%-- time param added to the link to prevent the page from caching the image for when it gets changed through ajax  --%>
+			<img class="unit-image" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': unit?.id, 'time': new Date().getTime()])}"/>
 		</g:if>
 	</div>
 	
