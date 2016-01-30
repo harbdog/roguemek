@@ -462,7 +462,8 @@ function addUser() {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				// the polling will add the user
+				// TODO: update on the page when polling works for users without at least one unit
+				location.reload();
 			}
 		})
 		.always(function() {
