@@ -23,6 +23,6 @@ class DefaultMeteorServlet extends MeteorServlet {
 		ReflectorServletProcessor rsp = new ReflectorServletProcessor()
 		rsp.setServletClassName(handlerClass)
 		framework.addAtmosphereHandler(mapping, rsp)
-		logger.info "Added AtmosphereHandler: $handlerClass mapped to $mapping"
+		logger.debug "Added AtmosphereHandler: $handlerClass mapped to $mapping in $sc.servletName"
 	}
 }

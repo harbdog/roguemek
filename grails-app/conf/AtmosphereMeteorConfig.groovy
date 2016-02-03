@@ -1,5 +1,5 @@
-import roguemek.game.DefaultMeteorHandler
 import roguemek.game.ChatMeteorHandler
+import roguemek.game.StagingMeteorHandler
 
 /*
  defaultMapping is used by _Events.groovy to create atmosphere-meteor-decorators.xml
@@ -33,16 +33,16 @@ defaultInitParams = [
 */
 
 servlets = [
-	MeteorServlet: [
-			className: "roguemek.game.DefaultMeteorServlet",
-			mapping: defaultMapping,
-			handler: DefaultMeteorHandler,
-			initParams: defaultInitParams
-	],
-	MeteorServletChat: [
+	Chat: [
 			className: "roguemek.game.DefaultMeteorServlet",
 			mapping: "/atmosphere/chat/*",
 			handler: ChatMeteorHandler,
+			initParams: defaultInitParams
+	],
+	Staging: [
+			className: "roguemek.game.DefaultMeteorServlet",
+			mapping: "/atmosphere/staging/*",
+			handler: StagingMeteorHandler,
 			initParams: defaultInitParams
 	]
 ]

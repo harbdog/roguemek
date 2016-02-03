@@ -134,9 +134,11 @@ log4j.main = {
            'net.sf.ehcache.hibernate'
 		   
     fatal 'org.hibernate.tool.hbm2ddl.SchemaExport'
-		   
+	
     // Set level for all application artifacts
-    info "grails.app", "roguemek", "org.atmosphere"
+    info "grails.app", "roguemek"
+	
+	warn "org.atmosphere"
 	
 	// Set for a specific controller in the default package
 	//debug "grails.app.controllers.YourController"

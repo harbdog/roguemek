@@ -946,8 +946,11 @@ var Jabber = {
 		var type = message.type;
 		if (type == 'chat') {
 			var $chat = $('#chat-window');
-			$chat.append('message: ' + message.message + '<br/>');
-			$chat.scrollTop($chat.height());
+			if(message.user != null) {
+				$chat.append(message.user + ': ');
+			}
+			$chat.append(message.message + '<br/>');
+			$chat.scrollTop($chat[0].scrollHeight);
 		}
 		if (type == 'notification') {
 			$('#notification').html(message.message);
