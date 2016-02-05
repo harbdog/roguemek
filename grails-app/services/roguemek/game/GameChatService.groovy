@@ -22,12 +22,12 @@ class GameChatService {
 
 	def recordIncompleteMessage(data) {
 		// This method could be used to persist errors to a data store.
-		log.error "Error GameChatService.recordIncompleteMessage: ${data}"
+		log.error "GameChatService.recordIncompleteMessage: ${data}"
 	}
 
 	def recordMaliciousUseWarning(data) {
 		// This method could be used to persist potential malicious code to a data store.
-		log.warn "Warning GameChatService.recordMaliciousUseWarning: ${data}"
+		log.warn "GameChatService.recordMaliciousUseWarning: ${data}"
 	}
 
 	def sendDisconnectMessage(event, request) {

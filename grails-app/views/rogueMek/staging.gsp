@@ -23,7 +23,6 @@
 			</g:if>
 			
 			<%-- testing atmosphere with simple chat --%>
-			<button id="chat-subscribe">Subscribe</button>
 			<div id="chat-window"></div>
 			<input id="chat-input" type="text"/>
 			

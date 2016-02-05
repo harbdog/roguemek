@@ -21,11 +21,6 @@ div #spinner {
 }
 
 /* Chat window/input decoration */
-#chat-subscribe {
-	position: relative;
-	left: 15%;
-}
-
 #chat-window {
 	position: relative;
 	height: 100px;
@@ -42,6 +37,16 @@ div #spinner {
 	left: 15%;
 	margin-top: 1em;
 	border: 1px solid black;
+}
+
+div.chat-line {
+	word-wrap: break-word;
+}
+
+/* TODO: use #FF4646 for enemy chat? */
+span.chat-user {
+	margin-right: 5px;
+	color: #3498DB;
 }
 
 /* Map/Unit selection radio button decoration */

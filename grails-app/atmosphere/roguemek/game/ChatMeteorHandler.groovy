@@ -19,12 +19,25 @@ import static org.atmosphere.cpr.AtmosphereResource.TRANSPORT.WEBSOCKET
 
 class ChatMeteorHandler extends HttpServlet {
 	
+	public static final String CHAT_MAPPING_ROOT = "/atmosphere/chat"
+	public static final String CHAT_MAPPING_GAME = "/atmosphere/chat/game"
+	
 	def atmosphereMeteor = Holders.applicationContext.getBean("atmosphereMeteor")
 	def gameChatService = Holders.applicationContext.getBean("gameChatService")
 	
 	@Override
 	void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String mapping = "/atmosphere/chat" + request.getPathInfo()
+		def user = gameChatService.currentUser(request)
+		if(user == null) return
+		
+		String mapping = CHAT_MAPPING_ROOT + request.getPathInfo()
+		
+		def session = request.getSession(false)
+		if(session.game != null &&
+				CHAT_MAPPING_GAME.equals(mapping)){
+			mapping += "/"+session.game
+		}
+				
 		Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(DefaultBroadcaster.class, mapping, true)
 		Meteor m = Meteor.build(request)
 
@@ -49,7 +62,9 @@ class ChatMeteorHandler extends HttpServlet {
 
 	@Override
 	void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String mapping = "/atmosphere/chat" + request.getPathInfo()
+		String mapping = CHAT_MAPPING_ROOT + request.getPathInfo()
+		def session = request.getSession(false)
+		
 		def jsonMap = JSON.parse(request.getReader().readLine().trim()) as Map
 		String type = jsonMap.containsKey("type") ? jsonMap.type.toString() : null
 		String message = jsonMap.containsKey("message") ? jsonMap.message.toString() : null
@@ -64,12 +79,18 @@ class ChatMeteorHandler extends HttpServlet {
 			def user = gameChatService.currentUser(request)
 			if(user == null) return
 			
-			jsonMap.user = user.toString()
-			
-			gameChatService.recordChat(user, jsonMap)
-			
-			Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(DefaultBroadcaster.class, mapping)
-			b.broadcast(jsonMap)
+			if(session.game != null &&
+					CHAT_MAPPING_GAME.equals(mapping)){
+				mapping += "/"+session.game
+				
+				jsonMap.user = user.toString()
+				
+				// TODO: actually record in the database, use async to do it in parallel to the broadcast?
+				gameChatService.recordChat(user, jsonMap)
+				
+				Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(DefaultBroadcaster.class, mapping)
+				b.broadcast(jsonMap)
+			}
 		}
 	}
 }
