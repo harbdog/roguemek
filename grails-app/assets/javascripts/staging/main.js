@@ -696,7 +696,7 @@ function ajaxUpdateMapSelection() {
 /**
  * Long polling to retrieve updates from staging asynchronously
  */
-var keepPolling = true;
+var keepPolling = false;
 function poll() {
 	if(!keepPolling) return;
 	

@@ -35,13 +35,13 @@ defaultInitParams = [
 servlets = [
 	Chat: [
 			className: "roguemek.game.DefaultMeteorServlet",
-			mapping: ChatMeteorHandler.CHAT_MAPPING_ROOT + "/*",
+			mapping: ChatMeteorHandler.MAPPING_ROOT + "/*",
 			handler: ChatMeteorHandler,
 			initParams: defaultInitParams
 	],
 	Staging: [
 			className: "roguemek.game.DefaultMeteorServlet",
-			mapping: "/atmosphere/staging/*",
+			mapping: StagingMeteorHandler.MAPPING_ROOT + "/*",
 			handler: StagingMeteorHandler,
 			initParams: defaultInitParams
 	]

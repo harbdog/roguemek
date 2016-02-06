@@ -11,6 +11,9 @@ class RogueMekController {
 	
 	transient springSecurityService
 	
+	def gameChatService
+	def gameStagingService
+	
 	@Transactional(readOnly = true)
 	def index() {
 		def userInstance = currentUser()
@@ -255,8 +258,11 @@ class RogueMekController {
 			user: userInstance.id,
 			map: b.toString()
 		]
+		
 		Object[] messageArgs = [b.name()]
-		Date update = GameMessage.addMessageUpdate(game, "staging.map.changed", messageArgs, data)
+		gameChatService.addMessageUpdate(game, "staging.map.changed", messageArgs)
+		
+		gameStagingService.addStagingUpdate(game, data)
 		
 		// TODO: make the map load asynchronously, then if launched too soon just make the players wait until it is loaded?
 		b.loadMap()

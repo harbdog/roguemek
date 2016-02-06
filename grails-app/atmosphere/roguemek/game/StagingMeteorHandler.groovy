@@ -4,7 +4,7 @@ import org.atmosphere.cpr.AtmosphereResourceEvent
 import org.atmosphere.cpr.AtmosphereResourceEventListenerAdapter
 import org.atmosphere.cpr.Broadcaster
 import org.atmosphere.cpr.BroadcasterFactory
-import org.atmosphere.cpr.DefaultBroadcaster
+import org.atmosphere.util.SimpleBroadcaster
 import org.atmosphere.cpr.Meteor
 
 import grails.converters.JSON
@@ -14,54 +14,85 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import org.atmosphere.websocket.WebSocketEventListenerAdapter
+
 import grails.util.Holders
 import static org.atmosphere.cpr.AtmosphereResource.TRANSPORT.WEBSOCKET
+import static org.atmosphere.cpr.AtmosphereResource.TRANSPORT.LONG_POLLING;
 
 class StagingMeteorHandler extends HttpServlet {
+	
+	public static final String MAPPING_ROOT = "/atmosphere/staging"
+	public static final String MAPPING_GAME = "/atmosphere/staging/game"
 
 	def atmosphereMeteor = Holders.applicationContext.getBean("atmosphereMeteor")
-	//def atmosphereTestService = Holders.applicationContext.getBean("atmosphereTestService")
+	def gameStagingService = Holders.applicationContext.getBean("gameStagingService")
 	
 	@Override
 	void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String mapping = "/atmosphere/staging" + request.getPathInfo()
-		Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(DefaultBroadcaster.class, mapping, true)
+		if(!gameStagingService.isAuthenticated(request)) return
+		
+		String mapping = MAPPING_ROOT + request.getPathInfo()
+		
+		def session = request.getSession(false)
+		if(session.game != null &&
+				MAPPING_GAME.equals(mapping)){
+			mapping += "/"+session.game
+		}
+		
+		Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(SimpleBroadcaster.class, mapping, true)
 		Meteor m = Meteor.build(request)
 
 		if (m.transport().equals(WEBSOCKET)) {
 			m.addListener(new WebSocketEventListenerAdapter() {
 				@Override
 				void onDisconnect(AtmosphereResourceEvent event) {
-					//atmosphereTestService.sendDisconnectMessage(event, request)
+					gameStagingService.sendDisconnect(event, request)
 				}
 			})
 		} else {
 			m.addListener(new AtmosphereResourceEventListenerAdapter() {
 				@Override
 				void onDisconnect(AtmosphereResourceEvent event) {
-					//atmosphereTestService.sendDisconnectMessage(event, request)
+					gameStagingService.sendDisconnect(event, request)
 				}
 			})
 		}
 
 		m.setBroadcaster(b)
+		m.resumeOnBroadcast(m.transport() == LONG_POLLING ? true : false).suspend(-1)
 	}
 
 	@Override
 	void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String mapping = "/atmosphere/staging" + request.getPathInfo()
+		if(!gameStagingService.isAuthenticated(request)) return
+		
+		String mapping = MAPPING_ROOT + request.getPathInfo()
+		
+		def session = request.getSession(false)
+		
 		def jsonMap = JSON.parse(request.getReader().readLine().trim()) as Map
-		String type = jsonMap.containsKey("type") ? jsonMap.type.toString() : null
-		String message = jsonMap.containsKey("message") ? jsonMap.message.toString() : null
-
-		if (type == null || message == null) {
-			//atmosphereTestService.recordIncompleteMessage(jsonMap)
-		} else {
-			if (message.toLowerCase().contains("<script")) {
-				//atmosphereTestService.recordMaliciousUseWarning(jsonMap)
-			} else {
-				println "StagingMeteorHandler: ${jsonMap}"
-			}
+		String action = jsonMap.containsKey("action") ? jsonMap.action.toString() : null
+		
+		if(action == null) {
+			gameStagingService.recordIncompleteData(jsonMap)
+		} 
+		else if(session.game != null &&
+				MAPPING_GAME.equals(mapping)){
+			// all staging actions still to be handled by the controller?
+			/*def user = gameStagingService.currentUser(request)
+			if(user == null) return
+			
+			def game = Game.get(session.game)
+			if(game == null) return
+			
+			//mapping += "/"+session.game
+			
+			def stagingResult = gameStagingService.performAction(game, user, jsonMap)
+			
+			if(stagingResult != null) {
+				Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(mapping)
+				b.broadcast(stagingResult)
+			}*/
 		}
 	}
 }

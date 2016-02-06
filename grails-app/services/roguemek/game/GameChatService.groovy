@@ -3,16 +3,19 @@ package roguemek.game
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.security.core.context.SecurityContext
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 
+import org.atmosphere.cpr.Broadcaster
+import org.atmosphere.cpr.BroadcasterFactory
 import grails.converters.JSON
 
 import roguemek.MekUser
 
-class GameChatService {
+import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
+
+class GameChatService extends AbstractGameService {
 	private static Log log = LogFactory.getLog(this)
 	
+	def atmosphereMeteorService
 	def messageSource
 	
 	def recordChat(user, data) {
@@ -29,6 +32,18 @@ class GameChatService {
 		// This method could be used to persist potential malicious code to a data store.
 		log.warn "GameChatService.recordMaliciousUseWarning: ${data}"
 	}
+	
+	def addMessageUpdate(Game game, String messageCode, Object[] messageArgs) {
+		if(game == null || messageCode == null) return
+		
+		String mapping = ChatMeteorHandler.MAPPING_GAME +"/"+ game.id
+		String message = messageSource.getMessage(messageCode, messageArgs, LocaleContextHolder.locale)
+		
+		log.info "GameChatService.addMessageUpdate: ${mapping} = ${message}"
+		
+		def chatResponse = [type: "chat", message: message] as JSON
+		metaBroadcaster.broadcastTo(mapping, chatResponse)
+	}
 
 	def sendDisconnectMessage(event, request) {
 		def user = currentUser(request)
@@ -39,15 +54,5 @@ class GameChatService {
 	
 		def chatResponse = [type: "chat", message: message] as JSON
 		event.broadcaster().broadcast(chatResponse)
-	}
-	
-	def currentUser(request) {
-		def httpSession = request?.getSession(false)
-		def context = (SecurityContext) httpSession?.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)
-		if (context?.authentication?.isAuthenticated()) {
-			return MekUser.get(context.authentication.principal.id)
-		}
-		
-		return null
 	}
 }
