@@ -36,7 +36,6 @@ class UrlMappings {
 		}
 		
 		group "/staging", {
-			"/poll" (controller:'game', action:'poll')
 			"/mapSelect" (controller:'rogueMek', action:'mapSelect')
 			"/mapUpdate" (controller:'rogueMek', action:'mapUpdate')
 			"/unitSelect" (controller:'rogueMek', action:'unitSelect')

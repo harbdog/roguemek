@@ -726,58 +726,18 @@ function getCritObjectById(unit, critId) {
 }
 
 /**
- * Long polling to retrieve updates from the game asynchronously
- */
-function poll() {
-    $.getJSON("game/poll", null)
-	.fail(function(jqxhr, textStatus, error) {
-		var err = textStatus + ", " + error;
-		console.log( "Request Failed: " + err );
-	})
-	.done(function(data){
-    	
-		if(data.terminated) {
-			console.log("poll terminated, starting over");
-		}
-		else if(data.date) {
-			// call the method that updates the client based on the polled return data
-	    	console.log("polled date: "+data.date);
-	        pollUpdate(data.updates);
-		}
-        
-    })
-	.always(function() {
-		var testPingTime = new Date().getTime();
-		var milliseconds = testPingTime - lastPing;
-		
-		if(milliseconds >= 10000) {
-			// ping once in a while
-			ping();
-		}
-		else{
-			// poll again!
-			poll();
-		}
-	});
-}
-
-/**
  * Occasionally perform a ping poll to determine response time
  */
 function ping() {
 	lastPing = new Date().getTime();
-	$.getJSON("game/poll", {
+	$.getJSON("game/ping", {
 		ping: "true"
 	})
 	.fail(function(jqxhr, textStatus, error) {
 		var err = textStatus + ", " + error;
 		console.log( "Request Failed: " + err );
 	})
-	.done(pingResponse)
-	.always(function() {
-		// go back to polling, ping again some time later
-		poll();
-	});
+	.done(pingResponse);
 }
 
 /**

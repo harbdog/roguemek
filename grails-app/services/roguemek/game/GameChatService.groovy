@@ -15,7 +15,6 @@ import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 class GameChatService extends AbstractGameService {
 	private static Log log = LogFactory.getLog(this)
 	
-	def atmosphereMeteorService
 	def messageSource
 	
 	def recordChat(user, data) {
@@ -32,16 +31,19 @@ class GameChatService extends AbstractGameService {
 		// This method could be used to persist potential malicious code to a data store.
 		log.warn "GameChatService.recordMaliciousUseWarning: ${data}"
 	}
-	
 	def addMessageUpdate(Game game, String messageCode, Object[] messageArgs) {
+		addMessageUpdate(game, messageCode, messageArgs, new Date().getTime())
+	}
+	
+	def addMessageUpdate(Game game, String messageCode, Object[] messageArgs, time) {
 		if(game == null || messageCode == null) return
 		
 		String mapping = ChatMeteorHandler.MAPPING_GAME +"/"+ game.id
 		String message = messageSource.getMessage(messageCode, messageArgs, LocaleContextHolder.locale)
 		
-		log.info "GameChatService.addMessageUpdate: ${mapping} = ${message}"
+		log.debug "GameChatService.addMessageUpdate: ${mapping} = ${message}"
 		
-		def chatResponse = [type: "chat", message: message] as JSON
+		def chatResponse = [type: "chat", message: message, time: time] as JSON
 		metaBroadcaster.broadcastTo(mapping, chatResponse)
 	}
 
@@ -52,7 +54,7 @@ class GameChatService extends AbstractGameService {
 		Object[] messageArgs = [user.toString()]
 		def message = messageSource.getMessage("chat.user.disconnected", messageArgs, LocaleContextHolder.locale)
 	
-		def chatResponse = [type: "chat", message: message] as JSON
+		def chatResponse = [type: "chat", message: message, time: new Date().getTime()] as JSON
 		event.broadcaster().broadcast(chatResponse)
 	}
 }

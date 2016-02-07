@@ -4,17 +4,22 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.context.i18n.LocaleContextHolder
+import org.atmosphere.cpr.Broadcaster
+import org.atmosphere.cpr.BroadcasterFactory
 
+import grails.converters.JSON
 import grails.transaction.Transactional
 import roguemek.*
 import roguemek.model.*
 import roguemek.mtf.*
+import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 
 @Transactional
-class GameService {
+class GameService extends AbstractGameService {
 	
 	transient springSecurityService
 	def messageSource
+	def gameChatService
 	LinkGenerator grailsLinkGenerator
 	
 	private static Log log = LogFactory.getLog(this)
@@ -98,7 +103,7 @@ class GameService {
 			gameState: String.valueOf(game.gameState)
 		]
 		Object[] messageArgs = []
-		Date update = GameMessage.addMessageUpdate(game, "staging.game.started", messageArgs, data)
+		Date update = addMessageUpdate(game, "staging.game.started", messageArgs, data)
 		
 		game.save flush: true
 	}
@@ -186,7 +191,7 @@ class GameService {
 		def endGameData = checkEndGameConditions(game)
 		if(endGameData != null) {
 			// game has ended
-			Date update = GameMessage.addMessageUpdate(game, "game.over", null, endGameData)
+			Date update = addMessageUpdate(game, "game.over", null, endGameData)
 			return
 		}
 		
@@ -217,7 +222,7 @@ class GameService {
 		BattleUnit turnUnit = game.getTurnUnit()
 		
 		Object[] messageArgs = [turnUnit.toString()]
-		Date update = GameMessage.addMessageUpdate(game, "game.unit.new.turn", messageArgs, data)
+		Date update = addMessageUpdate(game, "game.unit.new.turn", messageArgs, data)
 		
 		if(turnUnit.isDestroyed() && (currentTurnUnit != null && nextTurnUnit.id != currentTurnUnit.id)) {
 			// if the unit is destroyed from something like ammo explosion, proceed to the next unit's turn automatically
@@ -362,7 +367,7 @@ class GameService {
 						def locationStr = Mech.getLocationText(mostExplosiveAmmoLocation)
 						
 						Object[] messageArgs = [unit.toString(), String.valueOf(ammoExplosionDamage), locationStr]
-						Date update = GameMessage.addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, explosionData)
+						Date update = addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, explosionData)
 						
 						// perform piloting check on target if certain criticals received damage from weapons fire
 						checkCriticalsHitPilotSkill(game, unit, ammoCritsHitList)
@@ -1154,7 +1159,7 @@ class GameService {
 								: "game.unit.moved"
 					
 		Object[] messageArgs = [unit.toString(), unit.x, unit.y]
-		Date update = GameMessage.addMessageUpdate(
+		Date update = addMessageUpdate(
 				game, 
 				moveMessage, 
 				messageArgs, data)
@@ -1273,7 +1278,7 @@ class GameService {
 		]
 		
 		Object[] messageArgs = [unit.toString(), unit.heading]
-		Date update = GameMessage.addMessageUpdate(
+		Date update = addMessageUpdate(
 				game, 
 				jumping ? "game.unit.jump.rotated" : "game.unit.rotated", 
 				messageArgs, data)
@@ -1451,7 +1456,7 @@ class GameService {
 			]
 			
 			Object[] messageArgs = [unit.toString(), unit.x, unit.y]
-			Date update = GameMessage.addMessageUpdate(
+			Date update = addMessageUpdate(
 					game,
 					"game.unit.displaced",
 					messageArgs, data)
@@ -1507,7 +1512,7 @@ class GameService {
 				
 				def jumpMessage = "game.unit.jumping"
 				Object[] messageArgs = [unit.toString()]
-				Date update = GameMessage.addMessageUpdate(
+				Date update = addMessageUpdate(
 								game,
 								jumpMessage,
 								messageArgs, data)
@@ -1956,7 +1961,7 @@ class GameService {
 								String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
 								
 								Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, weapon.getShortName(), selfLocationStr]
-								Date update = GameMessage.addMessageUpdate(
+								Date update = addMessageUpdate(
 										game,
 										"game.unit.damage.self",
 										selfMessageArgs, selfData)
@@ -2036,7 +2041,7 @@ class GameService {
 			weapon.save flush:true
 			
 			// Add update information only about this weapon being fired
-			Date update = GameMessage.addMessageUpdate(game, messageCode, messageArgs, thisWeaponData)
+			Date update = addMessageUpdate(game, messageCode, messageArgs, thisWeaponData)
 		}
 		
 		// perform piloting check on source unit if certain attacks hit or missed
@@ -2071,7 +2076,7 @@ class GameService {
 		target.save flush:true
 		
 		// Add data only update information about the unit and target
-		Date update = GameMessage.addMessageUpdate(game, null, null, data)
+		Date update = addMessageUpdate(game, null, null, data)
 		
 		// automatically end the unit's turn after firing
 		this.initializeNextTurn(game)
@@ -2313,7 +2318,7 @@ class GameService {
 			]
 			
 			Object[] selfMessageArgs = [unit.toString()]
-			Date update = GameMessage.addMessageUpdate(
+			Date update = addMessageUpdate(
 					game,
 					"game.unit.stands",
 					selfMessageArgs, selfData)
@@ -2367,7 +2372,7 @@ class GameService {
 			}
 			
 			Object[] fallMessageArgs = [unit.toString(), fallSideStr]
-			Date fallUpdate = GameMessage.addMessageUpdate(
+			Date fallUpdate = addMessageUpdate(
 					game,
 					"game.unit.falls",
 					fallMessageArgs, fallData)
@@ -2386,7 +2391,7 @@ class GameService {
 					String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
 					
 					Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, "FALLING", selfLocationStr]	//TODO: i18n FALLING?
-					Date update = GameMessage.addMessageUpdate(
+					Date update = addMessageUpdate(
 							game,
 							"game.unit.damage.self",
 							selfMessageArgs, selfData)
@@ -2630,7 +2635,7 @@ class GameService {
 								]
 								
 								Object[] messageArgs = [unit.toString()]
-								Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.cockpit", messageArgs, destroyedUnitData)
+								Date update = addMessageUpdate(game, "game.unit.destroyed.cockpit", messageArgs, destroyedUnitData)
 								
 								return critsHitList
 							}
@@ -2656,7 +2661,7 @@ class GameService {
 						]
 						
 						Object[] messageArgs = [unit.toString()]
-						Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.engine", messageArgs, destroyedUnitData)
+						Date update = addMessageUpdate(game, "game.unit.destroyed.engine", messageArgs, destroyedUnitData)
 						
 						return critsHitList
 					}
@@ -2670,7 +2675,7 @@ class GameService {
 						]
 						
 						Object[] messageArgs = [unit.toString()]
-						Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.gyro", messageArgs, destroyedUnitData)
+						Date update = addMessageUpdate(game, "game.unit.destroyed.gyro", messageArgs, destroyedUnitData)
 						
 						return critsHitList
 					}
@@ -2690,7 +2695,7 @@ class GameService {
 			]
 			
 			Object[] messageArgs = [unit.toString()]
-			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.head", messageArgs, destroyedUnitData)
+			Date update = addMessageUpdate(game, "game.unit.destroyed.head", messageArgs, destroyedUnitData)
 			
 			return critsHitList
 		}
@@ -2706,7 +2711,7 @@ class GameService {
 			]
 			
 			Object[] messageArgs = [unit.toString()]
-			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.torso", messageArgs, destroyedUnitData)
+			Date update = addMessageUpdate(game, "game.unit.destroyed.torso", messageArgs, destroyedUnitData)
 			
 			return critsHitList
 		}
@@ -2723,7 +2728,7 @@ class GameService {
 			]
 			
 			Object[] messageArgs = [unit.toString()]
-			Date update = GameMessage.addMessageUpdate(game, "game.unit.destroyed.legs", messageArgs, destroyedUnitData)
+			Date update = addMessageUpdate(game, "game.unit.destroyed.legs", messageArgs, destroyedUnitData)
 			
 			return critsHitList
 		}
@@ -2802,7 +2807,7 @@ class GameService {
 					def criticalHitData = [id: critEquip.id, status: String.valueOf(critEquip.status)]
 					def data = [target: unit.id, criticalHit: criticalHitData]
 					
-					Date update = GameMessage.addMessageUpdate(game, null, null, data)
+					Date update = addMessageUpdate(game, null, null, data)
 				}
 			}
 		}
@@ -2850,7 +2855,7 @@ class GameService {
 					// TODO: include data in the update for the lost limb
 					def data = [:]
 					Object[] messageArgs = [unit.toString(), locationStr]
-					Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
+					Date update = addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
 					
 					return [hitLocation]
 				}
@@ -2991,7 +2996,7 @@ class GameService {
 				def data = [target: unit.id, criticalHit: criticalHitData]
 				
 				Object[] messageArgs = [unit.toString(), critEquip.toString(), locationStr]
-				Date update = GameMessage.addMessageUpdate(game, "game.unit.critical.hit", messageArgs, data)
+				Date update = addMessageUpdate(game, "game.unit.critical.hit", messageArgs, data)
 				
 				numCrits --
 			}
@@ -3020,7 +3025,7 @@ class GameService {
 					]
 					
 					Object[] messageArgs = [unit.toString(), String.valueOf(ammoExplosionDamage), locationStr]
-					Date update = GameMessage.addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, data)
+					Date update = addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, data)
 				}
 				
 				bAmmo.ammoRemaining = 0
@@ -3458,7 +3463,7 @@ class GameService {
 		def devMessageCode = "game.weapon.hit"
 		Object[] devMessageArgs = ["DEV", target.getPilotCallsign(), "BFG", damageByLocationStr, locationStr]
 		
-		Date update = GameMessage.addMessageUpdate(game, devMessageCode, devMessageArgs, devWeaponData)
+		Date update = addMessageUpdate(game, devMessageCode, devMessageArgs, devWeaponData)
 		
 		return
 	}
@@ -3503,9 +3508,39 @@ class GameService {
 		def devMessageCode = "game.weapon.hit"
 		Object[] devMessageArgs = ["DEV", target.getPilotCallsign(), "CRIT", damageByLocationStr, locationStr]
 		
-		Date update = GameMessage.addMessageUpdate(game, devMessageCode, devMessageArgs, devWeaponData)
+		Date update = addMessageUpdate(game, devMessageCode, devMessageArgs, devWeaponData)
 		
 		return
+	}
+	
+	/**
+	 * Adds message and/or data updates based on actions performed in the game
+	 * @param game
+	 * @param messageCode
+	 * @param messageArgs
+	 * @param data
+	 * @return
+	 */
+	def addMessageUpdate(Game game, String messageCode, Object[] messageArgs, Map data) {
+		if(game == null) return new Date(0)
+		
+		def time = new Date().getTime()
+		
+		if(messageCode != null && messageCode.length() > 0) {
+			gameChatService.addMessageUpdate(game, messageCode, messageArgs, time)
+		}
+		
+		if(data != null && !data.isEmpty()) {
+			String mapping = GameMeteorHandler.MAPPING_GAME +"/"+ game.id
+			data.time = time
+			
+			log.debug "GameService.addActionUpdate: ${mapping} = ${data}"
+			
+			def finishedResponse = data as JSON
+			metaBroadcaster.broadcastTo(mapping, finishedResponse)
+		}
+				
+		return new Date(time)
 	}
 	
 	/**

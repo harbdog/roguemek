@@ -33,7 +33,6 @@ function tick(event) {
 }
 
 function pingResponse(data) {
-	console.log(data);
 	var pong = new Date().getTime();
 	var milliseconds = pong - lastPing;
 	
@@ -377,8 +376,12 @@ function handleComplete(event) {
 				// Initialize the player UI
 				initPlayerUI();
 				
-				// begin long polling for game updates during play, starting with a ping
+				// begin long polling for game updates during play
+				initAtmosphere();
+				
+				// use setInterval to ping for every several seconds
 				ping();
+				setInterval(ping, 5000);
 			    
 			    // resize the canvas and adjust the board to the canvas on first load
 				initializing = false;

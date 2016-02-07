@@ -49,7 +49,7 @@ class GameStagingService extends AbstractGameService {
 		
 		String mapping = StagingMeteorHandler.MAPPING_GAME +"/"+ game.id
 		
-		log.info "GameStagingService.addStagingUpdate: ${mapping} = ${data}"
+		log.debug "GameStagingService.addStagingUpdate: ${mapping} = ${data}"
 		
 		def finishedResponse = data as JSON
 		metaBroadcaster.broadcastTo(mapping, finishedResponse)

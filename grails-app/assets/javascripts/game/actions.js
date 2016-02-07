@@ -84,29 +84,3 @@ function fire_weapons(weapons) {
 		target_id: target_id
 	});
 }
-
-function pollUpdate(updates) {
-	if(updates == null) return;
-	
-	$.each(updates, function(i, thisUpdate) {
-		
-		// Add the message from the update to the message display area
-		var t = new Date(thisUpdate.time);
-		var data = thisUpdate;
-		
-		if(thisUpdate.message != null) {
-			if(thisUpdate.message.length > 0) {
-				// only show a message if it had something to say
-				addMessageUpdate("["+t.toLocaleTimeString()+"] "+thisUpdate.message);
-			}
-			if(thisUpdate.data != null) {
-				// the data payload from a transmitted message is in its own key "data"
-				data = thisUpdate.data;
-			}
-		}
-		
-		if(data != null) {
-			updateGameData(data);
-		}
-	});
-}

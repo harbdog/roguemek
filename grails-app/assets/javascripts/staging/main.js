@@ -125,6 +125,9 @@ function initStaging() {
     
     // setup any dynamic UI pieces present at init
     setupDynamicUI();
+    
+    // begin HPG communications
+    initAtmosphere();
 }
 
 /**

@@ -8,50 +8,6 @@ class GameControllerService {
 	GameService gameService
 	
 	/**
-	 * Handles the constant long polling from each client to await updates to the game.
-	 * @return The map of messages to be converted to JSON at the controller back to the client.
-	 */
-	public def performPoll(Game game, MekUser user) {
-		Pilot pilot = game.getPrimaryPilotForUser(user)
-		if(pilot == null) return
-		
-		Date lastUpdate = pilot.lastUpdate
-		
-		int tries = 0
-		
-		while(true) {
-			if(tries >= 40) {
-				// give up and respond with no data after so many tries otherwise
-				// the client will assume the worst and start a new poll thread
-				break
-			}
-			
-			ArrayList updates = GameMessage.getMessageUpdates(game, lastUpdate)
-			
-			// set the pilot last update time to the last message's time
-			if(updates != null && !updates.isEmpty()) {
-				lastUpdate = new Date(updates.last().getTime())
-				
-				try{
-					Pilot p = Pilot.get(pilot.id)
-					p.lastUpdate = lastUpdate
-					p.save flush: true
-				} catch(Exception e) {
-					// StaleObjectStateException can occur when page is refreshed 
-					return [terminated: true]
-				}
-				
-				return [date: lastUpdate, messageUpdates: updates]
-			}
-			
-			tries ++
-			Thread.sleep(250)
-		}
-		
-		return [date: lastUpdate]
-	}
-	
-	/**
 	 * Calls the method by the name of the action set in the params.perform of the request.
 	 * @return The map of data to be converted to JSON at the controller back to the client.
 	 */

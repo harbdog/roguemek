@@ -148,41 +148,11 @@ class GameController {
 	}
 	
 	/**
-	 * This action is used to poll the server for continuous updates to the game
+	 * This action is used to ping the server
 	 * @render JSON object containing updates to relay back to the client
 	 */
-	def poll() {
-		// occasionally the client will poll just to determine response time
-		def isPing = params.ping;
-		if(isPing){
-			def gameResponse = [ping: "pong"]
-			render gameResponse as JSON
-			return;
-		}
-		
-		MekUser user = currentUser()
-		if(user == null) return
-		
-		Game game = Game.get(session.game)
-		if(game == null) return
-
-		def pollResponse = gameControllerService.performPoll(game, user)
-		def gameResponse = pollResponse?.terminated ? pollResponse : [date: pollResponse?.date]
-		if(pollResponse?.messageUpdates != null) {
-			gameResponse.updates = []
-			
-			int index = 0
-			for(GameMessage gm in pollResponse.messageUpdates) {
-				def thisUpdate = [
-					time: gm.time,
-					message: message(code: gm.messageCode, args: gm.messageArgs),
-					data: gm.data
-				]
-				
-				gameResponse.updates[index++] = thisUpdate
-			}
-		}
-		
+	def ping() {
+		def gameResponse = [ping: "pong"]
 		render gameResponse as JSON
 	}
 
