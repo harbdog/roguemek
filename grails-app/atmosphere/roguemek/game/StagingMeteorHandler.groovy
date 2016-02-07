@@ -71,28 +71,16 @@ class StagingMeteorHandler extends HttpServlet {
 		def session = request.getSession(false)
 		
 		def jsonMap = JSON.parse(request.getReader().readLine().trim()) as Map
-		String action = jsonMap.containsKey("action") ? jsonMap.action.toString() : null
 		
-		if(action == null) {
+		// all staging actions currently handled by the controller
+		gameStagingService.recordUnusedData(jsonMap)
+		
+		/*if(action == null) {
 			gameStagingService.recordIncompleteData(jsonMap)
 		} 
 		else if(session.game != null &&
 				MAPPING_GAME.equals(mapping)){
-			// all staging actions still to be handled by the controller?
-			/*def user = gameStagingService.currentUser(request)
-			if(user == null) return
-			
-			def game = Game.get(session.game)
-			if(game == null) return
-			
-			//mapping += "/"+session.game
-			
-			def stagingResult = gameStagingService.performAction(game, user, jsonMap)
-			
-			if(stagingResult != null) {
-				Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(mapping)
-				b.broadcast(stagingResult)
-			}*/
-		}
+			// if there was something to do here
+		}*/
 	}
 }

@@ -18,6 +18,10 @@ class GameStagingService extends AbstractGameService {
 	
 	def messageSource
 	
+	def recordUnusedData(data) {
+		log.info "GameStagingService.recordUnusedData: ${data}"
+	}
+	
 	def recordIncompleteData(data) {
 		// This method could be used to persist errors to a data store.
 		log.error "GameStagingService.recordIncompleteMessage: ${data}"
@@ -32,19 +36,12 @@ class GameStagingService extends AbstractGameService {
 		def user = currentUser(request)
 		if(user == null) return
 		
+		// TODO: what should happen if a user disconnects from staging?
 		/*Object[] messageArgs = [user.toString()]
 		def message = messageSource.getMessage("chat.user.disconnected", messageArgs, LocaleContextHolder.locale)
 	
 		def chatResponse = [type: "chat", message: message] as JSON
 		event.broadcaster().broadcast(chatResponse)*/
-	}
-	
-	def performAction(Game game, MekUser user, Map data) {
-		log.info "GameStagingService.performAction.${data.action}: ${game?.id} @ ${user} = ${data}"
-		
-		String action = data.action
-		
-		return this."$action"(game, user, data)
 	}
 	
 	def addStagingUpdate(Game game, Map data) {
@@ -56,7 +53,5 @@ class GameStagingService extends AbstractGameService {
 		
 		def finishedResponse = data as JSON
 		metaBroadcaster.broadcastTo(mapping, finishedResponse)
-		
-		// TODO: try turning off sessions for atmosphere, since the sample works fine with this stuff
 	}
 }

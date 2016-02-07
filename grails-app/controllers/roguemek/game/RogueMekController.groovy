@@ -369,7 +369,9 @@ class RogueMekController {
 			unitAdded: battleUnitInstance.id
 		]
 		Object[] messageArgs = [userInstance.toString(), battleUnitInstance.toString()]
-		Date update = GameMessage.addMessageUpdate(game, "staging.unit.added", messageArgs, data)
+		gameChatService.addMessageUpdate(game, "staging.unit.added", messageArgs)
+		
+		gameStagingService.addStagingUpdate(game, data)
 		
 		game.save flush:true
 		
@@ -412,7 +414,9 @@ class RogueMekController {
 			unitRemoved: unitInstance.id
 		]
 		Object[] messageArgs = [userInstance.toString(), unitInstance.toString()]
-		Date update = GameMessage.addMessageUpdate(game, "staging.unit.removed", messageArgs, data)
+		gameChatService.addMessageUpdate(game, "staging.unit.removed", messageArgs)
+		
+		gameStagingService.addStagingUpdate(game, data)
 		
 		def result = [updated:true]
 		render result as JSON
@@ -463,7 +467,9 @@ class RogueMekController {
 				userAdded: userInstance.id
 			]
 			Object[] messageArgs = [userInstance.toString()]
-			Date update = GameMessage.addMessageUpdate(game, "staging.user.added", messageArgs, data)
+			gameChatService.addMessageUpdate(game, "staging.user.added", messageArgs)
+			
+			gameStagingService.addStagingUpdate(game, data)
 		}
 		
 		def result = [updated:true]
@@ -515,7 +521,9 @@ class RogueMekController {
 			userRemoved: userToRemove.id
 		]
 		Object[] messageArgs = [userToRemove.toString()]
-		Date update = GameMessage.addMessageUpdate(game, "staging.user.removed", messageArgs, data)
+		gameChatService.addMessageUpdate(game, "staging.user.removed", messageArgs)
+		
+		gameStagingService.addStagingUpdate(game, data)
 		
 		def result = [updated:true]
 		render result as JSON
@@ -551,7 +559,9 @@ class RogueMekController {
 				location: startingLocation
 			]
 			Object[] messageArgs = [userToUpdate.toString(), startingLocation]
-			Date update = GameMessage.addMessageUpdate(game, "staging.location.changed", messageArgs, data)
+			gameChatService.addMessageUpdate(game, "staging.location.changed", messageArgs)
+			
+			gameStagingService.addStagingUpdate(game, data)
 		}
 		
 		def result = [updated:locationUpdated]
@@ -581,7 +591,7 @@ class RogueMekController {
 	}
 	
 	/**
-	 * Updates the camo selection of the user
+	 * Updates the preview camo selection of the user
 	 * @return
 	 */
 	def camoUpdate() {
@@ -682,7 +692,9 @@ class RogueMekController {
 				rgbCamo: [camoToApply[0], camoToApply[1], camoToApply[2]]
 			]
 			Object[] messageArgs = [userToUpdate.toString()]
-			Date update = GameMessage.addMessageUpdate(game, "staging.camo.color.changed", messageArgs, data)
+			gameChatService.addMessageUpdate(game, "staging.camo.color.changed", messageArgs)
+			
+			gameStagingService.addStagingUpdate(game, data)
 		}
 		
 		def result = [

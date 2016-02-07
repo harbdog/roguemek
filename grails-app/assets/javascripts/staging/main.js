@@ -125,9 +125,6 @@ function initStaging() {
     
     // setup any dynamic UI pieces present at init
     setupDynamicUI();
-    
-    // begin polling for updates
-    poll();
 }
 
 /**
@@ -691,73 +688,6 @@ function ajaxUpdateMapSelection() {
 		.always(function() {
 			dialogLoading.dialog("close");
 		});
-}
-
-/**
- * Long polling to retrieve updates from staging asynchronously
- */
-var keepPolling = false;
-function poll() {
-	if(!keepPolling) return;
-	
-    $.getJSON("poll", null)
-	.fail(function(jqxhr, textStatus, error) {
-		var err = textStatus + ", " + error;
-		console.log( "Request Failed: " + err );
-		
-		// TODO: if the failure occurs because of 404, need to stop polling, show message and link to user to go somewhere else
-	})
-	.done(function(data){
-    	
-		if(data.terminated) {
-			console.log("poll terminated, starting over");
-		}
-		else if(data.date) {
-			// call the method that updates the client based on the polled return data
-	    	console.log("polled date: "+data.date);
-	        pollUpdate(data.updates);
-		}
-		
-    })
-	.always(function() {
-		// poll again!
-		poll();
-	});
-}
-
-/**
- * Perform updates based on poll data
- * @param updates
- */
-function pollUpdate(updates) {
-	if(updates == null) return;
-	
-	$.each(updates, function(i, thisUpdate) {
-		
-		// Add the message from the update to the message display area
-		if(thisUpdate != null) {
-			
-			var data = thisUpdate;
-			
-			if(thisUpdate.message != null) {
-				var t = new Date(thisUpdate.time);
-				
-				if(thisUpdate.message.length > 0) {
-					// only show a message if it had something to say
-					console.log("MESSAGE: ["+t.toLocaleTimeString()+"] "+thisUpdate.message);
-					//addMessageUpdate("["+t.toLocaleTimeString()+"] "+thisUpdate.message);
-				}
-				if(thisUpdate.data != null) {
-					// the data payload from a transmitted message is in its own key "data"
-					data = thisUpdate.data;
-				}
-			}
-			
-			if(data != null) {
-				updateStagingData(data);
-			}
-		}
-	});
 }
 
 /**
