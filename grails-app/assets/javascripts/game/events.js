@@ -41,7 +41,48 @@ function pingResponse(data) {
 	}
 }
 
-function handleKeyPress(key) {
+function handleChatControls(e, key) {
+	if(key == "escape" || key == "tab") {
+		// hide the chat input
+		e.preventDefault();
+		
+		var currentMessage = messagingDisplay.getChatInput();
+		if(key == "escape"
+				&& currentMessage.trim().length > 0) {
+			// if escape is pressed with content in chat input, clear it, otherwise it can close the chat input
+			messagingDisplay.setChatInput("");
+		}
+		else {
+			messagingDisplay.showChatInput(false);
+		}
+	}
+	else if(key == "enter") {
+		// submit the chat input
+		e.preventDefault();
+		
+		var data = {
+			type: 'chat',
+			message: messagingDisplay.getChatInput()
+		};
+		HPG.chatSubscription.push(JSON.stringify(data));
+		messagingDisplay.setChatInput("");
+		
+		messagingDisplay.showChatInput(false);
+	}
+	else {
+		// let the key proceed as input to chat
+	}
+}
+
+function handleKeyPress(e, key) {
+	
+	if(isChatInput()) {
+		// typing in chat
+		return handleChatControls(e, key);
+	}
+	
+	e.preventDefault();
+	
 	if(!playerActionReady){
 		// TODO: alternate actions if pressed when player turns but between being ready for another action
 		console.log("Waiting...")
@@ -215,6 +256,13 @@ function handleKeyPress(key) {
 		// target next enemy unit
 		cycleTarget(true);
 	}
+	else if(key == "escape"){
+		// clear target
+		handleTargetChange(null);
+	}
+	else if(key == "t"){
+		handleShowChatInput();
+	}
 	else if(key == "`"){
 		// toggle isometric view
 		toggleIsometricDisplay();
@@ -246,6 +294,14 @@ function handleKeyPress(key) {
 	else {
 		console.log("Unbound key pressed: " + key);
 	}
+}
+
+function handleShowChatInput() {
+	messagingDisplay.showChatInput(true);
+}
+
+function isChatInput() {
+	return messagingDisplay.isChatInput;
 }
 
 /**
@@ -552,15 +608,12 @@ function addEventHandlers() {
 		var charCode = e.which || e.keyCode;
 		var key = String.fromCharCode(charCode);
 		
-		handleKeyPress(key);
-		
-		e.preventDefault();
+		handleKeyPress(e, key);
 	};
 	
 	window.addEventListener("keydown", function(e) {
 		// handle special keys which don't have char codes, such as space and arrow keys
 		if(specialKeyCodes.indexOf(e.keyCode) > -1) {
-			e.preventDefault();
 			
 			var key = "";
 			switch(e.keyCode){
@@ -604,7 +657,7 @@ function addEventHandlers() {
 							break;
 			}
 			
-			handleKeyPress(key);
+			handleKeyPress(e, key);
 		}
 	}, false);
 }
@@ -885,14 +938,28 @@ function handleTargetChange(targetUnit) {
 	
 	setPlayerTarget(targetUnit);
 	
-	// show the unit indicator on the previous target, hide on the new target
 	if(prevTargetUnit != null && prevTargetUnit.getUnitDisplay()!= null
-			&& prevTargetUnit.id != targetUnit.id) {
+			&& (targetUnit == null || prevTargetUnit.id != targetUnit.id)) {
+		// show the unit indicator on the previous target,
 		prevTargetUnit.getUnitDisplay().setUnitIndicatorVisible(true);
 	}
-	targetUnit.getUnitDisplay().setUnitIndicatorVisible(false);
 	
-	target(targetUnit);
+	if(targetUnit == null) {
+		// clear selected weapons and update weapons display
+		clearSelectedWeapons();
+		clearWeaponsToHit(turnUnit);
+		
+		updateWeaponsDisplay(turnUnit);
+		
+		// Update selected weapons
+		updateSelectedWeapons();
+	}
+	else {
+		// hide the unit indicator on the new target
+		targetUnit.getUnitDisplay().setUnitIndicatorVisible(false);
+		
+		target(targetUnit);
+	}
 }
 
 function keepBoardInWindow() {

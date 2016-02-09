@@ -636,6 +636,12 @@ function getSelectedWeaponsIndices() {
 function clearSelectedWeapons() {
 	selectedWeapons = [];
 }
+function clearWeaponsToHit(unit) {
+	if(unit == null) return;
+	$.each(unit.weapons, function(key, w) {
+		w.toHit = null;
+	});
+}
 function addSelectedWeapon(weapon) {
 	if(weapon != null && weapon.cooldown == 0
 			&& weapon.toHit != null && weapon.toHit > 0) {
@@ -1004,10 +1010,8 @@ function updateGameData(data) {
 	}
 	
 	if(data.weaponData){
-		// TODO: move clearing previous toHit for each weapon to its own method
-		$.each(turnUnit.weapons, function(key, w) {
-			w.toHit = null;
-		});
+		// clearing previous toHit for each weapon
+		clearWeaponsToHit(turnUnit);
 		
 		// update the cooldown status of the weapons fired
 		$.each(data.weaponData, function(key, wData) {

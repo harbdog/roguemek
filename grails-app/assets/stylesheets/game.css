@@ -31,7 +31,7 @@ h1 {
 }
 
 a:link, a:visited, a:hover {
-	color: #3399FF;
+	color: #3498DB;
 }
 
 div #spinner {
@@ -58,7 +58,7 @@ div #progressDiv {
 div #progressBar {
 	width: 0%;
 	height: 100%;
-	background-color: #3399FF;
+	background-color: #3498DB;
 }
 
 div.hidden {
@@ -101,16 +101,44 @@ div #pingDiv {
 	font-size: 12px;
 }
 
+
+
+/* Chat window/input decoration */
 #messagingArea {
+	top: 0px;
+	left: 0px;
 	cursor: default;
 	padding: 0px 0px 0px 5px;
-	resize: none;
 	background-color: transparent;
 	color: #FFFFFF;
 	outline: none;
 	border: none;
 	border-bottom: 1px solid #FFFFFF;
 	font-size: 14px;
+	overflow: auto;
+}
+
+#chat-input {
+	top: 0px;
+	left: 0px;
+	padding: 0px 0px 0px 5px;
+	background-color: transparent;
+	border: 1px solid #FFFFFF;
+}
+
+div.chat-line {
+	word-wrap: break-word;
+}
+
+span.chat-time {
+	margin-right: 5px;
+	color: #C0C0C0;
+}
+
+/* TODO: use #FF4646 for enemy chat? */
+span.chat-user {
+	margin-right: 5px;
+	color: #3498DB;
 }
 
 #settingsDiv span.property-heading {
@@ -199,7 +227,7 @@ div#statuses {
 }
 
 .status-positive {
-	color: #3399FF;
+	color: #3498DB;
 }
 
 div#points {
@@ -231,10 +259,10 @@ div#heat-bar {
 	border-right-style: solid;
 	border-width: 4px;
 	border-color: #AA0000;
-	background: -webkit-linear-gradient(left, #3399FF, #FF0000); /* For Safari 5.1 to 6.0 */
-	background: -o-linear-gradient(right, #3399FF, #FF0000); /* For Opera 11.1 to 12.0 */
-	background: -moz-linear-gradient(right, #3399FF, #FF0000); /* For Firefox 3.6 to 15 */
-	background: linear-gradient(to right, #3399FF, #FF0000); /* Standard syntax */
+	background: -webkit-linear-gradient(left, #3498DB, #FF0000); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(right, #3498DB, #FF0000); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(right, #3498DB, #FF0000); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(to right, #3498DB, #FF0000); /* Standard syntax */
 }
 
 div.heat-level {
@@ -279,7 +307,7 @@ div.armor-bar > div {
 	position: absolute;
     bottom: 0;
 	width: 100%;
-	background-color: #3399FF;
+	background-color: #3498DB;
 }
 
 div.armor-bar > div.color75percent {
@@ -312,7 +340,7 @@ div.internals-bar > div {
 	position: absolute;
     bottom: 0;
 	width: 100%;
-	background-color: #3399FF;
+	background-color: #3498DB;
 }
 
 div.internals-bar > div.color75percent {
@@ -336,7 +364,7 @@ div.crits {
 div.crits h1 {
 	margin: 10px 10px 0px 0px;
 	padding: 0;
-	color: #3399FF;
+	color: #3498DB;
 	font-size: 14px;
 }
 

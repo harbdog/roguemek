@@ -87,6 +87,7 @@ class ChatMeteorHandler extends HttpServlet {
 				mapping += "/"+session.game
 				
 				jsonMap.user = user.toString()
+				jsonMap.time = new Date().getTime()
 				
 				// TODO: actually record in the database, use async to do it in parallel to the broadcast?
 				gameChatService.recordChat(user, jsonMap)

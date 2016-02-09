@@ -22,7 +22,8 @@
 		        <g:message code="page.browser.not.supported" />
 		    </canvas>
 		    
-		    <textarea id="messagingArea" readonly><g:message code="game.you.joined" /></textarea>
+		    <div id="messagingArea"></div>
+		    <input id="chat-input" type="text"/>
 	    </div>
 	    
 	</body>

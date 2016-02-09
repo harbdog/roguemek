@@ -47,6 +47,10 @@ function handleChat(data) {
 		
 		$chat.append(chatLine);
 		
+		// TODO: allow customization of colors in chat!
+		var effectOptions = {color: shadeColor("#3399FF", -0.5)};
+		$(".chat-line").last().effect("highlight", effectOptions, 2000);
+		
 		$chat.scrollTop($chat[0].scrollHeight);
 	}
 }
