@@ -10,6 +10,7 @@ class MechMTF {
 	
 	public static final String MTF_CRIT_EMPTY = "-Empty-"
 	public static final String MTF_CRIT_HEATSINK = "Heat Sink"
+	public static final String MTF_CRIT_DBL_HEATSINK = "Double Heat Sink"
 	public static final String MTF_CRIT_JUMPJET = "Jump Jet"
 	public static final String MTF_CRIT_SHOULDER = "Shoulder"
 	public static final String MTF_CRIT_UP_ARM_ACT = "Upper Arm Actuator"

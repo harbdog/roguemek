@@ -12,8 +12,6 @@ class Game {
 	
 	private static final Date NULL_DATE = new Date(0)
 	
-	private static final int turnsPerRound = 4
-	
 	String id
 	static mapping= {
 		id generator: 'uuid'

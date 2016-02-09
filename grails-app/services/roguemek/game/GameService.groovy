@@ -1104,26 +1104,26 @@ class GameService extends AbstractGameService {
 		if(unitStatus == CombatStatus.UNIT_WALKING 
 				&& prevUnitStatus != CombatStatus.UNIT_WALKING) {
 			// Add 1 heat per round for starting to walk
-			heatGen = (1 / game.turnsPerRound)
+			heatGen = 1
 		}
 		else if(unitStatus == CombatStatus.UNIT_RUNNING 
 				&& prevUnitStatus == CombatStatus.UNIT_WALKING) {
 			// Add 1 heat per round for going from walk to run
-			heatGen = (1 / game.turnsPerRound)
+			heatGen = 1
 		}
 		else if(unitStatus == CombatStatus.UNIT_RUNNING 
 				&& prevUnitStatus != CombatStatus.UNIT_WALKING 
 				&& prevUnitStatus != CombatStatus.UNIT_RUNNING) {
 			// Add 2 heat per round for going straight to run
-			heatGen = (2 / game.turnsPerRound)
+			heatGen = 2
 		}
 		else if(unitStatus == CombatStatus.UNIT_JUMPING) {
 			// add heat for JUMPING, the initial jump is 3 heat, then after 3 jumps more heat is generated
 			if(unit.jpMoved > 3) {
-				heatGen = (1 / game.turnsPerRound)
+				heatGen = 1
 			}
 			else if(initiatedJumping){
-				heatGen = (3 / game.turnsPerRound)
+				heatGen = 3
 			}
 		}
 
@@ -1222,7 +1222,7 @@ class GameService extends AbstractGameService {
 				unit.jpMoved = 0
 				
 				// minimum of 3 heat generated when jump jets are engaged
-				heatGen = (3 / game.turnsPerRound)
+				heatGen = 3
 			}
 		}
 		else {
@@ -1236,18 +1236,18 @@ class GameService extends AbstractGameService {
 			if(unitStatus == CombatStatus.UNIT_WALKING
 					&& prevUnitStatus != CombatStatus.UNIT_WALKING) {
 				// Add 1 heat per round for starting to walk
-				heatGen = (1 / game.turnsPerRound)
+				heatGen = 1
 			}
 			else if(unitStatus == CombatStatus.UNIT_RUNNING
 					&& prevUnitStatus == CombatStatus.UNIT_WALKING) {
 				// Add 1 heat per round for going from walk to run
-				heatGen = (1 / game.turnsPerRound)
+				heatGen = 1
 			}
 			else if(unitStatus == CombatStatus.UNIT_RUNNING
 					&& prevUnitStatus != CombatStatus.UNIT_WALKING
 					&& prevUnitStatus != CombatStatus.UNIT_RUNNING) {
 				// Add 2 heat per round for going straight to run
-				heatGen = (2 / game.turnsPerRound)
+				heatGen = 2
 			}
 		}
 		
@@ -1505,7 +1505,7 @@ class GameService extends AbstractGameService {
 				unit.jpMoved = 0
 				
 				// apply initial heat for jumping
-				def heatGen = (3 / game.turnsPerRound)
+				def heatGen = 3
 				unit.heat += heatGen
 				
 				unit.save flush: true, deepValidate: false
@@ -3185,17 +3185,23 @@ class GameService extends AbstractGameService {
 	 * @return
 	 */
 	private double getHeatDissipation(Game game, BattleUnit unit) {
-		int externalHeatDissipation = 0
+		double externalHeatDissipation = 0
 		
-		int heatSinkTypeMultiplier = 1
+		double heatSinkTypeMultiplier = 0
 		
 		if(unit instanceof BattleMech) {
-			if(unit.mech?.heatSinkType == Unit.HS_DOUBLE) {
-				heatSinkTypeMultiplier = 2
+			HeatSink heatSink
+			if(unit.mech?.heatSinkType == Unit.HS_SINGLE) {
+				heatSink = HeatSink.findByName(MechMTF.MTF_CRIT_HEATSINK)
+			}
+			else if(unit.mech?.heatSinkType == Unit.HS_DOUBLE) {
+				heatSink = HeatSink.findByName(MechMTF.MTF_CRIT_DBL_HEATSINK)
 			}
 			
+			heatSinkTypeMultiplier = heatSink?.dissipation ?: 0
+			
 			// each mech starts with 10 heat sinks included in the engine
-			int engineHeatSinks = 10
+			def engineHeatSinks = 10
 			
 			// if the mech is in Water, increase heat dissipation by double for each heat sink in the water (max of 6)
 			Hex unitHex = game.board?.getHexAt(unit.x, unit.y)
@@ -3244,7 +3250,7 @@ class GameService extends AbstractGameService {
 			externalHeatDissipation += engineHeatSinks + numEquipHeatSinks + numWaterHeatSinks
 		}
 		
-		return ((externalHeatDissipation * heatSinkTypeMultiplier) / game.turnsPerRound)
+		return (externalHeatDissipation * heatSinkTypeMultiplier)
 	}
 	
 	/**
