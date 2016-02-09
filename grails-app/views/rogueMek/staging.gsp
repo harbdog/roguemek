@@ -131,7 +131,7 @@
 				</g:if>
 				<g:else>
 					<%-- For now, just a link just to refresh page --%>
-					<span class="left"><link:stagingGame id="${gameInstance?.id}"><g:message code="default.button.refresh.label" /></link:stagingGame></span>
+					<span class="left"><link:stagingGame id="${gameInstance?.id}"><g:message code="default.button.waiting.label" /></link:stagingGame></span>
 				</g:else>
 				
 				<span class="right"><link:dropship><g:message code="default.button.leave.label" /></link:dropship></span>

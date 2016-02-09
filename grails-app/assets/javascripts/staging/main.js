@@ -456,8 +456,7 @@ function addUser() {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				// TODO: update on the page when polling works for users without at least one unit
-				location.reload();
+				// the polling will update the users and teams
 			}
 		})
 		.always(function() {
@@ -738,19 +737,25 @@ function updateStagingData(data) {
 	else if(data.userAdded != null) {
 		var userId = data.userAdded;
 		
-		ajaxStageUser(userId);
+		// TODO: update the users and teams on the page without forcing reload
+		window.location.reload();
+		
+		//ajaxStageUser(userId);
 	}
 	else if(data.userRemoved != null) {
 		var userId = data.userRemoved;
 		$("div.player[data-userid='"+userId+"']").fadeOut();
+		
+		// TODO: update the users and teams on the page without forcing reload
+		window.location.reload();
 	}
 	else if(data.gameState != null) {
-		if(data.gameState == 'A') {
+		if(data.gameState == "A") {
 			console.log("The game is now active");
 		}
 		
 		// TODO: update the game state on the page without forcing reload
-		location.reload();
+		window.location.reload();
 	}
 }
 

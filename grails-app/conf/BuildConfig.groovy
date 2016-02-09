@@ -76,6 +76,7 @@ grails.project.dependency.resolution = {
 		compile ":spring-security-core:2.0-RC4"
 		compile ":mail:1.0.7"
 		compile ":atmosphere-meteor:1.0.4"
+		compile ":html-cleaner:0.3"
 		
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.7.4"

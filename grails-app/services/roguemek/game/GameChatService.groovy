@@ -15,7 +15,22 @@ import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 class GameChatService extends AbstractGameService {
 	private static Log log = LogFactory.getLog(this)
 	
+	def htmlCleaner
 	def messageSource
+	
+	def sendChat(user, data, mapping) {
+		// clean the message to not allow some markup
+		def message = htmlCleaner.cleanHtml(data.message, 'simpleText')
+		data.message = message
+		
+		data.user = user.toString()
+		data.time = new Date().getTime()
+		
+		// TODO: actually record in the database, use async to do it in parallel to the broadcast?
+		recordChat(user, data)
+		
+		metaBroadcaster.broadcastTo(mapping, data)
+	}
 	
 	def recordChat(user, data) {
 		// This method could be used to persist chat messages to a data store.
@@ -31,6 +46,7 @@ class GameChatService extends AbstractGameService {
 		// This method could be used to persist potential malicious code to a data store.
 		log.warn "GameChatService.recordMaliciousUseWarning: ${data}"
 	}
+	
 	def addMessageUpdate(Game game, String messageCode, Object[] messageArgs) {
 		addMessageUpdate(game, messageCode, messageArgs, new Date().getTime())
 	}

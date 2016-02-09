@@ -26,6 +26,8 @@ class ChatMeteorHandler extends HttpServlet {
 	def atmosphereMeteor = Holders.applicationContext.getBean("atmosphereMeteor")
 	def gameChatService = Holders.applicationContext.getBean("gameChatService")
 	
+	def htmlCleaner
+	
 	@Override
 	void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if(!gameChatService.isAuthenticated(request)) return
@@ -74,10 +76,10 @@ class ChatMeteorHandler extends HttpServlet {
 		
 		if (type == null || message == null) {
 			gameChatService.recordIncompleteMessage(jsonMap)
-		} 
+		}
 		else if (message.toLowerCase().contains("<script")) {
 			gameChatService.recordMaliciousUseWarning(jsonMap)
-		} 
+		}
 		else {
 			def user = gameChatService.currentUser(request)
 			if(user == null) return
@@ -86,14 +88,7 @@ class ChatMeteorHandler extends HttpServlet {
 					MAPPING_GAME.equals(mapping)){
 				mapping += "/"+session.game
 				
-				jsonMap.user = user.toString()
-				jsonMap.time = new Date().getTime()
-				
-				// TODO: actually record in the database, use async to do it in parallel to the broadcast?
-				gameChatService.recordChat(user, jsonMap)
-				
-				Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(mapping)
-				b.broadcast(jsonMap)
+				gameChatService.sendChat(user, jsonMap, mapping)
 			}
 		}
 	}

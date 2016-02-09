@@ -18,9 +18,11 @@ import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 class GameService extends AbstractGameService {
 	
 	transient springSecurityService
+	LinkGenerator grailsLinkGenerator
+	
 	def messageSource
 	def gameChatService
-	LinkGenerator grailsLinkGenerator
+	def gameStagingService
 	
 	private static Log log = LogFactory.getLog(this)
 	
@@ -102,10 +104,14 @@ class GameService extends AbstractGameService {
 		def data = [
 			gameState: String.valueOf(game.gameState)
 		]
-		Object[] messageArgs = []
-		Date update = addMessageUpdate(game, "staging.game.started", messageArgs, data)
 		
 		game.save flush: true
+		
+		// let those still in the staging screen be aware of the game state change
+		Object[] messageArgs = []
+		gameChatService.addMessageUpdate(game, "staging.game.started", messageArgs)
+		
+		gameStagingService.addStagingUpdate(game, data)
 	}
 	
 	/**
