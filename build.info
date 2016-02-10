@@ -24,3 +24,7 @@ Oracle JDK 1.7 (oracle.com)
 5. The project should automatically build, and may take a couple minutes the first time. If you get an error saying "Grails requires a JDK", make sure you get an Oracle JDK of the correct version installed and try again.
 
 6. Finally, to run the application, select Run -> Run As -> Grails Command (run-app). When the server is running it will present a URL that can be accessed to login and start using the application (ex: "Server running. Browse to http://localhost:8080/RogueMek").
+
+
+NOTES:
+- When running as a war in Tomcat 7, increase max memory pool to around 392, and add the java option -XX:MaxPermSize=128m

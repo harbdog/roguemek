@@ -192,7 +192,7 @@ class BootStrap {
 		log.info('Initialized Maps')
 		
 		HexMap boardMap = HexMap.findByName("Battletech")
-		boardMap.loadMap()
+		boardMap?.loadMap()
 		log.info('Preloaded sample Board')
 		
 		// Initialize a sample BattleMech

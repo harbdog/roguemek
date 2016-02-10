@@ -26,8 +26,6 @@ class ChatMeteorHandler extends HttpServlet {
 	def atmosphereMeteor = Holders.applicationContext.getBean("atmosphereMeteor")
 	def gameChatService = Holders.applicationContext.getBean("gameChatService")
 	
-	def htmlCleaner
-	
 	@Override
 	void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if(!gameChatService.isAuthenticated(request)) return
