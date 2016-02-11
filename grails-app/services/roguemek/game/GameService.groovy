@@ -74,7 +74,12 @@ class GameService extends AbstractGameService {
 	public def initializeGame(Game game) {
 		if(game.gameState != Game.GAME_INIT) return
 		
-		// TODO: if the board is null, pick a random map
+		// if the board is null, pick a random map
+		if(game.board.getHexMap() == null) {
+			BattleHexMap b = game.board
+			b.map = getRandomMap()
+			b.save flush:true
+		}
 		
 		// load the board in case is not loaded already
 		game.loadMap()
@@ -112,6 +117,10 @@ class GameService extends AbstractGameService {
 		gameChatService.addMessageUpdate(game, "staging.game.started", messageArgs)
 		
 		gameStagingService.addStagingUpdate(game, data)
+	}
+	
+	public HexMap getRandomMap() {
+		return HexMap.executeQuery("from HexMap order by random", [max: 1])?.first()
 	}
 	
 	/**
