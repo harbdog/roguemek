@@ -33,11 +33,7 @@ class HexMap {
     }
 	
 	public static void init() {
-		Set<String> boardPaths = ContextHelper.getResourcePaths("/src/boards/")
-		
-		for(String path in boardPaths) {
-			MapBoard.initBoardFromPath(path)
-		}
+		MapBoard.initBoards()
 	}
 	
 	public def loadMap() {

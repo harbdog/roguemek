@@ -32,6 +32,7 @@ class ContextHelper {
 		Set<String> paths = servletContext.getResourcePaths(path)
 
 		if(paths == null) {
+			// look for the path relatively in the project path instead of the war
 			paths = new ArrayList<String>()
 			if(path.startsWith("/")) {
 				path = path.substring(1)

@@ -154,6 +154,10 @@ class BootStrap {
 		assert MekUserRole.count() == 5
 		assert Pilot.count() == 3
 		
+		// Initialize maps
+		HexMap.init()
+		log.info('Initialized Maps')
+		
 		// Initialize names
 		Name.init()
 		Surname.init()
@@ -188,9 +192,6 @@ class BootStrap {
 		
 		
 		// Initialize a sample HexMap board
-		HexMap.init()
-		log.info('Initialized Maps')
-		
 		HexMap boardMap = HexMap.findByName("Battletech")
 		boardMap?.loadMap()
 		log.info('Preloaded sample Board')

@@ -12,7 +12,16 @@ import roguemek.model.Hex
 class MapBoard {
 	private static Log log = LogFactory.getLog(this)
 	
-	public static final String BOARD_EXTENSION = ".board"
+	private static final String BOARD_ROOT_PATH = "/src/boards/"
+	private static final String BOARD_EXTENSION = ".board"
+	
+	public static void initBoards() {
+		Set<String> boardPaths = ContextHelper.getResourcePaths(BOARD_ROOT_PATH)
+		
+		for(String path in boardPaths) {
+			MapBoard.initBoardFromPath(path)
+		}
+	}
 	
 	public static HexMap initBoardFromPath(String path) {
 		HexMap board
@@ -31,10 +40,16 @@ class MapBoard {
 			}
 			
 			// generate the name by stripping the parent path, extension, and capitalizing the first letters
-			def boardFileName = path.substring(path.lastIndexOf(File.separator)+1)
-			def boardName = boardFileName.substring(0, boardFileName.lastIndexOf('.'))
+			def pathSeparator = File.separator
+			if(path.contains("/")) {
+				// URIs inside a war only use /
+				pathSeparator = "/"
+			}
+			
+			def boardFileName = path.substring(path.lastIndexOf(pathSeparator)+1)
+			def boardName = boardFileName.substring(0, boardFileName.lastIndexOf(BOARD_EXTENSION))
 					.replaceAll('_', ' ').split(' ')
-					.collect{ it.capitalize() }.join(' ')
+					.collect{ it.capitalize() }.iterator().join(' ')
 			
 			board = new HexMap(name: boardName, path: path, numCols: numCols, numRows: numRows)
 			
