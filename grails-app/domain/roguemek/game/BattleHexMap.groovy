@@ -62,6 +62,10 @@ class BattleHexMap {
 		return Hex.get(hexId)
 	}
 	
+	int compareTo(obj) {
+		toString() <=> obj.toString()
+	}
+	
 	@Override
 	public String toString() {
 		return map?.toString()

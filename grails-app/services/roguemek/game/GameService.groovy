@@ -100,6 +100,9 @@ class GameService extends AbstractGameService {
 		// get the first unit ready for its turn
 		initializeTurnUnit(game)
 		
+		game.startDate = new Date()
+		game.updateDate = game.startDate
+		
 		game.validate()
 		if(game.hasErrors()) {
 			log.error(game.errors)

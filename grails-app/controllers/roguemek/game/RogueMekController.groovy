@@ -63,6 +63,31 @@ class RogueMekController {
 	}
 	
 	/**
+	 * Generates the info needed to join a battle
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	def join(Integer max) {
+		def userInstance = currentUser()
+		if(userInstance) {
+	        params.max = Math.min(max ?: 10, 100)
+			params.sort = params.sort ?: "description"
+			params.order = params.order ?: "asc"
+			def gameCriteria = Game.createCriteria()
+			def initGames = gameCriteria.list(max: params.max, offset: params.offset) {
+				and {
+					eq("gameState", Game.GAME_INIT)
+				}
+				order(params.sort, params.order)
+			}
+	        respond initGames, model:[gameInstanceCount: initGames.getTotalCount()]
+		}
+		else {
+			redirect action: 'index'
+		}
+    }
+	
+	/**
 	 * Shows the game staging page
 	 * @return
 	 */

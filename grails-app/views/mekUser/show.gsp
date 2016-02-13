@@ -45,7 +45,7 @@
 				<li class="fieldcontain">
 					<span id="password-label" class="property-label"><g:message code="user.password.label" default="Password" /></span>
 					
-						<span class="property-value" aria-labelledby="password-label"><g:fieldValue bean="${mekUserInstance}" field="password"/></span>
+						<span class="property-value" aria-labelledby="password-label">*******</span>
 					
 				</li>
 				</g:if>
