@@ -32,8 +32,8 @@ function init(){
 			$("#spinner").fadeOut('slow');
 		});
 	
-	// The global login form should be able to allow login regardless of the current page 
-	$('#loginForm').ajaxForm(function(result) {
+	// TODO: figure out how to use ajax form without getting duplication of page contents 
+	/*$('#loginForm').ajaxForm(function(result) {
 		$('#loginBox').html(result);
-	});
+	});*/
 }
