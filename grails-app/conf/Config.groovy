@@ -86,7 +86,7 @@ grails.spring.bean.packages = []
 grails.web.disable.multipart=false
 
 // request parameters to mask when logging exceptions
-grails.exceptionresolver.params.exclude = ['password']
+grails.exceptionresolver.params.exclude = ['password', 'confirm']
 
 // configure auto-caching of queries by default (if false you can cache individual queries with 'cache: true')
 grails.hibernate.cache.queries = false
@@ -173,6 +173,9 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/debrief/**':					['permitAll'],
 	'/mekUser/register':			['permitAll'],
 	'/mekUser/confirm':				['permitAll'],
+	'/mekUser/forgotPassword':		['permitAll'],
+	'/mekUser/resetPassword':		['permitAll'],
+	'/mekUser/updatePassword':		['permitAll'],
 	'/mekUser/success':				['permitAll'],
 	'/**/js/**':					['permitAll'],
 	'/**/css/**':					['permitAll'],

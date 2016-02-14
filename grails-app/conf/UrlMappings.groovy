@@ -35,6 +35,21 @@ class UrlMappings {
 			action = 'confirm'
 		}
 		
+		name forgotPassword: "/forgotPassword"{
+			controller = 'mekUser'
+			action = 'forgotPassword'
+		}
+		
+		name resetPassword: "/resetPassword"{
+			controller = 'mekUser'
+			action = 'resetPassword'
+		}
+		
+		name updatePassword: "/updatePassword"{
+			controller = 'mekUser'
+			action = 'updatePassword'
+		}
+		
 		name success: "/success"{
 			controller = 'mekUser'
 			action = 'success'

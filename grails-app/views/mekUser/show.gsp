@@ -49,6 +49,22 @@
 					
 				</li>
 				</g:if>
+				
+				<g:if test="${!mekUserInstance?.enabled && mekUserInstance?.confirmCode}">
+				<li class="fieldcontain">
+					<span id="confirmCode-label" class="property-label"><g:message code="user.confirm.label" default="Confirm" /></span>
+					
+						<span class="property-value" aria-labelledby="confirmCode-label"><g:createLink absolute="true" controller="mekUser" action="confirm" id="${mekUserInstance?.confirmCode}"></g:createLink></span>
+					
+				</li>
+				</g:if>
+				
+				<li class="fieldcontain">
+					<span id="enabled-label" class="property-label"><g:message code="user.enabled.label" default="Enabled" /></span>
+					
+						<span class="property-value" aria-labelledby="enabled-label"><g:formatBoolean boolean="${mekUserInstance?.enabled}" /></span>
+					
+				</li>
 			
 				<li class="fieldcontain">
 					<span id="accountExpired-label" class="property-label"><g:message code="user.accountExpired.label" default="Account Expired" /></span>
@@ -61,13 +77,6 @@
 					<span id="accountLocked-label" class="property-label"><g:message code="user.accountLocked.label" default="Account Locked" /></span>
 					
 						<span class="property-value" aria-labelledby="accountLocked-label"><g:formatBoolean boolean="${mekUserInstance?.accountLocked}" /></span>
-					
-				</li>
-			
-				<li class="fieldcontain">
-					<span id="enabled-label" class="property-label"><g:message code="user.enabled.label" default="Enabled" /></span>
-					
-						<span class="property-value" aria-labelledby="enabled-label"><g:formatBoolean boolean="${mekUserInstance?.enabled}" /></span>
 					
 				</li>
 			
