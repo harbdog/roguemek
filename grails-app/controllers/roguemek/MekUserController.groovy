@@ -8,6 +8,9 @@ import grails.plugin.springsecurity.annotation.Secured
 class MekUserController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+	
+	def grailsApplication
+	def mailService
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -40,20 +43,64 @@ class MekUserController {
 	@Transactional
     def register() {
 		if(request.method == 'POST') {
-			def u = new MekUser()
+			MekUser u = new MekUser()
 			u.properties['username', 'password', 'callsign'] = params
 			if(u.password != params.confirm) {
 				u.errors.rejectValue("password", "user.password.dontmatch")
 				return [user:u]
 			}
-			if(u.save()) {
-				session.user = u
-				redirect controller:"RogueMek"
+			
+			u.enabled=false;
+			u.confirmCode= UUID.randomUUID().toString()
+			
+			if(u.save(flush: true)) {
+				//session.user = u
+				
+				try{
+					mailService.sendMail {
+						to u.username
+						subject "RogueMek Registration for ${u.callsign}"
+						html g.render(template:"mailtemplate",model:[code:u.confirmCode])
+					}
+				}
+				catch(org.springframework.mail.MailAuthenticationException e) {
+					log.error e.toString()
+				}
+				
+				render(view: "index", model: [userInstance: u])
+				redirect(action: "success")
 			}
 			else {
 				return [user:u]
 			}
 		}
+	}
+	
+	@Transactional
+	def confirm(String id) {
+		MekUser u = MekUser.findByConfirmCode(id)
+		if(!u) {
+			redirect action: 'index'
+			return;
+		}
+
+		// enabled the user account
+		u.confirmCode = null
+		u.enabled = true
+		
+		// give the user role to the account
+		Role userRole = Role.findByAuthority(Role.ROLE_USER)
+		MekUserRole.create u, userRole, true
+		
+		if (!u.save(flush: true)) {
+			render(view: "success", model: [message: 'Problem activating account.'])
+			return
+		}
+		render(view: "success", model: [message: 'Your account is successfully activated.'])
+	}
+	
+	def success(){
+		render(view:'success', model: [message: 'Your account has been created, it can be activated by visiting the confirmation link sent to your provided email address.']);
 	}
 
 	@Secured(['ROLE_ADMIN'])

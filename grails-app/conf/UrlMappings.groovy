@@ -25,6 +25,21 @@ class UrlMappings {
 			}
 		}
 		
+		name register: "/register"{
+			controller = 'mekUser'
+			action = 'register'
+		}
+		
+		name confirm: "/confirm"{
+			controller = 'mekUser'
+			action = 'confirm'
+		}
+		
+		name success: "/success"{
+			controller = 'mekUser'
+			action = 'success'
+		}
+		
 		name dropship: "/dropship"{
 			controller = 'rogueMek'
 			action = 'index'

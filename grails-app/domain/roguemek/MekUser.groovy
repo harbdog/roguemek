@@ -18,7 +18,9 @@ class MekUser {
 	String password
 	Date signupDate = NULL_DATE
 	Date lastLoginDate = NULL_DATE
-	boolean enabled = true
+	boolean enabled = false
+	String confirmCode
+	
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
@@ -31,6 +33,7 @@ class MekUser {
 		username email:true, unique:true
 		callsign blank: false, unique: true
 		password blank: false
+		confirmCode nullable: true
 	}
 
 	Set<Role> getAuthorities() {
