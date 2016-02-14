@@ -37,6 +37,7 @@ class MekUserController {
 		}
 	}
 
+	@Transactional
     def register() {
 		if(request.method == 'POST') {
 			def u = new MekUser()
