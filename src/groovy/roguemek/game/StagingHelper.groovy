@@ -263,7 +263,7 @@ class StagingHelper {
 		}
 		
 		if(thisStagingData == null) {
-			thisStagingData = new StagingUser(user: userInstance, game: this, startingLocation: location)
+			thisStagingData = new StagingUser(user: userInstance, game: game, startingLocation: location)
 			game.stagingUsers.add(thisStagingData)
 		}
 		else{
