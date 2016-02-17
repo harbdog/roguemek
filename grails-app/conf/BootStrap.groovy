@@ -9,18 +9,22 @@ import roguemek.model.*
 
 class BootStrap {
 
+	def grailsApplication
+	
     def init = { ServletContext servletContext ->
 		
-		/* Sample code for determining environment from grails.util.Environment
+		/* Sample code for determining environment from grails.util.Environment */
 		if (Environment.current == Environment.DEVELOPMENT) {
-            // insert Development environment specific code here
-        } else 
-        if (Environment.current == Environment.TEST) {
+			// insert Development environment specific code here
+			printClassPath this.class.classLoader
+			log.debug("mail: "+grailsApplication.config.grails.mail)
+        } 
+		else if (Environment.current == Environment.TEST) {
             // insert Test environment specific code here
-        } else 
-        if (Environment.current == Environment.PRODUCTION) {
+        } 
+		else if (Environment.current == Environment.PRODUCTION) {
             // insert Production environment specific code here
-        } */
+        }
 		
 		// Initialize the Context helping for determining location of resource with or without using the war
 		ContextHelper.setContext(servletContext)
@@ -283,4 +287,14 @@ class BootStrap {
     }
     def destroy = {
     }
+	
+	def printClassPath(classLoader) {
+		log.debug "$classLoader"
+		classLoader.getURLs().each {url->
+		   log.debug "- ${url.toString()}"
+		}
+		if (classLoader.parent) {
+		   printClassPath(classLoader.parent)
+		}
+	  }
 }

@@ -1,15 +1,22 @@
-// locations to search for config files that get merged into the main config;
-// config files can be ConfigSlurper scripts, Java properties files, or classes
-// in the classpath in ConfigSlurper format
+// locations to search for config files that get merged into the main config:
+def ENV_NAME = "ROGUEMEK_CONFIG"
 
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
+grails.config.locations = [
+	"classpath:${appName}-config.groovy",
+	"file:${appName}-config.groovy"
+]
 
-// if (System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
+if(System.getenv(ENV_NAME)) {
+	log.info "Including configuration file specified in environment: " + System.getenv(ENV_NAME)
+	grails.config.locations << "file:" + System.getenv(ENV_NAME)
+ 
+} else if(System.getProperty(ENV_NAME)) {
+	log.info "Including configuration file specified on command line: " + System.getProperty(ENV_NAME)
+	grails.config.locations << "file:" + System.getProperty(ENV_NAME)
+ 
+} else {
+	log.warn "No external configuration file defined with environment property name: ${ENV_NAME}"
+}
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 
@@ -57,18 +64,6 @@ grails {
         // escapes all not-encoded output at final stage of outputting
         // filteringCodecForContentType.'text/html' = 'html'
     }
-	mail {
-		host = "smtp.gmail.com"
-		port = 465
-		username = "roguemek@gmail.com"
-		/** --> DO NOT COMMIT PASSWORD <-- */
-		password = "PASSWORD"
-		/** --> DO NOT COMMIT PASSWORD <-- */
-		props = ["mail.smtp.auth":"true",
-				 "mail.smtp.socketFactory.port":"465",
-				 "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
-				 "mail.smtp.socketFactory.fallback":"false"]
-	}
 }
 
 

@@ -91,6 +91,10 @@ grails.war.resources = { stagingDir, args ->
 	copy(todir: "${stagingDir}/src") {
 		fileset(dir: "src")
 	}
+	
+	copy(file: "${appName}-config.groovy",
+		 tofile: "${stagingDir}/WEB-INF/classes/${appName}-config.groovy")
+	
 	// TODO: assets already in the war but flattened out a bit?
 	copy(todir: "${stagingDir}/assets") {
 		fileset(dir: "grails-app/assets")
