@@ -92,10 +92,10 @@ class GameService extends AbstractGameService {
 		
 		game.gameState = Game.GAME_ACTIVE
 		game.gameTurn = 0
-		
-		// TODO: perform initiative roll on first and every 4 turns after to change up the order of the units turn
-		// game.units...
 		game.unitTurn = 0
+		
+		// perform initiative roll on first and every 4 turns after to change up the order of the units turn
+		game.units = doInitiativeRolls(game)
 		
 		// get the first unit ready for its turn
 		initializeTurnUnit(game)
@@ -122,6 +122,45 @@ class GameService extends AbstractGameService {
 		gameStagingService.addStagingUpdate(game, data)
 	}
 	
+	/**
+	 * Performs the initiative rolls to rearrange the order in which game units take their turn
+	 * @param game
+	 * @return
+	 */
+	public List doInitiativeRolls(Game game) {
+		def unitInitiatives = []
+		
+		for(BattleUnit unit in game.units) {
+			// TODO: alter initiative roll based on mech weight, speed, pilot skill, etc...
+			unitInitiatives << new UnitOrder(unit: unit, initiative: Roll.randomInt(1000, 1))
+		}
+		
+		// TODO: handle ties
+		def newOrder = []
+		unitInitiatives.sort().each { UnitOrder thisOrder ->
+			newOrder << thisOrder.unit
+		}
+		
+		return newOrder
+	}
+	
+	/**
+	 * Internal class only used to help sort out initiative rolls
+	 * @author eric
+	 *
+	 */
+	static class UnitOrder implements Comparable {
+		def unit
+		def initiative
+		int compareTo(other) {
+			this.initiative <=> other.initiative
+		}
+	}
+	
+	/**
+	 * Returns a random map from the database
+	 * @return
+	 */
 	public HexMap getRandomMap() {
 		return HexMap.executeQuery("from HexMap order by random", [max: 1])?.first()
 	}
@@ -220,6 +259,13 @@ class GameService extends AbstractGameService {
 			if(game.unitTurn >= game.units.size()) {
 				game.gameTurn ++
 				game.unitTurn = 0
+				
+				if(game.gameTurn % 4 == 0) {
+					// perform initiative roll every 4 turns to change up the order of the units turn
+					game.units = doInitiativeRolls(game)
+					
+					// TODO: message the initiative change, or better, update UI to indicate unit turn order at all times
+				}
 			}
 			
 			nextTurnUnit = game.getTurnUnit()
