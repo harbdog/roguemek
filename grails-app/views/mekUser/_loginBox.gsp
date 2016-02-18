@@ -1,12 +1,12 @@
-<g:if test="${params.action != 'auth'}">
-	<div class="left" id="loginBox">
-		<h1><g:message code="login.member.label" default="Already a member?" /></h1>
-		<g:render template="/mekUser/loginForm" />
-	</div>
-</g:if>
-
-<div class="right">
-	<h1><g:message code="login.need.account.label" default="Need an account?" /></h1>
-	<p class="legend"><g:message code="login.signup.label" default="Signup now to start playing!" /></p>
-	<link:register><g:message code="login.register.now.label" default="Register now" /></link:register>
+<div class="nav" role="navigation">
+	<ul>
+		<div class="right">
+			<g:if test="${params.action != 'auth'}">
+				<li><link:login><g:message code="login.label" default="Login" /></link:login></li>
+			</g:if>
+			<g:if test="${params.action != 'register'}">
+				<li><link:register><g:message code="register.label" default="Register" /></link:register></li>
+			</g:if>
+		</div>
+	</ul>
 </div>

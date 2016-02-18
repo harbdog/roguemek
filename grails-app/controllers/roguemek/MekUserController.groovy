@@ -50,19 +50,39 @@ class MekUserController {
 				return [user:u]
 			}
 			
-			u.enabled = false;
-			u.confirmCode = UUID.randomUUID().toString()
+			// Only use email confirmation for new accounts if it was setup
+			def emailConfirmationRequired = (grailsApplication.config.grails.mail.password != "PASSWORD")
+			
+			if(emailConfirmationRequired) {
+				u.enabled = false
+				u.confirmCode = UUID.randomUUID().toString()
+			}
+			else {
+				u.enabled = true
+			}
 			
 			if(u.save(flush: true)) {
-				try{
-					mailService.sendMail {
-						to u.username
-						subject "RogueMek Registration for ${u.callsign}"
-						html g.render(template:"mailConfirmUser", model:[code:u.confirmCode])
+				if(emailConfirmationRequired) {
+					try{
+						mailService.sendMail {
+							to u.username
+							subject "RogueMek Registration for ${u.callsign}"
+							html g.render(template:"mailConfirmUser", model:[code:u.confirmCode])
+						}
+					}
+					catch(org.springframework.mail.MailAuthenticationException e) {
+						log.error e.toString()
 					}
 				}
-				catch(org.springframework.mail.MailAuthenticationException e) {
-					log.error e.toString()
+				else {
+					log.warn("Grails mail not setup, skipping email registration for ${u.username}")
+					
+					// give the user role to the account
+					Role userRole = Role.findByAuthority(Role.ROLE_USER)
+					MekUserRole.create u, userRole, true
+					
+					render(view: "success", model: [message: "Your account is successfully registered as ${u.username}."])
+					return
 				}
 				
 				render(view: "index", model: [userInstance: u])

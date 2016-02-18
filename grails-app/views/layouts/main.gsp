@@ -18,16 +18,14 @@
 		<g:layoutHead/>
 	</head>
 	<body>
-		<div id="grailsLogo" role="banner"><a href="/RogueMek"><asset:image src="roguemek_logo.png" alt="RogueMek"/></a></div>
+		<div id="grailsLogo" role="banner"><g:link uri="/"><asset:image src="roguemek_logo.png" alt="RogueMek"/></g:link></div>
 		
 		<div id="loginBox" class="loginBox">
 			<sec:ifLoggedIn>
 				<g:render template="/mekUser/loginLanding" />
 			</sec:ifLoggedIn>
       		<sec:ifNotLoggedIn>
-				<g:if test="${params.action != 'register'}">
-					<g:render template="/mekUser/loginBox" />
-				</g:if>
+				<g:render template="/mekUser/loginBox" />
 			</sec:ifNotLoggedIn>
 		</div>
 		

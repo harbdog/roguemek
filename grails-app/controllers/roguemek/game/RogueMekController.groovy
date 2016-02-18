@@ -198,7 +198,6 @@ class RogueMekController {
 	 * @param gameInstance
 	 * @return
 	 */
-	@Secured(['ROLE_USER'])
 	def delete(Game gameInstance) {
 		
 		if (gameInstance == null || !gameInstance.isInit()) {
@@ -239,6 +238,7 @@ class RogueMekController {
 	 * Gets names and information about the available maps
 	 * @respond object containing the names and info about each map
 	 */
+	@Transactional(readOnly = true)
 	def mapSelect() {
 		def userInstance = currentUser()
 		if(userInstance) {
@@ -300,6 +300,7 @@ class RogueMekController {
 	 * Gets names and information about the available units
 	 * @respond object containing the names and info about each unit
 	 */
+	@Transactional(readOnly = true)
 	def unitSelect() {
 		def userInstance = currentUser()
 		if(userInstance) {
@@ -314,6 +315,7 @@ class RogueMekController {
 	 * Allows for individual calls to render a user's unit on the stage
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	def stageUnit() {
 		def userInstance = currentUser()
 		if(userInstance == null) return
@@ -451,6 +453,7 @@ class RogueMekController {
 	 * Allows for individual calls to render a user on the stage
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	def stageUser() {
 		def userInstance = currentUser()
 		if(userInstance == null) return
@@ -597,6 +600,7 @@ class RogueMekController {
 	 * Gets the camo selection page ready
 	 * @respond
 	 */
+	@Transactional(readOnly = true)
 	def camoSelect() {
 		def userInstance = currentUser()
 		

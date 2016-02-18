@@ -4,7 +4,7 @@
 </g:if>
 <g:else>
 		<div class="nav logout" role="navigation">
-			<li><%-- <g:link controller="mekUser" action="profile">Profile</g:link> | --%><g:link controller="logout">Logout</g:link></li>
+			<ul><li><%-- <g:link controller="mekUser" action="profile">Profile</g:link> | --%><g:link controller="logout">Logout</g:link></li></ul>
 		</div>
 		
 		<%-- You own (${session?.user?.ownedMechs?.size() ?: 0}) Mechs.<br> --%>
@@ -16,11 +16,8 @@
 </g:else>
 
 <div class="nav" role="navigation">
-	<g:if test="${params.action == 'register'}">
-		<%-- Hide user box while registering --%>
-	</g:if>
-	
 	<ul>
+	
 	<sec:ifLoggedIn>
 		<li><a class="dropship" href="${createLink(uri: '/dropship')}"><g:message code="dropship.home.label" default="Dropship"/></a></li>
 	</sec:ifLoggedIn>
@@ -48,5 +45,6 @@
        <li><g:link controller="game"
                 action="list">Games</g:link></li>
     </sec:ifAnyGranted>
+    
     </ul>
 </div>

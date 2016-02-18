@@ -25,6 +25,11 @@ class UrlMappings {
 			}
 		}
 		
+		name login: "/login"{
+			controller = 'login'
+			action = 'auth'
+		}
+		
 		name register: "/register"{
 			controller = 'mekUser'
 			action = 'register'
