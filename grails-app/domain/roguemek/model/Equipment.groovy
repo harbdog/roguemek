@@ -51,18 +51,15 @@ class Equipment {
     }
 	
 	static void init() {
-		def defaultEquip = Equipment.findByName("Cockpit")
-		if(defaultEquip != null) {
-			return
-		}
-		
 		// Create all objects for the game from csv
 		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Equipment.csv"))).eachLine { map ->
+			def equip = Equipment.findByName(map.name)
+			if(equip) return
 			
 			// update Aliases to be multiple strings in an array instead of one string
 			Equipment.updateAliases(map)
 			
-			def equip = new Equipment(map)
+			equip = new Equipment(map)
 			
 			if(!equip.validate()) {
 				log.error("Errors with equipment "+equip.name+":\n")

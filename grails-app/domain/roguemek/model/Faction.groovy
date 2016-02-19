@@ -19,14 +19,12 @@ class Faction {
 	}
 	
 	static void init() {
-		def defaultFaction = Faction.findByName("Lone Wolf")
-		if(defaultFaction != null) {
-			return
-		}
-		
 		// Create all factions for the game from csv
 		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Factions.csv"))).eachLine { map ->
-			def faction = new Faction(map)
+			def faction = Faction.findByName(map.name)
+			if(faction) return
+			
+			faction = new Faction(map)
 			
 			if(!faction.validate()) {
 				log.error("Errors with faction "+faction.name+":\n")

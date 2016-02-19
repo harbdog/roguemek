@@ -24,7 +24,12 @@ class MapBoard {
 	}
 	
 	public static HexMap initBoardFromPath(String path) {
-		HexMap board
+		// check to see if the board is already loaded into the database
+		HexMap board = HexMap.findByPath(path)
+		if(board != null) {
+			log.info("Board already loaded: "+path)
+			return board
+		}
 		
 		InputStream boardFile = ContextHelper.getResource(path)
 		if(boardFile.available() && path.endsWith(BOARD_EXTENSION)) {

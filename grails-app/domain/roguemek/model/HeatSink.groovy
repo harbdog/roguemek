@@ -17,18 +17,15 @@ class HeatSink extends Equipment {
 	}
 	
 	static void init() {
-		def defaultHS = HeatSink.findByName("Heat Sink")
-		if(defaultHS != null) {
-			return
-		}
-		
 		// Create all objects for the game from csv
 		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/HeatSinks.csv"))).eachLine { map ->
+			def heatsink = HeatSink.findByName(map.name)
+			if(heatsink) return
 			
 			// update Aliases to be multiple strings in an array instead of one string
 			HeatSink.updateAliases(map)
 			
-			def heatsink = new HeatSink(map)
+			heatsink = new HeatSink(map)
 			
 			if(!heatsink.validate()) {
 				log.error("Errors with heatsink "+heatsink.name+":\n")

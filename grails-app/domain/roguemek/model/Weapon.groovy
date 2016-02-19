@@ -46,13 +46,11 @@ class Weapon extends Equipment {
 	}
 	
 	static void init() {
-		def defaultWeapon = Weapon.findByName("Small Laser")
-		if(defaultWeapon != null) {
-			return
-		}
-		
 		// Create all objects for the game from csv
 		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Weapons.csv"))).eachLine { map ->
+			// using name and mass since Hatchets have the same name but differ in mass based on mech tonnage
+			def weapon = Weapon.findByNameAndMass(map.name, map.mass)
+			if(weapon) return
 			
 			// update Aliases to be multiple strings in an array instead of one string
 			Weapon.updateAliases(map)
@@ -71,7 +69,7 @@ class Weapon extends Equipment {
 				map.ammoTypes = ammoTypesArr
 			}
 			
-			def weapon = new Weapon(map)
+			weapon = new Weapon(map)
 			if(!weapon.validate()) {
 				log.error("Errors with weapon "+weapon.name+":\n")
 				weapon.errors.allErrors.each {

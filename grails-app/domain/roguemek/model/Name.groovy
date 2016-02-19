@@ -31,10 +31,7 @@ class Name {
 	}
 	
 	static void init() {
-		def defaultName = Name.findByName("Aaron")
-		if(defaultName != null) {
-			return
-		}
+		if(Name.count() > 0) return
 		
 		def isDevEnv = (Environment.current == Environment.DEVELOPMENT)
 		def devLimitCounter = 0

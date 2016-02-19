@@ -13,18 +13,16 @@ class JumpJet extends Equipment {
 	}
 	
 	static void init() {
-		def defaultJJ = JumpJet.findByName("Jump Jet")
-		if(defaultJJ != null) {
-			return
-		}
-		
 		// Create all objects for the game from csv
 		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/JumpJets.csv"))).eachLine { map ->
+			// using name and mass since Jump Jets have the same name but differ in mass based on mech tonnage
+			def jumpjet = JumpJet.findByNameAndMass(map.name, map.mass)
+			if(jumpjet) return
 			
 			// update Aliases to be multiple strings in an array instead of one string
 			JumpJet.updateAliases(map)
 			
-			def jumpjet = new JumpJet(map)
+			jumpjet = new JumpJet(map)
 			
 			if(!jumpjet.validate()) {
 				log.error("Errors with jumpjet "+jumpjet.name+":\n")

@@ -47,6 +47,7 @@ class MechMTF {
 		}
 		
 		def map = [:]
+		Mech mech
 		
 		// initialize values not in the MTF spec
 		map.cbills = 0
@@ -71,6 +72,12 @@ class MechMTF {
 			else {
 				map.chassis = chassisVariant
 				map.variant = "?"
+			}
+			
+			mech = Mech.findByNameAndChassisAndVariant(map.name, map.chassis, map.variant)
+			if(mech) {
+				log.info("Mech already loaded: "+mech.toString())
+				return mech
 			}
 		}
 		
@@ -205,7 +212,7 @@ class MechMTF {
 		}
 		
 		
-		Mech mech = new Mech(map)
+		mech = new Mech(map)
 		if(!mech.validate()) {
 			log.error("Errors with mech "+mech.name+":\n")
 			mech.errors.allErrors.each {
@@ -360,6 +367,10 @@ class MechMTF {
 					log.info("CREATED MISSING EQUIPMENT "+thisCrit.name)
 				}
 			}
+		}
+		
+		if(thisCrit == null) {
+			log.error("null? "+critName)
 		}
 		
 		crits[critStart + subSectionIndex] = thisCrit.id

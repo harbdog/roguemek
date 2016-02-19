@@ -32,29 +32,45 @@ class BootStrap {
 		// Initialize the Hex Tileset
 		HexTileset.init()
 		
+		def rootRole = Role.findByAuthority(Role.ROLE_ROOT)
+		if(!rootRole) {
+			rootRole = new Role(authority: Role.ROLE_ROOT).save(flush: true)
+		}
 		
-		def rootRole = new Role(authority: Role.ROLE_ROOT).save(flush: true)
-		def adminRole = new Role(authority: Role.ROLE_ADMIN).save(flush: true)
-		def userRole = new Role(authority: Role.ROLE_USER).save(flush: true)
+		def adminRole = Role.findByAuthority(Role.ROLE_ADMIN)
+		if(!adminRole) {
+			adminRole = new Role(authority: Role.ROLE_ADMIN).save(flush: true)
+		}
 		
-		def adminEmail = 'harbdog@gmail.com'
-		def adminCallsign = 'CapperDeluxe'
-		def adminPassword = 'Pass99'
+		def userRole = Role.findByAuthority(Role.ROLE_USER)
+		if(!userRole) {
+			userRole = new Role(authority: Role.ROLE_USER).save(flush: true)
+		}
 		
-		def testEmail = 'roguemek@gmail.com'
-		def testCallsign = 'RogueMekWarrior'
-		def testPassword = 'Pass99'
+		assert Role.count == 3
 		
-		def sampleEmail = 'test@test.com'
-		def sampleCallsign = 'TestWarrior'
-		def samplePassword = 'Pass99'
+		// Initialize names
+		log.info('Initializing Names/Surnames... this may take a while if first time')
+		Name.init()
+		Surname.init()
+		
+		// random query name test
+		log.info('Initialized Names/Surnames. Random query names test:')
+		log.info("R: "+ Name.getRandom().name)
+		log.info("F: "+ Name.getRandom(Name.GENDER_FEMALE).name)
+		log.info("M: "+ Name.getRandom(Name.GENDER_MALE).name)
+		log.info("S: "+ Surname.getRandom().surname)
+		
+		// use RogueMek-config.groovy to define initial users
 		
 		// Create Admin user with all Roles
-		def adminUser = MekUser.findByUsername(adminEmail)
+		def adminUser = MekUser.findByUsername(grailsApplication.config.roguemek.users.admin.username)
 		def adminPilot
 		if(!adminUser) {
 			// initialize testing admin user
-			adminUser = new MekUser(username: adminEmail, callsign: adminCallsign, password: adminPassword, enabled: true)
+			adminUser = new MekUser(grailsApplication.config.roguemek.users.admin)
+			adminUser.enabled = true
+			
 			if(!adminUser.validate()) {
 				log.error("Errors with admin "+adminUser.username+":\n")
 				adminUser.errors.allErrors.each {
@@ -63,11 +79,16 @@ class BootStrap {
 			}
 			else {
 				adminUser.save flush:true
+				
+				// assign all roles to admin user
+				MekUserRole.create adminUser, rootRole, true
+				MekUserRole.create adminUser, adminRole, true
+				MekUserRole.create adminUser, userRole, true
 			
 				log.info('Initialized admin user '+adminUser.username)
 			}
 			
-			adminPilot = new Pilot(firstName: "Rogue", lastName: "Mek", ownerUser: adminUser, status: Pilot.STATUS_ACTIVE)
+			adminPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: adminUser, status: Pilot.STATUS_ACTIVE)
 			if(!adminPilot.validate()) {
 				log.error("Errors with pilot "+adminPilot.firstName+":\n")
 				adminPilot.errors.allErrors.each {
@@ -76,21 +97,20 @@ class BootStrap {
 			}
 			else {
 				adminPilot.save flush:true
-			
-				log.info('Initialized admin pilot '+adminPilot.firstName)
+				
+				log.info('Initialized admin pilot '+adminPilot.toString())
 			}
 		}
 		
-		MekUserRole.create adminUser, rootRole, true
-		MekUserRole.create adminUser, adminRole, true
-		MekUserRole.create adminUser, userRole, true
-		
-		// Create test user with User role
-		def testUser = MekUser.findByUsername(testEmail)
+		// Create optional test user with User role
+		def createTester = grailsApplication.config.roguemek.users.tester?.username
+		def testUser = MekUser.findByUsername(createTester)
 		def testPilot
-		if(!testUser) {
+		if(createTester && !testUser) {
 			// initialize testing admin user
-			testUser = new MekUser(username: testEmail, callsign: testCallsign, password: testPassword, enabled: true)
+			testUser = new MekUser(grailsApplication.config.roguemek.users.tester)
+			testUser.enabled = true
+			
 			if(!testUser.validate()) {
 				log.error("Errors with tester "+testUser.username+":\n")
 				testUser.errors.allErrors.each {
@@ -99,11 +119,14 @@ class BootStrap {
 			}
 			else {
 				testUser.save flush:true
+				
+				// assign user role to test user
+				MekUserRole.create testUser, userRole, true
 			
 				log.info('Initialized test user '+testUser.username)
 			}
 			
-			testPilot = new Pilot(firstName: "Testy", lastName: "Tester", ownerUser: testUser, status: Pilot.STATUS_ACTIVE)
+			testPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: testUser, status: Pilot.STATUS_ACTIVE)
 			if(!testPilot.validate()) {
 				log.error("Errors with pilot "+testPilot.firstName+":\n")
 				testPilot.errors.allErrors.each {
@@ -113,66 +136,17 @@ class BootStrap {
 			else {
 				testPilot.save flush:true
 			
-				log.info('Initialized test pilot '+testPilot.firstName)
+				log.info('Initialized test pilot '+testPilot.toString())
 			}
 		}
 		
-		MekUserRole.create testUser, userRole, true
-		
-		// Create sample user with User role
-		def sampleUser = MekUser.findByUsername(sampleEmail)
-		def samplePilot
-		if(!sampleUser) {
-			// initialize testing admin user
-			sampleUser = new MekUser(username: sampleEmail, callsign: sampleCallsign, password: samplePassword, enabled: true)
-			if(!sampleUser.validate()) {
-				log.error("Errors with tester "+sampleUser.username+":\n")
-				sampleUser.errors.allErrors.each {
-					log.error(it)
-				}
-			}
-			else {
-				sampleUser.save flush:true
-			
-				log.info('Initialized test user '+sampleUser.username)
-			}
-			
-			samplePilot = new Pilot(firstName: "Samply", lastName: "Sampler", ownerUser: sampleUser, status: Pilot.STATUS_ACTIVE)
-			if(!samplePilot.validate()) {
-				log.error("Errors with pilot "+samplePilot.firstName+":\n")
-				samplePilot.errors.allErrors.each {
-					log.error(it)
-				}
-			}
-			else {
-				samplePilot.save flush:true
-			
-				log.info('Initialized sample pilot '+samplePilot.firstName)
-			}
-		}
-		
-		MekUserRole.create sampleUser, userRole, true
-		
-		assert MekUser.count() == 3
-		assert Role.count() == 3
-		assert MekUserRole.count() == 5
-		assert Pilot.count() == 3
+		assert MekUser.count() >= 1
+		assert MekUserRole.count() >= 1
+		assert Pilot.count() >= 1
 		
 		// Initialize maps
 		HexMap.init()
 		log.info('Initialized Maps')
-		
-		// Initialize names
-		Name.init()
-		Surname.init()
-		log.info('Initialized Names/Surnames')
-		
-		// random query name test
-		log.info('Random query names test:')
-		log.info("R: "+ Name.getRandom().name)
-		log.info("F: "+ Name.getRandom(Name.GENDER_FEMALE).name)
-		log.info("M: "+ Name.getRandom(Name.GENDER_MALE).name)
-		log.info("S: "+ Surname.getRandom().surname)
 		
 		// Initialize factions
 		Faction.init()
@@ -186,7 +160,6 @@ class BootStrap {
 		Weapon.init()
 		log.info('Initialized Equipment')
 		
-		
 		// Initialize stock mechs
 		Mech.init()
 		log.info('Initialized Mechs')
@@ -194,95 +167,104 @@ class BootStrap {
 		// Initialize heat effects
 		HeatEffect.initializeHeatEffects()
 		
+		// setting up some test BattleMech instances for the test game
+		def battleMechA
+		def battleMechB
+		def battleMech2
+		def battleMech3
 		
-		// Initialize a sample HexMap board
-		HexMap boardMap = HexMap.findByName("Battletech")
-		boardMap?.loadMap()
-		log.info('Preloaded sample Board')
-		
-		// Initialize a sample BattleMech
-		def battleMech = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Stalker"), x: 0, y: 0, heading: 3, rgb: [255, 0, 0])
-		if(!battleMech.validate()) {
-			log.error("Errors with battle mech "+battleMech.mech?.name+":\n")
-			battleMech.errors.allErrors.each {
-				log.error(it)
+		if(adminPilot) {
+			// Initialize a sample BattleMech
+			battleMechA = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Stalker"), rgb: [255, 0, 0])
+			if(!battleMechA.validate()) {
+				log.error("Errors with battle mech "+battleMechA.mech?.name+":\n")
+				battleMechA.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				battleMechA.save flush:true
+			
+				log.info('Initialized battle mech '+battleMechA.mech.name+" with ID="+battleMechA.id)
+			}
+			
+			// and a 2nd mech for the admin pilot
+			battleMechB = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Firestarter"), rgb: [255, 105, 105])
+			if(!battleMechB.validate()) {
+				log.error("Errors with battle mech "+battleMechB.mech?.name+":\n")
+				battleMechB.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				battleMechB.save flush:true
+			
+				log.info('Initialized battle mech '+battleMechB.mech.name+" with ID="+battleMechB.id)
 			}
 		}
-		else {
-			battleMech.save flush:true
 		
-			log.info('Initialized battle mech '+battleMech.mech.name+" with ID="+battleMech.id)
-		}
-		
-		// and a 2nd mech for the admin pilot
-		def battleMechB = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Firestarter"), x: 1, y: 0, heading: 3, rgb: [255, 105, 105])
-		if(!battleMechB.validate()) {
-			log.error("Errors with battle mech "+battleMechB.mech?.name+":\n")
-			battleMechB.errors.allErrors.each {
-				log.error(it)
+		if(testPilot) {
+			// and another BattleMech
+			battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Warhammer"), rgb: [0, 0, 255])
+			if(!battleMech2.validate()) {
+				log.error("Errors with battle mech "+battleMech2.mech?.name+":\n")
+				battleMech2.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				battleMech2.save flush:true
+			
+				log.info('Initialized battle mech '+battleMech2.mech.name+" with ID="+battleMech2.id)
+			}
+			
+			// yet another BattleMech
+			battleMech3 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Blackjack"), rgb: [0, 255, 0])
+			if(!battleMech3.validate()) {
+				log.error("Errors with battle mech "+battleMech3.mech?.name+":\n")
+				battleMech3.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				battleMech3.save flush:true
+			
+				log.info('Initialized battle mech '+battleMech3.mech.name+" with ID="+battleMech3.id)
 			}
 		}
-		else {
-			battleMechB.save flush:true
 		
-			log.info('Initialized battle mech '+battleMechB.mech.name+" with ID="+battleMechB.id)
-		}
-		
-		// and another BattleMech
-		def battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Warhammer"), x: 4, y: 4, heading: 5, rgb: [0, 0, 255])
-		if(!battleMech2.validate()) {
-			log.error("Errors with battle mech "+battleMech2.mech?.name+":\n")
-			battleMech2.errors.allErrors.each {
-				log.error(it)
+		if(adminPilot && testPilot
+				&& battleMechA && battleMechB && battleMech2 && battleMech3) {
+			// Initialize a sample HexMap board
+			HexMap boardMap = HexMap.findByName("Battletech")
+			boardMap?.loadMap()
+			log.info('Preloaded sample Board')
+			
+			// Initialize a sample Game
+			BattleHexMap battleBoardMap = new BattleHexMap(map: boardMap)
+			battleBoardMap.save flush:true
+			
+			Game sampleGame = new Game(ownerUser: adminUser, 
+					description: "The Battle of Wits", 
+					users: [adminUser, testUser], 
+					spectators: [], 
+					units: [battleMechA, battleMechB, battleMech2, battleMech3], 
+					board: battleBoardMap)
+			
+			StagingUser stagingAdmin = new StagingUser(game: sampleGame, user: adminUser, startingLocation: Game.STARTING_NW, rgbCamo: [255, 0, 0])
+			StagingUser stagingTester = new StagingUser(game: sampleGame, user: testUser, startingLocation: Game.STARTING_N, rgbCamo: [0, 0, 255])
+			sampleGame.stagingUsers = [stagingAdmin, stagingTester]
+			
+			if(!sampleGame.validate()) {
+				log.error("Errors with game:\n")
+				sampleGame.errors.allErrors.each {
+					log.error(it)
+				}
 			}
-		}
-		else {
-			battleMech2.save flush:true
-		
-			log.info('Initialized battle mech '+battleMech2.mech.name+" with ID="+battleMech2.id)
-		}
-		
-		// yet another BattleMech
-		def battleMech3 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Blackjack"), x: 2, y: 3, heading: 4, rgb: [0, 255, 0])
-		if(!battleMech3.validate()) {
-			log.error("Errors with battle mech "+battleMech3.mech?.name+":\n")
-			battleMech3.errors.allErrors.each {
-				log.error(it)
+			else {
+				sampleGame.save flush:true
+				log.info('Initialized game '+sampleGame.id)
 			}
-		}
-		else {
-			battleMech3.save flush:true
-		
-			log.info('Initialized battle mech '+battleMech3.mech.name+" with ID="+battleMech3.id)
-		}
-		
-		assert BattleMech.count() == 4
-		
-		// Initialize a sample Game
-		BattleHexMap battleBoardMap = new BattleHexMap(map: boardMap)
-		battleBoardMap.save flush:true
-		
-		Game sampleGame = new Game(ownerUser: adminUser, 
-				description: "The Battle of Wits", 
-				users: [adminUser, testUser], 
-				spectators: [sampleUser], 
-				units: [battleMech, battleMechB, battleMech2, battleMech3], 
-				board: battleBoardMap)
-		
-		StagingUser stagingAdmin = new StagingUser(game: sampleGame, user: adminUser, startingLocation: Game.STARTING_NW, rgbCamo: [255, 0, 0])
-		StagingUser stagingTester = new StagingUser(game: sampleGame, user: testUser, startingLocation: Game.STARTING_N, rgbCamo: [0, 0, 255])
-		sampleGame.stagingUsers = [stagingAdmin, stagingTester]
-		
-		if(!sampleGame.validate()) {
-			log.error("Errors with game:\n")
-			sampleGame.errors.allErrors.each {
-				log.error(it)
-			}
-		}
-		else {
-			sampleGame.save flush:true
-			battleMech.save flush:true
-			log.info('Initialized game '+sampleGame.id)
 		}
     }
     def destroy = {

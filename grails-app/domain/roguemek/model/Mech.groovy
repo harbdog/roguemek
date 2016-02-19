@@ -113,12 +113,6 @@ class Mech extends Unit {
 	public static final ASSAULT = "assault"
 
 	static void init() {
-		// TODO: instead, determine on a per mech basis whether it already exists or needs to be created
-		def defaultMech = Mech.findByName("Atlas")
-		if(defaultMech != null) {
-			return
-		}
-		
 		Set<String> mechPaths = ContextHelper.getResourcePaths("/src/mtf/mechs/")
 		
 		for(String path in mechPaths) {
