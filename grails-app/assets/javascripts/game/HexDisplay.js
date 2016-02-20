@@ -44,24 +44,30 @@ c.update = function() {
 	// cache the object based on settings since caching makes text blurry, but not caching is a big performance hit
 	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY){
 		// no caching at the highest gfx setting
-		if(useIsometric && this.getHex() != null) {
-			if(this.getHex().getElevation() >= 0) {
-				this.cache(0, 0, hexWidth, hexHeight + (elevationHeight * this.getHex().getElevation()));
-			}
-			else {
-				this.cache(0, (elevationHeight * this.getHex().getElevation()), hexWidth, hexHeight);
-			}
+		this.doCache();
+	}
+}
+
+c.doCache = function() {
+	if(useIsometric && this.getHex() != null) {
+		if(this.getHex().getElevation() >= 0) {
+			this.cache(0, 0, hexWidth, hexHeight + (elevationHeight * this.getHex().getElevation()));
 		}
 		else {
-			this.cache(0, 0, hexWidth, hexHeight);
+			this.cache(0, (elevationHeight * this.getHex().getElevation()), hexWidth, hexHeight - (elevationHeight * this.getHex().getElevation()));
 		}
+	}
+	else {
+		this.cache(0, 0, hexWidth, hexHeight);
 	}
 }
 
 c.cleanChildren = function() {
 	if(this.isometricChildren != null) {
 		for(var i=0; i<this.isometricChildren.length; i++){
-			this.removeChild(this.isometricChildren[i]);
+			if(this.isometricChildren[i] != null) {
+				this.removeChild(this.isometricChildren[i]);
+			}
 		}
 		this.isometricChildren = null;
 	}
@@ -110,12 +116,17 @@ c.drawIsometric = function() {
 		// keep track of the isometric child display object indices so they can be easily removed/toggled
 		this.isometricChildren = [];
 		
+		// might need to know adjacent hexes to display appropriately
+		var adjacents = this.coords.getAdjacentCoords();
+		
 		// move the hex image up or down based on elevation
 		var elev = this.getHex().getElevation();
 		this.y -= (elevationHeight * elev);
 		
 		if(elev > 0) {
 			// draw the polygons that make up the isometric elevation
+			
+			// HEADING_SW
 			var p1 = new createjs.Shape();
 			p1.graphics.setStrokeStyle(1)
 					.beginStroke(darkgray).beginFill(darkgray)
@@ -126,6 +137,7 @@ c.drawIsometric = function() {
 					.lineTo(0, (hexHeight/2)).endStroke();
 			this.isometricChildren[0] = this.addChild(p1);
 			
+			// HEADING_S
 			var p2 = new createjs.Shape();
 			p2.graphics.setStrokeStyle(1)
 					.beginStroke(darkgray).beginFill(gray)
@@ -137,6 +149,7 @@ c.drawIsometric = function() {
 			
 			this.isometricChildren[1] = this.addChild(p2);
 			
+			// HEADING_SE
 			var p3 = new createjs.Shape();
 			p3.graphics.setStrokeStyle(1)
 					.beginStroke(darkgray).beginFill(lightgray)
@@ -151,41 +164,83 @@ c.drawIsometric = function() {
 		
 		if(elev < 0) {
 			// draw the polygons that make up the isometric elevation
-			var p1 = new createjs.Shape();
-			p1.graphics.setStrokeStyle(1)
-					.beginStroke(darkgray).beginFill(lightgray)
-					.moveTo(0, (hexHeight/2))
-					.lineTo(0, (hexHeight/2) + (elevationHeight * elev))
-					.lineTo((hexWidth/4), (elevationHeight * elev))
-					.lineTo((hexWidth/4), 0)
-					.lineTo(0, (hexHeight/2)).endStroke();
-			this.isometricChildren[0] = this.addChild(p1);
 			
-			var p2 = new createjs.Shape();
-			p2.graphics.setStrokeStyle(1)
-					.beginStroke(darkgray).beginFill(gray)
-					.moveTo((hexWidth/4), 0)
-					.lineTo((hexWidth/4), (elevationHeight * elev))
-					.lineTo((3*hexWidth/4), (elevationHeight * elev))
-					.lineTo((3*hexWidth/4), 0)
-					.lineTo((hexWidth/4), 0).endStroke();
+			// HEADING_NW
+			if(adjacents[HEADING_NW] != null) {
+				var coordsNW = adjacents[HEADING_NW];
+				var hexNW = getHex(coordsNW);
+				
+				var elevDiff = elev;
+				if(hexNW.getElevation() < 0) {
+					elevDiff = elev - hexNW.getElevation();
+				}
+				
+				if(elevDiff < 0) {
+					var p1 = new createjs.Shape();
+					p1.graphics.setStrokeStyle(1)
+							.beginStroke(darkgray).beginFill(lightgray)
+							.moveTo(0, (hexHeight/2))
+							.lineTo(0, (hexHeight/2) + (elevationHeight * elevDiff))
+							.lineTo((hexWidth/4), (elevationHeight * elevDiff))
+							.lineTo((hexWidth/4), 0)
+							.lineTo(0, (hexHeight/2)).endStroke();
+					this.isometricChildren[0] = this.addChild(p1);
+				}
+			}
 			
-			this.isometricChildren[1] = this.addChild(p2);
+			// HEADING_N
+			if(adjacents[HEADING_N] != null) {
+				var coordsN = adjacents[HEADING_N];
+				var hexN = getHex(coordsN);
+				
+				var elevDiff = elev;
+				if(hexN.getElevation() < 0) {
+					elevDiff = elev - hexN.getElevation();
+				}
+				
+				if(elevDiff < 0) {
+					var p2 = new createjs.Shape();
+					p2.graphics.setStrokeStyle(1)
+							.beginStroke(darkgray).beginFill(gray)
+							.moveTo((hexWidth/4), 0)
+							.lineTo((hexWidth/4), (elevationHeight * elevDiff))
+							.lineTo((3*hexWidth/4), (elevationHeight * elevDiff))
+							.lineTo((3*hexWidth/4), 0)
+							.lineTo((hexWidth/4), 0).endStroke();
+					
+					this.isometricChildren[1] = this.addChild(p2);
+				}
+			}
 			
-			var p3 = new createjs.Shape();
-			p3.graphics.setStrokeStyle(1)
-					.beginStroke(darkgray).beginFill(darkgray)
-					.moveTo((3*hexWidth/4), 0)
-					.lineTo((3*hexWidth/4), (elevationHeight * elev))
-					.lineTo(hexWidth, (hexHeight/2) + (elevationHeight * elev))
-					.lineTo(hexWidth, (hexHeight/2))
-					.lineTo((3*hexWidth/4), 0).endStroke();
-			
-			this.isometricChildren[2] = this.addChild(p3);
+			//HEADING_NE
+			if(adjacents[HEADING_NE] != null) {
+				var coordsNE = adjacents[HEADING_NE];
+				var hexNE = getHex(coordsNE);
+				
+				var elevDiff = elev;
+				if(hexNE.getElevation() < 0) {
+					elevDiff = elev - hexNE.getElevation();
+				}
+				
+				if(elevDiff < 0) {
+					var p3 = new createjs.Shape();
+					p3.graphics.setStrokeStyle(1)
+							.beginStroke(darkgray).beginFill(darkgray)
+							.moveTo((3*hexWidth/4), 0)
+							.lineTo((3*hexWidth/4), (elevationHeight * elevDiff))
+							.lineTo(hexWidth, (hexHeight/2) + (elevationHeight * elevDiff))
+							.lineTo(hexWidth, (hexHeight/2))
+							.lineTo((3*hexWidth/4), 0).endStroke();
+					
+					this.isometricChildren[2] = this.addChild(p3);
+				}
+			}
 		}
 	}
 }
-
+c.elevation = function() {
+	return this.hex.elevation;
+}
 c.isXOdd = function() {
 	return isXOdd(this.coords.x);
 }

@@ -276,6 +276,9 @@ function initHexMapDisplay() {
 			}
 		}
 	}
+	
+	// temporary store for HexDisplay objects that need to be added to the stage
+	var hexDisplayInsertArray = []
 		
 	for(var y=0; y<numRows; y++){
 		
@@ -315,24 +318,42 @@ function initHexMapDisplay() {
 				hexDisplay.addChild(hexImg);
 			});
 			
-			// so they won't overlap incorrectly, add to the stage only the evenX columns first, later will add oddX
-			if(!thisHex.isXOdd()) {
-				if(firstUpdate) stage.addChild(hexDisplay);
-			}
+			// send off to be inserted to the stage
+			if(firstUpdate) hexDisplayInsertArray.push(hexDisplay);
 		}
+	}
+	
+	if(hexDisplayInsertArray.length > 0) {
+		// so they won't overlap incorrectly, sort display insertion array 
+		// by row (asc), then even columns (asc), then odd columns (asc)
+		hexDisplayInsertArray.sort(function(aDisplay, bDisplay) {
+			
+			if(aDisplay.yCoords() != bDisplay.yCoords()) {
+				// both in different rows, sort by Y
+				return aDisplay.yCoords() - bDisplay.yCoords();
+			}
+			
+			var aOdd = aDisplay.isXOdd();
+			var bOdd = bDisplay.isXOdd();
+			
+			if(aOdd && !bOdd){
+				// only aDisplay is odd, aDisplay comes last
+				return 1;
+			}
+			else if(!aOdd && bOdd) {
+				// only bDisplay is odd, aDisplay comes first
+				return -1;
+			}
+			else {
+				// both are odd, or both are even, sort by X
+				return aDisplay.xCoords() - bDisplay.xCoords();
+			}
+		});
 		
-		// now add to the stage only the oddX columns in this row
-		for(var x=1; x<numCols; x+=2){
-			
-			var thisHex = thisHexRow[x];
-			if(thisHex == null){
-				continue;
-			}
-			
-			// TODO: add the HexDisplay objects to the stage in ascending elevation order, in addition to evenX before oddX columns
-			var hexDisplay = thisHex.getHexDisplay();
-			if(firstUpdate) stage.addChild(hexDisplay);
-		}
+		// now add to the stage
+		$.each(hexDisplayInsertArray, function(index, hexDisplay) {
+			stage.addChild(hexDisplay);
+		});
 	}
 	
 	updateHexDisplayObjects();
