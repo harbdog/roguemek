@@ -9,6 +9,7 @@ function Settings() {}
 // initialize all default settings for the game
 Settings.init = function() {
 	// the scale used for the board
+	Settings.default(Settings.BOARD_ISOMETRIC, true);
 	Settings.default(Settings.BOARD_SCALE, 1);
 	
 	// the scale used for the UI overlay
@@ -30,6 +31,7 @@ Settings.init = function() {
 }
 
 // STATIC key names of settings for the game
+Settings.BOARD_ISOMETRIC = "BOARD_ISOMETRIC";
 Settings.BOARD_SCALE = "BOARD_SCALE";
 Settings.UI_SCALE = "UI_SCALE";
 Settings.UI_OPACITY = "UI_OPACITY";

@@ -32,6 +32,18 @@ s.init = function() {
 		}
     });
 	
+	////////////////////////////////////////
+	// create the isometric board setting //
+	var boardIsometricToggle = SettingsDisplay.createToggleSetting(
+			settingsDiv, 
+			"boardIso", "Isometric View", 
+			Settings.get(Settings.BOARD_ISOMETRIC) , 
+			"Off", "On", 
+			function() {
+				toggleIsometricDisplay();
+			}
+	);
+	
 	////////////////////////////////////
 	// create the board scale setting //
 	this.boardScaleSlider = SettingsDisplay.createSliderSetting(
@@ -149,6 +161,47 @@ s.show = function() {
 	this.update();
 	this.settingsDialog.dialog("option", "position", {my: "left top+"+positionOffset, at: "left top", of: canvas});
 	this.settingsDialog.dialog("open");
+}
+
+SettingsDisplay.createToggleSetting = function(settingsDiv, toggleName, toggleText, toggleValue, toggleOffText, toggleOnText, callFunction) {
+	var settingOuterDiv = $("<div>", {id: toggleName+"Div"});
+	settingsDiv.append(settingOuterDiv);
+	
+	var settingLabel = $("<span>", {id: toggleName+"Label", class: "property-heading"});
+	settingLabel.text(toggleText);
+	settingOuterDiv.append(settingLabel);
+	
+	var settingToggler = $("<div>", {id: toggleName+"Toggler", class: "toggle property-value"});
+	
+	var settingOff = $("<input>", {id: toggleName+"ToggleOff", type:"radio", name: toggleName+"Radio", class: "toggleButton"});
+	var settingOffLabel = $("<label>", {for: toggleName+"ToggleOff", class: "toggleLabel"});
+	settingOffLabel.text(toggleOffText);
+	settingToggler.append(settingOff);
+	settingToggler.append(settingOffLabel);
+	
+	var settingOn = $("<input>", {id: toggleName+"ToggleOn", type:"radio", name: toggleName+"Radio", class: "toggleButton"});
+	var settingOnLabel = $("<label>", {for: toggleName+"ToggleOn", class: "toggleLabel"});
+	settingOnLabel.text(toggleOnText);
+	settingToggler.append(settingOn);
+	settingToggler.append(settingOnLabel);
+	
+	settingOuterDiv.append(settingToggler);
+	
+	// set current value
+	if(toggleValue) {
+		settingOn.prop("checked", true);
+	}
+	else {
+		settingOff.prop("checked", true);
+	}
+	
+	// create toggle buttonset
+	settingToggler.buttonset();
+	
+	// add event
+	settingToggler.change(callFunction);
+	
+	return settingToggler;
 }
 
 /**

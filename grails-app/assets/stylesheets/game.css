@@ -141,8 +141,17 @@ span.chat-user {
 	color: #3498DB;
 }
 
+/* In-game Settings decoration */
 #settingsDiv span.property-heading {
 	margin-left: 10px;
+}
+
+#settingsDiv div.toggle {
+	margin: 5px 0px 10px 2.5em;
+}
+
+#settingsDiv div.toggle span.ui-button-text {
+	padding: 0.1em 1.5em;
 }
 
 #settingsDiv div.sliderDiv {

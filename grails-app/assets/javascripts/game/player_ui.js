@@ -23,7 +23,6 @@ var hexWidth = defHexWidth * hexScale;
 var hexHeight = defHexHeight * hexScale;
 
 // variables for isometric view
-var useIsometric = true;
 var isometricPadding = 0;
 var defElevationHeight = 15;
 var elevationHeight = defElevationHeight * hexScale;
@@ -436,7 +435,7 @@ function updateHexDisplayObjects() {
 		}
 		
 		if(y == 0) {
-			if(useIsometric) {
+			if(Settings.get(Settings.BOARD_ISOMETRIC) ) {
 				// screen boundary padding is needed for isometric view to see the 
 				// top of high elevation hexes at the top of the screen 
 				var highestElevation = 0;
@@ -1388,7 +1387,8 @@ function showGameOverDialog(data) {
  * switches the hex board between isometric and flat
  */
 function toggleIsometricDisplay() {
-	useIsometric = !useIsometric;
+	Settings.set(Settings.BOARD_ISOMETRIC, !Settings.get(Settings.BOARD_ISOMETRIC));
+	
 	updateHexDisplayObjects();
 	updateUnitDisplayObjects();
 	updateTargetPosition();

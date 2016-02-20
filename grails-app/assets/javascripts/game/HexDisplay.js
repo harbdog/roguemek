@@ -49,7 +49,7 @@ c.update = function() {
 }
 
 c.doCache = function() {
-	if(useIsometric && this.getHex() != null) {
+	if(Settings.get(Settings.BOARD_ISOMETRIC) && this.getHex() != null) {
 		if(this.getHex().getElevation() >= 0) {
 			this.cache(0, 0, hexWidth, hexHeight + (elevationHeight * this.getHex().getElevation()));
 		}
@@ -109,7 +109,7 @@ c.drawLevel = function() {
 }
 
 c.drawIsometric = function() {
-	if(useIsometric 
+	if(Settings.get(Settings.BOARD_ISOMETRIC)  
 			&& this.getHex() != null 
 			&& this.getHex().getElevation() != 0) {
 		

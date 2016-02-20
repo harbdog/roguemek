@@ -405,7 +405,7 @@ c.getUpdatedDisplayY = function(coords) {
 		displayY = coords.y * hexHeight + (hexHeight / 2);
 	}
 	
-	if(useIsometric) {
+	if(Settings.get(Settings.BOARD_ISOMETRIC) ) {
 		// shift the Y value up (negative) to match the displayed elevation for isometric view
 		// by finding the Hex object and use its elevation to offset
 		if(hexMap != null) {
