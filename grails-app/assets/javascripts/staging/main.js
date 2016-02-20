@@ -662,7 +662,10 @@ function showMapSelect() {
 		$("input[type='radio'][name='map-radio'][value='"+selectedMapId+"']").prop("checked", true);
 	}
 	
-	mapSelectDialog.dialog("option", "position", {my: "left top", at: "left top", of: $("#map-button")});
+	var windowHeight = $(window).height();
+	
+	mapSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
+	mapSelectDialog.dialog("option", "height", windowHeight);
 	mapSelectDialog.dialog("open");
 }
 
