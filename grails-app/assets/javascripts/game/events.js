@@ -318,6 +318,7 @@ function showSettingsDisplay() {
  * Shows the unit info dialog
  * @param unitId
  */
+var firstUnitInfoDisplayLoad = false
 function showUnitInfoDisplay(unitId) {
 	// show a loading dialog while waiting to get the info display from the server
 	dialogLoading.dialog("open");
@@ -330,6 +331,14 @@ function showUnitInfoDisplay(unitId) {
 			
 	    	// move the header to the title area of the dialog
 	    	$(".unit-header").appendTo("#unit-title");
+	    	
+	    	if(!firstUnitInfoDisplayLoad) {
+	    		// stupid trick to get the dialog to show in the correct place without causing browser scrollbars to appear
+	    		dialogDisplay.dialog("option", "width", (canvas.width >= 900) ? 900 : canvas.width);
+				dialogDisplay.dialog("option", "height", (canvas.height >= 600) ? 600 : canvas.height);
+				dialogDisplay.dialog("option", "position", { my: "center", at: "center", of: window});
+				firstUnitInfoDisplayLoad = true;
+	    	}
 	    });
 	},250);
 }
@@ -376,20 +385,7 @@ function resize_canvas(){
 		// update dialog display
 		dialogDisplay.dialog("option", "width", (canvas.width >= 900) ? 900 : canvas.width);
 		dialogDisplay.dialog("option", "height", (canvas.height >= 600) ? 600 : canvas.height);
-		
-		if(canvas.width < 900) {
-			dialogDisplay.dialog("option", "position", { my: "left", at: "left", of: window});
-		}
-		else {
-			dialogDisplay.dialog("option", "position", { my: "center", at: "center", of: window});
-		}
-		
-		if(canvas.height < 600) {
-			dialogDisplay.dialog("option", "position", { my: "top", at: "top", of: window});
-		}
-		else {
-			dialogDisplay.dialog("option", "position", { my: "center", at: "center", of: window});
-		}
+		dialogDisplay.dialog("option", "position", { my: "center", at: "center", of: window});
 		
 		// update displayable hexes
 		updateHexMapDisplay();
