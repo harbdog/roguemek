@@ -84,6 +84,9 @@ class GameService extends AbstractGameService {
 		// load the board in case is not loaded already
 		game.loadMap()
 		
+		// perform initiative roll on first and every 4 turns after to change up the order of the units turn
+		game.units = doInitiativeRolls(game)
+		
 		// use staging data to set up the game elements
 		StagingHelper.stageGame(game)
 		
@@ -93,9 +96,6 @@ class GameService extends AbstractGameService {
 		game.gameState = Game.GAME_ACTIVE
 		game.gameTurn = 0
 		game.unitTurn = 0
-		
-		// perform initiative roll on first and every 4 turns after to change up the order of the units turn
-		game.units = doInitiativeRolls(game)
 		
 		// get the first unit ready for its turn
 		initializeTurnUnit(game)

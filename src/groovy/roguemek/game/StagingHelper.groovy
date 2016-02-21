@@ -76,7 +76,7 @@ class StagingHelper {
 					// at N, face S
 					genHeading =  3
 					
-					xMin = Math.floor(numHexCols / 2) - 2
+					xMin = Math.floor(numHexCols / 2)
 					yMin = 0
 					break
 					
@@ -84,7 +84,7 @@ class StagingHelper {
 					// at S, face N
 					genHeading = 0
 					
-					xMin = Math.floor(numHexCols / 2) - 2
+					xMin = Math.floor(numHexCols / 2)
 					yMin = numHexRows - 5
 					break
 				
@@ -93,7 +93,7 @@ class StagingHelper {
 					genHeading = 2
 					
 					xMin = 0
-					yMin = Math.floor(numHexRows / 2) - 2
+					yMin = Math.floor(numHexRows / 2)
 					break
 					
 				case Game.STARTING_E:
@@ -101,7 +101,7 @@ class StagingHelper {
 					genHeading = 5
 					
 					xMin = numHexCols - 5
-					yMin = Math.floor(numHexRows / 2) - 2
+					yMin = Math.floor(numHexRows / 2)
 					break
 					
 				case Game.STARTING_NW:
@@ -116,15 +116,15 @@ class StagingHelper {
 					// at SE, face NW
 					genHeading = 5
 					
-					xMin = numHexCols - 5
-					yMin = numHexRows - 5
+					xMin = numHexCols - 1
+					yMin = numHexRows - 1
 					break
 					
 				case Game.STARTING_NE:
 					// at NE, face SW
 					genHeading = 4
 					
-					xMin = numHexCols - 5
+					xMin = numHexCols - 1
 					yMin = 0
 					break
 					
@@ -133,28 +133,56 @@ class StagingHelper {
 					genHeading = 1
 					
 					xMin = 0
-					yMin = numHexRows - 5
+					yMin = numHexRows - 1
 					break
 					
 				case Game.STARTING_CENTER:
 					// at Center, face random
 					genHeading = Roll.getDieRollTotal(1, 6) - 1
 					
-					xMin = Math.floor(numHexCols / 2) - 2
-					yMin = Math.floor(numHexRows / 2) - 2
+					xMin = Math.floor(numHexCols / 2) - 1
+					yMin = Math.floor(numHexRows / 2) - 1
 					break
 					
 				default: break
 			}
 			
-			def hexAvailable = false;
+			// try starting at the given corner/edge
+			genLocation = new Coords(xMin, yMin)
+			
+			// check the exact location of the corner/edge first
+			def hexAvailable = !game.isHexOccupied(genLocation)
+			
+			def hexDistance = 1
+			def numCols = game.getBoard().getMap().getNumCols()
+			def numRows = game.getBoard().getMap().getNumRows()
 			while(!hexAvailable){
-				int randomX = Roll.getDieRollTotal(1, 5) - 1
-				int randomY = Roll.getDieRollTotal(1, 5) - 1
+				// start moving away from the origination point until an open hex is found
+				def tryCoords = []
 				
-				genLocation = new Coords(randomX + xMin, randomY + yMin)
+				for(int thisX=-hexDistance; thisX<=hexDistance; thisX++) {
+					for(int thisY=-hexDistance; thisY<=hexDistance; thisY++) {
+						Coords thisCoord = new Coords(thisX + xMin, thisY + yMin)
+						
+						if(thisCoord.x >= 0 && thisCoord.y >= 0
+								&& thisCoord.x < numCols && thisCoord.y < numRows){
+							tryCoords.add(thisCoord)
+						}
+					}
+				}
 				
-				hexAvailable = !game.isHexOccupied(genLocation)
+				// start going through the coords at random
+				Collections.shuffle(tryCoords)
+				
+				for(Coords thisCoord in tryCoords) {
+					hexAvailable = !game.isHexOccupied(thisCoord)
+					if(hexAvailable) {
+						genLocation = thisCoord
+						break
+					}
+				}
+				
+				hexDistance ++
 			}
 		}
 		
