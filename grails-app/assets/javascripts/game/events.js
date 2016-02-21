@@ -266,6 +266,9 @@ function handleKeyPress(e, key) {
 	else if(key == "`"){
 		// toggle isometric view
 		toggleIsometricDisplay();
+		
+		// update in settings in case it is showing
+		settingsDisplay.update();
 	}
 	else if(key == "home"){
 		// enter fullscreen mode

@@ -8,6 +8,7 @@ function SettingsDisplay() {
 	
 	this.settingsDialog = null;
 	
+	this.boardIsometricToggle = null;
 	this.boardScaleSlider = null;
 	this.uiScaleSlider = null;
 	
@@ -34,10 +35,10 @@ s.init = function() {
 	
 	////////////////////////////////////////
 	// create the isometric board setting //
-	var boardIsometricToggle = SettingsDisplay.createToggleSetting(
+	this.boardIsometricToggle = SettingsDisplay.createToggleSetting(
 			settingsDiv, 
 			"boardIso", "Isometric View", 
-			Settings.get(Settings.BOARD_ISOMETRIC) , 
+			Settings.get(Settings.BOARD_ISOMETRIC), 
 			"Off", "On", 
 			function() {
 				toggleIsometricDisplay();
@@ -151,6 +152,7 @@ s.init = function() {
 s.update = function() {
 	// update any values that need to be updated between showing settings
 	// such as zoom/scale that can be adjusted without using the settings menu
+	this.boardIsometricToggle.updateValue(Settings.get(Settings.BOARD_ISOMETRIC));
 	this.boardScaleSlider.slider("option", "value", Settings.get(Settings.BOARD_SCALE));
 	this.uiScaleSlider.slider("option", "value", Settings.get(Settings.UI_SCALE));
 }
@@ -187,16 +189,20 @@ SettingsDisplay.createToggleSetting = function(settingsDiv, toggleName, toggleTe
 	
 	settingOuterDiv.append(settingToggler);
 	
-	// set current value
-	if(toggleValue) {
-		settingOn.prop("checked", true);
-	}
-	else {
-		settingOff.prop("checked", true);
-	}
-	
 	// create toggle buttonset
 	settingToggler.buttonset();
+	
+	// set current value
+	settingToggler.updateValue = function(newValue) {
+		if(newValue) {
+			settingOn.prop("checked", true).button("refresh");
+		}
+		else {
+			settingOff.prop("checked", true).button("refresh");
+		}
+	}
+	
+	settingToggler.updateValue(toggleValue);
 	
 	// add event
 	settingToggler.change(callFunction);
