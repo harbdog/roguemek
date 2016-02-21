@@ -329,6 +329,7 @@ class RogueMekController {
 		
 		if(params.unitId == null) return
 		BattleUnit thisUnit = BattleUnit.read(params.unitId)
+		// TODO: figure out why only when server code is changed during run-app, this starts failing to find the unit after added in staging...
 		if(thisUnit == null) return
 		
 		render ( template: 'stageUnit', model: [unit: thisUnit, showUnitDelete: (userInstance?.id == thisUser?.id)])

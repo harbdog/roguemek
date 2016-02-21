@@ -586,7 +586,12 @@ function ajaxStageUnit(unitId, userId) {
 	
 	var $tempDiv = $("<div>", {class: "player-unit"});
 	
-	$tempDiv.load("stageUnit", inputMap, function() {
+	$tempDiv.load("stageUnit", inputMap, function(response, status, xhr) {
+		if (status == "error") {
+			var msg = "Error staging unit "+unitId+": ";
+			$("#stagingError").html( msg + xhr.status + " " + xhr.statusText ).show();
+		}
+		
 		// move the unit content to the player area
 		var playerDiv = $("div.player[data-userid='"+userId+"']");
 		$tempDiv.children().appendTo(playerDiv);

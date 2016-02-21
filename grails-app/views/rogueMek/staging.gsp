@@ -22,6 +22,8 @@
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>
 			
+			<div id="stagingError" class="errors" style="display: none"></div>
+			
 			<%-- testing atmosphere with simple chat --%>
 			<div id="chat-window"></div>
 			<input id="chat-input" type="text"/>
