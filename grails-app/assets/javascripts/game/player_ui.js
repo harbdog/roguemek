@@ -521,6 +521,10 @@ function updateUnitDisplayObjects() {
 		if(displayUnit != null) {
 			displayUnit.update();
 			displayUnit.positionUpdate();
+			
+			// need to update the position in the event that isometric was just toggled
+			displayUnit.x = displayUnit.getUpdatedDisplayX(displayUnit.unit.coords);
+			displayUnit.y = displayUnit.getUpdatedDisplayY(displayUnit.unit.coords);
 		}
 	});
 }
