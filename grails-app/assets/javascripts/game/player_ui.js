@@ -378,10 +378,19 @@ function updateHexMapDisplay() {
     	var xOffset = thisDisplayHex.x * hexScale;
 		var yOffset = thisDisplayHex.y * hexScale;
 		
-		// TODO: handle pop-out of hexes at the top of the screen when using isometric mode
+		var thisHexWidth = scaledHexWidth;
+		var thisHexHeight = scaledHexHeight;
 		
-		if((xOffset + scaledHexWidth < startX || xOffset > canvasX) 
-				|| (yOffset + scaledHexHeight < startY || yOffset > canvasY)) {
+		if(Settings.get(Settings.BOARD_ISOMETRIC)) {
+			// handle pop-out of hexes at the top of the screen when using isometric mode
+			var elev = thisDisplayHex.getHex().getElevation();
+			if(elev > 0) {
+				thisHexHeight = scaledHexHeight + (elev * elevationHeight * hexScale);
+			}
+		}
+		
+		if((xOffset + thisHexWidth < startX || xOffset > canvasX) 
+				|| (yOffset + thisHexHeight < startY || yOffset > canvasY)) {
 			// hex object is outside of the view area
 			thisDisplayHex.visible = false;
 		}
