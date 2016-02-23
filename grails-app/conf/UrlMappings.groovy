@@ -66,24 +66,12 @@ class UrlMappings {
 		}
 		
 		name stagingGame: "/staging/$id"{
-			controller='rogueMek'
+			controller='staging'
 			action = 'staging'
 		}
 		
-		group "/staging", {
-			"/mapSelect" (controller:'rogueMek', action:'mapSelect')
-			"/mapUpdate" (controller:'rogueMek', action:'mapUpdate')
-			"/unitSelect" (controller:'rogueMek', action:'unitSelect')
-			"/stageUnit" (controller:'rogueMek', action:'stageUnit')
-			"/addUnit" (controller:'rogueMek', action:'addUnit')
-			"/removeUnit" (controller:'rogueMek', action:'removeUnit')
-			"/stageUser" (controller:'rogueMek', action:'stageUser')
-			"/addUser" (controller:'rogueMek', action:'addUser')
-			"/removeUser" (controller:'rogueMek', action:'removeUser')
-			"/locationUpdate" (controller:'rogueMek', action:'locationUpdate')
-			"/camoSelect" (controller:'rogueMek', action:'camoSelect')
-			"/camoUpdate" (controller:'rogueMek', action:'camoUpdate')
-			"/camoApply" (controller:'rogueMek', action:'camoApply')
+		name stagingAction: "/staging/$action"{
+			controller='staging'
 		}
 		
 		name startGame: "/startBattle"{
