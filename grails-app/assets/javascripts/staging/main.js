@@ -579,7 +579,7 @@ function showUnitSelect() {
 
 //setup ajax paging and sorting for the unit select
 function setupAjaxUnitSelect() {
-	var test = $("#unit-selection").find(".pagination a, th.sortable a").on({
+	$("#unit-selection").find(".pagination a, th.sortable a").on({
 		click: function(event) {
 	        event.preventDefault();
 	        var url = $(this).attr('href');
@@ -691,11 +691,36 @@ function showMapSelect() {
 		$("input[type='radio'][name='map-radio'][value='"+selectedMapId+"']").prop("checked", true);
 	}
 	
+	var windowWidth = $(window).width();
 	var windowHeight = $(window).height();
 	
 	mapSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
+	mapSelectDialog.dialog("option", "width", windowWidth/2);
 	mapSelectDialog.dialog("option", "height", windowHeight);
 	mapSelectDialog.dialog("open");
+	
+	setupAjaxMapSelect();
+}
+
+//setup ajax paging and sorting for the map select
+function setupAjaxMapSelect() {
+	$("#map-selection").find(".pagination a, th.sortable a").on({
+		click: function(event) {
+	        event.preventDefault();
+	        var url = $(this).attr('href');
+	        
+	        var selection = $("#map-selection");
+	        $(selection).html($("#spinner").html());
+	
+	        $.ajax({
+	            type: 'GET',
+	            url: url,
+	            success: function(data) {
+	                $(selection).fadeOut('fast', function() {$(this).html(data).fadeIn({complete: setupAjaxMapSelect});});
+	            }
+	        });
+		}
+    });
 }
 
 function ajaxUpdateMapSelection() {

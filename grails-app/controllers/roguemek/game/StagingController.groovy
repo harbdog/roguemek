@@ -51,7 +51,15 @@ class StagingController {
 	def mapSelect() {
 		def userInstance = currentUser()
 		if(userInstance) {
-			respond userInstance
+			params.max = Math.min(params.max ? params.int('max') : 20, 100)
+			params.sort = params.sort ?: "name"
+			params.order = params.order ?: "asc"
+			
+			def model = [hexMapInstanceList: HexMap.list(params), hexMapInstanceTotal: HexMap.count()]
+			
+			//if(request.xhr)
+			// ajax request code from http://www.craigburke.com/2011/01/01/grails-ajax-list-with-paging-and-sorting.html
+			render(template: "mapSelect", model: model)
 		}
 		else {
 			redirect url: "/"

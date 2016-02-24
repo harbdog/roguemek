@@ -20,6 +20,7 @@ class HexMap {
 	
 	Integer numCols
 	Integer numRows
+	String size
 	
 	List hexMap
 	static hasMany = [hexMap: String]
@@ -30,7 +31,12 @@ class HexMap {
 		mapLoaded nullable: false
 		numRows min: 0
 		numCols min: 0
+		size nullable: true
     }
+	
+	def beforeInsert() {
+		size = "${numCols}x${numRows}"
+	}
 	
 	public static void init() {
 		MapBoard.initBoards()
