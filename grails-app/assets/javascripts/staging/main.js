@@ -573,7 +573,31 @@ function showUnitSelect() {
 	unitSelectDialog.dialog("option", "width", windowWidth/2);
 	unitSelectDialog.dialog("option", "height", windowHeight);
 	unitSelectDialog.dialog("open");
+	
+	setupAjaxUnitSelect();
 }
+
+//setup ajax paging and sorting for the unit select
+function setupAjaxUnitSelect() {
+	var test = $("#unit-selection").find(".pagination a, th.sortable a").on({
+		click: function(event) {
+	        event.preventDefault();
+	        var url = $(this).attr('href');
+	        
+	        var selection = $("#unit-selection");
+	        $(selection).html($("#spinner").html());
+	
+	        $.ajax({
+	            type: 'GET',
+	            url: url,
+	            success: function(data) {
+	                $(selection).fadeOut('fast', function() {$(this).html(data).fadeIn({complete: setupAjaxUnitSelect});});
+	            }
+	        });
+		}
+    });
+}
+
 
 function ajaxStageUnit(unitId, userId) {
 	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
