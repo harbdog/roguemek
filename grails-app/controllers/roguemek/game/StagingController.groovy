@@ -187,7 +187,7 @@ class StagingController {
 			// set the unit color to the color selected by the player
 			def camoSelection = StagingHelper.getCamoForUser(game, userInstance)
 			
-			def rgbCamo = [255, 255, 255]
+			def rgbCamo = [255, 0, 0]
 			if(camoSelection instanceof Short[]) {
 				rgbCamo = camoSelection
 			}
