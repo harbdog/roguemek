@@ -20,6 +20,16 @@ div #spinner {
 	text-indent: -9999px;
 }
 
+#private-link {
+	position: relative;
+	left: 15%;
+	width: 70%;
+}
+
+#private-link input {
+	width: 100%;
+}
+
 /* Chat window/input decoration */
 #chat-window {
 	position: relative;

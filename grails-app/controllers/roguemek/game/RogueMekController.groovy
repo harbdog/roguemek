@@ -74,6 +74,7 @@ class RogueMekController {
 			def initGames = gameCriteria.list(max: params.max, offset: params.offset) {
 				and {
 					eq("gameState", Game.GAME_INIT)
+					eq("privateGame", false)
 				}
 				order(params.sort, params.order)
 			}

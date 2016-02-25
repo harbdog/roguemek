@@ -20,6 +20,8 @@ class Game {
 	String description
 	MekUser ownerUser
 	
+	Boolean privateGame = false
+	
 	List users
 	List spectators
 	List units

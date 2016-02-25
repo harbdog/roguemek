@@ -13,11 +13,16 @@
 		<div id="unitSelectDiv"></div>
 		<div id="camoSelectDiv"></div>
 		<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
-		
-		
-	
+
 		<div id="show-game" class="content scaffold-show" role="main">
 			<h1><g:message code="game.init.staging.label" /> - ${gameInstance?.description}</h1>
+			
+			<g:if test="${gameInstance?.privateGame}">
+				<div id="private-link">
+					<span>Private Link: </span><input type="text" value='<g:createLink absolute="true" mapping="stagingGame" id="${gameInstance?.id}"></g:createLink>' readonly></input>
+				</div>
+			</g:if>
+			
 			<g:if test="${flash.message}">
 				<div class="message" role="status">${flash.message}</div>
 			</g:if>

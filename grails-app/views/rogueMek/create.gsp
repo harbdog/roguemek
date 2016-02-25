@@ -32,6 +32,13 @@
 					    <g:textField name="description" required="" value="${gameInstance?.description}"/>
 					</div>
 					
+					<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'privateGame', 'error')} ">
+						<label for="privateGame">
+							<g:message code="game.private.label" default="Private Battle" />
+						</label>
+						<g:checkBox name="privateGame" value="${gameInstance?.privateGame}" />
+					</div>
+					
 					<%-- TODO: Add more options for the new game --%>
 					
 				</fieldset>
