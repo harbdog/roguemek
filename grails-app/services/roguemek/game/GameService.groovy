@@ -288,7 +288,9 @@ class GameService extends AbstractGameService {
 					// perform initiative roll every 4 turns to change up the order of the units turn
 					game.units = doInitiativeRolls(game)
 					
-					// TODO: message the initiative change, or better, update UI to indicate unit turn order at all times
+					// message the initiative change, or better, update UI to indicate unit turn order at all times
+					Object[] messageArgs = []
+					gameChatService.addMessageUpdate(game, "game.initiative.changed", messageArgs)
 				}
 			}
 			
@@ -296,7 +298,8 @@ class GameService extends AbstractGameService {
 			
 			// avoid infinite loop if all mechs become destroyed!
 			if(currentTurnUnit != null && nextTurnUnit.id == currentTurnUnit.id) {
-				log.info("All other mechs destroyed, last unit not destroyed?")
+				// this condition also reached if initiative changed and the last unit became the first unit
+				//log.info("All other mechs destroyed, last unit not destroyed?")
 				break;
 			}
 		}
