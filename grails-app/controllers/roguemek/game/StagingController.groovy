@@ -37,6 +37,15 @@ class StagingController {
 			redirect mapping: "debriefGame", id: game.id
 		}
 		else {
+			if(game.isActive()) {
+				def isParticipant = game.isParticipant(userInstance)
+				
+				if(!isParticipant) {
+					redirect mapping:"dropship"
+					return
+				}
+			}
+			
 			session["game"] = game.id
 			
 			respond game, model:[userInstance:userInstance]

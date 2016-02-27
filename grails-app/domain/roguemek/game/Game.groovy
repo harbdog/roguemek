@@ -226,7 +226,7 @@ class Game {
 	}
 	
 	/**
-	 * Checks to see if the given user is in the game already (by id compare)
+	 * Checks to see if the given user is in the game (by id compare)
 	 * @param user
 	 * @return
 	 */
@@ -238,6 +238,40 @@ class Game {
 				return true
 			}
 		}
+		
+		return false
+	}
+	
+	/**
+	 * Checks to see if the given user is a spectator in the game (by id compare)
+	 * @param user
+	 * @return
+	 */
+	public boolean hasSpectator(MekUser user) {
+		if(user == null) return false
+		
+		for(MekUser chkUser in spectators) {
+			if(user.id == chkUser.id) {
+				return true
+			}
+		}
+		
+		return false
+	}
+	
+	/**
+	 * Checks to see if the given user is participating as either a player, spectator, or owner of the game (by id compare)
+	 * @param user
+	 * @return
+	 */
+	public boolean isParticipant(MekUser user) {
+		if(user == null) return false
+		
+		if(ownerUser.id == user.id) return true
+		
+		if(hasUser(user)) return true
+		
+		if(hasSpectator(user)) return true
 		
 		return false
 	}
