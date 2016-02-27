@@ -206,7 +206,7 @@ class StagingHelper {
 			}
 		}
 		
-		return null
+		return userInstance.rgbColorPref
 	}
 	
 	/**
@@ -251,6 +251,10 @@ class StagingHelper {
 		if(saveGameNeeded) {
 			game.save flush:true
 		}
+		
+		// also save the color as preference on the user for later use
+		userInstance.rgbColorPref = camo
+		userInstance.save flush:true
 		
 		return true
 	}

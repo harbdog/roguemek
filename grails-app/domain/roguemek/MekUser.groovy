@@ -21,6 +21,8 @@ class MekUser {
 	boolean enabled = false
 	String confirmCode
 	
+	Short[] rgbColorPref = [255, 0, 0]
+	
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired

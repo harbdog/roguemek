@@ -16,8 +16,7 @@
 			<g:set var="rgbCamoBackground" value="rgb(255, 0, 0)" />
 		</g:else>
 	
-		<g:if test="${gameInstance?.isInit() 
-				&& (gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id)}">
+		<g:if test="${gameInstance?.isInit() && userInstance?.id == user?.id}">
 			<button class="player-camo" data-userid="${user?.id}" style="background: ${rgbCamoBackground};"></button>
 		</g:if>
 		<g:else>
