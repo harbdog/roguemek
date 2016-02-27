@@ -59,6 +59,11 @@ span.chat-user {
 	color: #3498DB;
 }
 
+/* Map/Unit selection table decoration */
+#unit-selection td, th{
+	padding: 2px;
+}
+
 /* Map/Unit selection radio button decoration */
 label {
     display: inline-block;
