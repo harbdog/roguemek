@@ -67,10 +67,11 @@ class GameChatService extends AbstractGameService {
 		def user = currentUser(request)
 		if(user == null) return
 		
-		Object[] messageArgs = [user.toString()]
+		// TODO: implement a way for the page to be refreshed, or game to be entered without the disconnected message always showing
+		/*Object[] messageArgs = [user.toString()]
 		def message = messageSource.getMessage("chat.user.disconnected", messageArgs, LocaleContextHolder.locale)
 	
 		def chatResponse = [type: "chat", message: message, time: new Date().getTime()] as JSON
-		event.broadcaster().broadcast(chatResponse)
+		event.broadcaster().broadcast(chatResponse)*/
 	}
 }
