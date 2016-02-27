@@ -74,6 +74,24 @@ class GameService extends AbstractGameService {
 	public def initializeGame(Game game) {
 		if(game.gameState != Game.GAME_INIT) return
 		
+		// do not allow the game to start if it doesn't have at least 2 users
+		if(game.users.size() < 2) {
+			Object[] messageArgs = []
+			gameChatService.addMessageUpdate(game, "staging.game.not.enough.users", messageArgs)
+			
+			return false
+		}
+		
+		// do not allow the game to start if it doesn't have at least 1 unit per user
+		for(MekUser chkUser in game.users) {
+			if(game.getUnitsForUser(chkUser).isEmpty()) {
+				Object[] messageArgs = []
+				gameChatService.addMessageUpdate(game, "staging.game.not.enough.units", messageArgs)
+				
+				return false
+			}
+		}
+		
 		// if the board is null, pick a random map
 		if(game.board.getHexMap() == null) {
 			BattleHexMap b = game.board
@@ -106,7 +124,11 @@ class GameService extends AbstractGameService {
 		game.validate()
 		if(game.hasErrors()) {
 			log.error(game.errors)
-			return
+			
+			Object[] messageArgs = []
+			gameChatService.addMessageUpdate(game, "staging.game.errors.init", messageArgs)
+			
+			return false
 		}
 		
 		def data = [
@@ -120,6 +142,8 @@ class GameService extends AbstractGameService {
 		gameChatService.addMessageUpdate(game, "staging.game.started", messageArgs)
 		
 		gameStagingService.addStagingUpdate(game, data)
+		
+		return true
 	}
 	
 	/**

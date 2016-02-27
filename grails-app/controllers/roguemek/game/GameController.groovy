@@ -33,11 +33,15 @@ class GameController {
 						// TODO: give owner User a button to start the game instead of auto starting
 						log.info("Game("+g.id+") owner User "+user?.username+" is starting the game")
 						
-						gameService.initializeGame(g)
+						def initSuccess = gameService.initializeGame(g)
+						if(!initSuccess) {
+							// there was a failure, redirect back to staging
+							redirect controller: "staging", action: "staging", id: g.id
+						}
 					}
 					else {
 						// give participant pilots a screen showing they are waiting for the owner to start
-						redirect controller: "rogueMek", action: "staging", id: g.id
+						redirect controller: "staging", action: "staging", id: g.id
 					}
 				}
 				else if(g.isOver()) {
