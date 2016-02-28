@@ -30,22 +30,36 @@ div #spinner {
 	width: 100%;
 }
 
-/* Chat window/input decoration */
+/* Chat area decoration */
+#chat-area {
+	margin: 1em 1em 1em 1em;
+}
+
 #chat-window {
-	position: relative;
-	height: 100px;
-	width: 70%;
-	left: 15%;
+	float: left;
+    width: 70%;
+    border: 1px solid black;
+    height: 100px;
+    overflow: auto;
+}
+
+#chat-users {
+	float: left;
+    width: 29%;
 	border: 1px solid black;
-	margin-top: 1em;
-	overflow: auto;
+    border-left: 1px solid #CCCCCC;
+    height: 100px;
+    overflow: auto;
+}
+
+#chat-users span {
+	font-size: 0.8em;
+	margin-left: 1em;
 }
 
 #chat-input {
-	position: relative;
-	width: 70%;
-	left: 15%;
-	margin-top: 1em;
+	width: 99%;
+	margin-right: 1em;
 	border: 1px solid black;
 }
 

@@ -32,16 +32,42 @@ class GameStagingService extends AbstractGameService {
 		log.warn "GameStagingService.recordMaliciousUseWarning: ${data}"
 	}
 	
+	def sendConnect(request) {
+		def user = currentUser(request)
+		if(user == null) return
+		
+		def session = request.getSession(false)
+		if(session.game != null){
+			Game game = Game.get(session.game)
+			
+			// add the user to the chat users list
+			if(game?.staging?.addChatUser(user)) {
+				// broadcast new user
+				def data = [
+					chatUsers: getStagingChatUsers(game)
+				]
+				addStagingUpdate(game, data)
+			}
+		}
+	}
+	
 	def sendDisconnect(event, request) {
 		def user = currentUser(request)
 		if(user == null) return
 		
-		// TODO: what should happen if a user disconnects from staging?
-		/*Object[] messageArgs = [user.toString()]
-		def message = messageSource.getMessage("chat.user.disconnected", messageArgs, LocaleContextHolder.locale)
-	
-		def chatResponse = [type: "chat", message: message] as JSON
-		event.broadcaster().broadcast(chatResponse)*/
+		def session = request.getSession(false)
+		if(session.game != null){
+			Game game = Game.get(session.game)
+			
+			// remove the user from the chat users list
+			if(game?.staging?.removeChatUser(user)) {
+				// broadcast removed user
+				def data = [
+					chatUsers: getStagingChatUsers(game)
+				]
+				addStagingUpdate(game, data)
+			}
+		}
 	}
 	
 	def addStagingUpdate(Game game, Map data) {
@@ -96,5 +122,17 @@ class GameStagingService extends AbstractGameService {
 		}
 		
 		return stageUser
+	}
+	
+	/**
+	 * Gets the list of names of users in the staging chat for a game
+	 */
+	def getStagingChatUsers(Game game) {
+		def chatUsers = []
+		for(MekUser user in game?.staging?.chatUsers) {
+			chatUsers.add(user.toString())
+		}
+		
+		return chatUsers
 	}
 }

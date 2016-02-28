@@ -20,9 +20,12 @@ class GameChatService extends AbstractGameService {
 	
 	def sendChat(user, data, mapping) {
 		// clean the message to not allow some markup
-		def message = htmlCleaner.cleanHtml(data.message, 'simpleText')
-		data.message = message
+		def message = htmlCleaner.cleanHtml(data.message, 'simpleText')?.trim()
+		if(message == null || message.length() == 0) {
+			return
+		}
 		
+		data.message = message
 		data.user = user.toString()
 		data.time = new Date().getTime()
 		

@@ -749,6 +749,28 @@ function ajaxUpdateMapSelection() {
 		});
 }
 
+function handleChatUsersUpdate(usersList) {
+	//<div><span class="chat-user">CapperDeluxe</span></div>
+	var $chatUsers = $('#chat-users');
+	
+	// clearing out the div each call to regenerate the entire list
+	$chatUsers.empty();
+	
+	$.each(usersList, function(index, thisUser) {
+		var chatLine = "<div>"
+		if(thisUser != null) {
+			chatLine += "<span class='chat-user'>"+ thisUser +"</span>";
+		}
+		chatLine += "</div>";
+		
+		$chatUsers.append(chatLine);
+	});
+	
+	// TODO: allow customization of colors in chat!
+	var effectOptions = {color: shadeColor("#3399FF", -0.5)};
+	$chatUsers.effect("highlight", effectOptions, 1000);
+}
+
 /**
  * Handle all staging updates resulting from server actions
  * @param data
@@ -757,7 +779,16 @@ function updateStagingData(data) {
 	var effectOptions = {color: "#3399FF"};
 	var userId = data.user;
 	
-	if(data.map != null) {
+	if(data.chatUsers != null) {
+		// update displayed list of users in the staging chat room
+		var chatUsersList = data.chatUsers;
+		
+		console.log("Chat users list updated:");
+		console.log(chatUsersList);
+		
+		handleChatUsersUpdate(chatUsersList);
+	}
+	else if(data.map != null) {
 		var mapName = data.map;
 		// since only the game owner can select using #map-button, others will get updates on the span #map-selection
 		$("#map-selection").text(mapName)

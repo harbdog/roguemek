@@ -38,4 +38,26 @@ class StagingGame {
 			stageUser.delete flush:true
 		}
 	}
+	
+	/**
+	 * Adds the given user to the list of users currently connected to the chat
+	 */
+	public boolean addChatUser(MekUser user) {
+		if(user == null) return false
+		
+		addToChatUsers(user)
+		
+		return save(flush:true)
+	}
+	
+	/**
+	 * Removes the given user from the list of currently connected chat users
+	 */
+	public boolean removeChatUser(MekUser user) {
+		if(user == null) return false
+		
+		removeFromChatUsers(user)
+		
+		return save(flush:true)
+	}
 }

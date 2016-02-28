@@ -29,9 +29,12 @@
 			
 			<div id="stagingError" class="errors" style="display: none"></div>
 			
-			<%-- testing atmosphere with simple chat --%>
-			<div id="chat-window"></div>
-			<input id="chat-input" type="text"/>
+			<%-- using atmosphere meteor for chat --%>
+			<div id="chat-area">
+				<div id="chat-window"></div>
+				<div id="chat-users"></div>
+				<input id="chat-input" type="text"/>
+			</div>
 			
 			<ol class="property-list game">
 			
