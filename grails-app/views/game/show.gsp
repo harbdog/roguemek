@@ -23,6 +23,15 @@
 			</g:if>
 			<ol class="property-list game">
 			
+				<g:if test="${gameInstance?.description}">
+				<li class="fieldcontain">
+					<span id="description-label" class="property-label"><g:message code="game.description.label" default="Description" /></span>
+					
+						<span class="property-value" aria-labelledby="description-label"><g:fieldValue bean="${gameInstance}" field="description"/></span>
+					
+				</li>
+				</g:if>
+			
 				<g:if test="${gameInstance?.gameState}">
 				<li class="fieldcontain">
 					<span id="gameState-label" class="property-label"><g:message code="game.gameState.label" default="Game State" /></span>
