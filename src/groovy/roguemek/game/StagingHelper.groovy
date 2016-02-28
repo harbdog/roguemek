@@ -289,7 +289,7 @@ class StagingHelper {
 	}
 	
 	/**
-	 * Gets the staging game information for the given user, creating it if it is not present
+	 * Gets the staging game information for the given user
 	 */
 	private static StagingUser getStagingForUser(StagingGame staging, MekUser userInstance) {
 		if(staging == null || userInstance == null) return null
@@ -303,31 +303,13 @@ class StagingHelper {
 			}
 		}
 		
-		if(stageUser == null) {
-			stageUser = new StagingUser(staging: staging, user: userInstance)
-			staging.stagingUsers.add(stageUser)
-			
-			staging.save flush:true
-		}
-		
 		return stageUser
 	}
 	
 	/**
-	 * Gets the staging game information for the given game, creating it if it is not currently set
+	 * Gets the staging game information for the given game
 	 */
 	private static StagingGame getStagingForGame(Game game) {
-		if(game == null) return null
-		
-		StagingGame staging = game.staging
-		if(staging == null) {
-			staging = new StagingGame(game: game)
-			staging.save flush:true
-			
-			game.staging = staging
-			game.save flush:true
-		}
-		
-		return staging
+		return game?.staging
 	}
 }

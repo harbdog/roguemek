@@ -326,6 +326,10 @@ class StagingController {
 			
 			game.save flush:true
 			
+			// generate staging information for the new user
+			StagingGame staging = gameStagingService.generateStagingForGame(game)
+			gameStagingService.generateStagingForUser(staging, userInstance)
+			
 			def data = [
 				user: userInstance.id,
 				userAdded: userInstance.id

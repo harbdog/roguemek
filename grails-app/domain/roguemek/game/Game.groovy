@@ -44,6 +44,7 @@ class Game {
 	public static final Character GAME_ACTIVE = 'A'
 	public static final Character GAME_PAUSED = 'P'
 	public static final Character GAME_OVER = 'O'
+	public static final Character GAME_DELETED = 'D'
 	
 	public static final String STARTING_N = "N"
 	public static final String STARTING_NE = "NE"
@@ -66,7 +67,7 @@ class Game {
 		ownerUser nullable: false
 		unitTurn min: 0
 		gameTurn min: 0
-		gameState inList: [GAME_INIT, GAME_ACTIVE, GAME_PAUSED, GAME_OVER]
+		gameState inList: [GAME_INIT, GAME_ACTIVE, GAME_PAUSED, GAME_OVER, GAME_DELETED]
 		board nullable: false
 		staging nullable: true
     }

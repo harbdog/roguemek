@@ -54,4 +54,47 @@ class GameStagingService extends AbstractGameService {
 		def finishedResponse = data as JSON
 		metaBroadcaster.broadcastTo(mapping, finishedResponse)
 	}
+	
+	/**
+	 * Generates the staging information for the given game
+	 */
+	StagingGame generateStagingForGame(Game game) {
+		if(game == null) return null
+		
+		StagingGame staging = game.staging
+		if(staging == null) {
+			staging = new StagingGame(game: game)
+			staging.save flush:true
+			
+			game.staging = staging
+			game.save flush:true
+		}
+		
+		return staging
+	}
+	
+	/**
+	 * Generates the staging information for the given user
+	 */
+	StagingUser generateStagingForUser(StagingGame staging, MekUser userInstance) {
+		if(staging == null || userInstance == null) return null
+		
+		StagingUser stageUser
+		
+		for(StagingUser stagingData in staging.stagingUsers) {
+			if(stagingData.user.id == userInstance.id) {
+				stageUser = stagingData
+				break
+			}
+		}
+		
+		if(stageUser == null) {
+			stageUser = new StagingUser(staging: staging, user: userInstance)
+			staging.stagingUsers.add(stageUser)
+			
+			staging.save flush:true
+		}
+		
+		return stageUser
+	}
 }

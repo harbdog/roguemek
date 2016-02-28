@@ -11,6 +11,9 @@ class RogueMekController {
 	
 	transient springSecurityService
 	
+	def gameChatService
+	def gameStagingService
+	
 	@Transactional(readOnly = true)
 	def index() {
 		def userInstance = currentUser()
@@ -155,6 +158,9 @@ class RogueMekController {
 		}
 
 		gameInstance.save flush:true
+		
+		// generate staging information for the game
+		gameStagingService.generateStagingForGame(gameInstance)
 
 		request.withFormat {
 			form multipartForm {
@@ -181,9 +187,21 @@ class RogueMekController {
 		if(!userInstance || gameInstance.ownerUser != userInstance) {
 			redirect mapping:"dropship"
 		}
+
+		// delete any staging data
+		gameInstance.staging?.clearStagingData()
+		
+		// let those still in the staging screen be aware of the game state change
+		Object[] messageArgs = []
+		gameChatService.addMessageUpdate(gameInstance, "staging.game.deleted", messageArgs)
+		// TODO: make it work in the client where a message shows that the game is deleted and the user gets bumped back to the dropship
+		/*def data = [
+			gameState: Game.GAME_DELETED
+		]
+		gameStagingService.addStagingUpdate(gameInstance, data)*/
 		
 		gameInstance.delete flush:true
-	
+		
 		request.withFormat {
 			form multipartForm {
 				flash.message = message(code: 'default.deleted.message', args: [message(code: 'battle.label', default: 'Battle'), gameInstance.description])
