@@ -22,10 +22,6 @@ class StagingGame {
 		// "staging" references exist only temporarily while the game is still being staged
 		stagingUsers: StagingUser]
 	
-    static constraints = {
-		game nullable: false
-    }
-	
 	/**
 	 * Clears staging data for when the game goes from staging to active play
 	 */

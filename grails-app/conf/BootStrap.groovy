@@ -241,15 +241,14 @@ class BootStrap {
 			log.info('Preloaded sample Board')
 			
 			// Initialize a sample Game
-			BattleHexMap battleBoardMap = new BattleHexMap(map: boardMap)
-			battleBoardMap.save flush:true
-			
 			Game sampleGame = new Game(ownerUser: adminUser, 
 					description: "The Battle of Wits", 
 					users: [adminUser, testUser], 
 					spectators: [], 
-					units: [battleMechA, battleMechB, battleMech2, battleMech3], 
-					board: battleBoardMap)
+					units: [battleMechA, battleMechB, battleMech2, battleMech3])
+			
+			BattleHexMap battleBoardMap = new BattleHexMap(game: sampleGame, map: boardMap)
+			sampleGame.board = battleBoardMap
 			
 			if(!sampleGame.validate()) {
 				log.error("Errors with game:\n")

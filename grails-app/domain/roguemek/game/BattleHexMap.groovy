@@ -13,6 +13,8 @@ class BattleHexMap {
 	HexMap map
 	Integer timeOfDay = 1200
 	
+	static belongsTo = [game: Game]
+	
 	// TODO: atmospheric/weather conditions
 	
     static constraints = {

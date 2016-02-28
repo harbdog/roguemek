@@ -142,9 +142,7 @@ class RogueMekController {
 		}
 		
 		if(gameInstance.board == null) {
-			BattleHexMap battleMap = new BattleHexMap()
-			battleMap.save flush:true
-			
+			BattleHexMap battleMap = new BattleHexMap(game: gameInstance)
 			gameInstance.board = battleMap
 		}
 		
@@ -184,17 +182,7 @@ class RogueMekController {
 			redirect mapping:"dropship"
 		}
 		
-		// delete any staging data
-		gameInstance.clearStagingData()
-		StagingGame staging = gameInstance.staging
-		gameInstance.staging = null
-		gameInstance.save flush:true
-		
-		BattleHexMap battleMap = gameInstance.board
-		
 		gameInstance.delete flush:true
-		staging.delete flush:true
-		battleMap.delete flush:true
 	
 		request.withFormat {
 			form multipartForm {
