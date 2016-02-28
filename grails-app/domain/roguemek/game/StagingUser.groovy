@@ -13,8 +13,9 @@ class StagingUser {
 		id generator: 'uuid'
 	}
 	
+	static belongsTo = [staging: StagingGame]
+	
 	MekUser user
-	Game game
 	
 	String startingLocation = Game.STARTING_RANDOM
 	
@@ -23,7 +24,6 @@ class StagingUser {
 	
     static constraints = {
 		user nullable: false
-		game nullable: false
 		
 		startingLocation inList: [Game.STARTING_N, Game.STARTING_NE, Game.STARTING_E, Game.STARTING_SE,
 									Game.STARTING_S, Game.STARTING_SW, Game.STARTING_W, Game.STARTING_NW,

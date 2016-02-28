@@ -20,15 +20,15 @@ class Game {
 	String description
 	MekUser ownerUser
 	
+	StagingGame staging
+	
 	Boolean privateGame = false
 	
 	List users
 	List spectators
 	List units
 	
-	static hasMany = [users:MekUser, spectators:MekUser, units:BattleUnit,
-						// "staging" references exist only temporarily while the game is still being staged
-						stagingUsers: StagingUser]
+	static hasMany = [users:MekUser, spectators:MekUser, units:BattleUnit]
 	
 	Integer unitTurn = 0
 	Integer gameTurn = 0
@@ -68,6 +68,7 @@ class Game {
 		gameTurn min: 0
 		gameState inList: [GAME_INIT, GAME_ACTIVE, GAME_PAUSED, GAME_OVER]
 		board nullable: false
+		staging nullable: true
     }
 	
 	def beforeInsert() {
@@ -86,7 +87,15 @@ class Game {
 	 */
 	public void clearStagingData() {
 		// TODO: figure out how to actually delete this data from the database table
-		stagingUsers = []
+		staging?.clearStagingData()
+	}
+	
+	/**
+	 * Returns the staging users from the staging game data
+	 * @return
+	 */
+	public getStagingUsers() {
+		return staging?.stagingUsers
 	}
 	
 	/**

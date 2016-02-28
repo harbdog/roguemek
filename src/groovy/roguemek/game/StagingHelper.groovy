@@ -200,10 +200,10 @@ class StagingHelper {
 	 * @return
 	 */
 	public static def getCamoForUser(Game game, MekUser userInstance) {
-		for(StagingUser stagingData in game?.stagingUsers) {
-			if(stagingData.user.id == userInstance?.id) {
-				return stagingData.rgbCamo
-			}
+		StagingGame thisStaging = getStagingForGame(game)
+		StagingUser thisStagingData = getStagingForUser(thisStaging, userInstance)
+		if(thisStagingData?.rgbCamo) {
+			return thisStagingData.rgbCamo
 		}
 		
 		return userInstance.rgbColorPref
@@ -219,26 +219,11 @@ class StagingHelper {
 	public static boolean setCamoForUser(Game game, MekUser userInstance, def camo) {
 		if(game == null || userInstance == null) return false
 		
-		StagingUser thisStagingData
+		StagingGame thisStaging = getStagingForGame(game)
+		StagingUser thisStagingData = getStagingForUser(thisStaging, userInstance)
+		if(thisStagingData == null) return false
 		
-		for(StagingUser stagingData in game.stagingUsers) {
-			if(stagingData.user.id == userInstance?.id) {
-				thisStagingData = stagingData
-				break
-			}
-		}
-		
-		def saveGameNeeded = false
-		
-		if(thisStagingData == null) {
-			thisStagingData = new StagingUser(user: userInstance, game: game, rgbCamo: camo)
-			game.stagingUsers.add(thisStagingData)
-			
-			saveGameNeeded = true
-		}
-		else{
-			thisStagingData.rgbCamo = camo
-		}
+		thisStagingData.rgbCamo = camo
 		
 		thisStagingData.validate()
 		if(thisStagingData.hasErrors()) {
@@ -248,13 +233,14 @@ class StagingHelper {
 		
 		thisStagingData.save flush:true
 		
-		if(saveGameNeeded) {
-			game.save flush:true
-		}
+		log.info("before ${userInstance.toString()}: ${userInstance.rgbColorPref}")
 		
 		// also save the color as preference on the user for later use
 		userInstance.rgbColorPref = camo
 		userInstance.save flush:true
+		
+		
+		log.info("after ${userInstance.toString()}: ${userInstance.rgbColorPref}")
 		
 		return true
 	}
@@ -266,10 +252,10 @@ class StagingHelper {
 	 * @return
 	 */
 	public static String getStartingLocationForUser(Game game, MekUser userInstance) {
-		for(StagingUser stagingData in game?.stagingUsers) {
-			if(stagingData.user.id == userInstance?.id) {
-				return stagingData.startingLocation
-			}
+		StagingGame thisStaging = getStagingForGame(game)
+		StagingUser thisStagingData = getStagingForUser(thisStaging, userInstance)
+		if(thisStagingData?.startingLocation) {
+			return thisStagingData.startingLocation
 		}
 		
 		return Game.STARTING_RANDOM
@@ -285,22 +271,11 @@ class StagingHelper {
 	public static boolean setStartingLocationForUser(Game game, MekUser userInstance, String location) {
 		if(game == null || userInstance == null) return false
 		
-		StagingUser thisStagingData
+		StagingGame thisStaging = getStagingForGame(game)
+		StagingUser thisStagingData = getStagingForUser(thisStaging, userInstance)
+		if(thisStagingData == null) return false
 		
-		for(StagingUser stagingData in game.stagingUsers) {
-			if(stagingData.user.id == userInstance?.id) {
-				thisStagingData = stagingData
-				break
-			}
-		}
-		
-		if(thisStagingData == null) {
-			thisStagingData = new StagingUser(user: userInstance, game: game, startingLocation: location)
-			game.stagingUsers.add(thisStagingData)
-		}
-		else{
-			thisStagingData.startingLocation = location
-		}
+		thisStagingData.startingLocation = location
 		
 		thisStagingData.validate()
 		if(thisStagingData.hasErrors()) {
@@ -311,5 +286,48 @@ class StagingHelper {
 		thisStagingData.save flush:true
 		
 		return true
+	}
+	
+	/**
+	 * Gets the staging game information for the given user, creating it if it is not present
+	 */
+	private static StagingUser getStagingForUser(StagingGame staging, MekUser userInstance) {
+		if(staging == null || userInstance == null) return null
+		
+		StagingUser stageUser
+		
+		for(StagingUser stagingData in staging.stagingUsers) {
+			if(stagingData.user.id == userInstance.id) {
+				stageUser = stagingData
+				break
+			}
+		}
+		
+		if(stageUser == null) {
+			stageUser = new StagingUser(staging: staging, user: userInstance)
+			staging.stagingUsers.add(stageUser)
+			
+			staging.save flush:true
+		}
+		
+		return stageUser
+	}
+	
+	/**
+	 * Gets the staging game information for the given game, creating it if it is not currently set
+	 */
+	private static StagingGame getStagingForGame(Game game) {
+		if(game == null) return null
+		
+		StagingGame staging = game.staging
+		if(staging == null) {
+			staging = new StagingGame(game: game)
+			staging.save flush:true
+			
+			game.staging = staging
+			game.save flush:true
+		}
+		
+		return staging
 	}
 }

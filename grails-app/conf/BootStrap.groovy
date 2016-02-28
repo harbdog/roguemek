@@ -251,10 +251,6 @@ class BootStrap {
 					units: [battleMechA, battleMechB, battleMech2, battleMech3], 
 					board: battleBoardMap)
 			
-			StagingUser stagingAdmin = new StagingUser(game: sampleGame, user: adminUser, startingLocation: Game.STARTING_NW, rgbCamo: [255, 0, 0])
-			StagingUser stagingTester = new StagingUser(game: sampleGame, user: testUser, startingLocation: Game.STARTING_N, rgbCamo: [0, 0, 255])
-			sampleGame.stagingUsers = [stagingAdmin, stagingTester]
-			
 			if(!sampleGame.validate()) {
 				log.error("Errors with game:\n")
 				sampleGame.errors.allErrors.each {
@@ -264,9 +260,31 @@ class BootStrap {
 			else {
 				sampleGame.save flush:true
 				log.info('Initialized game '+sampleGame.id)
+				
+				// create staging data for the sample game
+				StagingGame staging = new StagingGame(game: sampleGame)
+				StagingUser stagingAdmin = new StagingUser(staging: staging, user: adminUser, startingLocation: Game.STARTING_NW, rgbCamo: [255, 0, 0])
+				StagingUser stagingTester = new StagingUser(staging: staging, user: testUser, startingLocation: Game.STARTING_N, rgbCamo: [0, 0, 255])
+				
+				sampleGame.staging = staging
+				staging.stagingUsers = [stagingAdmin, stagingTester]
+				
+				if(staging.save(flush: true)) {
+					sampleGame.staging = staging
+					sampleGame.save flush:true
+					
+					log.info('Initialized staging '+staging.id)
+				}
+				else {
+					log.error("Errors with staging:\n")
+					staging.errors.allErrors.each {
+						log.error(it)
+					}
+				}
 			}
 		}
     }
+	
     def destroy = {
     }
 	

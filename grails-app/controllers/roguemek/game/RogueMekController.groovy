@@ -185,18 +185,15 @@ class RogueMekController {
 		}
 		
 		// delete any staging data
-		def stagingUsers = []
-		for(def stageUser in gameInstance.stagingUsers) {
-			stagingUsers.add(stageUser)
-		}
-		gameInstance.stagingUsers = []
-		for(StagingUser stageUser in stagingUsers) {
-			stageUser.delete flush:true
-		}
+		gameInstance.clearStagingData()
+		StagingGame staging = gameInstance.staging
+		gameInstance.staging = null
+		gameInstance.save flush:true
 		
 		BattleHexMap battleMap = gameInstance.board
 		
 		gameInstance.delete flush:true
+		staging.delete flush:true
 		battleMap.delete flush:true
 	
 		request.withFormat {
