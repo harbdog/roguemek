@@ -294,7 +294,7 @@ class StagingController {
 		def userInstance = currentUser()
 		if(userInstance == null) return
 		
-		Game gameInstance = Game.get(session.game)
+		Game gameInstance = Game.read(session.game)
 		if(gameInstance == null) return
 		
 		if(params.userId == null) return

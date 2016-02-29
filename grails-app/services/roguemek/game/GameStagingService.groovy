@@ -7,12 +7,14 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.atmosphere.cpr.Broadcaster
 import org.atmosphere.cpr.BroadcasterFactory
 import grails.converters.JSON
+import grails.transaction.Transactional
 
 import roguemek.*
 import roguemek.model.*
 
 import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 
+@Transactional
 class GameStagingService extends AbstractGameService {
 	private static Log log = LogFactory.getLog(this)
 	
@@ -41,7 +43,11 @@ class GameStagingService extends AbstractGameService {
 			Game game = Game.get(session.game)
 			
 			// add the user to the chat users list
-			if(game?.staging?.addChatUser(user)) {
+			StagingGame staging = game?.staging
+			if(staging) {
+				staging.chatUsers.add(user)
+				staging.save flush:true
+				
 				// broadcast new user
 				def data = [
 					chatUsers: getStagingChatUsers(game)
@@ -60,7 +66,11 @@ class GameStagingService extends AbstractGameService {
 			Game game = Game.get(session.game)
 			
 			// remove the user from the chat users list
-			if(game?.staging?.removeChatUser(user)) {
+			StagingGame staging = game?.staging
+			if(staging) {
+				staging.chatUsers.remove(user)
+				staging.save flush:true
+				
 				// broadcast removed user
 				def data = [
 					chatUsers: getStagingChatUsers(game)
@@ -127,6 +137,7 @@ class GameStagingService extends AbstractGameService {
 	/**
 	 * Gets the list of names of users in the staging chat for a game
 	 */
+	@Transactional(readOnly = true)
 	def getStagingChatUsers(Game game) {
 		def chatUsers = []
 		for(MekUser user in game?.staging?.chatUsers) {

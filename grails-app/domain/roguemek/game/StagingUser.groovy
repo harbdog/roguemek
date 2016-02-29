@@ -13,8 +13,6 @@ class StagingUser {
 		id generator: 'uuid'
 	}
 	
-	static belongsTo = [staging: StagingGame]
-	
 	MekUser user
 	
 	String startingLocation = Game.STARTING_RANDOM

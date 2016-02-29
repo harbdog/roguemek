@@ -18,9 +18,10 @@ class StagingGame {
 	List chatUsers = []
 	List stagingUsers = []
 	
-	static hasMany = [chatUsers: MekUser,
-		// "staging" references exist only temporarily while the game is still being staged
-		stagingUsers: StagingUser]
+	static hasMany = [
+		chatUsers: MekUser,
+		stagingUsers: StagingUser
+	]
 	
 	/**
 	 * Clears staging data for when the game goes from staging to active play
@@ -37,27 +38,5 @@ class StagingGame {
 		for(StagingUser stageUser in delStagingUsers) {
 			stageUser.delete flush:true
 		}
-	}
-	
-	/**
-	 * Adds the given user to the list of users currently connected to the chat
-	 */
-	public boolean addChatUser(MekUser user) {
-		if(user == null) return false
-		
-		addToChatUsers(user)
-		
-		return save(flush:true)
-	}
-	
-	/**
-	 * Removes the given user from the list of currently connected chat users
-	 */
-	public boolean removeChatUser(MekUser user) {
-		if(user == null) return false
-		
-		removeFromChatUsers(user)
-		
-		return save(flush:true)
 	}
 }
