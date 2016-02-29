@@ -20,8 +20,6 @@ class Game {
 	String description
 	MekUser ownerUser
 	
-	StagingGame staging
-	
 	Boolean privateGame = false
 	
 	List users
@@ -29,6 +27,7 @@ class Game {
 	List units
 	
 	static hasMany = [users:MekUser, spectators:MekUser, units:BattleUnit]
+	static hasOne = [staging: StagingGame]
 	
 	Integer unitTurn = 0
 	Integer gameTurn = 0

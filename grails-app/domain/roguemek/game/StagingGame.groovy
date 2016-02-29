@@ -15,8 +15,8 @@ class StagingGame {
 	
 	static belongsTo = [game: Game]
 	
-	List chatUsers = []
-	List stagingUsers = []
+	List chatUsers
+	List stagingUsers
 	
 	static hasMany = [
 		chatUsers: MekUser,
