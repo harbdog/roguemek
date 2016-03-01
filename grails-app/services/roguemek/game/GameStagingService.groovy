@@ -3,15 +3,13 @@ package roguemek.game
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
-
 import org.atmosphere.cpr.Broadcaster
 import org.atmosphere.cpr.BroadcasterFactory
+
 import grails.converters.JSON
 import grails.transaction.Transactional
-
 import roguemek.*
 import roguemek.model.*
-
 import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 
 @Transactional
@@ -40,13 +38,15 @@ class GameStagingService extends AbstractGameService {
 		
 		def session = request.getSession(false)
 		if(session.game != null){
-			Game game = Game.get(session.game)
+			Game game = Game.load(session.game)
 			
 			// add the user to the chat users list
-			StagingGame staging = game?.staging
-			if(staging) {
-				staging.chatUsers.add(user)
-				staging.save flush:true
+			if(game) {
+				GameChatUser chatUser = GameChatUser.findByGameAndChatUser(game, user)
+				if(chatUser == null) {
+					chatUser = new GameChatUser(game: game, chatUser: user)
+					chatUser.save flush:true
+				}
 				
 				// broadcast new user
 				def data = [
@@ -63,13 +63,15 @@ class GameStagingService extends AbstractGameService {
 		
 		def session = request.getSession(false)
 		if(session.game != null){
-			Game game = Game.get(session.game)
+			Game game = Game.load(session.game)
 			
 			// remove the user from the chat users list
-			StagingGame staging = game?.staging
-			if(staging) {
-				staging.chatUsers.remove(user)
-				staging.save flush:true
+			if(game) {
+				// TODO: in case the same chat user is connected to same game in two windows, figure it out
+				GameChatUser chatUser = GameChatUser.findByGameAndChatUser(game, user)
+				if(chatUser != null) {
+					chatUser.delete flush:true
+				}
 				
 				// broadcast removed user
 				def data = [
@@ -80,6 +82,9 @@ class GameStagingService extends AbstractGameService {
 		}
 	}
 	
+	/**
+	 * Broadcasts an update to staging clients
+	 */
 	def addStagingUpdate(Game game, Map data) {
 		if(game == null || data == null) return
 		
@@ -92,43 +97,16 @@ class GameStagingService extends AbstractGameService {
 	}
 	
 	/**
-	 * Generates the staging information for the given game
-	 */
-	StagingGame generateStagingForGame(Game game) {
-		if(game == null) return null
-		
-		StagingGame staging = game.staging
-		if(staging == null) {
-			staging = new StagingGame(game: game)
-			staging.save flush:true
-			
-			game.staging = staging
-			game.save flush:true
-		}
-		
-		return staging
-	}
-	
-	/**
 	 * Generates the staging information for the given user
 	 */
-	StagingUser generateStagingForUser(StagingGame staging, MekUser userInstance) {
-		if(staging == null || userInstance == null) return null
+	StagingUser generateStagingForUser(Game game, MekUser userInstance) {
+		if(game == null || userInstance == null) return null
 		
-		StagingUser stageUser
-		
-		for(StagingUser stagingData in staging.stagingUsers) {
-			if(stagingData.user.id == userInstance.id) {
-				stageUser = stagingData
-				break
-			}
-		}
+		StagingUser stageUser = StagingUser.findByGameAndUser(game, userInstance)
 		
 		if(stageUser == null) {
-			stageUser = new StagingUser(staging: staging, user: userInstance)
-			staging.stagingUsers.add(stageUser)
-			
-			staging.save flush:true
+			stageUser = new StagingUser(game: game, user: userInstance)
+			stageUser.save flush:true
 		}
 		
 		return stageUser
@@ -140,8 +118,11 @@ class GameStagingService extends AbstractGameService {
 	@Transactional(readOnly = true)
 	def getStagingChatUsers(Game game) {
 		def chatUsers = []
-		for(MekUser user in game?.staging?.chatUsers) {
-			chatUsers.add(user.toString())
+		
+		def chatUserObjects = GameChatUser.findAllByGame(game)
+		for(GameChatUser gameChatObject in chatUserObjects) {
+			// TODO: build a custom query to list the names since this is probably using multiple queries to do the task
+			chatUsers.add(gameChatObject?.chatUser.toString())
 		}
 		
 		return chatUsers

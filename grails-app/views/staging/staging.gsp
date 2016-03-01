@@ -101,11 +101,12 @@
 		
 		<div id="teams">
 			<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
-			<g:set var="showJoin" value="${!gameInstance?.hasUser(userInstance) && gameInstance?.isInit()}" />
+			<g:set var="showJoin" value="${stagingInstance == null && gameInstance?.isInit()}" />
 			<script type="text/javascript">var playersEditable = ${isEditable};</script>
 			<script type="text/javascript">var unitsEditable = ${gameInstance?.isInit()};</script>
 			
-			<g:each in="${gameInstance?.users}" var="thisUser">
+			<g:each in="${stagingUsers}" var="thisStagingUser">
+				<g:set var="thisUser" value="${thisStagingUser.user}" />
 				<div class="team">
 					<h2>Team ${thisUser}</h2>
 					

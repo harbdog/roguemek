@@ -1,4 +1,8 @@
-<%@ page import="roguemek.game.Game" %>
+<%@page import="java.rmi.server.UID"%>
+<%@ page 
+	import="roguemek.game.Game" 
+	import="roguemek.game.StagingUser"
+%>
 
 <!DOCTYPE html>
 <html>
@@ -31,7 +35,7 @@
 			<g:if test="${mekUserInstance?.pilots}">
 			<%
                 // find all games owned by the user and that the user's pilots are in
-                def gameList
+                def gameList = []
 				
 				def initGames = []
 				def activeGames = []
@@ -51,11 +55,19 @@
 						initGames.add(g)
 					}
 				}
-                   
+				
+				// more games will be found by looking for StagingUser objects for this user
+				def stagingGameList = StagingUser.executeQuery(
+					'select distinct u.game from StagingUser u where u.user=:user',
+					[user: mekUserInstance]
+				)
+				
+				gameList.addAll(stagingGameList)
+				
                 def userIdList = [mekUserInstance.id]
                 
                 def c = Game.createCriteria()
-                gameList = c.listDistinct {
+                def inGameList = c.listDistinct {
 	                or {
 		                users {
 		                  'in'("id", userIdList)
@@ -63,6 +75,8 @@
 	                }
 	                order("updateDate", "desc")
                 }
+				
+				gameList.addAll(inGameList)
 					
 				for(Game g in gameList) {
 					switch(g.gameState) {

@@ -1,5 +1,7 @@
 package roguemek.game
 
+import java.util.List;
+
 import roguemek.MekUser
 
 /** 
@@ -9,11 +11,20 @@ import roguemek.MekUser
 class StagingUser {
 	
 	String id
-	static mapping= {
+	static mapping = {
 		id generator: 'uuid'
 	}
 	
+	Game game
 	MekUser user
+	
+	List units
+	
+	static hasMany = [
+		units:BattleUnit
+	]
+	
+	Boolean isSpectator = false
 	
 	String startingLocation = Game.STARTING_RANDOM
 	
@@ -21,6 +32,7 @@ class StagingUser {
 	// Camo patternCamo	// TODO: add camo patterns other than solid colors
 	
     static constraints = {
+		game nullable: true
 		user nullable: false
 		
 		startingLocation inList: [Game.STARTING_N, Game.STARTING_NE, Game.STARTING_E, Game.STARTING_SE,

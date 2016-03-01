@@ -61,7 +61,7 @@
 		</g:else>
 	</div>
 	
-	<g:each in="${gameInstance?.getUnitsForUser(user)}" var="unit">
+	<g:each in="${StagingHelper.getUnitsForUser(gameInstance, user)}" var="unit">
 		<g:render template="stageUnit" model="[unit: unit, showUnitDelete: (userInstance?.id == user?.id)]" />
 	</g:each>
 	

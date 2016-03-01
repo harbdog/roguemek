@@ -74,8 +74,10 @@ class GameService extends AbstractGameService {
 	public def initializeGame(Game game) {
 		if(game.gameState != Game.GAME_INIT) return
 		
+		def stageUsers = StagingUser.findAllByGame(game)
+		
 		// do not allow the game to start if it doesn't have at least 2 users
-		if(game.users.size() < 2) {
+		if(stageUsers.size() < 2) {
 			Object[] messageArgs = []
 			gameChatService.addMessageUpdate(game, "staging.game.not.enough.users", messageArgs)
 			
@@ -83,8 +85,8 @@ class GameService extends AbstractGameService {
 		}
 		
 		// do not allow the game to start if it doesn't have at least 1 unit per user
-		for(MekUser chkUser in game.users) {
-			if(game.getUnitsForUser(chkUser).isEmpty()) {
+		for(StagingUser chkUser in stageUsers) {
+			if(chkUser.units.isEmpty()) {
 				Object[] messageArgs = []
 				gameChatService.addMessageUpdate(game, "staging.game.not.enough.units", messageArgs)
 				
@@ -102,15 +104,21 @@ class GameService extends AbstractGameService {
 		// load the board in case is not loaded already
 		game.loadMap()
 		
+		// place each StagingUser's users and units in the game
+		game.units = []
+		StagingUser.findAllByGame(game).each { StagingUser thisStagingData ->
+			if(thisStagingData.units != null) {
+				game.units.addAll(thisStagingData.units)
+			}
+		}
+		
 		// perform initiative roll on first and every 4 turns after to change up the order of the units turn
 		game.units = doInitiativeRolls(game)
 		
 		// use staging data to set up the game elements
 		StagingHelper.stageGame(game)
 		
-		// clear any staging data that was used during initialization
-		game.clearStagingData()
-		
+		// setup game states
 		game.gameState = Game.GAME_ACTIVE
 		game.gameTurn = 0
 		game.unitTurn = 0

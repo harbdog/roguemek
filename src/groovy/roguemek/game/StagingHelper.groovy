@@ -17,6 +17,8 @@ class StagingHelper {
 	 * @param game
 	 */
 	public static void stageGame(Game game) {
+		if(game == null) return
+		
 		// clear locations for each unit
 		for(BattleUnit unit in game.units) {
 			if(unit.x != null || unit.y != null) {
@@ -35,6 +37,9 @@ class StagingHelper {
 			
 			StagingHelper.generateUnitStartingPosition(game, unit, startingLocation)
 		}
+		
+		// clear any staging data that was used during initialization
+		game.clearStagingData()
 	}
 	
 	/**
@@ -194,14 +199,76 @@ class StagingHelper {
 	}
 	
 	/**
+	 * Adds a unit for the user to its staging data
+	 * @param game
+	 * @param userInstance
+	 * @param unitInstance
+	 * @return
+	 */
+	public static def addUnitForUser(Game game, MekUser userInstance, BattleUnit unitInstance) {
+		StagingUser thisStagingData = getStagingForUser(game, userInstance)
+		if(thisStagingData == null) return false
+		
+		thisStagingData.addToUnits(unitInstance)
+		
+		thisStagingData.validate()
+		if(thisStagingData.hasErrors()) {
+			log.error(thisStagingData.errors)
+			return false
+		}
+		
+		thisStagingData.save flush:true
+		
+		return true
+	}
+	
+	/**
+	 * Removes a unit for the user from its staging data
+	 * @param game
+	 * @param userInstance
+	 * @param unitInstance
+	 * @return
+	 */
+	public static def removeUnitForUser(Game game, MekUser userInstance, BattleUnit unitInstance) {
+		StagingUser thisStagingData = getStagingForUser(game, userInstance)
+		if(thisStagingData == null) return false
+		
+		thisStagingData.removeFromUnits(unitInstance)
+		
+		thisStagingData.validate()
+		if(thisStagingData.hasErrors()) {
+			log.error(thisStagingData.errors)
+			return false
+		}
+		
+		thisStagingData.save flush:true
+		
+		return true
+	}
+	
+	/**
+	 * Gets the units for the user based on staging data
+	 * @param game
+	 * @param userInstance
+	 * @return
+	 */
+	public static def getUnitsForUser(Game game, MekUser userInstance) {
+		StagingUser thisStagingData = getStagingForUser(game, userInstance)
+		if(thisStagingData?.units) {
+			return thisStagingData.units
+		}
+		
+		return []
+	}
+	
+	/**
 	 * Gets the camo for the user based on staging data
 	 * @param game
 	 * @param userInstance
 	 * @return
 	 */
 	public static def getCamoForUser(Game game, MekUser userInstance) {
-		StagingGame thisStaging = getStagingForGame(game)
-		StagingUser thisStagingData = getStagingForUser(thisStaging, userInstance)
+		StagingUser thisStagingData = getStagingForUser(game, userInstance)
 		if(thisStagingData?.rgbCamo) {
 			return thisStagingData.rgbCamo
 		}
@@ -219,8 +286,7 @@ class StagingHelper {
 	public static boolean setCamoForUser(Game game, MekUser userInstance, def camo) {
 		if(game == null || userInstance == null) return false
 		
-		StagingGame thisStaging = getStagingForGame(game)
-		StagingUser thisStagingData = getStagingForUser(thisStaging, userInstance)
+		StagingUser thisStagingData = getStagingForUser(game, userInstance)
 		if(thisStagingData == null) return false
 		
 		thisStagingData.rgbCamo = camo
@@ -233,14 +299,9 @@ class StagingHelper {
 		
 		thisStagingData.save flush:true
 		
-		log.info("before ${userInstance.toString()}: ${userInstance.rgbColorPref}")
-		
 		// also save the color as preference on the user for later use
 		userInstance.rgbColorPref = camo
 		userInstance.save flush:true
-		
-		
-		log.info("after ${userInstance.toString()}: ${userInstance.rgbColorPref}")
 		
 		return true
 	}
@@ -252,8 +313,7 @@ class StagingHelper {
 	 * @return
 	 */
 	public static String getStartingLocationForUser(Game game, MekUser userInstance) {
-		StagingGame thisStaging = getStagingForGame(game)
-		StagingUser thisStagingData = getStagingForUser(thisStaging, userInstance)
+		StagingUser thisStagingData = getStagingForUser(game, userInstance)
 		if(thisStagingData?.startingLocation) {
 			return thisStagingData.startingLocation
 		}
@@ -271,8 +331,7 @@ class StagingHelper {
 	public static boolean setStartingLocationForUser(Game game, MekUser userInstance, String location) {
 		if(game == null || userInstance == null) return false
 		
-		StagingGame thisStaging = getStagingForGame(game)
-		StagingUser thisStagingData = getStagingForUser(thisStaging, userInstance)
+		StagingUser thisStagingData = getStagingForUser(game, userInstance)
 		if(thisStagingData == null) return false
 		
 		thisStagingData.startingLocation = location
@@ -291,25 +350,9 @@ class StagingHelper {
 	/**
 	 * Gets the staging game information for the given user
 	 */
-	private static StagingUser getStagingForUser(StagingGame staging, MekUser userInstance) {
-		if(staging == null || userInstance == null) return null
+	private static StagingUser getStagingForUser(Game game, MekUser userInstance) {
+		if(game == null || userInstance == null) return null
 		
-		StagingUser stageUser
-		
-		for(StagingUser stagingData in staging.stagingUsers) {
-			if(stagingData.user.id == userInstance.id) {
-				stageUser = stagingData
-				break
-			}
-		}
-		
-		return stageUser
-	}
-	
-	/**
-	 * Gets the staging game information for the given game
-	 */
-	private static StagingGame getStagingForGame(Game game) {
-		return game?.staging
+		return StagingUser.findByGameAndUser(game, userInstance)
 	}
 }

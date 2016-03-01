@@ -46,9 +46,12 @@ class StagingController {
 				}
 			}
 			
+			def stagingUsers = StagingUser.findAllByGame(game)
+			def stagingInstance = StagingUser.findByGameAndUser(game, userInstance)
+			
 			session["game"] = game.id
 			
-			respond game, model:[userInstance:userInstance]
+			respond game, model:[userInstance:userInstance, stagingUsers:stagingUsers, stagingInstance:stagingInstance]
 		}
 	}
 	
@@ -119,8 +122,7 @@ class StagingController {
 		// TODO: make the map load asynchronously, then if launched too soon just make the players wait until it is loaded?
 		b.loadMap()
 		
-		def result = [updated:true]
-		render result as JSON
+		render ([updated:true] as JSON)
 	}
 	
 	/**
@@ -179,11 +181,11 @@ class StagingController {
 		if(userInstance == null) return
 		
 		// units can only be updated in the Init stage
-		Game game = Game.get(session.game)
+		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
 		
 		if(params.unitId == null) return
-		Unit unitInstance = Unit.get(params.unitId)
+		Unit unitInstance = Unit.read(params.unitId)
 		if(unitInstance == null) return
 		
 		// create the BattleUnit instance to load into the game
@@ -220,10 +222,8 @@ class StagingController {
 			log.info('Initialized battle unit '+battleUnitInstance.mech?.name+" with ID="+battleUnitInstance.id)
 		}
 		
-		game.units.add(battleUnitInstance)
-		
-		if(game.hasErrors()) {
-			render game.errors
+		def result = StagingHelper.addUnitForUser(game, userInstance, battleUnitInstance)
+		if(!result) {
 			return
 		}
 		
@@ -236,10 +236,7 @@ class StagingController {
 		
 		gameStagingService.addStagingUpdate(game, data)
 		
-		game.save flush:true
-		
-		def result = [updated:true]
-		render result as JSON
+		render ([updated:true] as JSON)
 	}
 	
 	/**
@@ -251,7 +248,7 @@ class StagingController {
 		if(userInstance == null) return
 		
 		// units can only be updated in the Init stage
-		Game game = Game.get(session.game)
+		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
 		
 		if(params.unitId == null) return
@@ -261,14 +258,10 @@ class StagingController {
 		// make sure only the unit owner can remove the unit
 		if(!unitInstance.isUsedBy(userInstance)) return
 		
-		game.units.remove(unitInstance)
-		
-		if(game.hasErrors()) {
-			render game.errors
+		def result = StagingHelper.removeUnitForUser(game, userInstance, unitInstance)
+		if(!result) {
 			return
 		}
-		
-		game.save flush:true
 		
 		// TODO: remove the BattleUnit from the database, if it is not owned (also remove the pilot if not owned)
 		
@@ -281,8 +274,7 @@ class StagingController {
 		
 		gameStagingService.addStagingUpdate(game, data)
 		
-		def result = [updated:true]
-		render result as JSON
+		render ([updated:true] as JSON)
 	}
 	
 	/**
@@ -315,33 +307,20 @@ class StagingController {
 		// users can only be updated in the Init stage
 		Game game = Game.get(session.game)
 		if(game == null || !game.isInit()) return
+
+		// generate staging information for the new user
+		gameStagingService.generateStagingForUser(game, userInstance)
 		
-		if(!game.users.contains(userInstance)){
-			game.users.add(userInstance)
-			
-			if(game.hasErrors()) {
-				render game.errors
-				return
-			}
-			
-			game.save flush:true
-			
-			// generate staging information for the new user
-			StagingGame staging = gameStagingService.generateStagingForGame(game)
-			gameStagingService.generateStagingForUser(staging, userInstance)
-			
-			def data = [
-				user: userInstance.id,
-				userAdded: userInstance.id
-			]
-			Object[] messageArgs = [userInstance.toString()]
-			gameChatService.addMessageUpdate(game, "staging.user.added", messageArgs)
-			
-			gameStagingService.addStagingUpdate(game, data)
-		}
+		def data = [
+			user: userInstance.id,
+			userAdded: userInstance.id
+		]
+		Object[] messageArgs = [userInstance.toString()]
+		gameChatService.addMessageUpdate(game, "staging.user.added", messageArgs)
 		
-		def result = [updated:true]
-		render result as JSON
+		gameStagingService.addStagingUpdate(game, data)
+		
+		render ([updated:true] as JSON)
 	}
 	
 	/**
@@ -353,7 +332,7 @@ class StagingController {
 		if(userInstance == null) return
 		
 		// users can only be updated in the Init stage
-		Game game = Game.get(session.game)
+		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
 		
 		if(params.userId == null) return
@@ -363,27 +342,11 @@ class StagingController {
 		// make sure only the user or the game owner can remove the user
 		if(userInstance != game.ownerUser && userInstance != userToRemove) return
 
-		game.users.remove(userToRemove)
+		StagingUser thisStagingData = StagingHelper.getStagingForUser(game, userToRemove)
+		thisStagingData.delete flush:true
 		
-		// remove any of the user's units from the game also
-		def unitsToRemove = []
-		for(BattleUnit unitInstance in game.units) {
-			if(unitInstance.isUsedBy(userToRemove)) {
-				unitsToRemove << unitInstance
-			}
-		}
-		
-		unitsToRemove.each { unitInstance ->
-			game.units.remove(unitInstance)
-		}
-		
-		if(game.hasErrors()) {
-			render game.errors
-			return
-		}
-		
-		game.save flush:true
-		
+		// TODO: remove any of the user's BattleUnit from the database, if it is not owned (also remove the pilot if not owned)
+
 		def data = [
 			user: userInstance.id,
 			userRemoved: userToRemove.id
@@ -393,8 +356,7 @@ class StagingController {
 		
 		gameStagingService.addStagingUpdate(game, data)
 		
-		def result = [updated:true]
-		render result as JSON
+		render ([updated:true] as JSON)
 	}
 	
 	/**
@@ -432,8 +394,7 @@ class StagingController {
 			gameStagingService.addStagingUpdate(game, data)
 		}
 		
-		def result = [updated:locationUpdated]
-		render result as JSON
+		render ([updated:locationUpdated] as JSON)
 	}
 	
 	/**
@@ -444,15 +405,17 @@ class StagingController {
 	def camoSelect() {
 		def userInstance = currentUser()
 		
-		Game game = Game.get(session.game)
+		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
 		
 		if(params.userId == null) return
 		MekUser userToUpdate = MekUser.read(params.userId)
-		if(userToUpdate == null) return
 		
 		if(userToUpdate) {
-			respond game, model:[userInstance:userToUpdate]
+			// pass along a unit for preview if one exists
+			BattleUnit previewUnit = StagingUser.findByGameAndUser(game, userToUpdate)?.units[0]
+
+			respond game, model:[userInstance:userToUpdate, previewUnit:previewUnit]
 		}
 		else {
 			redirect url: "/"
@@ -480,7 +443,7 @@ class StagingController {
 		if(rgbCamo == null) return
 		
 		// users can only be updated in the Init stage
-		Game game = Game.get(session.game)
+		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
 		
 		if(params.userId == null) return
@@ -493,7 +456,7 @@ class StagingController {
 		def camoUpdated = StagingHelper.setCamoForUser(game, userToUpdate, rgbCamo)
 		
 		// apply the new camo to the first unit for the user so it can be displayed as a preview
-		BattleUnit u = game.getPrimaryUnitForUser(userToUpdate)
+		BattleUnit u = StagingUser.findByGameAndUser(game, userToUpdate)?.units[0]
 		if(u != null) {
 			u.rgb = rgbCamo
 			u.image = BattleUnit.initUnitImage(u)
@@ -518,7 +481,7 @@ class StagingController {
 		if(userInstance == null) return
 		
 		// units can only be updated in the Init stage
-		Game game = Game.get(session.game)
+		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
 		
 		if(params.userId == null) return
@@ -533,7 +496,7 @@ class StagingController {
 		
 		if(camoToApply != null) {
 			// apply the new camo to the each unit for the user so it can be displayed as a preview
-			for(BattleUnit u in game.getUnitsForUser(userToUpdate)) {
+			for(BattleUnit u in StagingHelper.getUnitsForUser(game, userToUpdate)) {
 				if(camoToApply instanceof Short[]){
 					// groovy list "equals" only works if cast as int[] array
 					if(u.rgb != null

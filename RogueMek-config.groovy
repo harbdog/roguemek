@@ -36,7 +36,7 @@ grails {
 			plugin {
 				initializeBeans {
 					delay = 10000  // milliseconds to delay initialization
-					period = 5000 // milliseconds to retry initialization based on servletContext readiness (e.g. waiting finish all BootStrap activities)
+					period = 3000  // milliseconds to retry initialization based on servletContext readiness (e.g. waiting finish all BootStrap activities)
 					attempts = 100 // number of attempts the TimerTask will make before quitting
 				}
 			}

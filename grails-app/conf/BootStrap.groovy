@@ -241,11 +241,7 @@ class BootStrap {
 			log.info('Preloaded sample Board')
 			
 			// Initialize a sample Game
-			Game sampleGame = new Game(ownerUser: adminUser, 
-					description: "The Battle of Wits", 
-					users: [adminUser, testUser], 
-					spectators: [], 
-					units: [battleMechA, battleMechB, battleMech2, battleMech3])
+			Game sampleGame = new Game(ownerUser: adminUser, description: "The Battle of Wits")
 			
 			BattleHexMap battleBoardMap = new BattleHexMap(game: sampleGame, map: boardMap)
 			sampleGame.board = battleBoardMap
@@ -261,25 +257,19 @@ class BootStrap {
 				log.info('Initialized game '+sampleGame.id)
 				
 				// create staging data for the sample game
-				StagingGame staging = new StagingGame(game: sampleGame)
-				StagingUser stagingAdmin = new StagingUser(staging: staging, user: adminUser, startingLocation: Game.STARTING_NW, rgbCamo: [255, 0, 0])
-				StagingUser stagingTester = new StagingUser(staging: staging, user: testUser, startingLocation: Game.STARTING_N, rgbCamo: [0, 0, 255])
+				StagingUser stagingAdmin = new StagingUser(
+						game: sampleGame, user: adminUser, 
+						startingLocation: Game.STARTING_NW, 
+						rgbCamo: [255, 0, 0],
+						units: [battleMechA, battleMechB])
+				stagingAdmin.save flush:true
 				
-				sampleGame.staging = staging
-				staging.stagingUsers = [stagingAdmin, stagingTester]
-				
-				if(staging.save(flush: true)) {
-					sampleGame.staging = staging
-					sampleGame.save flush:true
-					
-					log.info('Initialized staging '+staging.id)
-				}
-				else {
-					log.error("Errors with staging:\n")
-					staging.errors.allErrors.each {
-						log.error(it)
-					}
-				}
+				StagingUser stagingTester = new StagingUser(
+						game: sampleGame, user: testUser, 
+						startingLocation: Game.STARTING_N, 
+						rgbCamo: [0, 0, 255],
+						units: [battleMech2, battleMech3])
+				stagingTester.save flush:true
 			}
 		}
     }

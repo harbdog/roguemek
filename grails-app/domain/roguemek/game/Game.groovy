@@ -13,7 +13,7 @@ class Game {
 	private static final Date NULL_DATE = new Date(0)
 	
 	String id
-	static mapping= {
+	static mapping = {
 		id generator: 'uuid'
 	}
 	
@@ -22,12 +22,15 @@ class Game {
 	
 	Boolean privateGame = false
 	
-	List users
-	List spectators
+	Collection users
+	Collection spectators
 	List units
 	
-	static hasMany = [users:MekUser, spectators:MekUser, units:BattleUnit]
-	static hasOne = [staging: StagingGame]
+	static hasMany = [
+		users:MekUser, 
+		spectators:MekUser, 
+		units:BattleUnit
+	]
 	
 	Integer unitTurn = 0
 	Integer gameTurn = 0
@@ -68,7 +71,6 @@ class Game {
 		gameTurn min: 0
 		gameState inList: [GAME_INIT, GAME_ACTIVE, GAME_PAUSED, GAME_OVER, GAME_DELETED]
 		board nullable: false
-		staging nullable: true
     }
 	
 	def beforeInsert() {
@@ -86,16 +88,18 @@ class Game {
 	 * Clears staging data for when the game goes from staging to active play
 	 */
 	public void clearStagingData() {
-		// TODO: figure out how to actually delete this data from the database table
-		staging?.clearStagingData()
+		StagingUser.findAllByGame(this).each{ StagingUser stageUser ->
+			stageUser.delete flush:true
+		}
 	}
 	
 	/**
-	 * Returns the staging users from the staging game data
-	 * @return
+	 * Clears chat data for when the game is deleted or becomes inactive for play
 	 */
-	public getStagingUsers() {
-		return staging?.stagingUsers
+	public void clearChatData() {
+		GameChatUser.findAllByGame(this).each{ GameChatUser chatUser ->
+			chatUser.delete flush:true
+		}
 	}
 	
 	/**

@@ -150,6 +150,7 @@ class RogueMekController {
 		}
 		
 		gameInstance.ownerUser = userInstance
+		gameInstance.users = [userInstance]
 		gameInstance.validate()
 
 		if (gameInstance.hasErrors()) {
@@ -159,8 +160,8 @@ class RogueMekController {
 
 		gameInstance.save flush:true
 		
-		// generate staging information for the game
-		gameStagingService.generateStagingForGame(gameInstance)
+		// generate staging information for the owner user
+		gameStagingService.generateStagingForUser(gameInstance, userInstance)
 
 		request.withFormat {
 			form multipartForm {
@@ -188,8 +189,9 @@ class RogueMekController {
 			redirect mapping:"dropship"
 		}
 
-		// delete any staging data
-		gameInstance.staging?.clearStagingData()
+		// clean up any potential references that may be hanging around
+		gameInstance.clearStagingData()
+		gameInstance.clearChatData()
 		
 		// let those still in the staging screen be aware of the game state change
 		Object[] messageArgs = []
