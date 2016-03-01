@@ -76,8 +76,23 @@ class GameService extends AbstractGameService {
 		
 		def stageUsers = StagingUser.findAllByGame(game)
 		
+		// place each StagingUser's users and units in the game
+		game.units = []
+		StagingUser.findAllByGame(game).each { StagingUser thisStagingData ->
+			if(!game.hasUser(thisStagingData.user)) {
+				game.users.add(thisStagingData.user)
+			}
+			if(thisStagingData.units != null) {
+				game.units.addAll(thisStagingData.units)
+			}
+		}
+		
+		// for some reason adding to the users at this point needed  
+		// the game to be saved, otherwise concurrent exception was generated
+		game.save flush:true
+		
 		// do not allow the game to start if it doesn't have at least 2 users
-		if(stageUsers.size() < 2) {
+		if(game.users.size() < 2) {
 			Object[] messageArgs = []
 			gameChatService.addMessageUpdate(game, "staging.game.not.enough.users", messageArgs)
 			
@@ -85,8 +100,8 @@ class GameService extends AbstractGameService {
 		}
 		
 		// do not allow the game to start if it doesn't have at least 1 unit per user
-		for(StagingUser chkUser in stageUsers) {
-			if(chkUser.units.isEmpty()) {
+		for(MekUser chkUser in game.users) {
+			if(game.getUnitsForUser(chkUser).isEmpty()) {
 				Object[] messageArgs = []
 				gameChatService.addMessageUpdate(game, "staging.game.not.enough.units", messageArgs)
 				
@@ -103,14 +118,6 @@ class GameService extends AbstractGameService {
 		
 		// load the board in case is not loaded already
 		game.loadMap()
-		
-		// place each StagingUser's users and units in the game
-		game.units = []
-		StagingUser.findAllByGame(game).each { StagingUser thisStagingData ->
-			if(thisStagingData.units != null) {
-				game.units.addAll(thisStagingData.units)
-			}
-		}
 		
 		// perform initiative roll on first and every 4 turns after to change up the order of the units turn
 		game.units = doInitiativeRolls(game)
