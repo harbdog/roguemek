@@ -145,7 +145,7 @@
 					<span class="left"><link:stagingGame id="${gameInstance?.id}"><g:message code="default.button.waiting.label" /></link:stagingGame></span>
 				</g:else>
 				
-				<span class="right"><link:dropship><g:message code="default.button.leave.label" /></link:dropship></span>
+				<span class="right"><link:leaveGame id="${gameInstance?.id}"><g:message code="default.button.leave.label" /></link:leaveGame></span>
 			</g:else>
 		</div>
 	</body>

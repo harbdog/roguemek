@@ -89,6 +89,11 @@ class UrlMappings {
 			action = 'debrief'
 		}
 		
+		name leaveGame: "/leave/$id"{
+			controller = 'staging'
+			action = 'leave'
+		}
+		
 		name abortGame: "/abort/$id"{
 			controller = 'rogueMek'
 			action = 'abort'

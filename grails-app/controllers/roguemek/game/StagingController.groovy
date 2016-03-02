@@ -20,15 +20,17 @@ class StagingController {
 	}
 	
     /**
-	 * Shows the game staging page
+	 * Shows the game staging page and joins the game if possible
 	 * @return
 	 */
-	@Transactional(readOnly = true)
 	def staging(Game game) {
 		def userInstance = currentUser()
 		if(!userInstance) {
 			redirect action: 'index'
 		}
+		
+		boolean isParticipant = false
+		StagingUser stagingInstance
 		
 		if(game == null) {
 			redirect mapping:"dropship"
@@ -36,23 +38,70 @@ class StagingController {
 		else if(game.isOver()) {
 			redirect mapping: "debriefGame", id: game.id
 		}
+		else if(game.isActive()) {
+			isParticipant = game.isParticipant(userInstance)
+		}
 		else {
+			stagingInstance = StagingUser.findByGameAndUser(game, userInstance)
+			isParticipant = (stagingInstance != null)
+		}
+		
+		if(isParticipant) {
+			// nothing to do, let user proceed
+		}
+		else {
+			// user is not a participant and likely intends to join if init
 			if(game.isActive()) {
-				def isParticipant = game.isParticipant(userInstance)
-				
-				if(!isParticipant) {
-					redirect mapping:"dropship"
-					return
-				}
+				redirect mapping:"dropship"
+				return
 			}
 			
-			def stagingUsers = StagingUser.findAllByGame(game)
-			def stagingInstance = StagingUser.findByGameAndUser(game, userInstance)
+			// generate staging information for the new user
+			stagingInstance = gameStagingService.generateStagingForUser(game, userInstance)
 			
-			session["game"] = game.id
+			def data = [
+				user: userInstance.id,
+				userAdded: userInstance.id
+			]
+			Object[] messageArgs = [userInstance.toString()]
+			gameChatService.addMessageUpdate(game, "staging.user.added", messageArgs)
 			
-			respond game, model:[userInstance:userInstance, stagingUsers:stagingUsers, stagingInstance:stagingInstance]
+			gameStagingService.addStagingUpdate(game, data)
 		}
+		
+		def stagingUsers = StagingUser.findAllByGame(game)
+		
+		session["game"] = game.id
+		
+		respond game, model:[userInstance:userInstance, stagingUsers:stagingUsers, stagingInstance:stagingInstance]
+	}
+	
+	/**
+	 * Leaves the game, removing the user from it
+	 */
+	def leave(Game game) {
+		def userInstance = currentUser()
+		if(!userInstance || !game) {
+			redirect action: 'index'
+		}
+		
+		StagingUser stagingInstance = StagingUser.findByGameAndUser(game, userInstance)
+		if(stagingInstance) {
+			stagingInstance.delete flush:true
+			
+			// TODO: remove any of the user's BattleUnit from the database, if it is not owned (also remove the pilot if not owned)
+
+			def data = [
+				user: userInstance.id,
+				userRemoved: userInstance.id
+			]
+			Object[] messageArgs = [userInstance.toString()]
+			gameChatService.addMessageUpdate(game, "staging.user.removed", messageArgs)
+			
+			gameStagingService.addStagingUpdate(game, data)
+		}
+		
+		redirect mapping:"dropship"
 	}
 	
 	/**
@@ -157,7 +206,7 @@ class StagingController {
 		def userInstance = currentUser()
 		if(userInstance == null) return
 		
-		Game gameInstance = Game.get(session.game)
+		Game gameInstance = Game.read(session.game)
 		if(gameInstance == null) return
 		
 		if(params.userId == null) return
@@ -305,7 +354,7 @@ class StagingController {
 		if(userInstance == null) return
 		
 		// users can only be updated in the Init stage
-		Game game = Game.get(session.game)
+		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
 
 		// generate staging information for the new user
@@ -371,7 +420,7 @@ class StagingController {
 		if(startingLocation == null || !Game.STARTING_LOCATIONS.contains(startingLocation)) return
 		
 		// users can only be updated in the Init stage
-		Game game = Game.get(session.game)
+		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
 		
 		if(params.userId == null) return

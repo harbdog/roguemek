@@ -825,17 +825,15 @@ function updateStagingData(data) {
 	else if(data.userAdded != null) {
 		var userId = data.userAdded;
 		
-		// TODO: update the users and teams on the page without forcing reload
-		window.location.reload();
-		
-		//ajaxStageUser(userId);
+		// update the users and teams on the page without forcing reload
+		ajaxStageUser(userId);
 	}
 	else if(data.userRemoved != null) {
 		var userId = data.userRemoved;
 		$("div.player[data-userid='"+userId+"']").fadeOut();
 		
 		// TODO: update the users and teams on the page without forcing reload
-		window.location.reload();
+		//window.location.reload();
 	}
 	else if(data.gameState != null) {
 		if(data.gameState == "A") {
