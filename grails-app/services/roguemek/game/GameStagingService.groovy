@@ -50,7 +50,11 @@ class GameStagingService extends AbstractGameService {
 				
 				// broadcast new user
 				def data = [
-					chatUsers: getStagingChatUsers(game)
+					chatUser: [
+						add: true,
+						userid: user.id,
+						username:user.toString()
+					]
 				]
 				addStagingUpdate(game, data)
 			}
@@ -75,7 +79,11 @@ class GameStagingService extends AbstractGameService {
 				
 				// broadcast removed user
 				def data = [
-					chatUsers: getStagingChatUsers(game)
+					chatUser: [
+						remove: true,
+						userid: user.id,
+						username:user.toString()
+					]
 				]
 				addStagingUpdate(game, data)
 			}

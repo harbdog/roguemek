@@ -749,26 +749,48 @@ function ajaxUpdateMapSelection() {
 		});
 }
 
-function handleChatUsersUpdate(usersList) {
+/**
+ * Handles adding and removing users from the chat users list
+ * @param userData
+ */
+function handleChatUsersUpdate(userData) {
 	//<div><span class="chat-user">CapperDeluxe</span></div>
-	var $chatUsers = $('#chat-users');
+	var userId = userData.userid;
+	var userName = userData.username;
 	
-	// clearing out the div each call to regenerate the entire list
-	$chatUsers.empty();
+	var $chatUserDiv = $("div[data-chat-userid='"+userId+"']")
 	
-	$.each(usersList, function(index, thisUser) {
-		var chatLine = "<div>"
-		if(thisUser != null) {
-			chatLine += "<span class='chat-user'>"+ thisUser +"</span>";
+	if(userData.add) {
+		// first, make sure it doesn't already exist
+		if($chatUserDiv.length) {
+			$chatUserDiv.fadeIn();
+			return
 		}
-		chatLine += "</div>";
 		
-		$chatUsers.append(chatLine);
-	});
-	
-	// TODO: allow customization of colors in chat!
-	var effectOptions = {color: shadeColor("#3399FF", -0.5)};
-	$chatUsers.effect("highlight", effectOptions, 1000);
+		var $chatUsers = $('#chat-users');
+		
+		// create the div section containing the user name
+		var $chatUserDiv = $("<div>").attr("data-chat-userid", userId);
+		var $chatUserSpan = $("<span>", {class: "chat-user"}).text(userName);
+		
+		$chatUserDiv.append($chatUserSpan);
+		$chatUsers.append($chatUserDiv);
+		
+		// TODO: allow customization of colors in chat!
+		var effectOptions = {color: shadeColor("#3399FF", -0.5)};
+		$chatUserDiv.effect("highlight", effectOptions, 1000);
+	}
+	else if(userData.remove){
+		$chatUserDiv.fadeOut(function() {
+			var $this = $(this);
+			// waiting a short while before complete removal just in case it was only a refresh event
+			setTimeout(function(){
+				if($this.is(":visible") == false) {
+					$this.remove()
+				}
+			},500);
+		});
+	}
 }
 
 /**
@@ -779,14 +801,9 @@ function updateStagingData(data) {
 	var effectOptions = {color: "#3399FF"};
 	var userId = data.user;
 	
-	if(data.chatUsers != null) {
+	if(data.chatUser != null) {
 		// update displayed list of users in the staging chat room
-		var chatUsersList = data.chatUsers;
-		
-		console.log("Chat users list updated:");
-		console.log(chatUsersList);
-		
-		handleChatUsersUpdate(chatUsersList);
+		handleChatUsersUpdate(data.chatUser, true);
 	}
 	else if(data.map != null) {
 		var mapName = data.map;

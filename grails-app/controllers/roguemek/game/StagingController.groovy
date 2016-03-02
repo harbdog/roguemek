@@ -70,10 +70,14 @@ class StagingController {
 		}
 		
 		def stagingUsers = StagingUser.findAllByGame(game)
+		def chatUsers = GameChatUser.executeQuery(
+				'select u.chatUser from GameChatUser u where u.game=:game',
+				[game: game]
+		)
 		
 		session["game"] = game.id
 		
-		respond game, model:[userInstance:userInstance, stagingUsers:stagingUsers, stagingInstance:stagingInstance]
+		respond game, model:[userInstance:userInstance, stagingUsers:stagingUsers, stagingInstance:stagingInstance, chatUsers:chatUsers]
 	}
 	
 	/**
