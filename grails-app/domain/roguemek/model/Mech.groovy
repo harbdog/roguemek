@@ -116,9 +116,11 @@ class Mech extends Unit {
 		Set<String> mechPaths = ContextHelper.getResourcePaths("/src/mtf/mechs/")
 		
 		for(String path in mechPaths) {
-			InputStream mtfFile = ContextHelper.getResource(path)
-			if(mtfFile.available()) {
-				MechMTF.createMechFromMTF(mtfFile)
+			if(path.toLowerCase().endsWith(MechMTF.MTF_EXTENSION)) {
+				InputStream mtfFile = ContextHelper.getResource(path)
+				if(mtfFile.available()) {
+					MechMTF.createMechFromMTF(mtfFile)
+				}
 			}
 		}
 	}

@@ -30,9 +30,12 @@ class MapBoard {
 			log.info("Board already loaded: "+path)
 			return board
 		}
+		else if(!path.toLowerCase().endsWith(BOARD_EXTENSION)) {
+			return null
+		}
 		
 		InputStream boardFile = ContextHelper.getResource(path)
-		if(boardFile.available() && path.endsWith(BOARD_EXTENSION)) {
+		if(boardFile?.available()) {
 			// load only the board names and sizes to begin with, the contents of each map
 			// will be loaded as it is used the first time
 			def boardSize = getBoardSize(boardFile)

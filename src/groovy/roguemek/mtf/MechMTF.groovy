@@ -8,6 +8,8 @@ import roguemek.model.*;
 class MechMTF {
 	private static Log log = LogFactory.getLog(this)
 	
+	public static final String MTF_EXTENSION = ".mtf"
+	
 	public static final String MTF_CRIT_EMPTY = "-Empty-"
 	public static final String MTF_CRIT_HEATSINK = "Heat Sink"
 	public static final String MTF_CRIT_DBL_HEATSINK = "Double Heat Sink"
