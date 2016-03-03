@@ -855,10 +855,25 @@ function updateStagingData(data) {
 	else if(data.gameState != null) {
 		if(data.gameState == "A") {
 			console.log("The game is now active");
+			
+			$("#launch-button").button();
+			
+			// show a modal dialog with the launch button
+			$("#launch-dialog").dialog({
+		    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
+		    	title: "Prepare for Battle",
+		    	autoOpen: true,
+		    	modal: true,
+				show: {
+					effect: "fade",
+					duration: 250
+				},
+				hide: {
+					effect: "explode",
+					duration: 250
+				}
+		    });
 		}
-		
-		// TODO: update the game state on the page without forcing reload
-		//window.location.reload();
 	}
 }
 

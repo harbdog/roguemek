@@ -30,6 +30,12 @@ div #spinner {
 	width: 100%;
 }
 
+/* Launch dialog */
+#launch-button{
+	width: 98%;
+	font-size: 2em;
+}
+
 /* Chat area decoration */
 #chat-area {
 	margin: 1em 1em 1em 1em;

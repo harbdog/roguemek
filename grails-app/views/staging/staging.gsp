@@ -154,5 +154,9 @@
 				<span class="right"><link:leaveGame id="${gameInstance?.id}"><g:message code="default.button.leave.label" /></link:leaveGame></span>
 			</g:else>
 		</div>
+		
+		<div id="launch-dialog" style="display:none;" title="<g:message code='staging.game.started'/>">
+			<button id="launch-button"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.launch.label" /></link:startGame></button>
+		</div>
 	</body>
 </html>

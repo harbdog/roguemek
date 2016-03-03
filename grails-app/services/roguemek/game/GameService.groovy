@@ -144,6 +144,7 @@ class GameService extends AbstractGameService {
 		def stageUsers = StagingUser.findAllByGame(game)
 		
 		// place each StagingUser's users and units in the game
+		game.users = []
 		game.units = []
 		StagingUser.findAllByGame(game).each { StagingUser thisStagingData ->
 			if(!game.hasUser(thisStagingData.user)) {
