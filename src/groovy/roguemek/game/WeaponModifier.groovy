@@ -314,10 +314,10 @@ class WeaponModifier {
 		def fromLocationMods = getToHitModifiersFromLocation(game, srcUnit, tgtUnit)
 		toHitMods = (toHitMods << fromLocationMods).flatten()
 		
-		//log.info("Modifiers for "+weapon.toString()+" from "+srcUnit.toString() + " at "+tgtUnit.toString())
-		//for(WeaponModifier modifier in toHitMods) {
-			//log.info("  "+modifier.type+": "+modifier.value)
-		//}
+		log.info("Modifiers for "+weapon.toString()+" from "+srcUnit.toString() + " at "+tgtUnit.toString())
+		for(WeaponModifier modifier in toHitMods) {
+			log.info("  "+modifier.type+": "+modifier.value)
+		}
 		
 		return toHitMods
 	}
@@ -380,7 +380,7 @@ class WeaponModifier {
 		toHitMods = (toHitMods << attackerMods).flatten()
 		
 		// add target terrain modifier
-		def targetMods = Compute.getTargetTerrainModifier(game, tgtLocation)
+		def targetMods = Compute.getTargetTerrainModifier(game, tgtLocation, (tgtMoveStatus == GameService.CombatStatus.UNIT_JUMPING))
 		toHitMods = (toHitMods << targetMods).flatten()
 		
 		return toHitMods;

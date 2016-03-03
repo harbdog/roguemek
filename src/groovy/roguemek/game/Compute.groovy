@@ -563,15 +563,15 @@ class Compute {
 	 *
 	 * based off of the same method from MegaMek (Compute.java)
 	 */
-	public static def getTargetTerrainModifier(Game game, Coords location) {
+	public static def getTargetTerrainModifier(Game game, Coords location, boolean isJumping) {
 		Hex hex = game.getHexAt(location);
 	
 		def toHitMods = [];
 		
-		// TODO: you don't get terrain modifiers in midair from DFA
-		/*if (entityTarget != null && entityTarget.isMakingDfa()) {
-			return new ToHitData();
-		}*/
+		// you don't get terrain modifiers in midair (from DFA, or in this game from jumping either)
+		if(isJumping) {
+			return toHitMods
+		}
 		
 		int waterLevel = hex.getTerrainLevel(Terrain.WATER)
 		
