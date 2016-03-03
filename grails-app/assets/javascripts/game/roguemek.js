@@ -751,7 +751,13 @@ function ping() {
  * @param data
  */
 function updateGameData(data) {
-
+	
+	if(data.chatUser != null) {
+		// update displayed list of users in the game chat
+		handleChatUsersUpdate(data.chatUser);
+		return;
+	}
+	
 	if(data.message) {
 		// display the message to the player
 		var t = new Date(data.time);

@@ -87,7 +87,7 @@ s.init = function() {
 	
 	////////////////////////////////////////////
 	// create the UI background color setting //
-	var enemyColorInput = SettingsDisplay.createColorSetting(
+	var bgColorInput = SettingsDisplay.createColorSetting(
 			settingsDiv,
 			"bgColor", "UI Background",
 			Settings.UI_BG_COLOR
@@ -95,7 +95,7 @@ s.init = function() {
 	
 	////////////////////////////////////////////
 	// create the UI foreground color setting //
-	var enemyColorInput = SettingsDisplay.createColorSetting(
+	var fgColorInput = SettingsDisplay.createColorSetting(
 			settingsDiv,
 			"fgColor", "UI Foreground",
 			Settings.UI_FG_COLOR

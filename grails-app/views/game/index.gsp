@@ -22,7 +22,16 @@
 		        <g:message code="page.browser.not.supported" />
 		    </canvas>
 		    
-		    <div id="messagingArea"></div>
+		    <div id="messagingArea">
+		    	<div id="chat-window">
+					<%-- TODO: retrieve previous chat from database --%>
+				</div>
+			    <div id="chat-users">
+					<g:each in="${chatUsers}" var="thisUser">
+						<div data-chat-userid="${thisUser.id}"><span class="chat-user">${thisUser}</span></div>
+					</g:each>
+				</div>
+			</div>
 		    <input id="chat-input" type="text"/>
 	    </div>
 	    

@@ -118,6 +118,25 @@ div #pingDiv {
 	overflow: auto;
 }
 
+#chat-window {
+	float: left;
+    width: 80%;
+    height: 100%;
+    overflow: auto;
+}
+
+#chat-users {
+	float: left;
+    width: 19%;
+    height: 100%;
+    border-left: 1px solid #FFFFFF;
+    overflow: auto;
+}
+
+#chat-users span {
+	margin-left: 1em;
+}
+
 #chat-input {
 	top: 0px;
 	left: 0px;

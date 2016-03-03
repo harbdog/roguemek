@@ -69,6 +69,73 @@ class GameService extends AbstractGameService {
 	];
 	
 	/**
+	 * Handles connecting the user to the game chat
+	 */
+	def sendConnect(request) {
+		def user = currentUser(request)
+		if(user == null) return
+		
+		def session = request.getSession(false)
+		if(session.game != null){
+			Game game = Game.load(session.game)
+			
+			// add the user to the chat users list
+			if(game) {
+				GameChatUser chatUser = GameChatUser.findByGameAndChatUser(game, user)
+				if(chatUser == null) {
+					chatUser = new GameChatUser(game: game, chatUser: user)
+					chatUser.save flush:true
+				}
+				
+				// broadcast new user
+				def data = [
+					chatUser: [
+						add: true,
+						userid: user.id,
+						username:user.toString()
+					]
+				]
+				
+				Object[] messageArgs = []
+				Date update = addMessageUpdate(game, null, messageArgs, data)
+			}
+		}
+	}
+	
+	/**
+	 * Handles disconnecting the user from the game chat
+	 */
+	def sendDisconnect(event, request) {
+		def user = currentUser(request)
+		if(user == null) return
+		
+		def session = request.getSession(false)
+		if(session.game != null){
+			Game game = Game.load(session.game)
+			
+			// remove the user from the chat users list
+			if(game) {
+				GameChatUser chatUser = GameChatUser.findByGameAndChatUser(game, user)
+				if(chatUser != null) {
+					chatUser.delete flush:true
+				}
+				
+				// broadcast removed user
+				def data = [
+					chatUser: [
+						remove: true,
+						userid: user.id,
+						username:user.toString()
+					]
+				]
+				
+				Object[] messageArgs = []
+				Date update = addMessageUpdate(game, null, messageArgs, data)
+			}
+		}
+	}
+	
+	/**
 	 * Starts the game so it is ready to play the first turn
 	 */
 	public def initializeGame(Game game) {

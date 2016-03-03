@@ -28,7 +28,5 @@ function handleChat(data) {
 }
 
 function handleAction(data) {
-	console.log(data);
-	
 	updateGameData(data);
 }

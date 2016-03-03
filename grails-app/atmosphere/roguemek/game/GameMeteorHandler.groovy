@@ -46,20 +46,22 @@ class GameMeteorHandler extends HttpServlet {
 			m.addListener(new WebSocketEventListenerAdapter() {
 				@Override
 				void onDisconnect(AtmosphereResourceEvent event) {
-					//gameService.sendDisconnect(event, request)
+					gameService.sendDisconnect(event, request)
 				}
 			})
 		} else {
 			m.addListener(new AtmosphereResourceEventListenerAdapter() {
 				@Override
 				void onDisconnect(AtmosphereResourceEvent event) {
-					//gameService.sendDisconnect(event, request)
+					gameService.sendDisconnect(event, request)
 				}
 			})
 		}
 
 		m.setBroadcaster(b)
 		m.resumeOnBroadcast(m.transport() == LONG_POLLING ? true : false).suspend(-1)
+		
+		gameService.sendConnect(request)
 	}
 
 	@Override

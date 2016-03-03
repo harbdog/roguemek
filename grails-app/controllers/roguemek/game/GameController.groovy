@@ -50,6 +50,13 @@ class GameController {
 				}
 				else {
 					log.info("User "+user?.username+" joining Game("+g.id+")")
+					
+					def chatUsers = GameChatUser.executeQuery(
+							'select u.chatUser from GameChatUser u where u.game=:game',
+							[game: g]
+					)
+					
+					respond g, model:[chatUsers:chatUsers]
 				}
 			}
 		}

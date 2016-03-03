@@ -99,6 +99,7 @@ c.update = function() {
 	
 	$("#messagingArea").css("color", Settings.get(Settings.UI_FG_COLOR));
 	$("#messagingArea").css("border-color", Settings.get(Settings.UI_FG_COLOR));
+	$("#chat-users").css("border-color", Settings.get(Settings.UI_FG_COLOR));
 	
 	// Do NOT cache this object, it causes massive frameloss on slow tablets 
 	//this.cache(0,0, this.width,this.height);
@@ -110,7 +111,7 @@ c.update = function() {
 }
 
 c.addMessage = function(message, time, user, scrollToBottom) {
-	var $chat = $('#messagingArea');
+	var $chat = $('#chat-window');
 	
 	if(message != null && message.length > 0) { 
 		//this.messagingElement.htmlElement.innerHTML += "&#13;&#10;"+message;

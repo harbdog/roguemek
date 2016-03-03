@@ -56,7 +56,5 @@ function handleChat(data) {
 }
 
 function handleStaging(data) {
-	console.log(data);
-	
 	updateStagingData(data);
 }

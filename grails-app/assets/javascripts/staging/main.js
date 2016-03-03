@@ -803,7 +803,7 @@ function updateStagingData(data) {
 	
 	if(data.chatUser != null) {
 		// update displayed list of users in the staging chat room
-		handleChatUsersUpdate(data.chatUser, true);
+		handleChatUsersUpdate(data.chatUser);
 	}
 	else if(data.map != null) {
 		var mapName = data.map;
@@ -858,7 +858,7 @@ function updateStagingData(data) {
 		}
 		
 		// TODO: update the game state on the page without forcing reload
-		window.location.reload();
+		//window.location.reload();
 	}
 }
 
