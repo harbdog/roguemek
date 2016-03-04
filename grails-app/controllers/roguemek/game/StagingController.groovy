@@ -272,7 +272,7 @@ class StagingController {
 		else {
 			battleUnitInstance.save flush:true
 		
-			log.info('Initialized battle unit '+battleUnitInstance.mech?.name+" with ID="+battleUnitInstance.id)
+			log.debug('Initialized battle unit '+battleUnitInstance.mech?.name+" with ID="+battleUnitInstance.id)
 		}
 		
 		def result = StagingHelper.addUnitForUser(game, userInstance, battleUnitInstance)
