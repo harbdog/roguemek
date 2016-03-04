@@ -747,6 +747,21 @@ function ping() {
 }
 
 /**
+ * Loads initial list of users connected to chat
+ */
+function loadChatUsersList() {
+	lastPing = new Date().getTime();
+	$.getJSON("game/listChatUsers", 
+		null
+	)
+	.fail(function(jqxhr, textStatus, error) {
+		var err = textStatus + ", " + error;
+		console.log( "Request Failed: " + err );
+	})
+	.done(handleChatUsersList);
+}
+
+/**
  * Handle all game and unit updates resulting from server actions
  * @param data
  */

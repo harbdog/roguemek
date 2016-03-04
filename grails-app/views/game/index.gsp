@@ -27,9 +27,7 @@
 					<%-- TODO: retrieve previous chat from database --%>
 				</div>
 			    <div id="chat-users">
-					<g:each in="${chatUsers}" var="thisUser">
-						<div data-chat-userid="${thisUser.id}"><span class="chat-user">${thisUser}</span></div>
-					</g:each>
+					<%-- chat users will be initialized by an ajax call after the game elements have loaded fully --%>
 				</div>
 			</div>
 		    <input id="chat-input" type="text"/>

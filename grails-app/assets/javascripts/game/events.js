@@ -75,6 +75,17 @@ function handleChatControls(e, key) {
 }
 
 /**
+ * Handles initializing the list of chat users
+ * @param userDataList
+ */
+function handleChatUsersList(userDataList) {
+	$.each(userDataList, function(index, userData) {
+		userData.add = true;
+		handleChatUsersUpdate(userData);
+	});
+}
+
+/**
  * Handles adding and removing users from the chat users list
  * @param userData
  */
@@ -474,6 +485,9 @@ function handleComplete(event) {
 				
 				// Initialize the player UI
 				initPlayerUI();
+				
+				// load list of chat users just before connecting to the Atmosphere server
+				loadChatUsersList();
 				
 				// begin long polling for game updates during play
 				initAtmosphere();

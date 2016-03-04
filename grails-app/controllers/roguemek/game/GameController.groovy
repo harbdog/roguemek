@@ -51,12 +51,7 @@ class GameController {
 				else {
 					log.info("User "+user?.username+" joining Game("+g.id+")")
 					
-					def chatUsers = GameChatUser.executeQuery(
-							'select u.chatUser from GameChatUser u where u.game=:game',
-							[game: g]
-					)
-					
-					respond g, model:[chatUsers:chatUsers]
+					respond g
 				}
 			}
 		}
@@ -153,6 +148,31 @@ class GameController {
 			result.time = result.message.time
 			result.data = result.message.data
 			result.message = message(code: result.message.messageCode, args: result.message.messageArgs)
+		}
+		
+		render result as JSON
+	}
+	
+	/**
+	 * This action is used to retrieve list of chat users in the session game
+	 */
+	@Transactional(readOnly = true)
+	def listChatUsers() {
+		MekUser user = currentUser()
+		if(user == null) return
+		
+		Game game = Game.read(session.game)
+		if(game == null) return
+		
+		def chatUsers = GameChatUser.executeQuery(
+				'select u.chatUser from GameChatUser u where u.game=:game',
+				[game: game]
+		)
+		
+		def result = []
+		chatUsers.each { MekUser chatUser ->
+			def chatUserData = [userid: chatUser.id, username: chatUser.toString()]
+			result.add(chatUserData)
 		}
 		
 		render result as JSON
