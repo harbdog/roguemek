@@ -129,7 +129,7 @@ function initStaging() {
     		Ok: function() {
     			// forward to the leaving link
     			$(this).dialog("close");
-    			window.location.replace($("#leave-link").attr("data-leave-link"));
+    			redirectToDropship();
     		},
 	    	Cancel: function() {
 	    		$(this).dialog("close");
@@ -888,6 +888,12 @@ function updateStagingData(data) {
 		
 		// TODO: update the users and teams on the page without forcing reload
 		//window.location.reload();
+		
+		// if the user removed is the current user, show alert and redirect back to dropship
+		if(currentUserId == userId) {
+			alert("You have been removed from battle by the owner, returning to dropship");	// TODO: i18n this message
+			redirectToDropship();
+		}
 	}
 	else if(data.gameState != null) {
 		if(data.gameState == "A") {
@@ -911,6 +917,18 @@ function updateStagingData(data) {
 				}
 		    });
 		}
+	}
+}
+
+/**
+ * Redirects to the leave link automatically, which brings user back to the dropship
+ */
+function redirectToDropship() {
+	var dropshipUrl = $("#leave-link").attr("data-leave-link");
+	if(dropshipUrl != null) {
+		// setting currentUserId null so when it redirects it doesn't show the removed from game message
+		currentUserId = null;
+		window.location.replace(dropshipUrl);
 	}
 }
 

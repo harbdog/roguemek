@@ -54,7 +54,11 @@
 				</g:each>
 			</select>
 		
-			<button class="user-delete" data-userid="${user?.id}"></button>
+			<g:if test="${gameInstance?.isInit() 
+					&& (gameInstance?.ownerUser?.id == userInstance?.id)}">
+				<%-- only allowing the game owner to remove individual users --%>
+				<button class="user-delete" data-userid="${user?.id}"></button>
+			</g:if>
 		</g:if>
 		<g:else>
 			<label class="location">${startingLocation}</label>
