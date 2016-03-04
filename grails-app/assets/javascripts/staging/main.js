@@ -113,6 +113,36 @@ function initStaging() {
 		}
     });
     
+    // Initialize action specific confirmation dialog
+    $("#user-leave-dialog").dialog({
+    	autoOpen: false,
+    	modal: true,
+    	show: {
+			effect: "fade",
+			duration: 250
+		},
+		hide: {
+			effect: "explode",
+			duration: 250
+		},
+    	buttons: {
+    		Ok: function() {
+    			// forward to the leaving link
+    			$(this).dialog("close");
+    			window.location.replace($("#leave-link").attr("data-leave-link"));
+    		},
+	    	Cancel: function() {
+	    		$(this).dialog("close");
+			}
+    	},
+		position: {my: "center", at: "center", of: window}
+    });
+    
+    // setup a confirmation dialog for leaving
+    $("#leave-link").click(function() {
+    	$("#user-leave-dialog").dialog("open");
+    });
+    
     // add buttons and their actions
     $("#map-button").button({
     	icons: {
@@ -469,12 +499,19 @@ function deleteUser() {
 	var $this = $(this);
 	var userId = $this.attr("data-userid");
 	
-	$("<div style='font-size:0.8em;'>Are you sure you want to remove this player from battle?</div>").dialog({	// TODO: i18n for deletion message
-		title: "Remove Player",
+	$("#user-remove-dialog").dialog({
 		resizable: false,
 		modal: true,
+		show: {
+			effect: "fade",
+			duration: 250
+		},
+		hide: {
+			effect: "explode",
+			duration: 250
+		},
 		buttons: {
-			"Remove": function() {
+			Ok: function() {
 				$(this).dialog("close");
 				ajaxDeleteUser(userId, $this);
 			},
@@ -482,12 +519,12 @@ function deleteUser() {
 				$(this).dialog("close");
 			}
 		},
-		position: {my: "left top", at: "left bottom", of: $this}
+		position: {my: "center", at: "center", of: window}
 	});
 }
 
 function ajaxDeleteUser(userId, $this) {
-	dialogLoading.dialog("option", "position", {my: "left top", at: "left bottom", of: $this});
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
 	dialogLoading.dialog("open");
 
 	var inputMap = {userId: userId};
@@ -530,7 +567,7 @@ function deleteUnit() {
 }
 
 function ajaxDeleteUnit(unitId, $this) {
-	dialogLoading.dialog("option", "position", {my: "left top", at: "left bottom", of: $this});
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
 	dialogLoading.dialog("open");
 
 	var inputMap = {unitId: unitId};
@@ -670,7 +707,7 @@ function transferPlayer($playerDiv, $teamDiv) {
 function loadMapSelect() {
 	
 	// show a loading dialog while waiting to get the info display from the server
-	dialogLoading.dialog("option", "position", {my: "left top", at: "left top", of: $("#map-button")});
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
 	dialogLoading.dialog("open");
 	
 	// introduce a small delay so the animation doesn't look weird if the response is very fast
@@ -729,7 +766,7 @@ function ajaxUpdateMapSelection() {
 	var selectedMapName = $($("input[type='radio'][name='map-radio']:checked").prop("labels")).text();
 	var inputMap = {mapId: selectedMapId};
 	
-	dialogLoading.dialog("option", "position", {my: "left top", at: "left top", of: $("#map-button")});
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
 	
 	mapSelectDialog.dialog("close");
 	dialogLoading.dialog("open");

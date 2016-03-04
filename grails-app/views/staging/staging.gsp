@@ -151,11 +151,20 @@
 					<span class="left"><link:stagingGame id="${gameInstance?.id}"><g:message code="default.button.waiting.label" /></link:stagingGame></span>
 				</g:else>
 				
-				<span class="right"><link:leaveGame id="${gameInstance?.id}"><g:message code="default.button.leave.label" /></link:leaveGame></span>
+				<span class="right" id="leave-link" data-leave-link="<g:createLink mapping='leaveGame' id='${gameInstance?.id}'></g:createLink>">
+					<a href="#"><g:message code="default.button.leave.label" /></a>
+				</span>
 			</g:else>
 		</div>
 		
-		<div id="launch-dialog" style="display:none;" title="<g:message code='staging.game.started'/>">
+		<%-- Declaring some special case dialog purpose divs that initialize as not visible --%>
+		<div id="user-leave-dialog" style="display:none;" title="${g.message(code: 'staging.game.leave.title')}">
+			<div style='font-size:0.8em;'>${g.message(code: 'staging.game.leave.confirm')}</div>
+		</div>
+		<div id="user-remove-dialog" style="display:none;" title="${g.message(code: 'staging.game.remove.title')}">
+			<div style='font-size:0.8em;'>${g.message(code: 'staging.game.remove.confirm')}</div>
+		</div>
+		<div id="launch-dialog" style="display:none;" title="${g.message(code: 'staging.game.started')}">
 			<button id="launch-button"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.launch.label" /></link:startGame></button>
 		</div>
 	</body>
