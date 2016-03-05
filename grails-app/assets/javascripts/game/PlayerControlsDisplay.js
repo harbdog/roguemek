@@ -174,13 +174,13 @@ c.updateMoveActionPoints = function() {
 
 c.updateActionPoints = function() {
 	var ap = this.unit.apRemaining;
-	this.center.setPoints("AP "+ap);
+	this.center.setPoints(ap);
 }
 
 c.updateJumpPoints = function(jp) {
 	var jp = this.unit.jpRemaining;
 	if(this.jump != null) {
-		this.jump.setPoints("JP "+jp);
+		this.jump.setPoints(jp);
 	}
 }
 
