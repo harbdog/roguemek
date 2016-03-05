@@ -354,6 +354,10 @@ function handleKeyPress(e, key) {
 	}
 }
 
+function toggleShowChatInput() {
+	messagingDisplay.toggleShowChatInput();
+}
+
 function handleShowChatInput() {
 	messagingDisplay.showChatInput(true);
 }

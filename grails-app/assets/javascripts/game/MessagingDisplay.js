@@ -44,6 +44,10 @@ c.init = function() {
 	this.update()
 }
 
+c.toggleShowChatInput = function() {
+	this.showChatInput(!this.$chatInput.is(":visible"));
+}
+
 c.showChatInput = function(show) {
 	if(show) {
 		this.$chatInput.show().focus();

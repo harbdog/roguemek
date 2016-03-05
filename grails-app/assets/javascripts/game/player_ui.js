@@ -35,7 +35,7 @@ var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray
 var fpsDisplay, pingDisplay, dialogDisplay, dialogLoading;
 
 var settingsDisplay;
-var settingsButton, fullscreenButton;
+var settingsButton, chatButton;
 var messagingDisplay, floatingMessages;
 var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;
 
@@ -138,15 +138,15 @@ function initPlayerUI() {
     settingsButton.mouseChildren = false;
     
     // create the fullscreen button
-    fullscreenButton = new createjs.Container();
-    overlay.addChild(fullscreenButton);
+    chatButton = new createjs.Container();
+    overlay.addChild(chatButton);
 	
 	if( fullScreenApi.supportsFullScreen || devMode ) {
-		fullscreenButton.on("click", toggleFullScreen);
-		fullscreenButton.mouseChildren = false;
+		chatButton.on("click", toggleShowChatInput);
+		chatButton.mouseChildren = false;
 	}
 	else {
-		fullscreenButton.alpha = 0.33;
+		chatButton.alpha = 0.33;
 	}
 }
 
@@ -198,37 +198,36 @@ function updatePlayerUI() {
 	settingsButton.hitArea = settingsHit;
     
     // update the fullscreen button
-    fullscreenButton.x = 0;
-    fullscreenButton.y = buttonSize;
-    fullscreenButton.removeAllChildren();
+    chatButton.x = 0;
+    chatButton.y = buttonSize;
+    chatButton.removeAllChildren();
     
-    var fsBackground = new createjs.Shape();
-	fsBackground.graphics
+    var chatBackground = new createjs.Shape();
+    chatBackground.graphics
 			.beginFill(Settings.get(Settings.UI_BG_COLOR))
 			.drawRect(0,0, buttonSize,buttonSize);
-	fsBackground.alpha = Settings.get(Settings.UI_OPACITY);
-	fullscreenButton.addChild(fsBackground);
+    chatBackground.alpha = Settings.get(Settings.UI_OPACITY);
+	chatButton.addChild(chatBackground);
 	
-	var fsBorder = new createjs.Shape();
-	fsBorder.graphics.setStrokeStyle(2, "square")
+	var chatBorder = new createjs.Shape();
+	chatBorder.graphics.setStrokeStyle(2, "square")
 			.beginStroke(Settings.get(Settings.UI_FG_COLOR))
 			.drawRect(0,0, buttonSize,buttonSize);
-	fullscreenButton.addChild(fsBorder);
+	chatButton.addChild(chatBorder);
 	
-	// draw rectangle with 4 arrows at the corners
-	var fsIcon = new createjs.Shape();
-	fsIcon.graphics.setStrokeStyle(4, "square")
+	// draw a T for Talk
+	var chatIcon = new createjs.Shape();
+	chatIcon.graphics.setStrokeStyle(4, "square")
 			.beginStroke(Settings.get(Settings.UI_FG_COLOR))
-			.moveTo(buttonSize/6, 2*buttonSize/5).lineTo(buttonSize/6, 1*buttonSize/5).lineTo(buttonSize/6 + 1*buttonSize/5, 1*buttonSize/5)
-			.moveTo(5*buttonSize/6 - 1*buttonSize/5, 1*buttonSize/5).lineTo(5*buttonSize/6, 1*buttonSize/5).lineTo(5*buttonSize/6, 2*buttonSize/5)
-			.moveTo(buttonSize/6, 3*buttonSize/5).lineTo(buttonSize/6, 4*buttonSize/5).lineTo(buttonSize/6 + 1*buttonSize/5, 4*buttonSize/5)
-			.moveTo(5*buttonSize/6 - 1*buttonSize/5, 4*buttonSize/5).lineTo(5*buttonSize/6, 4*buttonSize/5).lineTo(5*buttonSize/6, 3*buttonSize/5)
-	fullscreenButton.addChild(fsIcon);
+			.moveTo(buttonSize/6, 1*buttonSize/4).lineTo(5*buttonSize/6, 1*buttonSize/4)
+			.moveTo(buttonSize/2, 1*buttonSize/4).lineTo(buttonSize/2, 4*buttonSize/5)
+			.endStroke();
+	chatButton.addChild(chatIcon);
 	
 	// create hit area
-	var fsHit = new createjs.Shape();
-	fsHit.graphics.beginFill("#000000").drawRect(0, 0, buttonSize, buttonSize).endStroke();
-	fullscreenButton.hitArea = fsHit;
+	var chatHit = new createjs.Shape();
+	chatHit.graphics.beginFill("#000000").drawRect(0, 0, buttonSize, buttonSize).endStroke();
+	chatButton.hitArea = chatHit;
 }
 
 
