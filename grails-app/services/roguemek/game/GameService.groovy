@@ -1176,7 +1176,11 @@ class GameService extends AbstractGameService {
 		
 		// prevent unit from jumping and walking/running in the same turn
 		if(jumping) {
-			if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
+			if(prevUnitStatus == CombatStatus.UNIT_PRONE || prevUnitStatus == CombatStatus.UNIT_IMMOBILE) {
+				// unit was not standing upright or was immobile, deny the jump
+				return new GameMessage("game.you.cannot.jump.prone", null, null)
+			}
+			else if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
 				// unit was not standing still or already jumping, deny the jump
 				return new GameMessage("game.you.cannot.jump.moving", null, null)
 			}
@@ -1369,7 +1373,11 @@ class GameService extends AbstractGameService {
 		
 		// prevent unit from jumping and walking/running in the same turn
 		if(jumping) {
-			if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
+			if(prevUnitStatus == CombatStatus.UNIT_PRONE || prevUnitStatus == CombatStatus.UNIT_IMMOBILE) {
+				// unit was not standing upright or was immobile, deny the jump
+				return new GameMessage("game.you.cannot.jump.prone", null, null)
+			}
+			else if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
 				// unit was not standing still or already jumping, deny the jump
 				return new GameMessage("game.you.cannot.jump.moving", null, null)
 			}
@@ -1658,7 +1666,16 @@ class GameService extends AbstractGameService {
 		
 		// prevent unit from jumping and walking/running in the same turn
 		if(jumping) {
-			if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
+			if(prevUnitStatus == CombatStatus.UNIT_PRONE || prevUnitStatus == CombatStatus.UNIT_IMMOBILE) {
+				// unit was not standing upright or was immobile, deny the jump
+				def data = [
+					unit: unit.id,
+					jumping: false,
+					message: new GameMessage("game.you.cannot.jump.prone", null, null)
+				]
+				return data
+			}
+			else if(prevUnitStatus != CombatStatus.UNIT_JUMPING && prevUnitStatus != CombatStatus.UNIT_STANDING) {
 				// unit was not standing still or already jumping, deny enabling jumping
 				def data = [
 					unit: unit.id,
