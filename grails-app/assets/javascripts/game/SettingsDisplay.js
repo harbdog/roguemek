@@ -8,6 +8,7 @@ function SettingsDisplay() {
 	
 	this.settingsDialog = null;
 	
+	this.fullscreenIsometricToggle = null;
 	this.boardIsometricToggle = null;
 	this.boardScaleSlider = null;
 	this.uiScaleSlider = null;
@@ -32,6 +33,20 @@ s.init = function() {
 			duration: 250
 		}
     });
+	
+	////////////////////////////////////////
+	// create the fullscreen game setting //
+	if (fullScreenApi.supportsFullScreen) {
+		this.fullscreenIsometricToggle = SettingsDisplay.createToggleSetting(
+				settingsDiv, 
+				"fullscreen", "Fullscreen", 
+				fullScreenApi.isFullScreen(), 
+				"Off", "On", 
+				function() {
+					toggleFullScreen();
+				}
+		);
+	}
 	
 	////////////////////////////////////////
 	// create the isometric board setting //
@@ -155,6 +170,8 @@ s.update = function() {
 	this.boardIsometricToggle.updateValue(Settings.get(Settings.BOARD_ISOMETRIC));
 	this.boardScaleSlider.slider("option", "value", Settings.get(Settings.BOARD_SCALE));
 	this.uiScaleSlider.slider("option", "value", Settings.get(Settings.UI_SCALE));
+	
+	if (fullScreenApi.supportsFullScreen) this.fullscreenIsometricToggle.updateValue(fullScreenApi.isFullScreen());
 }
 
 s.show = function() {
