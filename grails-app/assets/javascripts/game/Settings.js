@@ -8,7 +8,7 @@ function Settings() {}
 
 // initialize all default settings for the game
 Settings.init = function() {
-	// the scale used for the board
+	// the settings used for the board
 	Settings.default(Settings.BOARD_ISOMETRIC, true);
 	Settings.default(Settings.BOARD_SCALE, 1);
 	
@@ -48,18 +48,33 @@ Settings.GFX_PERFORMANCE = 0;
 Settings.GFX_BALANCE = 1;
 Settings.GFX_QUALITY = 2;
 
-Settings.default = function(key, value) {
-	if(Settings.get(key) == null) {
-		Settings.set(key, value);
+// sets up a default value for the setting if it has not yet been set
+Settings.default = function(key, value, session) {
+	if(Settings.get(key, session) == null) {
+		Settings.set(key, value, session);
 	}
 }
 
-Settings.get = function(key) {
-	return amplify.store(key);
+// gets the stored value, optionally specify if the session storage should be used instead of persisted
+Settings.get = function(key, session) {
+	if(session) {
+		var store = amplify.store.sessionStorage(key);
+		console.log(store);
+		if(store) return store.key;
+	}
+	else{
+		return amplify.store(key);
+	}
 }
 
-Settings.set = function(key, value) {
-	amplify.store(key, value);
+// sets the stored value, optionally specify if the session storage should be used instead of persisted
+Settings.set = function(key, value, session) {
+	if(session) {
+		amplify.store.sessionStorage(key, {key: value});
+	}
+	else{
+		amplify.store(key, value);
+	}
 }
 
 window.Settings = Settings;
