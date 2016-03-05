@@ -650,15 +650,15 @@ class GameService extends AbstractGameService {
 			
 			if(walkMPThisTurn <= 0) {
 				// TODO: when WalkMP is 0, make AP only usable for weapons fire?
-				return 0
 			}
-			
-			int runMPThisTurn = Math.ceil(walkMPThisTurn * 1.5)
-			
-			ap = Math.floor(runMPThisTurn / 2) + (runMPThisTurn % 2)
+			else {
+				int runMPThisTurn = Math.ceil(walkMPThisTurn * 1.5)
+				
+				ap = Math.floor(runMPThisTurn / 2) + (runMPThisTurn % 2)
+			}
 		}
 		
-		return ap
+		return ap + 1	// adding one since no twisting and weapons fire costs 1 AP
 	}
 	
 	/**
@@ -3446,9 +3446,9 @@ class GameService extends AbstractGameService {
 		else if(unit.apMoved == 0){
 			return CombatStatus.UNIT_STANDING
 		}
-		else if(unit.apRemaining < (unit.apMoved * 1/3)){
-			// Running is defined as when your mech is moving at greater than or 
-			// equal to 66% of your AP for the turn (33% remaining AP)
+		else if(unit.apRemaining <= unit.apMoved){
+			// Running is now defined as when your unit has as many or more AP used as it has remaining 
+			// due to +1 on top of MP for weapon/twist
 			return CombatStatus.UNIT_RUNNING
 		}
 		else{
