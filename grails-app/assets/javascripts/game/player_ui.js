@@ -215,13 +215,23 @@ function updatePlayerUI() {
 			.drawRect(0,0, buttonSize,buttonSize);
 	chatButton.addChild(chatBorder);
 	
-	// draw a T for Talk
+	// draw a small speech bubble with a small T inside it
 	var chatIcon = new createjs.Shape();
-	chatIcon.graphics.setStrokeStyle(4, "square")
+	chatIcon.graphics.setStrokeStyle(4, "round")
 			.beginStroke(Settings.get(Settings.UI_FG_COLOR))
-			.moveTo(buttonSize/6, 1*buttonSize/4).lineTo(5*buttonSize/6, 1*buttonSize/4)
-			.moveTo(buttonSize/2, 1*buttonSize/4).lineTo(buttonSize/2, 4*buttonSize/5)
+			.moveTo(1*buttonSize/5, 1*buttonSize/5).lineTo(4*buttonSize/5, 1*buttonSize/5)
+			.lineTo(4*buttonSize/5, 3*buttonSize/5)
+			.lineTo(buttonSize - 6, buttonSize - 6)
+			.lineTo(3*buttonSize/5, 3*buttonSize/4)
+			.lineTo(1*buttonSize/5, 3*buttonSize/4)
+			.lineTo(1*buttonSize/5, 1*buttonSize/5)
+			.endStroke()
+			.setStrokeStyle(2, "round")
+			.beginStroke(Settings.get(Settings.UI_FG_COLOR))
+			.moveTo(2*buttonSize/5, 2*buttonSize/5).lineTo(3*buttonSize/5, 2*buttonSize/5)
+			.moveTo(buttonSize/2, 2*buttonSize/5).lineTo(buttonSize/2, 3*buttonSize/5)
 			.endStroke();
+	
 	chatButton.addChild(chatIcon);
 	
 	// create hit area
