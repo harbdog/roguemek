@@ -167,7 +167,12 @@
 			<div style='font-size:0.8em;'>${g.message(code: 'staging.game.remove.confirm')}</div>
 		</div>
 		<div id="launch-dialog" style="display:none;" title="${g.message(code: 'staging.game.started')}">
-			<button id="launch-button"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.launch.label" /></link:startGame></button>
+			<g:if test="${gameInstance?.ownerUser == userInstance}">
+				<button id="launch-button"><g:message code="default.button.launching.label" /></button>
+			</g:if>
+			<g:else>
+				<button id="launch-button"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.launch.label" /></link:startGame></button>
+			</g:else>
 		</div>
 	</body>
 </html>
