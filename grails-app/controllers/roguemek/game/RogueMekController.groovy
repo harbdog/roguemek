@@ -142,6 +142,7 @@ class RogueMekController {
 		def userInstance = currentUser()
 		if(!userInstance) {
 			redirect action: 'index'
+			return
 		}
 		
 		if(gameInstance.board == null) {
@@ -152,6 +153,15 @@ class RogueMekController {
 		gameInstance.ownerUser = userInstance
 		gameInstance.users = [userInstance]
 		gameInstance.validate()
+		
+		// make sure the user creating the battle doesn't already own too many games in staging (limiting to 5 for now)
+		int userStagingLimit = 5
+		def usersStagingGames = Game.findAllByOwnerUserAndGameState(userInstance, Game.GAME_INIT)
+		if(usersStagingGames.size() >= userStagingLimit) {
+			gameInstance.errors.reject('error.user.too.many.staging.games', [userStagingLimit] as Object[], '[You have too many games, limit is [{0}]')
+			respond gameInstance.errors, view:'create'
+			return
+		}
 
 		if (gameInstance.hasErrors()) {
 			respond gameInstance.errors, view:'create'
