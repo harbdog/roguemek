@@ -17,6 +17,7 @@ class Pilot {
 	String callsign
 	
 	Character status
+	Boolean temporary
 	
 	static hasMany = [ownedUnits:BattleUnit]
 	
@@ -36,6 +37,14 @@ class Pilot {
 		
 		status inList: [STATUS_ACTIVE, STATUS_DECEASED, STATUS_RETIRED]
     }
+	
+	/**
+	 * Returns true if the pilot is a temporary one, not a long time career pilot
+	 * @return
+	 */
+	public boolean isTemporary() {
+		return temporary
+	}
 	
 	@Override
 	public String toString() {

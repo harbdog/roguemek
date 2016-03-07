@@ -245,7 +245,7 @@ class StagingController {
 		BattleUnit battleUnitInstance
 		if(unitInstance instanceof Mech) {
 			// TODO: create pilots with random names, but eventually show pilot selection to player
-			def testPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: userInstance, status: Pilot.STATUS_ACTIVE)
+			def testPilot = new Pilot(temporary: true, firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: userInstance, status: Pilot.STATUS_ACTIVE)
 			testPilot.save flush: true
 			
 			// set the unit color to the color selected by the player

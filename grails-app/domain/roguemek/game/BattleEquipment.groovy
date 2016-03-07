@@ -1,5 +1,6 @@
 package roguemek.game
 
+import roguemek.MekUser
 import roguemek.model.*
 
 /**
@@ -12,7 +13,7 @@ class BattleEquipment {
 		id generator: 'uuid'
 	}
 
-	Pilot ownerPilot
+	MekUser ownerUser
 	Equipment equipment
 	
 	Integer location
@@ -27,7 +28,7 @@ class BattleEquipment {
 	private static BattleEquipment emptyEquip
 	
     static constraints = {
-		ownerPilot nullable: false
+		ownerUser nullable: true
 		equipment nullable: false
 		
 		location nullable: true, inList: Mech.ALL_LOCATIONS

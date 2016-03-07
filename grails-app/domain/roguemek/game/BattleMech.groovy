@@ -80,7 +80,7 @@ class BattleMech extends BattleUnit {
 				}
 				else {
 					BattleEquipment bEquip
-					def newEquipMap = [ownerPilot: pilot, equipment: thisEquip, location: location]
+					def newEquipMap = [ownerUser: null, equipment: thisEquip, location: location]
 					
 					if(thisEquip.isEmpty()) {
 						// if the equipment is just "-Empty-", reuse the same BattleEquipment object across all BattleUnits for it
@@ -124,23 +124,23 @@ class BattleMech extends BattleUnit {
 			def hasJumpMP = (mech.jumpMP > 0)
 			def physicalWeapons = []
 			
-			BattleWeapon punch = new BattleWeapon([ownerPilot: pilot, equipment: Equipment.findByName("Punch"), location: null])
+			BattleWeapon punch = new BattleWeapon(ownerUser: null, equipment: Equipment.findByName("Punch"), location: null)
 			punch.actualDamage = Math.ceil(mech.mass / 10)
 			punch.save flush:true
 			physicalWeapons.add(punch)
 			
-			BattleWeapon kick = new BattleWeapon([ownerPilot: pilot, equipment: Equipment.findByName("Kick"), location: null])
+			BattleWeapon kick = new BattleWeapon(ownerUser: null, equipment: Equipment.findByName("Kick"), location: null)
 			kick.actualDamage = Math.ceil(mech.mass / 5)
 			kick.save flush:true
 			physicalWeapons.add(kick)
 			
-			BattleWeapon charge = new BattleWeapon([ownerPilot: pilot, equipment: Equipment.findByName("Charge"), location: null])
+			BattleWeapon charge = new BattleWeapon(ownerUser: null, equipment: Equipment.findByName("Charge"), location: null)
 			charge.actualDamage = Math.ceil(mech.mass / 10)
 			charge.save flush:true
 			physicalWeapons.add(charge)
 			
 			if(hasJumpMP) {
-				BattleWeapon dfa = new BattleWeapon([ownerPilot: pilot, equipment: Equipment.findByName("Death From Above"), location: null])
+				BattleWeapon dfa = new BattleWeapon(ownerUser: null, equipment: Equipment.findByName("Death From Above"), location: null)
 				dfa.actualDamage = Math.ceil(3 * mech.mass / 10)
 				dfa.save flush:true
 				physicalWeapons.add(dfa)
@@ -203,6 +203,40 @@ class BattleMech extends BattleUnit {
 	 */
 	public static int getCritSectionEnd(int critSectionIndex) {
 		return Mech.getCritSectionEnd(critSectionIndex)
+	}
+	
+	/**
+	 * Deletes all crit equipment that are not owned
+	 */
+	public void cleanEquipment() {
+		if(crits == null) return
+		
+		def cleanedIds = []
+		
+		crits?.each { String equipId ->
+			// only delete equipment if it is not considered owned
+			if(cleanedIds.contains(equipId)) return
+			
+			BattleEquipment bEquip = BattleEquipment.get(equipId)
+			if(bEquip != null && bEquip.ownerUser == null && !bEquip.isEmpty()) {
+				bEquip.delete flush:true
+				
+				cleanedIds << equipId
+			}
+		}
+		
+		physical?.each { String equipId ->
+			// all physical attack "equipment" needs to be deleted
+			BattleEquipment bEquip = BattleEquipment.get(equipId)
+			if(bEquip != null) {
+				bEquip.delete flush:true
+				
+				cleanedIds << equipId
+			}
+		}
+		
+		crits = null
+		save flush:true
 	}
 	
 	/**

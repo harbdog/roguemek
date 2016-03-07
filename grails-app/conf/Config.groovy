@@ -131,7 +131,9 @@ log4j.main = {
     fatal 'org.hibernate.tool.hbm2ddl.SchemaExport'
 	
     // Set level for all application artifacts
-    info "grails.app", "roguemek"
+    info "grails.app"
+	
+	info "roguemek"
 	
 	warn "org.atmosphere"
 	

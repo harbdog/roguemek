@@ -94,6 +94,40 @@ class Game {
 	}
 	
 	/**
+	 * Gets a list of staged units owned by the given staged user
+	 * @return
+	 */
+	public def getStagingUnitsForUser(MekUser userInstance) {
+		def unitsForUser = []
+		
+		if(userInstance == null) return unitsForUser
+		
+		StagingUser.findByGameAndUser(this, userInstance).each { StagingUser stageUser ->
+			unitsForUser.addAll(stageUser.units)
+		}
+		
+		return unitsForUser
+	}
+	
+	/**
+	 * Gets a map of staged users with list of staged units controlled by that user
+	 */
+	public def getStagingUnitsByUser() {
+		def unitsByUser = [:]
+		
+		StagingUser.findAllByGame(this).each{ StagingUser stageUser ->
+			MekUser user = stageUser.user
+			
+			def unitList = []
+			unitList.addAll(stageUser.units)
+			
+			unitsByUser[user] = unitList
+		}
+		
+		return unitsByUser
+	}
+	
+	/**
 	 * Clears chat data for when the game is deleted or becomes inactive for play
 	 */
 	public void clearChatData() {
@@ -122,7 +156,7 @@ class Game {
 	}
 	
 	/**
-	 * Gets a map of users with list of units controller by that user
+	 * Gets a map of users with list of units controlled by that user
 	 */
 	public def getUnitsByUser() {
 		def unitsByUser = [:]
