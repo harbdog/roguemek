@@ -25,8 +25,10 @@
 					<tr>
 					
 						<th><g:message code="battleMech.mech.label" default="Mech" /></th>
+						
+						<th><g:message code="battleMech.owner.label" default="Owner" /></th>
 					
-						<th><g:message code="battleMech.pilot.label" default="Owner Pilot" /></th>
+						<th><g:message code="battleMech.pilot.label" default="Pilot" /></th>
 					
 					</tr>
 				</thead>
@@ -36,7 +38,9 @@
 					
 						<td><g:link action="show" id="${battleMechInstance.id}">${battleMechInstance?.mech?.name +" "+battleMechInstance?.mech?.chassis+"-"+battleMechInstance?.mech?.variant}</g:link></td>
 					
-						<td>${battleMechInstance?.pilot?.firstName +" \""+battleMechInstance?.pilot?.ownerUser?.callsign+"\" "+battleMechInstance?.pilot?.lastName}</td>
+						<td>${battleMechInstance?.owner?.toString()}</td>
+					
+						<td>${battleMechInstance?.pilot?.toString()}</td>
 					
 					</tr>
 				</g:each>

@@ -34,6 +34,7 @@ class StagingController {
 		
 		if(game == null) {
 			redirect mapping:"dropship"
+			return
 		}
 		else if(game.isOver()) {
 			redirect mapping: "debriefGame", id: game.id
@@ -87,6 +88,7 @@ class StagingController {
 		def userInstance = currentUser()
 		if(!userInstance || !game) {
 			redirect action: 'index'
+			return
 		}
 		
 		StagingUser stagingInstance = StagingUser.findByGameAndUser(game, userInstance)

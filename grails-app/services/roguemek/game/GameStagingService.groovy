@@ -17,6 +17,7 @@ class GameStagingService extends AbstractGameService {
 	private static Log log = LogFactory.getLog(this)
 	
 	def messageSource
+	def gameChatService
 	
 	def recordUnusedData(data) {
 		log.info "GameStagingService.recordUnusedData: ${data}"
@@ -134,5 +135,53 @@ class GameStagingService extends AbstractGameService {
 		}
 		
 		return chatUsers
+	}
+	
+	/**
+	 * Cleans up a game that is being staged along with all temporary data elements
+	 */
+	def deleteGame(Game gameInstance) {
+		if(gameInstance == null) return
+		
+		// get a reference to each staged unit first
+		def stagedUnitsByUser = gameInstance.getStagingUnitsByUser()
+
+		// clean up any staging references that may be hanging around
+		gameInstance.clearStagingData()
+		gameInstance.clearChatData()
+		
+		// clean up unused staging Pilots, BattleUnits and BattleEquipment
+		stagedUnitsByUser.each { MekUser user, def unitList ->
+			log.debug("cleaning up units for ${user}")
+			
+			unitList.each { BattleUnit unit ->
+				if(unit.owner == null) {
+					log.debug("\tcleaning unit ${unit}")
+					
+					if(unit instanceof BattleMech) {
+						unit.cleanEquipment()
+					}
+					
+					unit.delete flush:true
+				}
+				
+				if(unit.pilot?.isTemporary()) {
+					log.debug("\tcleaning pilot ${unit.pilot}")
+					
+					unit.pilot.delete flush:true 
+				}
+			}
+		}
+		
+		// let those still in the staging screen be aware of the game state change
+		Object[] messageArgs = []
+		gameChatService.addMessageUpdate(gameInstance, "staging.game.deleted", messageArgs)
+		// TODO: make it work in the client where a message shows that the game is deleted and the user gets bumped back to the dropship
+		/*def data = [
+			gameState: Game.GAME_DELETED
+		]
+		addStagingUpdate(gameInstance, data)*/
+		
+		gameInstance.delete flush:true
 	}
 }

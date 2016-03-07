@@ -28,6 +28,7 @@
 			
 				<% 
 					def mechInstance = battleMechInstance?.mech
+					def ownerInstance = battleMechInstances?.owner
 					def pilotInstance = battleMechInstance?.pilot
 				 %>
 			
@@ -47,12 +48,21 @@
 					
 				</li>
 				</g:if>
+				
+				<g:if test="${ownerInstance}">
+				<li class="fieldcontain">
+					<span id="owner-label" class="property-label"><g:message code="battleMech.owner.label" default="Owner" /></span>
+					
+						<span class="property-value" aria-labelledby="owner-label"><g:link controller="mekUser" action="show" id="${ownerInstance?.id}">${ownerInstance?.toString()}</g:link></span>
+					
+				</li>
+				</g:if>
 			
 				<g:if test="${pilotInstance}">
 				<li class="fieldcontain">
 					<span id="pilot-label" class="property-label"><g:message code="battleMech.pilot.label" default="Pilot" /></span>
 					
-						<span class="property-value" aria-labelledby="pilot-label"><g:link controller="pilot" action="show" id="${pilotInstance?.id}">${pilotInstance?.firstName +" \""+pilotInstance?.ownerUser?.callsign+"\" "+pilotInstance?.lastName}</g:link></span>
+						<span class="property-value" aria-labelledby="pilot-label"><g:link controller="pilot" action="show" id="${pilotInstance?.id}">${pilotInstance?.toString()}</g:link></span>
 					
 				</li>
 				</g:if>

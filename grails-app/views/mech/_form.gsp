@@ -43,22 +43,3 @@
 	<g:select name="mass" from="${(20..100).step(5)}" class="range" required="" value="${fieldValue(bean: mechInstance, field: 'mass')}"/>
 
 </div>
-
-<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'armor', 'error')} ">
-	<label for="armor">
-		<g:message code="mech.armor.label" default="Armor" />
-		
-	</label>
-	
-
-</div>
-
-<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'internals', 'error')} ">
-	<label for="internals">
-		<g:message code="mech.internals.label" default="Internals" />
-		
-	</label>
-	
-
-</div>
-

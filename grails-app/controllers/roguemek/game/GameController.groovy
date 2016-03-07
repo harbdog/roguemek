@@ -15,6 +15,7 @@ class GameController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
 	GameService gameService
+	GameStagingService gameStagingService
 	GameControllerService gameControllerService
 	
 	def index() {
@@ -281,13 +282,13 @@ class GameController {
 
 	@Secured(['ROLE_ROOT'])
     def delete(Game gameInstance) {
-
+	
         if (gameInstance == null) {
             notFound()
             return
         }
 
-        gameInstance.delete flush:true
+        gameStagingService.deleteGame(gameInstance)
 
         request.withFormat {
             form multipartForm {

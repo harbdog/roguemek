@@ -382,7 +382,7 @@ class GameService extends AbstractGameService {
 			// avoid infinite loop if all mechs become destroyed!
 			if(currentTurnUnit != null && nextTurnUnit.id == currentTurnUnit.id) {
 				// this condition also reached if initiative changed and the last unit became the first unit
-				//log.info("All other mechs destroyed, last unit not destroyed?")
+				//log.debug("All other mechs destroyed, last unit not destroyed?")
 				break;
 			}
 		}
@@ -490,7 +490,7 @@ class GameService extends AbstractGameService {
 				
 				if(explosionRoll < explosionRisk) {
 					//  the unit failed the ammo explosion roll, look for the most volatile ammo to asplode
-					log.info("Ammo exploding on "+unit+" | "+explosionRoll+"/"+explosionRisk)
+					log.debug("Ammo exploding on "+unit+" | "+explosionRoll+"/"+explosionRisk)
 					
 					def mostExplosiveAmmo
 					def mostExplosiveAmmoLocation
@@ -557,7 +557,7 @@ class GameService extends AbstractGameService {
 				
 				if(shutdownPercent >= 100) {
 					// TODO: Shutdown the unit
-					log.info("Auto shutting down "+unit)
+					log.debug("Auto shutting down "+unit)
 					unit.shutdown = true
 				}
 				else {
@@ -565,19 +565,19 @@ class GameService extends AbstractGameService {
 					
 					if(shutdownRoll < shutdownPercent) {
 						// TODO: Shutdown the unit
-						log.info("Shutting down "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+						log.debug("Shutting down "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
 						unit.shutdown = true
 					}
 					else {
 						// Power up the unit if previously shutdown
-						log.info("Shutdown avoided "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
+						log.debug("Shutdown avoided "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
 						unit.shutdown = false
 					}
 				}
 			}
 			else if(unit.shutdown) {
 				// Power up the unit if previously shutdown
-				log.info("Shutdown ended "+unit)
+				log.debug("Shutdown ended "+unit)
 				unit.shutdown = false
 			}
 			
@@ -2015,17 +2015,17 @@ class GameService extends AbstractGameService {
 			
 			boolean weaponHit = false
 			if(toHit >= 100) {
-				//log.info("Weapon "+weapon+" AUTO HIT ("+toHit+")!")
+				//log.debug("Weapon "+weapon+" AUTO HIT ("+toHit+")!")
 				weaponHit = true
 			}
 			else if(toHit > 0){
 				int result = Roll.randomInt(100, 1)
 				if(result <= toHit) {
-					//log.info("Weapon "+weapon+" HIT! Rolled: "+result+"/"+toHit)
+					//log.debug("Weapon "+weapon+" HIT! Rolled: "+result+"/"+toHit)
 					weaponHit = true
 				}
 				else {
-					//log.info("Weapon "+weapon+" MISSED! Rolled: "+result+"/"+toHit)
+					//log.debug("Weapon "+weapon+" MISSED! Rolled: "+result+"/"+toHit)
 				}
 			}
 			
@@ -2302,7 +2302,7 @@ class GameService extends AbstractGameService {
 	public def checkActionsPilotSkill(Game game, BattleUnit target, def pilotingActionsChecks) {
 		if(target instanceof BattleMech) {
 			for(PilotingModifier.Modifier thisCause in pilotingActionsChecks) {
-				log.info("Pilot skill check due to: "+thisCause)
+				log.debug("Pilot skill check due to: "+thisCause)
 				
 				def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, thisCause)
 				def checkSuccess = doPilotSkillCheck(game, target, modifiers)
@@ -2376,7 +2376,7 @@ class GameService extends AbstractGameService {
 				}
 				
 				if(thisCause != null) {
-					log.info("Pilot skill check due to critical on: "+thisHit)
+					log.debug("Pilot skill check due to critical on: "+thisHit)
 					
 					def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, thisCause)
 					def checkSuccess = doPilotSkillCheck(game, target, modifiers)
@@ -2406,7 +2406,7 @@ class GameService extends AbstractGameService {
 			if(turnUnitStatus == CombatStatus.UNIT_JUMPING) {
 				// jumping will require a piloting skill check with destroyed leg, or damaged gyro, leg/foot/hip actuators
 				if(unit.isLegged()) {
-					log.info("Pilot skill check due to jumping with destroyed leg")
+					log.debug("Pilot skill check due to jumping with destroyed leg")
 					pilotingCheckModifier = PilotingModifier.Modifier.MECH_JUMPING
 				}
 				else {
@@ -2417,7 +2417,7 @@ class GameService extends AbstractGameService {
 					for(BattleEquipment critEquip in critsList) {
 						
 						if(!critEquip.isActive()) {
-							log.info("Pilot skill check due to jumping with critical on: "+critEquip)
+							log.debug("Pilot skill check due to jumping with critical on: "+critEquip)
 							pilotingCheckModifier = PilotingModifier.Modifier.MECH_JUMPING
 							break;
 						}
@@ -2432,7 +2432,7 @@ class GameService extends AbstractGameService {
 				for(BattleEquipment critEquip in critsList) {
 					
 					if(!critEquip.isActive()) {
-						log.info("Pilot skill check due to running with critical on: "+critEquip)
+						log.debug("Pilot skill check due to running with critical on: "+critEquip)
 						pilotingCheckModifier = PilotingModifier.Modifier.MECH_RUNNING
 						break;
 					}
@@ -2480,21 +2480,21 @@ class GameService extends AbstractGameService {
 		
 		boolean checkSuccess = false
 		if(toCheck >= 100) {
-			log.info("Unit "+unit+" AUTO STANDS ("+toCheck+")!")
+			log.debug("Unit "+unit+" AUTO STANDS ("+toCheck+")!")
 			checkSuccess = true
 		}
 		else if(toCheck > 0){
 			int result = Roll.randomInt(100, 1)
 			if(result <= toCheck) {
-				log.info("Unit "+unit+" STANDS! Rolled: "+result+"/"+toCheck)
+				log.debug("Unit "+unit+" STANDS! Rolled: "+result+"/"+toCheck)
 				checkSuccess = true
 			}
 			else {
-				log.info("Unit "+unit+" FALLS! Rolled: "+result+"/"+toCheck)
+				log.debug("Unit "+unit+" FALLS! Rolled: "+result+"/"+toCheck)
 			}
 		}
 		else {
-			log.info("Unit "+unit+" AUTO FALLS ("+toCheck+")!")
+			log.debug("Unit "+unit+" AUTO FALLS ("+toCheck+")!")
 		}
 		
 		if(checkSuccess 
@@ -2750,7 +2750,7 @@ class GameService extends AbstractGameService {
 			//return critsHitList
 		}
 		
-		//log.info("Applying "+damage+" damage to "+unit+" @ "+Mech.getLocationText(hitLocation))
+		//log.debug("Applying "+damage+" damage to "+unit+" @ "+Mech.getLocationText(hitLocation))
 		
 		// if(unit instanceof BattleMech)...
 		while(damage > 0 && unit.armor[hitLocation] > 0) {
@@ -3060,7 +3060,7 @@ class GameService extends AbstractGameService {
 				numHits = 1
 			}
 			else {
-				//log.info("No critical hits on "+hitLocation)
+				//log.debug("No critical hits on "+hitLocation)
 				return critsHitList
 			}
 		}
@@ -3118,7 +3118,7 @@ class GameService extends AbstractGameService {
 		
 		if(numCrits == 0) {
 			// TODO: apply critical hits to next location according to damage transfer
-			log.info("No Critical hits remain on "+hitLocation+" for unit "+unit)
+			log.debug("No Critical hits remain on "+hitLocation+" for unit "+unit)
 		}
 		else {
 			if(numHits > numCrits) {
