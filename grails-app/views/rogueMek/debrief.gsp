@@ -24,7 +24,7 @@
                 		
                 		<g:each in="${unitList}" var="unit">
                 			<g:set var="pilot" value="${unit.pilot}" />
-                			<span class="property-value" aria-labelledby="users-label">${unit.getHealthPercentage().round()}% : <g:link controller="battleMech" action="show" id="${unit.id}">${unit?.encodeAsHTML()}</g:link> - <g:link controller="pilot" action="show" id="${pilot.id}">${pilot?.encodeAsHTML()}</g:link></span>
+                			<span class="property-value" aria-labelledby="users-label">${unit.getHealthPercentage().round()}% : ${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}</span>
                 		</g:each>
                 	</li>
                 </g:each>
