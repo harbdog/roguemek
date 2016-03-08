@@ -57,6 +57,10 @@ function initPlayerUI() {
 	messagingDisplay = new MessagingDisplay();
 	overlay.addChild(messagingDisplay);
 	
+	// auto scroll to bottom of chat messages area
+	var $chat = $('#chat-window');
+	$chat.scrollTop($chat[0].scrollHeight);
+	
 	// stores any active floating messages
 	floatingMessages = [];
 	
@@ -137,7 +141,7 @@ function initPlayerUI() {
     settingsButton.on("click", showSettingsDisplay);
     settingsButton.mouseChildren = false;
     
-    // create the fullscreen button
+    // create the chat button
     chatButton = new createjs.Container();
     overlay.addChild(chatButton);
 	

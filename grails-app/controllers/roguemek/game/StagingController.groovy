@@ -4,6 +4,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import grails.converters.*
 import roguemek.*
+import roguemek.chat.*
 import roguemek.model.*
 
 @Transactional
@@ -75,10 +76,13 @@ class StagingController {
 				'select u.chatUser from GameChatUser u where u.game=:game',
 				[game: game]
 		)
+		def chatMessages = ChatMessage.findAllByOptGameId(game.id, [max: 100, sort: "time", order: "asc"])
 		
 		session["game"] = game.id
 		
-		respond game, model:[userInstance:userInstance, stagingUsers:stagingUsers, stagingInstance:stagingInstance, chatUsers:chatUsers]
+		respond game, model:[userInstance:userInstance, 
+				stagingUsers:stagingUsers, stagingInstance:stagingInstance, 
+				chatUsers:chatUsers, chatMessages:chatMessages]
 	}
 	
 	/**

@@ -3,12 +3,14 @@ package roguemek.game
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.scheduling.annotation.Async
 
 import org.atmosphere.cpr.Broadcaster
 import org.atmosphere.cpr.BroadcasterFactory
 import grails.converters.JSON
 
 import roguemek.MekUser
+import roguemek.chat.ChatMessage
 
 import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 
@@ -29,15 +31,27 @@ class GameChatService extends AbstractGameService {
 		data.user = user.toString()
 		data.time = new Date().getTime()
 		
-		// TODO: actually record in the database, use async to do it in parallel to the broadcast?
+		// record in the database using async to do it in parallel to the broadcast
 		recordChat(user, data)
 		
 		metaBroadcaster.broadcastTo(mapping, data)
 	}
 	
+	/**
+	 * Asynchronously persist the chat message to the data store
+	 * @param user
+	 * @param data
+	 * @return
+	 */
+	@Async
 	def recordChat(user, data) {
-		// This method could be used to persist chat messages to a data store.
-		log.info "GameChatService.recordChat - ${user}: ${data}"
+		log.debug "GameChatService.recordChat - ${user}: ${data}"
+		if(data == null) return
+		
+		if(data.message && data.time && data.game) {
+			ChatMessage chat = new ChatMessage(user: user, message: data.message, time: new Date(data.time), optGameId: data.game)
+			chat.save flush: true
+		}
 	}
 
 	def recordIncompleteMessage(data) {
@@ -61,6 +75,9 @@ class GameChatService extends AbstractGameService {
 		String message = messageSource.getMessage(messageCode, messageArgs, LocaleContextHolder.locale)
 		
 		log.debug "GameChatService.addMessageUpdate: ${mapping} = ${message}"
+		
+		def messageData = [time: time, message: message, game: game.id]
+		recordChat(null, messageData)
 		
 		def chatResponse = [type: "chat", message: message, time: time] as JSON
 		metaBroadcaster.broadcastTo(mapping, chatResponse)

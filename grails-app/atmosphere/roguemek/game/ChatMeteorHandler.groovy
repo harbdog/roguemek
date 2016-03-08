@@ -86,6 +86,8 @@ class ChatMeteorHandler extends HttpServlet {
 					MAPPING_GAME.equals(mapping)){
 				mapping += "/"+session.game
 				
+				jsonMap.game = session.game
+				
 				gameChatService.sendChat(user, jsonMap, mapping)
 			}
 		}

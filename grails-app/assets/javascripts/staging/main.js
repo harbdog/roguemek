@@ -158,6 +158,10 @@ function initStaging() {
     
     // begin HPG communications
     initAtmosphere();
+    
+    // auto scroll to bottom of chat at load
+    var $chat = $('#chat-window');
+    $chat.scrollTop($chat[0].scrollHeight);
 }
 
 /**

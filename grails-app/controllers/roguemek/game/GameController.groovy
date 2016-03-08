@@ -5,6 +5,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import grails.converters.*
 import roguemek.*
+import roguemek.chat.*
 import roguemek.model.*
 
 @Transactional
@@ -32,7 +33,7 @@ class GameController {
 				if(g.isInit()) {
 					if(g.ownerUser == user) {
 						// TODO: give owner User a button to start the game instead of auto starting
-						log.info("Game("+g.id+") owner User "+user?.username+" is starting the game")
+						log.debug("Game("+g.id+") owner User "+user?.username+" is starting the game")
 						
 						def initSuccess = gameService.initializeGame(g)
 						if(!initSuccess) {
@@ -50,9 +51,11 @@ class GameController {
 					redirect controller: "rogueMek", action: "debrief", id: g.id
 				}
 				else {
-					log.info("User "+user?.username+" joining Game("+g.id+")")
+					log.debug("User "+user?.username+" joining Game("+g.id+")")
 					
-					respond g
+					def chatMessages = ChatMessage.findAllByOptGameId(g.id, [max: 200, sort: "time", order: "asc"])
+					
+					respond g, model: [chatMessages:chatMessages]
 				}
 			}
 		}

@@ -73,10 +73,15 @@ div.chat-line {
 	word-wrap: break-word;
 }
 
+span.chat-time {
+	margin-right: 5px;
+	color: #C0C0C0;
+}
+
 /* TODO: use #FF4646 for enemy chat? */
 span.chat-user {
 	margin-right: 5px;
-	color: #3498DB;
+	color: #3399FF;
 }
 
 /* Map/Unit selection table decoration */

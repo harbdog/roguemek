@@ -154,10 +154,10 @@ span.chat-time {
 	color: #C0C0C0;
 }
 
-/* TODO: use #FF4646 for enemy chat? */
+/* TODO: use #FF4646 for enemy chat... allow custom color setting? */
 span.chat-user {
 	margin-right: 5px;
-	color: #3498DB;
+	color: #99CCFF;
 }
 
 /* In-game Settings decoration */

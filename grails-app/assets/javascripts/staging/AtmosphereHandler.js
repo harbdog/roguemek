@@ -37,6 +37,9 @@ function handleChat(data) {
 		var $chat = $('#chat-window');
 		
 		var chatLine = "<div class='chat-line'>"
+		if(data.time != null) {
+			chatLine += "<span class='chat-time'>"+"["+new Date(data.time).toLocaleTimeString()+"]"+"</span>";
+		}
 		if(data.user != null) {
 			chatLine += "<span class='chat-user'>"+ data.user +":</span>";
 		}

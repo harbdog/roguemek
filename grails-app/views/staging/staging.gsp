@@ -34,7 +34,17 @@
 			<%-- using atmosphere meteor for chat --%>
 			<div id="chat-area">
 				<div id="chat-window">
-					<%-- TODO: retrieve previous chat from database --%>
+					<%-- show previous chat from database --%>
+					<g:if test="${chatMessages}">
+						<g:each in="${chatMessages}" var="thisChat">
+							<div class="chat-line">
+								<%-- TODO: figure out showing in the locale time style like Date.toLocaleTimeString in javascript --%>
+								<span class="chat-time">[<g:formatDate format="h:mm:ss a" date="${thisChat.time}"/>]</span>
+								<g:if test="${thisChat.user}"><span class="chat-user">${thisChat.user}:</span></g:if>
+								<span class="chat-message">${thisChat.message}</span>
+							</div>
+						</g:each>
+					</g:if>
 				</div>
 				<div id="chat-users">
 					<g:each in="${chatUsers}" var="thisUser">
