@@ -220,7 +220,7 @@ class Compute {
 		Coords sourceC = ai.attackPos
 		Coords targetC = ai.targetPos
 		
-		log.debug("losStraight: "+sourceC+"->"+targetC)
+		log.trace("losStraight: "+sourceC+"->"+targetC)
 		
 		def interveningCoords = intervening(game, sourceC, targetC)
 		
@@ -265,7 +265,7 @@ class Compute {
 		Coords sourceC = ai.attackPos
 		Coords targetC = ai.targetPos
 		
-		log.debug("losDivided: "+sourceC+"->"+targetC)
+		log.trace("losDivided: "+sourceC+"->"+targetC)
 		
 		def interveningCoords = intervening(game, sourceC, targetC)
 		
