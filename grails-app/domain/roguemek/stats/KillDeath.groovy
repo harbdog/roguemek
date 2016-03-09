@@ -1,34 +1,34 @@
-package roguemek.chat
+package roguemek.stats
 
 import java.util.Date
 
 import roguemek.MekUser
 import roguemek.game.Game
+import roguemek.model.Unit
 
-class ChatMessage {
+class KillDeath {
 	private static final Date NULL_DATE = new Date(0)
-	
+
 	String id
-	MekUser user
+	
+	Game game
 	Date time = NULL_DATE
-	String message
+	
+	MekUser killer
+	Unit killerUnit
+	MekUser victim
+	Unit victimUnit
 	
 	static mapping = {
 		id generator: 'uuid'
 		version false
-		message type: 'text'
 	}
 	
-	// optional values that reference external resources
-	String optGameId
-	
     static constraints = {
-		user nullable: true
-		time nullable: false
-		message blank: false
-		
-		optGameId nullable: true
-    }
+		// if a unit is destroyed through self damage, no killer is set
+		killer nullable: true
+		killerUnit nullable:true
+	}
 	
 	def beforeInsert() {
 		if (time == NULL_DATE) {

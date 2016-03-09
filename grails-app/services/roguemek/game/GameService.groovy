@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.scheduling.annotation.Async
 import org.atmosphere.cpr.Broadcaster
 import org.atmosphere.cpr.BroadcasterFactory
 
@@ -12,6 +13,7 @@ import grails.transaction.Transactional
 import roguemek.*
 import roguemek.model.*
 import roguemek.mtf.*
+import roguemek.stats.*
 import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 
 @Transactional
@@ -23,6 +25,7 @@ class GameService extends AbstractGameService {
 	def messageSource
 	def gameChatService
 	def gameStagingService
+	def gameOverService
 	
 	private static Log log = LogFactory.getLog(this)
 	
@@ -273,72 +276,6 @@ class GameService extends AbstractGameService {
 	}
 	
 	/**
-	 * Checks the game to see if any end game conditions are met, and if so it sets the GAME_OVER status
-	 * @param game
-	 * @return
-	 */
-	public def checkEndGameConditions(Game game) {
-		
-		def endGameData = null
-		def gameOver = game.isOver()
-		
-		// TODO: move this function to a new class dedicated to checking win conditions
-		
-		if(gameOver) {
-			log.info("Game "+game.id+" is already over")
-		}
-		else {
-			def unitsByUserMap = game.getUnitsByUser()
-			def numActiveUsers = 0
-			unitsByUserMap.each{ user, unitList ->
-				for(BattleUnit unit in unitList) {
-					if(unit.isActive()) {
-						numActiveUsers ++
-						break
-					}
-				}
-			}
-			
-			if(numActiveUsers <= 1) {
-				log.info("Game "+game.id+" over due to "+numActiveUsers+" users with active units")
-				gameOver = true
-			}
-		}
-		
-		if(gameOver) {
-			game.gameState = Game.GAME_OVER
-			game.save flush: true
-			
-			endGameData = getEndGameData(game)
-		}
-		
-		return endGameData
-	}
-	
-	/**
-	 * Gets the return data for the end of the game
-	 * @param game
-	 * @return
-	 */
-	public def getEndGameData(Game game) {
-		def gameOverHeader = messageSource.getMessage("game.over.debriefing.header", null, LocaleContextHolder.locale)
-		def gameOverMessage = messageSource.getMessage("game.over.debriefing", null, LocaleContextHolder.locale)
-		def gameOverLabel = messageSource.getMessage("game.over.debriefing.label", null, LocaleContextHolder.locale)
-		def gameOverURL = grailsLinkGenerator.link(controller: 'rogueMek', action: 'debrief', id: game.id)
-		
-		def endGameData = [
-			game: game.id,
-			gameState: String.valueOf(game.gameState),
-			gameOverHeader: gameOverHeader,
-			gameOverMessage: gameOverMessage,
-			gameOverLabel: gameOverLabel,
-			gameOverURL: gameOverURL
-		]
-		
-		return endGameData
-	}
-	
-	/**
 	 * Starts the next unit's turn
 	 * @return
 	 */
@@ -352,7 +289,7 @@ class GameService extends AbstractGameService {
 		}
 		
 		// check for end-game conditions before continuing to the next turn
-		def endGameData = checkEndGameConditions(game)
+		def endGameData = gameOverService.checkEndGameConditions(game)
 		if(endGameData != null) {
 			// game has ended
 			Date update = addMessageUpdate(game, "game.over", null, endGameData)
@@ -521,7 +458,7 @@ class GameService extends AbstractGameService {
 						int ammoRemaining = mostExplosiveAmmo.ammoRemaining
 						int ammoExplosionDamage = ammoRemaining * mostExplosiveAmmo.getExplosiveDamage()
 						
-						def ammoCritsHitList = applyDamage(game, ammoExplosionDamage, unit, mostExplosiveAmmoLocation)
+						def ammoCritsHitList = applyDamage(game, null, ammoExplosionDamage, unit, mostExplosiveAmmoLocation)
 						unit.save flush:true
 						
 						mostExplosiveAmmo.status = BattleEquipment.STATUS_DESTROYED
@@ -2080,7 +2017,7 @@ class GameService extends AbstractGameService {
 						
 						if(target instanceof BattleMech) {
 							// handle any piloting skill checks that may need to happen after crits are hit from self damage
-							def fireCritsHitList = applyDamage(game, actualDamage, target, hitLocation)
+							def fireCritsHitList = applyDamage(game, unit, actualDamage, target, hitLocation)
 							critsHitList = (critsHitList << fireCritsHitList).flatten()
 							
 							thisWeaponFire.weaponHitLocations[hitLocation] += actualDamage
@@ -2742,7 +2679,7 @@ class GameService extends AbstractGameService {
 	}
 	
 	// apply damage to hit location starting with armor, then internal, then use damage redirect from there if needed
-	public def applyDamage(Game game, int damage, BattleUnit unit, int hitLocation) {
+	public def applyDamage(Game game, BattleUnit attacker, int damage, BattleUnit unit, int hitLocation) {
 		def critsHitList = []
 		
 		if(unit.isDestroyed()) {
@@ -2801,7 +2738,7 @@ class GameService extends AbstractGameService {
 		
 		if(critChance) {
 			// send off to see what criticals might get hit
-			def critsApplied = applyCriticalHit(game, unit, critLocation);
+			def critsApplied = applyCriticalHit(game, attacker, unit, critLocation);
 			
 			if(critsApplied.size() > 0) {
 				critsHitList = (critsHitList << critsApplied).flatten()
@@ -2818,6 +2755,9 @@ class GameService extends AbstractGameService {
 							if(MechMTF.MTF_CRIT_COCKPIT == thisCrit.getName()) {
 								// if the cockpit is destroyed, the unit is dead
 								unit.status = BattleUnit.STATUS_DESTROYED
+								
+								// the unit was just destroyed from this, record the death
+								recordKillDeath(game, attacker, unit)
 								
 								// create destroyed message info
 								def destroyedUnitData = [
@@ -2845,6 +2785,9 @@ class GameService extends AbstractGameService {
 					if(numEngineHits >= 3) {
 						unit.status = BattleUnit.STATUS_DESTROYED
 						
+						// the unit was just destroyed from this, record the death
+						recordKillDeath(game, attacker, unit)
+						
 						// create destroyed message info
 						def destroyedUnitData = [
 							unit: unit.id,
@@ -2858,6 +2801,9 @@ class GameService extends AbstractGameService {
 					}
 					else if(numGyroHits >= 2) {
 						unit.status = BattleUnit.STATUS_DESTROYED
+						
+						// the unit was just destroyed from this, record the death
+						recordKillDeath(game, attacker, unit)
 						
 						// create destroyed message info
 						def destroyedUnitData = [
@@ -2879,6 +2825,9 @@ class GameService extends AbstractGameService {
 			//debug.log("Head internal destroyed!");
 			unit.status = BattleUnit.STATUS_DESTROYED
 			
+			// the unit was just destroyed from this, record the death
+			recordKillDeath(game, attacker, unit)
+			
 			// create destroyed message info
 			def destroyedUnitData = [
 				unit: unit.id,
@@ -2894,6 +2843,9 @@ class GameService extends AbstractGameService {
 			// if head or center internal are gone, the unit is dead
 			//debug.log("CT internal destroyed!");
 			unit.status = BattleUnit.STATUS_DESTROYED
+			
+			// the unit was just destroyed from this, record the death
+			recordKillDeath(game, attacker, unit)
 			
 			// create destroyed message info
 			def destroyedUnitData = [
@@ -2911,6 +2863,9 @@ class GameService extends AbstractGameService {
 			// if both of the legs internal are gone, the unit is dead
 			//debug.log("Both legs destroyed!");
 			unit.status = BattleUnit.STATUS_DESTROYED
+			
+			// the unit was just destroyed from this, record the death
+			recordKillDeath(game, attacker, unit)
 			
 			// create destroyed message info
 			def destroyedUnitData = [
@@ -2944,13 +2899,13 @@ class GameService extends AbstractGameService {
 			return critsHitList
 		}
 		else if(hitLocation == Mech.LEFT_ARM || hitLocation == Mech.LEFT_LEG || hitLocation == Mech.LEFT_REAR) {
-			return applyDamage(game, damage, unit, Mech.LEFT_TORSO)
+			return applyDamage(game, attacker, damage, unit, Mech.LEFT_TORSO)
 		}
 		else if(hitLocation == Mech.RIGHT_ARM || hitLocation == Mech.RIGHT_LEG || hitLocation == Mech.RIGHT_REAR) {
-			return applyDamage(game, damage, unit, Mech.RIGHT_TORSO)
+			return applyDamage(game, attacker, damage, unit, Mech.RIGHT_TORSO)
 		}
 		else if(hitLocation == Mech.LEFT_TORSO || hitLocation == Mech.RIGHT_TORSO) {
-			return applyDamage(game, damage, unit, Mech.CENTER_TORSO)
+			return applyDamage(game, attacker, damage, unit, Mech.CENTER_TORSO)
 		}
 		else {
 			log.error("Who the hell did I hit?  Extra "+damage+" damage from location: "+hitLocation)
@@ -3012,15 +2967,15 @@ class GameService extends AbstractGameService {
 	/**
 	 * Rolls to see if a critical hit will occur when the hitLocation has been damaged internally, and applies the result
 	 */
-	public def applyCriticalHit(Game game, BattleUnit unit, int hitLocation) {
-		return applyCriticalHit(game, unit, hitLocation, 0)
+	public def applyCriticalHit(Game game, BattleUnit attacker, BattleUnit unit, int hitLocation) {
+		return applyCriticalHit(game, attacker, unit, hitLocation, 0)
 	}
 	
 	/**
 	 * Rolls to see if a critical hit will occur when the hitLocation has been damaged internally, and applies the result
 	 * @return def list of critical hit equipment or location index of blown off limb
 	 */
-	public def applyCriticalHit(Game game, BattleUnit unit, int hitLocation, int numHits) {
+	public def applyCriticalHit(Game game, BattleUnit attacker, BattleUnit unit, int hitLocation, int numHits) {
 		// store and return any crit equipment that gets hit
 		def critsHitList = []
 		
@@ -3199,7 +3154,7 @@ class GameService extends AbstractGameService {
 					int ammoRemaining = bAmmo.ammoRemaining
 					int ammoExplosionDamage = ammoRemaining * bAmmo.getExplosiveDamage()
 					
-					def ammoCritsHitList = applyDamage(game, ammoExplosionDamage, unit, hitLocation)
+					def ammoCritsHitList = applyDamage(game, attacker, ammoExplosionDamage, unit, hitLocation)
 					unit.save flush:true
 					
 					critsHitList = (critsHitList << ammoCritsHitList).flatten()
@@ -3255,7 +3210,7 @@ class GameService extends AbstractGameService {
 			hitLocation = unitLocations[resultLocation]
 		}
 		
-		def critsHitList = applyDamage(game, damage, unit, hitLocation)
+		def critsHitList = applyDamage(game, null, damage, unit, hitLocation)
 		
 		// handle any piloting skill checks that may need to happen after crits are hit from self damage
 		checkCriticalsHitPilotSkill(game, unit, critsHitList)
@@ -3635,7 +3590,7 @@ class GameService extends AbstractGameService {
 		
 		log.info("devDamage to "+target.toString()+" for "+damage+" in the "+hitLocation)
 		
-		def critsHitList = applyDamage(game, damage, target, hitLocation)
+		def critsHitList = applyDamage(game, null, damage, target, hitLocation)
 		
 		log.info("  critsHitList: "+critsHitList)
 		
@@ -3678,7 +3633,7 @@ class GameService extends AbstractGameService {
 		
 		log.info("devCrit to "+target.toString()+" for "+crits+" in the "+hitLocation)
 		
-		def critsHitList = applyCriticalHit(game, target, hitLocation, crits)
+		def critsHitList = applyCriticalHit(game, null, target, hitLocation, crits)
 		
 		log.info("  critsHitList: "+critsHitList)
 		
@@ -3738,6 +3693,38 @@ class GameService extends AbstractGameService {
 		}
 				
 		return new Date(time)
+	}
+	
+	/**
+	 * Stores the killer/victim units and users for the K/D
+	 * @param game
+	 * @param time
+	 * @param killer
+	 * @param killerUnit
+	 * @param victim
+	 * @param victimUnit
+	 * @return
+	 */
+	@Async
+	def recordKillDeath(Game game, BattleUnit killerB, BattleUnit victimB) {
+		if(game == null || victimB == null) return
+		
+		MekUser killer = killerB?.pilot?.ownerUser
+		MekUser victim = victimB?.pilot?.ownerUser
+		
+		Unit killerUnit
+		Unit victimUnit
+		
+		if(killerB instanceof BattleMech) killerUnit = killerB.mech
+		if(victimB instanceof BattleMech) victimUnit = victimB.mech
+				
+		Date time = new Date()
+		
+		KillDeath thisKD = new KillDeath(game: game, time: time, 
+				killer: killer, killerUnit: killerUnit, 
+				victim: victim, victimUnit: victimUnit)
+				
+		thisKD.save flush: true
 	}
 	
 	/**
