@@ -16,10 +16,10 @@ Long Range Missile 5,LRM5,"ISLRM5,LRM 5",,Missile,2,1,2,1,2,5,5,6,7,14,21,LRM5AM
 Short Range Missile 6,SRM6,"ISSRM6,SRM 6",,Missile,3,2,4,2,2,6,1,0,3,6,9,SRM6AMMO,I,0,0,0
 Short Range Missile 4,SRM4,"ISSRM4,SRM 4",,Missile,2,1,3,2,2,4,1,0,3,6,9,SRM4AMMO,I,0,0,0
 Short Range Missile 2,SRM2,"ISSRM2,SRM 2",,Missile,1,1,2,2,2,2,1,0,3,6,9,SRM2AMMO,I,0,0,0
-Punch,PUNCH,Punch,,Physical,0,0,0,0,1,1,1,0,1,1,1,,I,0,0,0
-Kick,KICK,Kick,,Physical,0,0,0,0,1,1,1,0,1,1,1,,I,0,0,0
-Charge,CHARGE,Charge,,Physical,0,0,0,0,1,1,5,0,1,1,1,,I,0,0,0
-Death From Above,DFA,DFA,,Physical,0,0,0,0,1,1,5,0,1,1,1,,I,0,0,0
+Punch,PUNCH,Punch,,Physical,0,0,0,0,2,1,1,0,1,1,1,,I,0,0,0
+Kick,KICK,Kick,,Physical,0,0,0,0,2,1,1,0,1,1,1,,I,0,0,0
+Charge,CHARGE,Charge,,Physical,0,0,0,0,2,1,5,0,1,1,1,,I,0,0,0
+Death From Above,DFA,DFA,,Physical,0,0,0,0,2,1,5,0,1,1,1,,I,0,0,0
 Hatchet,HATCHET,ISHatchet,,Physical,2,2,0,0,1,1,1,0,1,1,1,,I,0,0,0
 Hatchet,HATCHET,ISHatchet,,Physical,3,3,0,0,1,1,1,0,1,1,1,,I,0,0,0
 Hatchet,HATCHET,ISHatchet,,Physical,4,4,0,0,1,1,1,0,1,1,1,,I,0,0,0
