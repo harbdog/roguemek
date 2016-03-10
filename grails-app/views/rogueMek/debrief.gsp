@@ -61,30 +61,13 @@
 		def chatMessages = ChatMessage.findAllByOptGameId(gameInstance?.id, [sort: "time", order: "asc"])
 		
 	 %>
-	
-		<%-- using atmosphere meteor for chat --%>
-		<div id="chat-area">
-			<div id="chat-window">
-				<%-- show previous chat from database --%>
-				<g:if test="${chatMessages}">
-					<g:each in="${chatMessages}" var="thisChat">
-						<div class="chat-line">
-							<%-- TODO: figure out showing in the locale time style like Date.toLocaleTimeString in javascript --%>
-							<span class="chat-time">[<g:formatDate format="h:mm:ss a" date="${thisChat.time}"/>]</span>
-							<g:if test="${thisChat.user}"><span class="chat-user">${thisChat.user}:</span></g:if>
-							<span class="chat-message">${thisChat.message}</span>
-						</div>
-					</g:each>
-				</g:if>
-			</div>
-			<input id="chat-input" type="text"/>
-		</div>
-	
+		
 		<div id="show-game" class="content scaffold-show" role="main">
 			<h1><g:message code="game.over.debriefing.label" /> - ${gameInstance?.description}</h1>
 			<g:if test="${flash.message}">
 			<div class="message" role="status">${flash.message}</div>
 			</g:if>
+			
 			<ol class="property-list game">
 			
 				<g:each in="${sortedUsers}" var="user">
@@ -127,6 +110,23 @@
 				</g:if>
 			
 			</ol>
+		</div>
+		
+		<div id="chat-area" class="content">
+			<h1><g:message code="game.battle.log.label" default="Combat Log" /></h1>
+			<div id="chat-window">
+				<%-- show previous chat from database --%>
+				<g:if test="${chatMessages}">
+					<g:each in="${chatMessages}" var="thisChat">
+						<div class="chat-line">
+							<%-- TODO: figure out showing in the locale time style like Date.toLocaleTimeString in javascript --%>
+							<span class="chat-time">[<g:formatDate format="h:mm:ss a" date="${thisChat.time}"/>]</span>
+							<g:if test="${thisChat.user}"><span class="chat-user">${thisChat.user}:</span></g:if>
+							<span class="chat-message">${thisChat.message}</span>
+						</div>
+					</g:each>
+				</g:if>
+			</div>
 		</div>
 	</body>
 </html>
