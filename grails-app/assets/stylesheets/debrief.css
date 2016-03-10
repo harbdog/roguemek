@@ -1,0 +1,56 @@
+/* DEBRIEF PAGE */
+div #spinner {
+	background: url(../images/hex-spinner.gif) no-repeat transparent;
+	background-size: 64px;
+	width: 64px;
+	height: 64px;
+    padding: 0.5em;
+    position: absolute;
+    top: calc(50% - 32px);
+    left: calc(50% - 32px);
+	text-indent: -9999px;
+}
+
+#private-link {
+	position: relative;
+	left: 15%;
+	width: 70%;
+}
+
+#private-link input {
+	width: 100%;
+}
+
+/* Chat area decoration */
+#chat-area {
+	margin: 1em 1em 1em 1em;
+}
+
+#chat-window {
+	float: left;
+    width: 100%;
+    height: 100px;
+    border: 1px solid black;
+    margin-right: 1em;
+    overflow: auto;
+}
+#chat-input {
+	width: 100%;
+	margin-right: 1em;
+	border: 1px solid black;
+}
+
+div.chat-line {
+	word-wrap: break-word;
+}
+
+span.chat-time {
+	margin-right: 5px;
+	color: #C0C0C0;
+}
+
+/* TODO: use #FF4646 for enemy chat? */
+span.chat-user {
+	margin-right: 5px;
+	color: #3399FF;
+}
