@@ -40,6 +40,7 @@ class StagingController {
 		}
 		else if(game.isOver()) {
 			redirect mapping: "debriefGame", id: game.id
+			return
 		}
 		else if(game.isActive()) {
 			isParticipant = game.isParticipant(userInstance)
