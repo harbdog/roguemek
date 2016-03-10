@@ -10,6 +10,7 @@ import roguemek.model.*
 class RogueMekController {
 	
 	transient springSecurityService
+	def grailsApplication
 	
 	def gameChatService
 	def gameStagingService
@@ -154,8 +155,8 @@ class RogueMekController {
 		gameInstance.users = [userInstance]
 		gameInstance.validate()
 		
-		// make sure the user creating the battle doesn't already own too many games in staging (limiting to 5 for now)
-		int userStagingLimit = 5
+		// make sure the user creating the battle doesn't already own too many games in staging
+		int userStagingLimit = grailsApplication.config.roguemek.game.settings.userStagingLimit ?: 3
 		def usersStagingGames = Game.findAllByOwnerUserAndGameState(userInstance, Game.GAME_INIT)
 		if(usersStagingGames.size() >= userStagingLimit) {
 			gameInstance.errors.reject('error.user.too.many.staging.games', [userStagingLimit] as Object[], '[You have too many games, limit is [{0}]')

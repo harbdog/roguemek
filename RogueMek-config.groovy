@@ -18,6 +18,13 @@ roguemek {
 //			password = "DemoDemo"
 //		}
 	}
+	game {
+		settings {
+			maxUserUnits = 12
+			maxBattleUnits = 24
+			userStagingLimit = 3
+		}
+	}
 }
 
 grails {

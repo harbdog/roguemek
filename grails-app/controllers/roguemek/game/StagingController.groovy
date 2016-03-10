@@ -11,6 +11,7 @@ import roguemek.model.*
 class StagingController {
 
 	transient springSecurityService
+	def grailsApplication
 	
 	def gameChatService
 	def gameStagingService
@@ -242,6 +243,30 @@ class StagingController {
 		// units can only be updated in the Init stage
 		Game game = Game.read(session.game)
 		if(game == null || !game.isInit()) return
+		
+		// make sure max units per player and max units per game settings will not be breached
+		def maxUserUnits = grailsApplication.config.roguemek.game.settings.maxUserUnits ?: 12
+		def maxBattleUnits = grailsApplication.config.roguemek.game.settings.maxBattleUnits ?: 24
+		
+		def unitsByUser = game.getStagingUnitsByUser()
+		def userUnitCount = unitsByUser[userInstance].size()
+		if(userUnitCount >= maxUserUnits) {
+			Object[] messageArgs = [userInstance.toString(), maxUserUnits]
+			gameChatService.addMessageUpdate(game, "staging.unit.user.limit", messageArgs)
+			render ([updated:false] as JSON)
+			return
+		}
+		
+		def battleUnitCount = 0
+		unitsByUser.each { MekUser thisUser, def unitList ->
+			battleUnitCount += unitList.size()
+		}
+		if(battleUnitCount >= maxBattleUnits) {
+			Object[] messageArgs = [maxBattleUnits]
+			gameChatService.addMessageUpdate(game, "staging.unit.game.limit", messageArgs)
+			render ([updated:false] as JSON)
+			return
+		}
 		
 		if(params.unitId == null) return
 		Unit unitInstance = Unit.read(params.unitId)
