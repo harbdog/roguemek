@@ -1710,7 +1710,8 @@ class GameService extends AbstractGameService {
 					// TODO: handle different ammo types within a weapon
 					for(Ammo ammo in ammoTypes) {
 						ammoRemaining = getRemainingAmmo(unit, ammo)
-						if(ammoRemaining >= 0) {
+						if(ammoRemaining > 0) {
+							// break as soon as at some ammo is found
 							break
 						}
 					}
