@@ -61,8 +61,7 @@ class Weapon extends Equipment {
 				
 				def ammoTypesArr = []
 				ammoTypesStr.split(":").each {
-					def itAmmo = Ammo.findByShortName(it)
-					if(itAmmo != null) {
+					Ammo.findAllByShortName(it).each { Ammo itAmmo ->
 						ammoTypesArr.add(itAmmo)
 					}
 				}
