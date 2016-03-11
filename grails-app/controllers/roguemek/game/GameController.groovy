@@ -18,6 +18,7 @@ class GameController {
 	GameService gameService
 	GameStagingService gameStagingService
 	GameControllerService gameControllerService
+	GameOverService gameOverService
 	
 	def index() {
 		def doRedirect = false;
@@ -80,7 +81,7 @@ class GameController {
 		
 		if(g.isOver()) {
 			// game has ended
-			def endGameData =  gameService.getEndGameData(g)
+			def endGameData =  gameOverService.getEndGameData(g)
 			render endGameData as JSON
 			return
 		}

@@ -32,7 +32,7 @@ var showLevels = true;
 
 var rootStage, stage, overlay, canvas;
 var unitListDisplay, unitListDisplayArray, unitTurnDisplay, unitTurnDisplayArray;
-var fpsDisplay, pingDisplay, dialogDisplay, dialogLoading;
+var fpsDisplay, pingDisplay, dialogDisplay, dialogLoading, gameOverDialog;
 
 var settingsDisplay;
 var settingsButton, chatButton;
@@ -1384,27 +1384,47 @@ function addMessageUpdate(message, time, user) {
  * @param data
  */
 function showGameOverDialog(data) {
-	// the game is over, open a dialog with the message and button to go to debriefing URL
-	
-	// TODO: pause the stage
 	
 	// disable the browser accidental navigation protection
 	window.onbeforeunload = null;
 	
-	var gameOverDialog = $("<div>"+data.gameOverMessage+"<br/><br/><a href='"+data.gameOverURL+"'>"+"&gt; "+data.gameOverLabel+"</a></div>").dialog({
-    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
-    	title: data.gameOverHeader,
-    	autoOpen: false,
-    	modal: true,
-		show: {
-			effect: "fade",
-			duration: 1000
-		},
-		hide: {
-			effect: "explode",
-			duration: 500
-		}
-    });
+	// turn off player controls
+	turnUnit = null;
+	showPlayerUnitControls(null);
+	
+	// TODO: pause the stage?
+	
+	// fade the stage some, but not completely
+	var curtains = new createjs.Shape();
+	curtains.graphics.beginFill("#000000").drawRect(0, 0, canvas.width*(1/overlay.scaleX), canvas.height*(1/overlay.scaleY));
+	curtains.alpha = 0;
+	overlay.addChildAt(curtains, 0);
+	
+	createjs.Tween.get(curtains)
+			.to({alpha: 0.5}, 1000)
+			.addEventListener("change", function() {
+				update = true;
+			});	
+	
+	
+	// open a dialog with the message and button to go to debriefing URL
+	if(gameOverDialog == null){
+		gameOverDialog = $("<div>"+data.gameOverMessage+"<br/><br/><a href='"+data.gameOverURL+"'>"+"&gt; "+data.gameOverLabel+"</a></div>").dialog({
+		
+	    	open: function(event, ui) { $(this).siblings().find(".ui-dialog-titlebar-close", ui.dialog | ui).hide(); },
+	    	title: data.gameOverHeader,
+	    	autoOpen: false,
+	    	modal: false,
+			show: {
+				effect: "fade",
+				duration: 1000
+			},
+			hide: {
+				effect: "explode",
+				duration: 500
+			}
+	    });
+	}
 	
 	gameOverDialog.dialog("open");
 }

@@ -12,6 +12,8 @@ class GameControllerService {
 	 * @return The map of data to be converted to JSON at the controller back to the client.
 	 */
 	public def performAction(Game game, MekUser user, Map params) {
+		if(!game.isActive()) return
+	
 		// Need to determine what pilot and unit to pass along to the action
 		Pilot pilot
 		BattleUnit unit
