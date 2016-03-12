@@ -201,6 +201,16 @@ class BootStrap {
 			
 				log.info('Initialized battle mech '+battleMechB.mech.name+" with ID="+battleMechB.id)
 			}
+			
+			/*if (Environment.current == Environment.DEVELOPMENT) {
+				// testing creating ALL BattleMechs
+				Mech.list().each {
+					def thisBattleMech= new BattleMech(pilot: adminPilot, mech: it, rgb: [255, 0, 0])
+					thisBattleMech.save flush: true
+					
+					log.info('Initialized test battle mech '+thisBattleMech.mech.name+" with ID="+thisBattleMech.id)
+				}
+			}*/
 		}
 		
 		if(testPilot) {

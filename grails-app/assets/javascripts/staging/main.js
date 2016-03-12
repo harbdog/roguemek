@@ -618,7 +618,7 @@ function showUnitSelect() {
 	setupAjaxUnitSelect();
 }
 
-//setup ajax paging and sorting for the unit select
+//setup ajax filters, paging and sorting for the unit select
 function setupAjaxUnitSelect() {
 	$("#unit-selection").find(".pagination a, th.sortable a").on({
 		click: function(event) {
@@ -637,6 +637,66 @@ function setupAjaxUnitSelect() {
 	        });
 		}
     });
+	
+	//setup ajax filter functionality for the unit select
+	$("div.unit-filters form").submit(function(event) {
+		event.preventDefault();
+		var filterBox = $(this).parents("div.unit-filters");
+		filterAjaxUnitSelect(filterBox);
+		return false;
+	});
+	
+	var $inputFilter = $("div.unit-filters input#name")
+	if($inputFilter && $inputFilter.length) {
+		setCaretToPos($inputFilter[0], $inputFilter.val().length);
+	}
+}
+
+/**
+ * Use the provided filter to subset the standard unit query
+ */
+function filterAjaxUnitSelect(filterBox) {
+	var selection = $("#unit-selection");
+    $(selection).html($("#spinner").html());
+	
+	var form = $(filterBox).find("form");
+	var url = $(form).attr("action");
+	var data = $(form).serialize();
+
+	$.ajax({
+		type: 'POST',
+		url: url,
+		data: data,
+		success: function(data) {
+			$(selection).fadeOut('fast', function() {$(this).html(data).fadeIn({complete: setupAjaxUnitSelect});});
+		}
+	});
+}
+
+/**
+ * Used to set the selection range of a given element 
+ * from http://stackoverflow.com/a/499158/854696
+ */
+function setSelectionRange(input, selectionStart, selectionEnd) {
+	if (input.setSelectionRange) {
+		input.focus();
+		input.setSelectionRange(selectionStart, selectionEnd);
+	}
+	else if (input.createTextRange) {
+		var range = input.createTextRange();
+		range.collapse(true);
+		range.moveEnd('character', selectionEnd);
+		range.moveStart('character', selectionStart);
+		range.select();
+	}
+}
+
+/**
+ * Used to set the caret position of a given element
+ * from http://stackoverflow.com/a/499158/854696
+ */
+function setCaretToPos (input, pos) {
+	setSelectionRange(input, pos, pos);
 }
 
 

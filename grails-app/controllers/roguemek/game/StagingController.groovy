@@ -198,7 +198,21 @@ class StagingController {
 			params.sort = params.sort ?: "name"
 			params.order = params.order ?: "asc"
 			
-			def model = [unitInstanceList: Unit.list(params), unitInstanceTotal: Unit.count()]
+			def unitCriteria = Unit.createCriteria()
+			def units = unitCriteria.list (max: params.max, offset: params.offset) {
+				if(params.name){
+					or {
+						ilike("name", "%${params.name}%")
+						ilike("chassis", "%${params.name}%")
+						ilike("variant", "%${params.name}%")
+					}
+				}
+				order(params.sort, params.order)
+			}
+			
+			def filters = [name: params.name]
+			
+			def model = [unitInstanceList: units, unitInstanceTotal: units.totalCount, filters: filters]
 			
 			//if(request.xhr)
 			// ajax request code from http://www.craigburke.com/2011/01/01/grails-ajax-list-with-paging-and-sorting.html

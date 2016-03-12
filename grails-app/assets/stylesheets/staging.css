@@ -81,10 +81,14 @@ span.chat-time {
 /* TODO: use #FF4646 for enemy chat? */
 span.chat-user {
 	margin-right: 5px;
-	color: #3399FF;
+	color: #3498DB;
 }
 
 /* Map/Unit selection table decoration */
+div.unit-filters {
+	margin: 0 0 0.5em 0;
+}
+
 #unit-selection td, th{
 	padding: 2px;
 }

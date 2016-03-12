@@ -3,15 +3,22 @@
  %>
 
 <div id="unit-selection">
+	<div class="unit-filters">
+		<g:form action="unitSelect">
+			<g:submitButton name="unit-filter" value="Filter" />
+			<g:textField name="name" value="${filters?.name}" />
+		</g:form>
+	</div>
+
 	<table>
 		<thead>
 			<tr>
 			
-				<g:sortableColumn property="name" title="${message(code: 'unit.name.label', default: 'Name')}" />
+				<g:sortableColumn property="name" title="${message(code: 'unit.name.label', default: 'Name')}" params="${filters}" />
 				
-				<g:sortableColumn property="chassis" title="${message(code: 'unit.chassis.label', default: 'Chassis')}" />
+				<g:sortableColumn property="chassis" title="${message(code: 'unit.chassis.label', default: 'Chassis')}" params="${filters}" />
 				
-				<g:sortableColumn property="mass" title="${message(code: 'unit.tonnage.label', default: 'Tonnage')}" />
+				<g:sortableColumn property="mass" title="${message(code: 'unit.tonnage.label', default: 'Tonnage')}" params="${filters}" />
 			
 			</tr>
 		</thead>
@@ -38,6 +45,6 @@
 		</tbody>
 	</table>
 	<div class="pagination">
-		<g:paginate total="${unitInstanceTotal ?: 0}" />
+		<g:paginate total="${unitInstanceTotal ?: 0}" params="${filters}" />
 	</div>
 </div>
