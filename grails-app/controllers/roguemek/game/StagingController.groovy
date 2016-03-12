@@ -248,6 +248,14 @@ class StagingController {
 	}
 	
 	/**
+	 * Allows for individual calls to render a unit preview (TagLib)
+	 */
+	@Transactional(readOnly = true)
+	def previewUnit() {
+		render g.unitImage(['unitId': params.unitId])
+	}
+	
+	/**
 	 * Adds the selected unit to the game
 	 * @return
 	 */

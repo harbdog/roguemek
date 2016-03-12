@@ -1,7 +1,7 @@
 package roguemek.game
 
 import roguemek.model.*
-import roguemek.assets.ContextHelper
+import roguemek.game.UnitService
 
 /**
  * Represents the owned mech that can be taken into battle
@@ -31,6 +31,8 @@ class BattleMech extends BattleUnit {
 		physical size: 3..4		// Punch, Kick, and Charge, then DFA only if it has jump jets
     }
 	
+	def unitService
+	
 	def beforeValidate() {
 
 		if(mech != null 
@@ -40,7 +42,7 @@ class BattleMech extends BattleUnit {
 			internals = mech.internals
 			
 			// determine the displayed image
-			imageFile = BattleMech.initMechImage(mech)
+			imageFile = unitService.getUnitImagePath(mech)
 			
 			// generate the displayed image with default color/camo
 			image = BattleUnit.initUnitImage(this)
@@ -153,48 +155,6 @@ class BattleMech extends BattleUnit {
 				p.discard()
 			}
 		}
-	}
-	
-	private static String imagesBasePath = "units/mechs/"
-
-	/**
-	 * Used during creation of the BattleMech to determine the image to be used
-	 * @param mech
-	 * @return
-	 */
-	private static String initMechImage(Mech mech) {
-		String mechImage = "";
-		if(mech == null) return mechImage;
-		
-		// If no specific image found, use a default based on the mech's weight class
-		String weightClass = mech.getWeightClass()
-		mechImage = "default_"+ weightClass +"."+imagesExtension
-		
-		// using all lowercase and no spaces for base mech name
-		String mechName = mech.name.toLowerCase().replaceAll(" ", "")
-		String variant = mech.variant.toLowerCase()
-		
-		def imageNameList = [
-			"${mechName}_${variant}",		// match by "name_variant.gif"
-			"${mechName}"					// match by "name.gif"
-		]
-		
-		for(String imageName in imageNameList) {
-			try{
-				String testImage = imageName + "."+imagesExtension
-				InputStream imageFile = ContextHelper.getContextAsset("images/"+imagesBasePath + testImage)
-			
-				log.debug("testImage:"+testImage+", available="+imageFile.available())
-				if(imageFile.available()) {
-					mechImage = testImage
-					break;
-				}
-			} catch(Exception e) {
-				// this image not found, move on to the next
-			}
-		}
-		
-		return imagesBasePath + mechImage
 	}
 	
 	/**

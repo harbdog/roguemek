@@ -54,7 +54,7 @@ class EntityImage {
 		Image color = applyColor(this.base);
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream()
-		ImageIO.write(color, BattleUnit.imagesExtension, baos)
+		ImageIO.write(color, UnitService.imagesExtension, baos)
 		
 		return baos.toByteArray()
 	}

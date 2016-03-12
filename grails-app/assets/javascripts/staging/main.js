@@ -611,7 +611,7 @@ function showUnitSelect() {
 	var windowHeight = $(window).height();
 	
 	unitSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
-	unitSelectDialog.dialog("option", "width", windowWidth/2);
+	unitSelectDialog.dialog("option", "width", 3*windowWidth/4);
 	unitSelectDialog.dialog("option", "height", windowHeight);
 	unitSelectDialog.dialog("open");
 	
@@ -620,6 +620,33 @@ function showUnitSelect() {
 
 //setup ajax filters, paging and sorting for the unit select
 function setupAjaxUnitSelect() {
+	// setup radio change events
+	$('input:radio[name="unit-radio"]').change(function() {
+		var unitId = $(this).val();
+		console.log("Selected unitId="+unitId);
+        
+        var selection = $("#unit-selection-preview");
+        $(selection).html($("#spinner").html());
+
+        $.ajax({
+            type: 'GET',
+            url: 'previewUnit',
+            data: {unitId: unitId},
+            success: function(data) {
+            	// hide, load, then slide in the new unit preview
+                $(selection).hide({
+                	effect: 'slide',
+                	complete: function() {
+                		$(this).html(data).effect({
+                			effect: 'slide'
+                		});
+                	}
+                })
+            }
+        });
+	});
+	
+	// setup sorting and paginationg
 	$("#unit-selection").find(".pagination a, th.sortable a").on({
 		click: function(event) {
 	        event.preventDefault();

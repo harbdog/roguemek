@@ -60,8 +60,6 @@ class BattleUnit {
 	public static final Integer HEADING_SW = 4
 	public static final Integer HEADING_NW = 5
 	
-	public static String imagesExtension = "gif"
-	
     static constraints = {
 		owner nullable: true
 		pilot nullable: true

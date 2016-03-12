@@ -277,7 +277,7 @@ div.sp-picker-container {
 	border: none;
 }
 
-img.unit-preview {
+img.camo-unit-preview {
 	position: absolute;
 	margin: auto;
 	top: 0;
@@ -288,6 +288,33 @@ img.unit-preview {
     -moz-animation:spin 8s linear infinite;
     animation:spin 8s linear infinite;
 }
+
+/* Unit selection preview items */
+#unit-selection-panel {
+	display: flex;
+	height: 100%;
+	width: 100%;
+}
+
+#unit-selection-preview {
+	position: relative;
+	width: 50%;
+	margin-bottom: 1em;
+	border-left: 1px solid #999;
+	background-color: rgba(255, 255, 255, 0.25);
+}
+
+img.unit-preview {
+	position: absolute;
+	margin: auto;
+	top: 0;
+	left: 0;
+	right: 0;
+	-webkit-animation:spin 8s linear infinite;
+    -moz-animation:spin 8s linear infinite;
+    animation:spin 8s linear infinite;
+}
+
 /* http://stackoverflow.com/a/16771693/854696 */
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
