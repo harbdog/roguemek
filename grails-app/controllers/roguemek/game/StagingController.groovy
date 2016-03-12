@@ -514,7 +514,7 @@ class StagingController {
 			// pass along a unit for preview if one exists
 			BattleUnit previewUnit = StagingUser.findByGameAndUser(game, userToUpdate)?.units[0]
 
-			respond game, model:[userInstance:userToUpdate, previewUnit:previewUnit]
+			render template: 'camoSelect', model:[gameInstance:game, userInstance:userToUpdate, previewUnit:previewUnit]
 		}
 		else {
 			redirect url: "/"
