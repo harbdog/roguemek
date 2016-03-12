@@ -170,18 +170,28 @@ class BattleMech extends BattleUnit {
 		String weightClass = mech.getWeightClass()
 		mechImage = "default_"+ weightClass +"."+imagesExtension
 		
-		try{
-			// TODO: for now just matching by mech name (all lower case, no spaces), but should also extend to try chassis+variant first
-			String testImage = mech.name.toLowerCase().replaceAll(" ", "") + "."+imagesExtension
-			InputStream imageFile = ContextHelper.getContextAsset("images/"+imagesBasePath + testImage)
+		// using all lowercase and no spaces for base mech name
+		String mechName = mech.name.toLowerCase().replaceAll(" ", "")
+		String variant = mech.variant.toLowerCase()
 		
-			log.info("testImage:"+testImage+", available="+imageFile.available())
+		def imageNameList = [
+			"${mechName}_${variant}",		// match by "name_variant.gif"
+			"${mechName}"					// match by "name.gif"
+		]
+		
+		for(String imageName in imageNameList) {
+			try{
+				String testImage = imageName + "."+imagesExtension
+				InputStream imageFile = ContextHelper.getContextAsset("images/"+imagesBasePath + testImage)
 			
-			if(imageFile.available()) {
-				mechImage = testImage
+				log.debug("testImage:"+testImage+", available="+imageFile.available())
+				if(imageFile.available()) {
+					mechImage = testImage
+					break;
+				}
+			} catch(Exception e) {
+				// this image not found, move on to the next
 			}
-		} catch(Exception e) {
-			// no specific image found, use default
 		}
 		
 		return imagesBasePath + mechImage

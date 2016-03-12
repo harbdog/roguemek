@@ -366,13 +366,13 @@ class MechMTF {
 							battleValue:0])
 					
 					thisCrit.save()
-					log.info("CREATED MISSING EQUIPMENT "+thisCrit.name)
+					log.error("CREATED MISSING EQUIPMENT "+thisCrit.name)
 				}
 			}
 		}
 		
 		if(thisCrit == null) {
-			log.error("null? "+critName)
+			log.error("null crit? "+critName)
 		}
 		
 		crits[critStart + subSectionIndex] = thisCrit.id
