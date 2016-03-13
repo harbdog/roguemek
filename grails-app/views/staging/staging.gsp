@@ -137,7 +137,7 @@
 			</g:each>
 			
 			<%-- TODO: only show the "new team" option when at least one team has >1 members --%>
-			<g:if test="${showJoin || (gameInstance?.ownerUser == userInstance && gameInstance?.isInit())}">
+			<%-- <g:if test="${showJoin || (gameInstance?.ownerUser == userInstance && gameInstance?.isInit())}">
 				<div class="team">
 					<h2>New Team</h2>
 						
@@ -145,7 +145,7 @@
 						<button class="user-join"><g:message code="default.button.join.label" /></button>
 					</g:if>
 				</div>
-			</g:if>
+			</g:if> --%>
 		</div>
 			
 		<div class="buttons">

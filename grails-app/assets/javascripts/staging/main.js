@@ -472,12 +472,13 @@ function ajaxStageUser(userId) {
 		$this = $("div.player[data-userid='"+userId+"']").parents('div').eq(0);
 	}
 	
+	var tempTeamHeader = null;
 	if($this == null || $this.length == 0) {
 		// create a new temporary team div for the player until teams are introduced to the game
 		$this = $("<div>", {class: "team"});
 		$("div#teams").append($this);
 		
-		var tempTeamHeader = $("<h2>");
+		tempTeamHeader = $("<h2>");
 		tempTeamHeader.text("Team Temp");
 		$this.prepend(tempTeamHeader);
 	}
@@ -491,6 +492,12 @@ function ajaxStageUser(userId) {
 		// move the unit content to the player area
 		$tempDiv.children().appendTo($this);
 		$tempDiv.remove();
+		
+		// rename team header (for now, just the name of the player since teams aren't implemented yet)
+		if(tempTeamHeader != null) {
+			var playerName = $("div.player[data-userid='"+userId+"'] span.player-name").text();
+			tempTeamHeader.text("Team "+playerName);
+		}
 		
 		// TODO: implement actual Teams
 		setupDynamicUI();
@@ -1025,10 +1032,15 @@ function updateStagingData(data) {
 	}
 	else if(data.userRemoved != null) {
 		var userId = data.userRemoved;
-		$("div.player[data-userid='"+userId+"']").fadeOut();
 		
-		// TODO: update the users and teams on the page without forcing reload
-		//window.location.reload();
+		var $playerDiv = $("div.player[data-userid='"+userId+"']");
+		var $teamDiv = $playerDiv.parent("div.team");
+		$playerDiv.fadeOut();
+		
+		// TODO: only remove the team div if no players remain in it
+		$teamDiv.fadeOut(function() {
+			$(this).remove();
+		});
 		
 		// if the user removed is the current user, show alert and redirect back to dropship
 		if(currentUserId == userId) {
