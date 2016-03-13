@@ -241,8 +241,18 @@ class GameService extends AbstractGameService {
 		def unitInitiatives = []
 		
 		for(BattleUnit unit in game.units) {
-			// TODO: alter initiative roll based on mech weight, speed, pilot skill, etc...
-			unitInitiatives << new UnitOrder(unit: unit, initiative: Roll.randomInt(1000, 1))
+			// TODO: alter initiative roll based on mech weight, pilot skill, etc...
+			
+			// lowest number wins initiative
+			def initiativeMultiplier = 1
+			if(unit instanceof BattleMech) {
+				// for now, just altering the highest random number based on mech speed
+				initiativeMultiplier = (unit.mech.walkMP / 10)
+			}
+			
+			UnitOrder thisOrder = new UnitOrder(unit: unit, initiative: Roll.randomInt((int)(initiativeMultiplier * 1000), 1))
+			
+			unitInitiatives << thisOrder
 		}
 		
 		// TODO: handle ties
