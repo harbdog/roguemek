@@ -610,9 +610,9 @@ function showUnitSelect() {
 	var windowWidth = $(window).width();
 	var windowHeight = $(window).height();
 	
-	unitSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
+	unitSelectDialog.dialog("option", "position", {my: "top", at: "top", of: window});
 	unitSelectDialog.dialog("option", "width", 3*windowWidth/4);
-	unitSelectDialog.dialog("option", "height", windowHeight);
+	//unitSelectDialog.dialog("option", "height", windowHeight);	// do not bound the height so it won't have an inner scroll pane
 	unitSelectDialog.dialog("open");
 	
 	setupAjaxUnitSelect();
@@ -623,10 +623,8 @@ function setupAjaxUnitSelect() {
 	// setup radio change events
 	$('input:radio[name="unit-radio"]').change(function() {
 		var unitId = $(this).val();
-		console.log("Selected unitId="+unitId);
         
         var selection = $("#unit-selection-preview");
-        $(selection).html($("#spinner").html());
 
         $.ajax({
             type: 'GET',
@@ -636,9 +634,18 @@ function setupAjaxUnitSelect() {
             	// hide, load, then slide in the new unit preview
                 $(selection).hide({
                 	effect: 'slide',
+                	duration: 250,
                 	complete: function() {
                 		$(this).html(data).effect({
-                			effect: 'slide'
+                			effect: 'slide',
+                			duration: 350,
+                			complete: function() {
+                				// swap out the static for the animated preview image class
+                				// since it jitters if it starts out animated on load
+                				$(".unit-preview-static")
+                						.removeClass("unit-preview-static")
+                						.addClass("unit-preview");
+                			}
                 		});
                 	}
                 })

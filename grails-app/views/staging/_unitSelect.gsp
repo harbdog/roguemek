@@ -26,22 +26,36 @@
 				</thead>
 				<tbody>
 				
+				<%
+					// if the unitInstanceList is less than 12, make it 12 so the table can be sized consistently
+					def numUnits = unitInstanceList.size() 
+					if(numUnits < 12) {
+						(numUnits+1).upto(12) {
+							unitInstanceList.add(null)
+						}
+					}
+				%>
+				
 				<g:each in="${unitInstanceList}" status="i" var="thisUnit">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-						
-						<td>
-							<input type="radio" name="unit-radio" value="${thisUnit.id}" id="${thisUnit.id}">
-							<label for="${thisUnit.id}">${thisUnit.name}</label>
-						</td>
-						
-						<td>
-							<g:if test="${thisUnit instanceof Mech}">
-								${thisUnit.chassis}-${thisUnit.variant}
-							</g:if>
-						</td>
-						
-						<td>${fieldValue(bean: thisUnit, field: "mass")}</td>
-						
+						<g:if test="${thisUnit}">
+							<td>
+								<input type="radio" name="unit-radio" value="${thisUnit.id}" id="${thisUnit.id}">
+								<label for="${thisUnit.id}">${thisUnit.name}</label>
+							</td>
+							
+							<td>
+								<g:if test="${thisUnit instanceof Mech}">
+									${thisUnit.chassis}-${thisUnit.variant}
+								</g:if>
+							</td>
+							
+							<td>${fieldValue(bean: thisUnit, field: "mass")}</td>
+						</g:if>
+						<g:else>
+							<%-- Filling up space so the dialog looks good --%>
+							<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+						</g:else>
 					</tr>
 				</g:each>
 				</tbody>

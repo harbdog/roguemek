@@ -1,4 +1,9 @@
 /* STAGING PAGE */
+@font-face {
+	font-family: 'UbuntuMono';
+	src: url('images/UbuntuMono.ttf');
+}
+
 #map-button {
 	margin: 0 0 0.1em 1em;
 	font-size: 1em;
@@ -304,6 +309,24 @@ img.camo-unit-preview {
 	background-color: rgba(255, 255, 255, 0.25);
 }
 
+#unit-info-preview {
+	position: absolute;
+	margin: auto;
+	top: 5em;
+	right: 1em;
+	left: 1em;
+	bottom: 1em;
+	width: 100%;
+}
+
+img.unit-preview-static {
+	position: absolute;
+	margin: auto;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+
 img.unit-preview {
 	position: absolute;
 	margin: auto;
@@ -319,3 +342,94 @@ img.unit-preview {
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+#unit-info-preview {
+	font-family: UbuntuMono;
+}
+
+#unit-info-preview div.unit-info-header {
+	font-size: 1.25em;
+	margin-right: 1.5em;
+}
+
+#unit-info-preview div.unit-info-subheader {
+	font-size: 0.9em;
+	margin-right: 2em;
+}
+
+#unit-info-preview div.unit-stats {
+	font-size: 0.9em;
+	padding-top: 0.5em;
+	margin: 0.5em 2em 1em 0;
+	border-top: 2px solid #CCCCCC;
+}
+
+#unit-info-preview div.unit-equipment {
+	font-size: 0.8em;
+	padding: 0.5em 0 0.5em 0;
+	margin: 0.5em 2em 1em 0;
+	border-top: 1px groove #CCCCCC;
+	border-bottom: 1px groove #CCCCCC;
+}
+
+#unit-info-preview div.unit-heatsinks {
+	margin: 0 0 0 1em;
+}
+
+#unit-info-preview div.unit-weapons {
+	margin: 1em 0 0 1em;
+}
+
+#unit-info-preview div.unit-total-armor {
+	font-size: 0.8em;
+	margin: 0 0 0.5em 1em;
+}
+
+#unit-info-preview div.unit-armor {
+	display: table;
+	width: 70%;
+	font-size: 0.65em;
+	margin: 0 0 0 1.5em;
+}
+
+#unit-info-preview div.unit-armor > div {
+	display: table-cell;
+	width: 20%;
+	position: relative;
+}
+
+#unit-info-preview div.unit-armor > div > div {
+	/*position: absolute;
+	display: inline-block;*/
+	padding: 0.25em;
+}
+
+#unit-info-preview #armor-HD {
+	border: 1px groove #CCCCCC;
+	border-bottom: none;
+}
+#unit-info-preview #armor-CT {
+	border: 1px groove #CCCCCC;
+}
+#unit-info-preview #armor-LT {
+	border: 1px groove #CCCCCC;
+}
+#unit-info-preview #armor-RT {
+	border: 1px groove #CCCCCC;
+}
+#unit-info-preview #armor-LA {
+	border: 1px groove #CCCCCC;
+	border-right: none;
+}
+#unit-info-preview #armor-RA {
+	border: 1px groove #CCCCCC;
+	border-left: none;
+}
+#unit-info-preview #armor-LL {
+	border: 1px groove #CCCCCC;
+	border-top: none;
+}
+#unit-info-preview #armor-RL {
+	border: 1px groove #CCCCCC;
+	border-top: none;
+}

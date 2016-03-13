@@ -194,7 +194,7 @@ class StagingController {
 	def unitSelect() {
 		def userInstance = currentUser()
 		if(userInstance) {
-			params.max = Math.min(params.max ? params.int('max') : 20, 100)
+			params.max = Math.min(params.max ? params.int('max') : 12, 100)
 			params.sort = params.sort ?: "name"
 			params.order = params.order ?: "asc"
 			
@@ -244,15 +244,17 @@ class StagingController {
 		// TODO: figure out why only when server code is changed during run-app, this starts failing to find the unit after added in staging...
 		if(thisUnit == null) return
 		
-		render ( template: 'stageUnit', model: [unit: thisUnit, showUnitDelete: (userInstance?.id == thisUser?.id)])
+		render (template: 'stageUnit', model: [unit: thisUnit, showUnitDelete: (userInstance?.id == thisUser?.id)])
 	}
 	
 	/**
-	 * Allows for individual calls to render a unit preview (TagLib)
+	 * Allows for individual calls to render a unit preview
 	 */
 	@Transactional(readOnly = true)
 	def previewUnit() {
-		render g.unitImage(['unitId': params.unitId])
+		Unit thisUnit = Unit.read(params.unitId)
+		
+		render (template: 'previewUnit', model: [unit: thisUnit])
 	}
 	
 	/**

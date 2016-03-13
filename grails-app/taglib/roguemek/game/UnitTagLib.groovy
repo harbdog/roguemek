@@ -11,7 +11,8 @@ class UnitTagLib {
 	/**
 	 * Generates an image to the url of the image for the unit
 	 *
-	 * @attr unitId REQUIRED the id of the Unit (not BattleUnit) 
+	 * @attr unitId REQUIRED the id of the Unit domain object (not BattleUnit)
+	 * @attr animated OPTIONAL boolean value of whether to have it animated spinning (default: true)
 	 */
 	def unitImage = { attrs, body ->
 		def unitId = attrs.unitId
@@ -20,8 +21,12 @@ class UnitTagLib {
 		Unit unit = Unit.read(unitId)
 		if(!unit) return
 		
+		def animated = (attrs.animated != null) ? Boolean.valueOf(attrs.animated) : true
+		
 		def imagePath = unitService.getUnitImagePath(unit)
 		def imageURL = "${assetPath(src: imagePath)}"
-		out << "<img class='unit-preview' src='${imageURL}'/>"
+		def imageClass = (animated) ? "unit-preview" : "unit-preview-static"
+		
+		out << "<img class='${imageClass}' src='${imageURL}'/>"
 	}
 }
