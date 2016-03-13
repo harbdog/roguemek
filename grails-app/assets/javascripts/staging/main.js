@@ -643,8 +643,15 @@ function showUnitSelect() {
 
 //setup ajax filters, paging and sorting for the unit select
 function setupAjaxUnitSelect() {
+	// Disable the Select button until a selection is made
+	// http://stackoverflow.com/a/3646440/854696
+	var selectButton = $("div.ui-dialog-buttonpane button:contains('Select')").button("disable");
+	
 	// setup radio change events
 	$('input:radio[name="unit-radio"]').change(function() {
+		// show the select button since a selection has been made
+		selectButton.button("enable");
+		
 		var unitId = $(this).val();
         
         var selection = $("#unit-selection-preview");
@@ -689,15 +696,17 @@ function setupAjaxUnitSelect() {
 	            type: 'GET',
 	            url: url,
 	            success: function(data) {
+	            	selectButton.button("disable");
 	                $(selection).fadeOut('fast', function() {$(this).html(data).fadeIn({complete: setupAjaxUnitSelect});});
 	            }
 	        });
 		}
     });
 	
-	//setup ajax filter functionality for the unit select
+	// setup ajax filter functionality for the unit select
 	$("div.unit-filters form").submit(function(event) {
 		event.preventDefault();
+		selectButton.button("disable");
 		var filterBox = $(this).parents("div.unit-filters");
 		filterAjaxUnitSelect(filterBox);
 		return false;
@@ -862,9 +871,20 @@ function showMapSelect() {
 
 //setup ajax paging and sorting for the map select
 function setupAjaxMapSelect() {
+	// Disable the Select button until a selection is made
+	// http://stackoverflow.com/a/3646440/854696
+	var selectButton = $("div.ui-dialog-buttonpane button:contains('Select')").button("disable");
+	
+	$('input:radio[name="map-radio"]').change(function() {
+		// show the select button since a selection has been made
+		selectButton.button("enable");
+	});
+	
 	$("#map-selection").find(".pagination a, th.sortable a").on({
 		click: function(event) {
 	        event.preventDefault();
+	        selectButton.button("disable");
+	        
 	        var url = $(this).attr('href');
 	        
 	        var selection = $("#map-selection");
