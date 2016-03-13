@@ -138,6 +138,29 @@ function initStaging() {
 		position: {my: "center", at: "center", of: window}
     });
     
+    // setup a confirmation dialog for starting battle
+    $("#start-link").click(function() {
+		$("<div style='font-size:0.8em;'>Launch into combat?</div>").dialog({	// TODO: i18n for deletion message
+			title: "Launch Battle",
+			autoOpen: true,
+			resizable: false,
+			modal: true,
+			buttons: {
+				"Launch": function() {
+					$(this).dialog("close");
+					var launchUrl = $("#start-link").attr("data-start-link");
+					if(launchUrl != null) {
+						window.location.replace(launchUrl);
+					}
+				},
+				Cancel: function() {
+					$(this).dialog("close");
+				}
+			},
+			position: {my: "left bottom", at: "right top", of: $(this)}
+		});
+    });
+    
     // setup a confirmation dialog for leaving
     $("#leave-link").click(function() {
     	$("#user-leave-dialog").dialog("open");

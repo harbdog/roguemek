@@ -150,7 +150,9 @@
 			
 		<div class="buttons">
 			<g:if test="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}">
-				<span class="left"><link:startGame game="${gameInstance?.id}"><g:message code="default.button.init.battle.label" /></link:startGame></span>
+				<span class="left" id="start-link" data-start-link="<g:createLink mapping='startGame' params='[game:gameInstance?.id]'></g:createLink>">
+					<a href="#"><g:message code="default.button.init.battle.label" /></a>
+				</span>
 				
 				<span class="right"><link:abortGame id="${gameInstance?.id}"><g:message code="default.button.abort.label" /></link:abortGame></span>
 			</g:if>
