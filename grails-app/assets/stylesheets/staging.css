@@ -94,8 +94,17 @@ div.unit-filters {
 	margin: 0 0 0.5em 0;
 }
 
-#unit-selection td, th{
+#unit-selection td, th {
 	padding: 2px;
+}
+
+#unit-selection tr>td:last-child, tr>th:last-child {
+	padding-right: 0;
+}
+
+#unit-selection tr>td:last-child {
+	float: right;
+	padding-right: 1em;
 }
 
 /* Map/Unit selection radio button decoration */
