@@ -400,7 +400,7 @@ function ajaxUpdateCamoColorSelection(userId, rgbTinyColor) {
 					// update the preview unit image
 					var base64 = _arrayBufferToBase64(data.image);
 					
-					$("img.unit-preview").attr("src", "data:image/gif;base64," + base64);
+					$("img.camo-unit-preview").attr("src", "data:image/gif;base64," + base64);
 				}
 			}
 		})
