@@ -55,3 +55,7 @@ grails {
 		}
 	}
 }
+
+log4j.external = {
+	//debug "roguemek"
+}
