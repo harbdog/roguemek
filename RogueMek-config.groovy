@@ -25,6 +25,11 @@ roguemek {
 			userStagingLimit = 3
 		}
 	}
+	external {
+		settings {
+			externalUnitLink = "http://www.sarna.net/wiki/"
+		}
+	}
 }
 
 grails {

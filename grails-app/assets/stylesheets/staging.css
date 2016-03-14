@@ -261,7 +261,7 @@ div#camo-preview {
 	position: relative;
 	width: 50%;
 	border-left: 1px solid #999;
-	background-color: rgba(255, 255, 255, 0.25);
+	background-color: rgba(255, 255, 255, 0.15);
 }
 
 button.player-camo, span.player-camo {
@@ -315,7 +315,7 @@ img.camo-unit-preview {
 	width: 50%;
 	margin-bottom: 1em;
 	border-left: 1px solid #999;
-	background-color: rgba(255, 255, 255, 0.25);
+	background-color: rgba(255, 255, 255, 0.15);
 }
 
 #unit-info-preview {
@@ -359,6 +359,10 @@ img.unit-preview {
 #unit-info-preview div.unit-info-header {
 	font-size: 1.25em;
 	margin-right: 1.5em;
+}
+
+#unit-info-preview div.unit-info-header > a {
+	color: #3498DB;
 }
 
 #unit-info-preview div.unit-info-subheader {

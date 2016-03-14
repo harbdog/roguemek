@@ -9,7 +9,14 @@
 
 <div id="unit-info-preview">
 	<div class="unit-info-header">
-		<span class="unit-name">${unit?.name}</span>
+		<g:if test="${unitLink}">
+			<a href="${unitLink}" title="<g:message code="staging.unit.external.link.title" />" target="_blank">
+				<span class="unit-name">${unit?.name}<span class="ui-icon ui-icon-extlink" style="display:inline-block;"></span></span>
+			</a>
+		</g:if>
+		<g:else>
+			<span class="unit-name">${unit?.name}</span>
+		</g:else>
 		<span class="unit-mass right"><g:message code="unit.mass.label" args="[unit?.mass]" /></span>
 	</div>
 	

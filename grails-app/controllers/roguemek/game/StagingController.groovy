@@ -254,7 +254,15 @@ class StagingController {
 	def previewUnit() {
 		Unit thisUnit = Unit.read(params.unitId)
 		
-		render (template: 'previewUnit', model: [unit: thisUnit])
+		String externalUnitLink = grailsApplication.config.roguemek.external.settings.externalUnitLink
+		if(thisUnit != null && externalUnitLink != null && externalUnitLink.length() > 0) {
+			externalUnitLink = "${externalUnitLink}${thisUnit.name}"
+		}
+		else {
+			externalUnitLink = null
+		}
+		
+		render (template: 'previewUnit', model: [unit: thisUnit, unitLink: externalUnitLink])
 	}
 	
 	/**

@@ -133,7 +133,7 @@ log4j.main = {
     // Set level for all application artifacts
     info "grails.app"
 	
-	debug "roguemek"
+	info "roguemek"
 	
 	warn "org.atmosphere"
 	
