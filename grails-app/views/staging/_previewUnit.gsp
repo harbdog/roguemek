@@ -45,6 +45,9 @@
 				def heatsinks = [:] // [[<heatsink>:<critCount>], ...]
 				def weapons = [:]	// [[<weapon>:<critCount>], ...]
 				
+				def ammos = [:]		// [[<ammo>:<critCount>], ...]
+				def weaponAmmo = [:]// [[<weapon>:<ammoCount>], ...]
+				
 				for(def critSectionIndex in Mech.CRIT_LOCATIONS) {
 					def critEquipment = unit.getCritSection(critSectionIndex)
 					
@@ -54,6 +57,9 @@
 							map = weapons
 						} else if(thisEquip instanceof HeatSink) {
 							map = heatsinks
+						}
+						else if(thisEquip instanceof Ammo) {
+							map = ammos
 						}
 						
 						if(map != null) {
@@ -75,7 +81,20 @@
 				
 				weapons.each { Weapon weapon, int critCount ->
 					weapons[weapon] = (critCount / weapon.crits)
-					// TODO: calculate amount of ammo for weapons
+					
+					// calculate amount of ammo for weapons
+					if(weapon.ammoTypes) {
+						weapon.ammoTypes.each { Ammo at ->
+							if(weaponAmmo[weapon] == null) {
+								weaponAmmo[weapon] = 0
+							}
+							
+							def ammoCount = ammos[at]
+							if(ammoCount != null) {
+								weaponAmmo[weapon] += (ammoCount * at.ammoPerTon)
+							}
+						}
+					} 
 				}
 				
 				def sortedWeapons = weapons.sort( { k1, k2 -> k1.name <=> k2.name } as Comparator )*.key
@@ -90,7 +109,11 @@
 			
 			<div class="unit-weapons">
 				<g:each in="${sortedWeapons}" var="thisWeapon">
-					<p><span>${weapons[thisWeapon]}x</span> <span>${thisWeapon.name}</span></p>
+					<p>
+						<span>${weapons[thisWeapon]}x</span>
+						<span>${thisWeapon.name}</span>
+						<g:if test="${weaponAmmo[thisWeapon]}"><span>[${weaponAmmo[thisWeapon]}]</span></g:if>
+					</p>
 				</g:each>
 			</div>
 		</g:if>
