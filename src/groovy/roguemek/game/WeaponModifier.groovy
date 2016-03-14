@@ -340,7 +340,7 @@ class WeaponModifier {
 		
 		// add movement modifiers from target
 		GameService.CombatStatus tgtMoveStatus = GameService.getUnitCombatStatus(game, tgtUnit)
-		def tgtSpeed = tgtUnit.hexesMoved
+		int tgtSpeed = Math.floor(tgtUnit.hexesMoved / 2)
 		
 		if(tgtMoveStatus == GameService.CombatStatus.UNIT_STANDING){
 			// no target modifier for standing
@@ -365,7 +365,7 @@ class WeaponModifier {
 			toHitMods.push(new WeaponModifier(Modifier.TARGET_JUMPING, (tgtSpeed + 1) * STANDARD_MODIFIER))
 		}
 		else if(tgtSpeed > 0){
-			// +1 will be added for each hex moved since AP movement is less per turn than standard BT
+			// +1 will be added for every 2 hexes moved since AP movement is less per turn than standard BT
 			toHitMods.push(new WeaponModifier(Modifier.TARGET_MOVING, tgtSpeed * STANDARD_MODIFIER))
 		}
 		
