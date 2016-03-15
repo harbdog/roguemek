@@ -786,6 +786,7 @@ function updateGameData(data) {
 	}
 	
 	if(data.unit && data.turnUnit){
+		// TODO: figure out when this happens and comment why it needs to be skipped
 		return;
 	}
 	else if(data.turnUnit) {
@@ -800,7 +801,6 @@ function updateGameData(data) {
 	var prevTurnUnit = turnUnit;
 	if(data.turnUnit){
 		if(prevTurnUnit != null 
-				&& prevTurnUnit.id != data.turnUnit
 				&& isPlayerUnit(prevTurnUnit)) {
 			// clear selection and toHit of weapons before next turn unit begins
 			clearSelectedWeapons();
@@ -1153,7 +1153,7 @@ function updateGameData(data) {
     }
 	
 	// do some final UI updates from turn changes
-	if(prevTurnUnit != null && prevTurnUnit.id != turnUnit.id) {
+	if(prevTurnUnit != null && data.turnUnit) {
 		if(isPlayerUnit(prevTurnUnit)) {
 			if(!isPlayerUnitTurn()) {
 				setPlayerTarget(null);
