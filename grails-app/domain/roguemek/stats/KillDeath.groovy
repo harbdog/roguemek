@@ -4,6 +4,7 @@ import java.util.Date
 
 import roguemek.MekUser
 import roguemek.game.Game
+import roguemek.game.Pilot
 import roguemek.model.Unit
 
 class KillDeath {
@@ -16,8 +17,10 @@ class KillDeath {
 	
 	MekUser killer
 	Unit killerUnit
+	Pilot killerPilot
 	MekUser victim
 	Unit victimUnit
+	Pilot victimPilot
 	
 	static mapping = {
 		id generator: 'uuid'
@@ -28,6 +31,10 @@ class KillDeath {
 		// if a unit is destroyed through self damage, no killer is set
 		killer nullable: true
 		killerUnit nullable:true
+		
+		// temporary pilots will not be kept, so they will need to be recorded as null
+		killerPilot nullable: true
+		victimPilot nullable: true
 	}
 	
 	def beforeInsert() {

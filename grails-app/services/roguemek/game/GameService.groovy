@@ -3720,8 +3720,11 @@ class GameService extends AbstractGameService {
 	def recordKillDeath(Game game, BattleUnit killerB, BattleUnit victimB) {
 		if(game == null || victimB == null) return
 		
-		MekUser killer = killerB?.pilot?.ownerUser
-		MekUser victim = victimB?.pilot?.ownerUser
+		Pilot killerPilot =  killerB?.pilot
+		Pilot victimPilot = victimB?.pilot
+		
+		MekUser killer = killerPilot?.ownerUser
+		MekUser victim = victimPilot?.ownerUser
 		
 		Unit killerUnit
 		Unit victimUnit
@@ -3732,8 +3735,12 @@ class GameService extends AbstractGameService {
 		Date time = new Date()
 		
 		KillDeath thisKD = new KillDeath(game: game, time: time, 
-				killer: killer, killerUnit: killerUnit, 
+				killer: killer, killerUnit: killerUnit,
 				victim: victim, victimUnit: victimUnit)
+		
+		// only store pilot record if the pilot is not temporary
+		if(!killerPilot.isTemporary()) thisKD.killerPilot = killerPilot
+		if(!victimPilot.isTemporary()) thisKD.victimPilot = victimPilot
 				
 		thisKD.save flush: true
 	}
