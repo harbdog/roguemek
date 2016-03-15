@@ -1031,7 +1031,10 @@ class GameService extends AbstractGameService {
 			}
 		}
 		
-		return initializeNextTurn(game)
+		initializeNextTurn(game)
+		
+		// returning only success since the data will have been broadcasted
+		return [success: true]
 	}
 	
 	/**
@@ -1296,7 +1299,8 @@ class GameService extends AbstractGameService {
 			this.initializeNextTurn(game)
 		}
 		
-		return data
+        // returning only success since the data will have been broadcasted
+		return [success: true]
 	}
 	
 	/**
@@ -1418,7 +1422,8 @@ class GameService extends AbstractGameService {
 			this.initializeNextTurn(game)
 		}
 		
-		return data
+        // returning only success since the data will have been broadcasted
+		return [success: true]
 	}
 	
 	/**
@@ -1680,6 +1685,7 @@ class GameService extends AbstractGameService {
 		}
 		
 		def data = [
+			success: true,
 			unit: unit.id,
 			moveAP: moveAP,
 			jpMoved: unit.jpMoved,
@@ -2221,7 +2227,9 @@ class GameService extends AbstractGameService {
 		this.initializeNextTurn(game)
 		
 		// TODO: handle returning all of the individual data arrays instead of just the last
-		return data
+
+        // returning only success since the data will have been broadcasted
+		return [success: true]
 	}
 	
 	/**

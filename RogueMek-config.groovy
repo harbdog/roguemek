@@ -56,6 +56,10 @@ grails {
 	}
 }
 
+grails.plugin.springsecurity.secureChannel.definition = [
+	//'/**':    'REQUIRES_SECURE_CHANNEL'	// Require HTTPS for all pages
+  ]
+
 log4j.external = {
 	//debug "roguemek"
 }

@@ -13,7 +13,17 @@ function handleActionJSON(inputMap) {
 			var err = textStatus + ", " + error;
 			console.log( "Request Failed: " + err );
 		})
-		.done(updateGameData)
+		.done(function(data) {
+			var keyCount = Object.keys(data).length;
+			
+			if(keyCount == 0 || 
+					(keyCount == 1 && data.success)) {
+				// no data to update game with
+			}
+			else {
+				updateGameData(data);
+			}
+		})
 		.always(function() {
 			playerActionReady = true;
 		});

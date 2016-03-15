@@ -157,7 +157,7 @@ function initStaging() {
 					$(this).dialog("close");
 				}
 			},
-			position: {my: "left bottom", at: "right top", of: $(this)}
+			position: {my: "center", at: "center", of: window}
 		});
     });
     

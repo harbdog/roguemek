@@ -349,9 +349,9 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 					laserConf = {
 						laserDuration: 300,
 						laserWidth: 1,
-						laserColor: "#990000",
+						laserColor: "#FF0000",
 						glowWidth: 2,
-						glowColor: "#FF0000"
+						glowColor: "#FF6666"
 					};
 					break;
 					
@@ -361,7 +361,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 						laserWidth: 2,
 						laserColor: "#00FF00",
 						glowWidth: 2,
-						glowColor: "#009900"
+						glowColor: "#66FF66"
 					};
 					break;
 					
@@ -371,7 +371,7 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 						laserWidth: 2,
 						laserColor: "#0000FF",
 						glowWidth: 3,
-						glowColor: "#000099"
+						glowColor: "#6666FF"
 					};
 					break;
 					
