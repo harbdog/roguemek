@@ -71,7 +71,7 @@
                 	<g:set var="unitList" value="${unitsByUser[user]}" /> 
                 	
                 	<li class="fieldcontain">
-                		<span id="units-label" class="property-label"><g:message code="game.combat.status.label" default="Combat Status" /></span>
+                		<span id="units-label" class="property-label"><g:message code="game.status.label" default="Status" /></span>
                 		
                 		<g:each in="${unitList}" var="unit">
                 			<g:set var="pilot" value="${unit.pilot}" />
@@ -83,7 +83,7 @@
                 	
                 	<g:if test="${killMap[user]}">
 	                	<li class="fieldcontain">
-	                		<span id="kills-label" class="property-label"><g:message code="game.kill.status.label" default="Confirmed Kills" /></span>
+	                		<span id="kills-label" class="property-label"><g:message code="game.kill.label" default="Kills" /></span>
 	                		
 	                		<g:each in="${killMap[user]}" var="thisKD">
 	                			<span class="property-value" aria-labelledby="kills-label">
