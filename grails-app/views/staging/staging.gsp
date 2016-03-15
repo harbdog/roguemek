@@ -47,9 +47,7 @@
 					</g:if>
 				</div>
 				<div id="chat-users">
-					<g:each in="${chatUsers}" var="thisUser">
-						<div data-chat-userid="${thisUser.id}"><span class="chat-user">${thisUser}</span></div>
-					</g:each>
+					<%-- chat users will be initialized by an ajax call after the staging elements have loaded fully --%>
 				</div>
 				<input id="chat-input" type="text"/>
 			</div>

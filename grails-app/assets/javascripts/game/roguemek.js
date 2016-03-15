@@ -750,7 +750,6 @@ function ping() {
  * Loads initial list of users connected to chat
  */
 function loadChatUsersList() {
-	lastPing = new Date().getTime();
 	$.getJSON("game/listChatUsers", 
 		null
 	)

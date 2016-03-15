@@ -179,6 +179,9 @@ function initStaging() {
     // setup any dynamic UI pieces present at init
     setupDynamicUI();
     
+    // load list of chat users just before connecting to the Atmosphere server
+    loadChatUsersList();
+    
     // begin HPG communications
     initAtmosphere();
     
@@ -932,6 +935,32 @@ function ajaxUpdateMapSelection() {
 		.always(function() {
 			dialogLoading.dialog("close");
 		});
+}
+
+/**
+ * Loads initial list of users connected to chat
+ */
+function loadChatUsersList() {
+	lastPing = new Date().getTime();
+	$.getJSON("../game/listChatUsers", 
+		null
+	)
+	.fail(function(jqxhr, textStatus, error) {
+		var err = textStatus + ", " + error;
+		console.log( "Request Failed: " + err );
+	})
+	.done(handleChatUsersList);
+}
+
+/**
+ * Handles initializing the list of chat users
+ * @param userDataList
+ */
+function handleChatUsersList(userDataList) {
+	$.each(userDataList, function(index, userData) {
+		userData.add = true;
+		handleChatUsersUpdate(userData);
+	});
 }
 
 /**
