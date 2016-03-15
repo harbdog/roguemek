@@ -2765,7 +2765,6 @@ class GameService extends AbstractGameService {
 						if(thisCrit != null && !thisCrit.isActive()) {
 							if(MechMTF.MTF_CRIT_COCKPIT == thisCrit.getName()) {
 								// if the cockpit is destroyed, the unit is dead
-								unit.status = BattleUnit.STATUS_DESTROYED
 								
 								// the unit was just destroyed from this, record the death
 								recordKillDeath(game, attacker, unit)
@@ -2794,8 +2793,6 @@ class GameService extends AbstractGameService {
 					}
 					
 					if(numEngineHits >= 3) {
-						unit.status = BattleUnit.STATUS_DESTROYED
-						
 						// the unit was just destroyed from this, record the death
 						recordKillDeath(game, attacker, unit)
 						
@@ -2811,8 +2808,6 @@ class GameService extends AbstractGameService {
 						return critsHitList
 					}
 					else if(numGyroHits >= 2) {
-						unit.status = BattleUnit.STATUS_DESTROYED
-						
 						// the unit was just destroyed from this, record the death
 						recordKillDeath(game, attacker, unit)
 						
@@ -2834,7 +2829,6 @@ class GameService extends AbstractGameService {
 		if(critLocationDestroyed && critLocation == Mech.HEAD) {
 			// if head or center internal are gone, the unit is dead
 			//debug.log("Head internal destroyed!");
-			unit.status = BattleUnit.STATUS_DESTROYED
 			
 			// the unit was just destroyed from this, record the death
 			recordKillDeath(game, attacker, unit)
@@ -2853,7 +2847,6 @@ class GameService extends AbstractGameService {
 		else if(critLocationDestroyed && critLocation == Mech.CENTER_TORSO) {
 			// if head or center internal are gone, the unit is dead
 			//debug.log("CT internal destroyed!");
-			unit.status = BattleUnit.STATUS_DESTROYED
 			
 			// the unit was just destroyed from this, record the death
 			recordKillDeath(game, attacker, unit)
@@ -2873,7 +2866,6 @@ class GameService extends AbstractGameService {
 				&& unit.internals[Mech.LEFT_LEG] == 0 && unit.internals[Mech.RIGHT_LEG] == 0) {
 			// if both of the legs internal are gone, the unit is dead
 			//debug.log("Both legs destroyed!");
-			unit.status = BattleUnit.STATUS_DESTROYED
 			
 			// the unit was just destroyed from this, record the death
 			recordKillDeath(game, attacker, unit)
@@ -3708,17 +3700,17 @@ class GameService extends AbstractGameService {
 	
 	/**
 	 * Stores the killer/victim units and users for the K/D
+	 * and applies destroyed status on the victim
 	 * @param game
-	 * @param time
-	 * @param killer
-	 * @param killerUnit
-	 * @param victim
-	 * @param victimUnit
+	 * @param killerB
+	 * @param victimB
 	 * @return
 	 */
 	@Async
 	def recordKillDeath(Game game, BattleUnit killerB, BattleUnit victimB) {
-		if(game == null || victimB == null) return
+		if(game == null || victimB == null || victimB.status == BattleUnit.STATUS_DESTROYED) return
+		
+		victimB.status = BattleUnit.STATUS_DESTROYED
 		
 		Pilot killerPilot =  killerB?.pilot
 		Pilot victimPilot = victimB?.pilot
