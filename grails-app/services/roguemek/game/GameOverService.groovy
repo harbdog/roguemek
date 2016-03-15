@@ -101,8 +101,14 @@ class GameOverService {
 	def recordWinLoss(Game game, MekUser user, boolean isWinner) {
 		if(game == null || user == null) return
 		 
-		WinLoss thisWL = new WinLoss(game: game, time: game.updateDate, user: user, winner: isWinner)
-		thisWL.save flush: true
+		// make sure this result has not already been recorded, just in case
+		WinLoss thisWL = WinLoss.findByGameAndUser(game, user)
+		if(thisWL == null) {
+			thisWL = new WinLoss(game: game, time: game.updateDate, user: user, winner: isWinner)
+			thisWL.save flush: true
+		}
+		
+		return thisWL
 	}
    
 }
