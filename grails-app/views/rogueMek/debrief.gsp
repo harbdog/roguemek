@@ -19,8 +19,7 @@
 		// load some tables and maps to help display the game result data
 		def winners = []
 		def sortedUsers = []
-		def killMap = [:]	// key: Unit, value: [Unit,...]
-		def deathMap = [:]	// key: Unit, value: Unit
+		def killMap = [:]	// [key: MekUser, value: [KillDeath,...],...]
 		def unitsByUser = gameInstance?.getUnitsByUser()
 		
 		// show winners first on the page
@@ -35,26 +34,16 @@
 		}
 		sortedUsers = (winners << sortedUsers).flatten()
 		
-		// load the kill map
+		// load a map for easy access to the info by user
 		def killsDeaths = KillDeath.findAllByGame(gameInstance)
 		killsDeaths.each { KillDeath thisKD ->
-			if(thisKD.killerUnit != null) {
-				// note the death
-				deathMap[thisKD.victimUnit] = thisKD.killerUnit
-				
-				// note the kill
-				def unitKills = killMap[thisKD.killerUnit]
-				if(unitKills == null) {
-					unitKills = []
-					killMap[thisKD.killerUnit] = unitKills
-				}
-				
-				unitKills << thisKD.victimUnit
+			def killList = killMap[thisKD.killer]
+			if(killList == null) {
+				killList = []
+				killMap[thisKD.killer] = killList
 			}
-			else {
-				// note the death
-				deathMap[thisKD.victimUnit] = thisKD.victimUnit
-			}
+			
+			killList << thisKD
 		}
 		
 		// load chat messages
@@ -71,43 +60,39 @@
 			<ol class="property-list game">
 			
 				<g:each in="${sortedUsers}" var="user">
+				
+					<h3>
+						${user.callsign}
+						<g:if test="${winners.contains(user)}">
+							<span class="ui-icon ui-icon-star" style="display:inline-block;"></span>
+						</g:if>
+					</h3>
+				
                 	<g:set var="unitList" value="${unitsByUser[user]}" /> 
                 	
                 	<li class="fieldcontain">
-                		<span id="users-label" class="property-label">${user.callsign}</span>
+                		<span id="units-label" class="property-label"><g:message code="game.combat.status.label" default="Combat Status" /></span>
                 		
                 		<g:each in="${unitList}" var="unit">
                 			<g:set var="pilot" value="${unit.pilot}" />
-                			<span class="property-value" aria-labelledby="users-label">
+                			<span class="property-value" aria-labelledby="units-label">
                 				${unit.getHealthPercentage().round()}% : ${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}
-                				<g:if test="${unit instanceof BattleMech && deathMap[unit.mech]}">
-                					- Killed by ${deathMap[unit.mech]}
-                				</g:if>
-                				<g:if test="${unit instanceof BattleMech && killMap[unit.mech]}">
-                					(Kills: ${killMap[unit.mech].size()})
-                				</g:if>
                				</span>
                 		</g:each>
                 	</li>
+                	
+                	<g:if test="${killMap[user]}">
+	                	<li class="fieldcontain">
+	                		<span id="kills-label" class="property-label"><g:message code="game.kill.status.label" default="Confirmed Kills" /></span>
+	                		
+	                		<g:each in="${killMap[user]}" var="thisKD">
+	                			<span class="property-value" aria-labelledby="kills-label">
+	                				${thisKD.victimUnit} (${thisKD.victim})
+	               				</span>
+	                		</g:each>
+	                	</li>
+                	</g:if>
                 </g:each>
-			
-				<g:if test="${gameInstance?.startDate}">
-				<li class="fieldcontain">
-					<span id="startDate-label" class="property-label"><g:message code="game.startDate.label" default="Start Date" /></span>
-					
-						<span class="property-value" aria-labelledby="startDate-label"><g:formatDate date="${gameInstance?.startDate}" /></span>
-					
-				</li>
-				</g:if>
-			
-				<g:if test="${gameInstance?.updateDate}">
-				<li class="fieldcontain">
-					<span id="updateDate-label" class="property-label"><g:message code="game.endDate.label" default="End Date" /></span>
-					
-						<span class="property-value" aria-labelledby="updateDate-label"><g:formatDate date="${gameInstance?.updateDate}" /></span>
-					
-				</li>
-				</g:if>
 			
 			</ol>
 		</div>
