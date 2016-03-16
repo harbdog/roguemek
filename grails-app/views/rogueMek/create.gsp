@@ -29,7 +29,7 @@
 					        <g:message code="game.description.label" default="Description" />
 					        <span class="required-indicator">*</span>
 					    </label>
-					    <g:textField name="description" required="" value="${gameInstance?.description}"/>
+					    <g:textField name="description" required="" value="${gameInstance?.description}" autocomplete="false" autofocus="true"/>
 					</div>
 					
 					<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'privateGame', 'error')} ">

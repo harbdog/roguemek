@@ -79,8 +79,8 @@ class RogueMekController {
 			}
 			
 	        params.max = Math.min(max ?: 10, 100)
-			params.sort = params.sort ?: "description"
-			params.order = params.order ?: "asc"
+			params.sort = params.sort ?: "startDate"
+			params.order = params.order ?: "desc"
 			
 			def gameCriteria = Game.createCriteria()
 			def initGames = gameCriteria.list(max: params.max, offset: params.offset) {
@@ -91,39 +91,42 @@ class RogueMekController {
 				order(params.sort, params.order)
 			}
 			
-			// retrieve the total active chat users connected to each game
-			def chatUserCriteria = GameChatUser.createCriteria()
-			def gameChatUserCountList = chatUserCriteria.list {
-				projections {
-					groupProperty("game")
-					countDistinct("chatUser")
-				}
-				'in'("game", initGames)
-			}
-			// map the result list by game instance
-			def gameChatUserCount = [:]
-			gameChatUserCountList.each { resultRow ->
-				def resultGame = resultRow[0]
-				def resultCount = resultRow[1]
-				gameChatUserCount[resultGame] = resultCount
-			}
-			
-			// retrieve the total staging users connected to each game
-			def stagingUserCriteria = StagingUser.createCriteria()
-			def stagingUserCountList = stagingUserCriteria.list {
-				projections {
-					groupProperty("game")
-					countDistinct("user")
-				}
-				'in'("game", initGames)
-			}
-			// map the result list by game instance
-			def stagingUserCount = [:]
-			stagingUserCountList.each { resultRow ->
-				def resultGame = resultRow[0]
-				def resultCount = resultRow[1]
-				stagingUserCount[resultGame] = resultCount
-			}
+            def gameChatUserCount = [:]
+            def stagingUserCount = [:]
+            
+            if(initGames.getTotalCount() > 0) {
+                // retrieve the total active chat users connected to each game
+                def chatUserCriteria = GameChatUser.createCriteria()
+                def gameChatUserCountList = chatUserCriteria.list {
+                    projections {
+                        groupProperty("game")
+                        countDistinct("chatUser")
+                    }
+                    'in'("game", initGames)
+                }
+                // map the result list by game instance
+                gameChatUserCountList.each { resultRow ->
+                    def resultGame = resultRow[0]
+                    def resultCount = resultRow[1]
+                    gameChatUserCount[resultGame] = resultCount
+                }
+                
+                // retrieve the total staging users connected to each game
+                def stagingUserCriteria = StagingUser.createCriteria()
+                def stagingUserCountList = stagingUserCriteria.list {
+                    projections {
+                        groupProperty("game")
+                        countDistinct("user")
+                    }
+                    'in'("game", initGames)
+                }
+                // map the result list by game instance
+                stagingUserCountList.each { resultRow ->
+                    def resultGame = resultRow[0]
+                    def resultCount = resultRow[1]
+                    stagingUserCount[resultGame] = resultCount
+                }
+            }
 			
 			if(specialSort) {
 				// re-sort the initGames list based on the special sorting
