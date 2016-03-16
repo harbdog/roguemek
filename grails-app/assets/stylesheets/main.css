@@ -500,7 +500,7 @@ th a:link, th a:visited {
 }
 
 th a:hover, th a:focus {
-	color: #333333;
+	color: #C0C0C0;
 }
 
 th.sortable a {

@@ -71,9 +71,17 @@ class RogueMekController {
 	def join(Integer max) {
 		def userInstance = currentUser()
 		if(userInstance) {
+			String specialSort
+			if(["CHAT_USERS", "STAGING_USERS"].contains(params.sort)) {
+				// handle some special sorting options that aren't directly mapped to the Game domain
+				specialSort = params.sort
+				params.sort = null
+			}
+			
 	        params.max = Math.min(max ?: 10, 100)
 			params.sort = params.sort ?: "description"
 			params.order = params.order ?: "asc"
+			
 			def gameCriteria = Game.createCriteria()
 			def initGames = gameCriteria.list(max: params.max, offset: params.offset) {
 				and {
@@ -82,7 +90,80 @@ class RogueMekController {
 				}
 				order(params.sort, params.order)
 			}
-	        respond initGames, model:[gameInstanceCount: initGames.getTotalCount()]
+			
+			// retrieve the total active chat users connected to each game
+			def chatUserCriteria = GameChatUser.createCriteria()
+			def gameChatUserCountList = chatUserCriteria.list {
+				projections {
+					groupProperty("game")
+					countDistinct("chatUser")
+				}
+				'in'("game", initGames)
+			}
+			// map the result list by game instance
+			def gameChatUserCount = [:]
+			gameChatUserCountList.each { resultRow ->
+				def resultGame = resultRow[0]
+				def resultCount = resultRow[1]
+				gameChatUserCount[resultGame] = resultCount
+			}
+			
+			// retrieve the total staging users connected to each game
+			def stagingUserCriteria = StagingUser.createCriteria()
+			def stagingUserCountList = stagingUserCriteria.list {
+				projections {
+					groupProperty("game")
+					countDistinct("user")
+				}
+				'in'("game", initGames)
+			}
+			// map the result list by game instance
+			def stagingUserCount = [:]
+			stagingUserCountList.each { resultRow ->
+				def resultGame = resultRow[0]
+				def resultCount = resultRow[1]
+				stagingUserCount[resultGame] = resultCount
+			}
+			
+			if(specialSort) {
+				// re-sort the initGames list based on the special sorting
+				boolean ascending = (params.order == "asc")
+				def specialSortMap
+				if(specialSort == "CHAT_USERS") {
+					specialSortMap = gameChatUserCount
+					
+					initGames.sort { g1, g2 ->
+						(gameChatUserCount[g1] ?: 0) <=> (gameChatUserCount[g2] ?: 0)
+					}
+				}
+				else if(specialSort == "STAGING_USERS") {
+					specialSortMap = stagingUserCount
+					
+					initGames.sort { g1, g2 ->
+						(stagingUserCount[g1] ?: 0) <=> (stagingUserCount[g2] ?: 0)
+					}
+				}
+				
+				if(specialSortMap) {
+					if(ascending) {
+						initGames.sort { g1, g2 ->
+							(specialSortMap[g1] ?: 0) <=> (specialSortMap[g2] ?: 0)
+						}
+					}
+					else {
+						initGames.sort { g2, g1 ->
+							(specialSortMap[g1] ?: 0) <=> (specialSortMap[g2] ?: 0)
+						}
+					}
+				}
+			
+				// put the special sorting back in params so it appears in the rendered view properly
+				params.sort = specialSort
+			}
+			
+	        respond initGames, model:[gameInstanceCount: initGames.getTotalCount(), 
+										gameChatUserCount: gameChatUserCount, 
+										stagingUserCount: stagingUserCount]
 		}
 		else {
 			redirect action: 'index'
