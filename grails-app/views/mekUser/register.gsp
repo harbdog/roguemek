@@ -15,33 +15,33 @@
 		
 		<g:form action="register" name="registerForm">
 			<fieldset class="form">
-				<div class="fieldcontain ${hasErrors(bean: user, field: 'username', 'error')} required">
-					<label for="username">
-						<g:message code="user.email.label" default="Email" />
-						<span class="required-indicator">*</span>
-					</label>
-					<g:textField name="username" required="" value="${user?.username}"/>
-				</div>
 				<div class="fieldcontain ${hasErrors(bean: user, field: 'callsign', 'error')} required">
 					<label for="callsign">
 						<g:message code="user.callsign.label" default="Callsign" />
 						<span class="required-indicator">*</span>
 					</label>
-					<g:textField name="callsign" required="" value="${user?.callsign}"/>
+					<g:textField name="callsign" required="" value="${user?.callsign}" autocomplete="false" autofocus="true"/>
+				</div>
+				<div class="fieldcontain ${hasErrors(bean: user, field: 'username', 'error')} required">
+					<label for="username">
+						<g:message code="user.email.label" default="Email" />
+						<span class="required-indicator">*</span>
+					</label>
+					<g:textField name="username" required="" value="${user?.username}" autocomplete="false"/>
 				</div>
 				<div class="fieldcontain ${hasErrors(bean: user, field: 'password', 'error')} required">
 					<label for="password">
 						<g:message code="user.password.label" default="Password" />
 						<span class="required-indicator">*</span>
 					</label>
-					<g:passwordField name="password" required="" value="${user?.password}"/>
+					<g:passwordField name="password" required="" value="${user?.password}" autocomplete="false"/>
 				</div>
 				<div class="fieldcontain ${hasErrors(bean: user, field: 'password', 'error')} required">
 					<label for="confirm">
 						<g:message code="user.confirm.label" default="Confirm" />
 						<span class="required-indicator">*</span>
 					</label>
-					<g:passwordField name="confirm" required="" value="${params?.confirm}"/>
+					<g:passwordField name="confirm" required="" value="${params?.confirm}" autocomplete="false"/>
 				</div>
 			</fieldset>
 			
