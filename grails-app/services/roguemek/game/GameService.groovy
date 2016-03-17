@@ -3739,8 +3739,8 @@ class GameService extends AbstractGameService {
 				victim: victim, victimUnit: victimUnit)
 		
 		// only store pilot record if the pilot is not temporary
-		if(!killerPilot.isTemporary()) thisKD.killerPilot = killerPilot
-		if(!victimPilot.isTemporary()) thisKD.victimPilot = victimPilot
+		if(killerPilot != null && !killerPilot.isTemporary()) thisKD.killerPilot = killerPilot
+		if(victimPilot != null && !victimPilot.isTemporary()) thisKD.victimPilot = victimPilot
 				
 		thisKD.save flush: true
 	}
