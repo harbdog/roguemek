@@ -25,6 +25,11 @@ class UrlMappings {
 			}
 		}
 		
+		name userProfile: "/showProfile"{
+			controller = 'mekUser'
+			action = 'showUser'
+		}
+		
 		name login: "/login"{
 			controller = 'login'
 			action = 'auth'

@@ -9,6 +9,8 @@ class MekUserController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
+	transient springSecurityService
+	
 	def grailsApplication
 	def mailService
 
@@ -29,14 +31,19 @@ class MekUserController {
 
 	def showUser() {
 		def callsignToSearchFor = params.callsign
-		
-		def userInstance = MekUser.findByCallsign(callsignToSearchFor)
+		def userInstance
+		if(callsignToSearchFor == null) {
+			userInstance = currentUser()
+		}
+		else {
+			userInstance = MekUser.findByCallsign(callsignToSearchFor)
+		}
 		
 		if(userInstance) {
 			respond userInstance
 		}
 		else {
-			redirect action: 'index'
+			redirect url: "/"
 		}
 	}
 
@@ -278,5 +285,9 @@ class MekUserController {
             '*'{ render status: NOT_FOUND }
         }
     }
+	
+	private MekUser currentUser() {
+		return MekUser.get(springSecurityService.principal.id)
+	}
 }
 

@@ -64,7 +64,7 @@
 					<h3>
 						${user.callsign}
 						<g:if test="${winners.contains(user)}">
-							<span class="ui-icon ui-icon-star" style="display:inline-block;"></span>
+							<span class="just-icon ui-icon ui-icon-star"></span>
 						</g:if>
 					</h3>
 				

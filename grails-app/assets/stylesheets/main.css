@@ -107,6 +107,10 @@ img {
 
 /* GENERAL */
 
+.flex {
+	display: flex;
+}
+
 .right {
 	float: right;
 }
@@ -179,8 +183,7 @@ img {
 	        box-shadow: none;
 }
 
-.nav.logout {
-	float: right;
+div.logout {
     border-left: 2px solid #404040;
        -moz-box-shadow: none;
     -webkit-box-shadow: none;
@@ -647,4 +650,9 @@ th:hover, tr:hover {
 a.skip {
 	position: absolute;
 	left: -9999px;
+}
+
+/* just an icon span just to have a jquery-ui icon next to another element in the same line */
+span.just-icon {
+	display: inline-block;
 }
