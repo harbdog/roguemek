@@ -8,7 +8,7 @@
 	<head>
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
+		<title><g:message code="default.show.label" args="[mekUserInstance?.callsign]" /></title>
 	</head>
 	<body>
 		<div id="show-user" class="content scaffold-show" role="main">
@@ -48,7 +48,7 @@
 			</ol>
 			
 			<g:if test="${winLossList?.size()}">
-			<div id="winloss">
+			<div id="winloss"><a name="winloss"></a>
 				<h1>${winLossRatio[0]} <g:message code="user.winloss.label" default="Win | Loss" /> ${winLossRatio[1]}</h1>
 				<ol class="property-list">
 				<g:each in="${winLossList}" var="thisWL">
@@ -64,11 +64,11 @@
 					</li>
 				</g:each>
 				
-				<g:if test="${params.showAllWinLoss == null}">
+				<g:if test="${params.showAllWinLoss == null && winLossList.totalCount > winLossList.size()}">
 					<%-- TODO: use ajax to show more W/L --%>
 					<li class="fieldcontain">
 						<span class="property-value">
-						<button id="showAllWinLossButton"><link:userDetails callsign="${mekUserInstance.callsign}" showAllWinLoss="true"><g:message code="user.show.all.label" /></link:userDetails></button>
+						<button id="showAllWinLossButton"><g:link mapping="userDetails" params="[callsign: mekUserInstance.callsign, showAllWinLoss: true]" fragment="winloss"><g:message code="user.show.all.label" /></g:link></button>
 						<script type="text/javascript">$("#showAllWinLossButton").button();</script>
 						</span>
 					</li>
@@ -79,7 +79,7 @@
 			</g:if>
 			
 			<g:if test="${killDeathList?.size()}">
-			<div id="killdeath">
+			<div id="killdeath"><a name="killdeath"></a>
 				<h1>${killDeathRatio[0]} <g:message code="user.killdeath.label" default="Kill | Death" /> ${killDeathRatio[1]}</h1>
 				<ol class="property-list">
 				<g:each in="${killDeathList}" var="thisKD">
@@ -104,11 +104,11 @@
 					</li>
 				</g:each>
 				
-				<g:if test="${params.showAllKillDeath == null}">
+				<g:if test="${params.showAllKillDeath == null && killDeathList.totalCount > killDeathList.size()}">
 					<%-- TODO: use ajax to show more K/D --%>
 					<li class="fieldcontain">
 						<span class="property-value">
-						<button id="showAllKillDeathButton"><link:userDetails callsign="${mekUserInstance.callsign}" showAllKillDeath="true"><g:message code="user.show.all.label" /></link:userDetails></button>
+						<button id="showAllKillDeathButton"><g:link mapping="userDetails" params="[callsign: mekUserInstance.callsign, showAllKillDeath: true]" fragment="killdeath"><g:message code="user.show.all.label" /></g:link></button>
 						<script type="text/javascript">$("#showAllKillDeathButton").button();</script>
 						</span>
 					</li>

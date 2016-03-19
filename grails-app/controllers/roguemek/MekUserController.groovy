@@ -48,7 +48,11 @@ class MekUserController {
 			def killDeathMax = params.showAllKillDeath ? KillDeath.count() : 25
 			
 			def winLossRatio = [WinLoss.countByUserAndWinner(userInstance, true), WinLoss.countByUserAndWinner(userInstance, false)]
-			def winLossList = WinLoss.findAllByUser(userInstance, [max: winLossMax, sort: "time", order: "desc"])
+			def winLossCriteria = WinLoss.createCriteria()
+			def winLossList = winLossCriteria.list(max: winLossMax) {
+				eq("user", userInstance)
+				order("time", "desc")
+			}
 			
 			def killDeathRatio = [KillDeath.countByKiller(userInstance), KillDeath.countByVictim(userInstance)]
 			def killDeathCriteria = KillDeath.createCriteria()

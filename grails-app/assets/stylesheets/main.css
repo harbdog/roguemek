@@ -54,6 +54,10 @@ body {
 	        box-shadow: 0 0 0.3em #3498DB;
 }
 
+div.top-front {
+	margin: 1em 1em 0 1em;
+}
+
 img.unit-image {
 	-ms-transform: rotate(180deg); /* IE 9 */
     -webkit-transform: rotate(180deg); /* Safari */
@@ -655,4 +659,31 @@ a.skip {
 /* just an icon span just to have a jquery-ui icon next to another element in the same line */
 span.just-icon {
 	display: inline-block;
+}
+
+/* high scores decorations */
+div.highscores {
+	display: flex;
+	margin: 0 0 1em 0;
+	padding: 0 0 1em 0;
+	border-bottom: 1px solid #3498DB;
+}
+
+div.highscores h1 {
+	border-bottom: 1px solid;
+}
+
+div.highscores div.top-winners {
+	flex: 1;
+	margin: 0 2em 0 2em;
+}
+
+div.highscores div.top-killers {
+	flex: 1;
+	margin: 0 2em 0 2em;
+}
+
+div.highscores li {
+	font-size: 0.75em;
+	margin: 0 0 0 1em;
 }
