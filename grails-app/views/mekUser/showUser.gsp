@@ -47,12 +47,9 @@
 			
 			</ol>
 			
-			<%
-				def winLossList = WinLoss.findAllByUser(mekUserInstance, [sort: "time", order: "desc"])
-			%>
 			<g:if test="${winLossList?.size()}">
 			<div id="winloss">
-				<h1><g:message code="user.winloss.label" default="Win/Loss" /></h1>
+				<h1>${winLossRatio[0]} <g:message code="user.winloss.label" default="Win | Loss" /> ${winLossRatio[1]}</h1>
 				<ol class="property-list">
 				<g:each in="${winLossList}" var="thisWL">
 					<li class="fieldcontain">
@@ -66,23 +63,24 @@
 					</g:else>
 					</li>
 				</g:each>
+				
+				<g:if test="${params.showAllWinLoss == null}">
+					<%-- TODO: use ajax to show more W/L --%>
+					<li class="fieldcontain">
+						<span class="property-value">
+						<button id="showAllWinLossButton"><link:userDetails callsign="${mekUserInstance.callsign}" showAllWinLoss="true"><g:message code="user.show.all.label" /></link:userDetails></button>
+						<script type="text/javascript">$("#showAllWinLossButton").button();</script>
+						</span>
+					</li>
+				</g:if>
+				
 				</ol>
 			</div>
 			</g:if>
 			
-			<%
-				def killDeathCriteria = KillDeath.createCriteria()
-				def killDeathList = killDeathCriteria.list {
-					or {
-						eq("killer", mekUserInstance)
-						eq("victim", mekUserInstance)
-					}
-					order("time", "desc")
-				}
-			%>
 			<g:if test="${killDeathList?.size()}">
 			<div id="killdeath">
-				<h1><g:message code="user.killdeath.label" default="Kill/Death" /></h1>
+				<h1>${killDeathRatio[0]} <g:message code="user.killdeath.label" default="Kill | Death" /> ${killDeathRatio[1]}</h1>
 				<ol class="property-list">
 				<g:each in="${killDeathList}" var="thisKD">
 					<li class="fieldcontain">
@@ -105,6 +103,17 @@
 					</g:else>
 					</li>
 				</g:each>
+				
+				<g:if test="${params.showAllKillDeath == null}">
+					<%-- TODO: use ajax to show more K/D --%>
+					<li class="fieldcontain">
+						<span class="property-value">
+						<button id="showAllKillDeathButton"><link:userDetails callsign="${mekUserInstance.callsign}" showAllKillDeath="true"><g:message code="user.show.all.label" /></link:userDetails></button>
+						<script type="text/javascript">$("#showAllKillDeathButton").button();</script>
+						</span>
+					</li>
+				</g:if>
+				
 				</ol>
 			</div>
 			</g:if>

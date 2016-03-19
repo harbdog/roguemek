@@ -280,6 +280,45 @@ class BootStrap {
 						rgbCamo: [0, 0, 255],
 						units: [battleMech2, battleMech3])
 				stagingTester.save flush:true
+				
+				if (Environment.current == Environment.DEVELOPMENT) {
+					// testing loading many W/L and K/D records
+					for(i in (0..100)) {
+						boolean coinToss = (Roll.randomInt(2, 1) == 1)
+						
+						def thisWL = new roguemek.stats.WinLoss(game: sampleGame, user: adminUser, winner: coinToss)
+						thisWL.save flush:true
+						
+						def anotherWL = new roguemek.stats.WinLoss(game: sampleGame, user: testUser, winner: !coinToss)
+						anotherWL.save flush:true
+					}
+					
+					for(i in (0..250)) {
+						boolean coinToss = (Roll.randomInt(2, 1) == 1)
+						
+						def killer, killerUnit
+						def victim, victimUnit
+						
+						if(coinToss) {
+							killer = adminUser
+							killerUnit = battleMechA.mech
+							victim = testUser
+							victimUnit = battleMech2.mech
+						}
+						else {
+							killer = testUser
+							killerUnit = battleMech2.mech
+							victim = adminUser
+							victimUnit = battleMechA.mech
+						}
+						
+						def thisKD = new roguemek.stats.KillDeath(game: sampleGame, 
+																	killer: killer, killerUnit: killerUnit, 
+																	victim: victim, victimUnit: victimUnit)
+						thisKD.save flush:true
+						
+					}
+				}
 			}
 		}
     }

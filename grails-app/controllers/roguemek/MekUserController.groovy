@@ -4,6 +4,9 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
+import roguemek.stats.WinLoss
+import roguemek.stats.KillDeath
+
 @Transactional(readOnly = true)
 class MekUserController {
 
@@ -40,7 +43,25 @@ class MekUserController {
 		}
 		
 		if(userInstance) {
-			respond userInstance
+			// allow parameters that load more
+			def winLossMax = params.showAllWinLoss ? WinLoss.count() : 10
+			def killDeathMax = params.showAllKillDeath ? KillDeath.count() : 25
+			
+			def winLossRatio = [WinLoss.countByUserAndWinner(userInstance, true), WinLoss.countByUserAndWinner(userInstance, false)]
+			def winLossList = WinLoss.findAllByUser(userInstance, [max: winLossMax, sort: "time", order: "desc"])
+			
+			def killDeathRatio = [KillDeath.countByKiller(userInstance), KillDeath.countByVictim(userInstance)]
+			def killDeathCriteria = KillDeath.createCriteria()
+			def killDeathList = killDeathCriteria.list(max: killDeathMax) {
+				or {
+					eq("killer", userInstance)
+					eq("victim", userInstance)
+				}
+				order("time", "desc")
+			}
+			
+			respond userInstance, model: [winLossList: winLossList, winLossRatio: winLossRatio, 
+											killDeathList: killDeathList, killDeathRatio: killDeathRatio]
 		}
 		else {
 			redirect url: "/"
