@@ -16,13 +16,13 @@ class MechController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
-	def beforeInterceptor = {
+	/*def beforeInterceptor = {
 		log.info "Request from country: "+request.locale.country
-	}
+	}*/
 	
-	def afterInterceptor =  { model ->
+	/*def afterInterceptor =  { model ->
 		log.info "$actionName: $model"
-	}
+	}*/
 	
 
     def index(Integer max) {

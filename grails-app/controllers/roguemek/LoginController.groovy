@@ -27,7 +27,7 @@ class LoginController {
 	def springSecurityService
 	
 	/*def beforeInterceptor = {
-		log.info "Request from country: "+request.locale.country
+		log.debug "Request from country: "+request.locale.country
 	}*/
 	
 	/*def afterInterceptor =  { model ->

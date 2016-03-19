@@ -158,9 +158,6 @@ grails.plugin.springsecurity.authority.className = 'roguemek.Role'
 grails.plugin.springsecurity.useSecurityEventListener = true
 grails.plugin.springsecurity.rememberMe.cookieName = 'roguemek_remember_me'
 grails.plugin.springsecurity.rememberMe.key = 'BTechWarrior'
-grails.plugin.springsecurity.onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
-	roguemek.MekUser.updateLastLogin(appCtx.springSecurityService.currentUser.id)
-}
 grails.plugin.springsecurity.logout.handlerNames = 
 	['rememberMeServices', 'securityContextLogoutHandler',  'securityEventListener']
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
