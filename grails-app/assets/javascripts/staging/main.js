@@ -806,8 +806,37 @@ function ajaxStageUnit(unitId, userId) {
 		var effectOptions = {color: "#3399FF"};
 		$("div.player-unit[data-unitid='"+unitId+"']").effect("highlight", effectOptions, 2000);
 		
+		// update displayed counts of units/tonnage
+		updateUnitCounts(userId);
+		
 		dialogLoading.dialog("close");
     });
+}
+
+/**
+ * Updates the displayed unit and tonnage count for when a given userId has had changes to units made
+ * @param userId
+ */
+function updateUnitCounts(userId) {
+	if(userId == null) return;
+	
+	var playerDiv = $("div.player[data-userid='"+userId+"']");
+	
+	// update the total unit count
+	var unitCountSpan = playerDiv.closest(".team").find(".team-unit-count");
+	var unitCountString = unitCountSpan.text();
+	var unitCount = playerDiv.find(".player-unit").length;
+	unitCountSpan.text(unitCountString.replace(/\d+/, unitCount));
+	
+	// update the total tonnage
+	var tonnageCountSpan = playerDiv.closest(".team").find(".team-tonnage-count");
+	var tonnageCountString = tonnageCountSpan.text();
+	var tonnageCount = 0;
+	$.each(playerDiv.find(".player-unit"), function() {
+		tonnageCount += parseInt($(this).attr("data-unit-mass"));
+	});
+	tonnageCountSpan.text(tonnageCountString.replace(/\d+/, tonnageCount));
+	
 }
 
 function ajaxAddUnit() {
@@ -1051,7 +1080,14 @@ function updateStagingData(data) {
 	}
 	else if(data.unitRemoved != null) {
 		var unitId = data.unitRemoved;
-		$("div[data-unitid='"+unitId+"']").closest("div.player-unit").fadeOut();
+		$("div[data-unitid='"+unitId+"']").closest("div.player-unit").fadeOut(
+			function() {
+				$(this).remove();
+				
+				// update displayed counts of units/tonnage
+				updateUnitCounts(userId);
+			}
+		);
 	}
 	else if(data.userAdded != null) {
 		var userId = data.userAdded;

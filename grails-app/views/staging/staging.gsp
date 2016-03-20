@@ -1,4 +1,7 @@
-<%@ page import="roguemek.game.Game" %>
+<%@ page import="roguemek.game.Game" 
+		 import="roguemek.game.BattleUnit"
+		 import="roguemek.game.BattleMech"
+%>
 
 <!DOCTYPE html>
 <html>
@@ -123,8 +126,24 @@
 			
 			<g:each in="${stagingUsers}" var="thisStagingUser">
 				<g:set var="thisUser" value="${thisStagingUser.user}" />
+				
+				<%
+					// TODO: when teams are implement, this will need to be calculated for the entire team instead
+					int totalUnits = thisStagingUser.units?.size() ?: 0
+					int totalTonnage = 0
+					thisStagingUser.units?.each { BattleUnit unit ->
+						if(unit instanceof BattleMech) {
+							totalTonnage += unit.mech.mass
+						}
+					}
+				%>
+				
 				<div class="team">
-					<h2>Team ${thisUser}</h2>
+					<div class="team-header">
+						<h2>Team ${thisUser}</h2>
+						<span class="team-unit-count">${totalUnits} Units</span>
+						<span class="team-tonnage-count right">${totalTonnage} Tons</span>
+					</div>
 					
 					<g:render template="stageUser" model="[user: thisUser]" />
 					

@@ -149,10 +149,14 @@ input[type=radio]:checked + label:before {
 	padding: 0.5em 1em 1em 1em;
 }
 
-.team > h2 {
+.team-header h2 {
 	text-align: center;
 	font-size: 1.25em;
 	margin: 0.25em 0.25em 0.25em 0.25em;
+}
+
+.team-header span {
+	margin: 0 1em 0 1em;
 }
 
 .team {
@@ -223,13 +227,15 @@ button.unit-add {
 /* Starting position menu/button */
 .player-info label.location {
 	cursor: default;
-	margin: 0 0 0 0.25em;
 	font-size: 0.8em;
+}
+
+.player-info span.player-name {
+	margin: 0 0.5em 0 0.5em;
 }
 
 .player-info span.ui-selectmenu-button {
 	margin: 0 0 -0.5em 0;
-	height: 1.5em;
 }
 
 .player-info span.ui-selectmenu-text {

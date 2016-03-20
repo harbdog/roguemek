@@ -1,4 +1,4 @@
-<div class="player-unit" data-unitid="${unit?.id}">
+<div class="player-unit" data-unitid="${unit?.id}" data-unit-mass="${unit?.mech?.mass}">
 	<g:if test="${showUnitDelete}">
 		<button class="unit-delete" data-unitid="${unit?.id}"></button>
 	</g:if>

@@ -22,10 +22,10 @@
 		<g:else>
 			<span class="player-camo" style="background: ${rgbCamoBackground};"></span>
 		</g:else>
-	
-		<span class="player-name">${user}</span>
 		
 		<g:set var="startingLocation" value="${StagingHelper.getStartingLocationForUser(gameInstance, user)}" />
+		
+		<span class="player-name">${user}</span>
 		
 		<g:if test="${gameInstance?.isInit() 
 				&& (gameInstance?.ownerUser?.id == userInstance?.id || userInstance?.id == user?.id)}">
@@ -53,16 +53,16 @@
 					
 				</g:each>
 			</select>
-		
-			<g:if test="${gameInstance?.isInit() 
-					&& (gameInstance?.ownerUser?.id == userInstance?.id)}">
-				<%-- only allowing the game owner to remove individual users --%>
-				<button class="user-delete" data-userid="${user?.id}"></button>
-			</g:if>
 		</g:if>
 		<g:else>
 			<label class="location">${startingLocation}</label>
 		</g:else>
+		
+		<g:if test="${gameInstance?.isInit() 
+				&& (gameInstance?.ownerUser?.id == userInstance?.id)}">
+			<%-- only allowing the game owner to remove individual users --%>
+			<button class="user-delete right" data-userid="${user?.id}"></button>
+		</g:if>
 	</div>
 	
 	<g:each in="${StagingHelper.getUnitsForUser(gameInstance, user)}" var="unit">
