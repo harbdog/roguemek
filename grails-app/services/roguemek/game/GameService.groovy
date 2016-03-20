@@ -2759,6 +2759,11 @@ class GameService extends AbstractGameService {
 			// send off to see what criticals might get hit
 			def critsApplied = applyCriticalHit(game, attacker, unit, critLocation);
 			
+			if(critsApplied.size() == 1 && critsApplied.contains(critLocation)) {
+				// if the returned critsApplied only contains the location, it is destroyed by critical hit
+				critLocationDestroyed = true
+			}
+			
 			if(critsApplied.size() > 0) {
 				critsHitList = (critsHitList << critsApplied).flatten()
 				
