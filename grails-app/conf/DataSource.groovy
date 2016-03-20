@@ -33,7 +33,7 @@ environments {
 			dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
 			
 			if(System.env.OPENSHIFT_POSTGRESQL_DB_HOST && System.env.OPENSHIFT_POSTGRESQL_DB_PORT) {
-				url = "jdbc:postgresql://"+System.env.OPENSHIFT_POSTGRESQL_DB_HOST+":"+System.env.OPENSHIFT_POSTGRESQL_DB_PORT+"/roguemek"
+				url = "jdbc:postgresql://"+System.env.OPENSHIFT_POSTGRESQL_DB_HOST+":"+System.env.OPENSHIFT_POSTGRESQL_DB_PORT+"/"+(System.env.OPENSHIFT_APP_NAME ?: "roguemek")
 			}
 			else{
 				url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
@@ -45,7 +45,7 @@ environments {
             dbCreate = "update"
 			
 			if(System.env.OPENSHIFT_POSTGRESQL_DB_HOST && System.env.OPENSHIFT_POSTGRESQL_DB_PORT) {
-	            url = "jdbc:postgresql://"+System.env.OPENSHIFT_POSTGRESQL_DB_HOST+":"+System.env.OPENSHIFT_POSTGRESQL_DB_PORT+"/roguemek"
+	            url = "jdbc:postgresql://"+System.env.OPENSHIFT_POSTGRESQL_DB_HOST+":"+System.env.OPENSHIFT_POSTGRESQL_DB_PORT+"/"+(System.env.OPENSHIFT_APP_NAME ?: "roguemek")
 			}
 			else {
 				url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
@@ -57,7 +57,7 @@ environments {
             dbCreate = "update"
 			
 			if(System.env.OPENSHIFT_POSTGRESQL_DB_HOST && System.env.OPENSHIFT_POSTGRESQL_DB_PORT) {
-	            url = "jdbc:postgresql://"+System.env.OPENSHIFT_POSTGRESQL_DB_HOST+":"+System.env.OPENSHIFT_POSTGRESQL_DB_PORT+"/roguemek"
+	            url = "jdbc:postgresql://"+System.env.OPENSHIFT_POSTGRESQL_DB_HOST+":"+System.env.OPENSHIFT_POSTGRESQL_DB_PORT+"/"+(System.env.OPENSHIFT_APP_NAME ?: "roguemek")
 			}
 			else {
 				url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"

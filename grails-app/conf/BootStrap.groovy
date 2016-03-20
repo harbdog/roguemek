@@ -90,7 +90,7 @@ class BootStrap {
 			
 			if(Environment.current == Environment.DEVELOPMENT){
 				// only creating test pilot in dev environment
-				adminPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: adminUser, status: Pilot.STATUS_ACTIVE)
+				adminPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: adminUser, status: Pilot.STATUS_ACTIVE, temporary: false)
 				if(!adminPilot.validate()) {
 					log.error("Errors with pilot "+adminPilot.firstName+":\n")
 					adminPilot.errors.allErrors.each {
@@ -131,7 +131,7 @@ class BootStrap {
 			
 			if(Environment.current == Environment.DEVELOPMENT){
 				// only creating test pilot in dev environment
-				testPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: testUser, status: Pilot.STATUS_ACTIVE)
+				testPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: testUser, status: Pilot.STATUS_ACTIVE, temporary: false)
 				if(!testPilot.validate()) {
 					log.error("Errors with pilot "+testPilot.firstName+":\n")
 					testPilot.errors.allErrors.each {
@@ -143,12 +143,13 @@ class BootStrap {
 				
 					log.info('Initialized test pilot '+testPilot.toString())
 				}
+				
+				assert Pilot.count() >= 1
 			}
 		}
 		
 		assert MekUser.count() >= 1
 		assert MekUserRole.count() >= 1
-		assert Pilot.count() >= 1
 		
 		// Initialize maps
 		HexMap.init()
