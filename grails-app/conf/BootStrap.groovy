@@ -88,17 +88,20 @@ class BootStrap {
 				log.info('Initialized admin user '+adminUser.username)
 			}
 			
-			adminPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: adminUser, status: Pilot.STATUS_ACTIVE)
-			if(!adminPilot.validate()) {
-				log.error("Errors with pilot "+adminPilot.firstName+":\n")
-				adminPilot.errors.allErrors.each {
-					log.error(it)
+			if(Environment.current == Environment.DEVELOPMENT){
+				// only creating test pilot in dev environment
+				adminPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: adminUser, status: Pilot.STATUS_ACTIVE)
+				if(!adminPilot.validate()) {
+					log.error("Errors with pilot "+adminPilot.firstName+":\n")
+					adminPilot.errors.allErrors.each {
+						log.error(it)
+					}
 				}
-			}
-			else {
-				adminPilot.save flush:true
-				
-				log.info('Initialized admin pilot '+adminPilot.toString())
+				else {
+					adminPilot.save flush:true
+					
+					log.info('Initialized admin pilot '+adminPilot.toString())
+				}
 			}
 		}
 		
@@ -126,17 +129,20 @@ class BootStrap {
 				log.info('Initialized test user '+testUser.username)
 			}
 			
-			testPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: testUser, status: Pilot.STATUS_ACTIVE)
-			if(!testPilot.validate()) {
-				log.error("Errors with pilot "+testPilot.firstName+":\n")
-				testPilot.errors.allErrors.each {
-					log.error(it)
+			if(Environment.current == Environment.DEVELOPMENT){
+				// only creating test pilot in dev environment
+				testPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: testUser, status: Pilot.STATUS_ACTIVE)
+				if(!testPilot.validate()) {
+					log.error("Errors with pilot "+testPilot.firstName+":\n")
+					testPilot.errors.allErrors.each {
+						log.error(it)
+					}
 				}
-			}
-			else {
-				testPilot.save flush:true
-			
-				log.info('Initialized test pilot '+testPilot.toString())
+				else {
+					testPilot.save flush:true
+				
+					log.info('Initialized test pilot '+testPilot.toString())
+				}
 			}
 		}
 		
@@ -281,44 +287,44 @@ class BootStrap {
 						units: [battleMech2, battleMech3])
 				stagingTester.save flush:true
 				
-				if (Environment.current == Environment.DEVELOPMENT) {
-					// testing loading many W/L and K/D records
-					for(i in (0..100)) {
-						boolean coinToss = (Roll.randomInt(2, 1) == 1)
-						
-						def thisWL = new roguemek.stats.WinLoss(game: sampleGame, user: adminUser, winner: coinToss)
-						thisWL.save flush:true
-						
-						def anotherWL = new roguemek.stats.WinLoss(game: sampleGame, user: testUser, winner: !coinToss)
-						anotherWL.save flush:true
+				/*
+				// testing loading many W/L and K/D records
+				for(i in (0..100)) {
+					boolean coinToss = (Roll.randomInt(2, 1) == 1)
+					
+					def thisWL = new roguemek.stats.WinLoss(game: sampleGame, user: adminUser, winner: coinToss)
+					thisWL.save flush:true
+					
+					def anotherWL = new roguemek.stats.WinLoss(game: sampleGame, user: testUser, winner: !coinToss)
+					anotherWL.save flush:true
+				}
+				
+				for(i in (0..250)) {
+					boolean coinToss = (Roll.randomInt(2, 1) == 1)
+					
+					def killer, killerUnit
+					def victim, victimUnit
+					
+					if(coinToss) {
+						killer = adminUser
+						killerUnit = battleMechA.mech
+						victim = testUser
+						victimUnit = battleMech2.mech
+					}
+					else {
+						killer = testUser
+						killerUnit = battleMech2.mech
+						victim = adminUser
+						victimUnit = battleMechA.mech
 					}
 					
-					for(i in (0..250)) {
-						boolean coinToss = (Roll.randomInt(2, 1) == 1)
-						
-						def killer, killerUnit
-						def victim, victimUnit
-						
-						if(coinToss) {
-							killer = adminUser
-							killerUnit = battleMechA.mech
-							victim = testUser
-							victimUnit = battleMech2.mech
-						}
-						else {
-							killer = testUser
-							killerUnit = battleMech2.mech
-							victim = adminUser
-							victimUnit = battleMechA.mech
-						}
-						
-						def thisKD = new roguemek.stats.KillDeath(game: sampleGame, 
-																	killer: killer, killerUnit: killerUnit, 
-																	victim: victim, victimUnit: victimUnit)
-						thisKD.save flush:true
-						
-					}
+					def thisKD = new roguemek.stats.KillDeath(game: sampleGame, 
+																killer: killer, killerUnit: killerUnit, 
+																victim: victim, victimUnit: victimUnit)
+					thisKD.save flush:true
+					
 				}
+				*/
 			}
 		}
     }
