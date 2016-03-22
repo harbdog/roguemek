@@ -243,7 +243,7 @@ class GameService extends AbstractGameService {
 		for(BattleUnit unit in game.units) {
 			// TODO: alter initiative roll based on mech weight, pilot skill, etc...
 			
-			// lowest number wins initiative
+			// highest number wins initiative
 			def initiativeMultiplier = 1
 			if(unit instanceof BattleMech) {
 				// for now, just altering the highest random number based on mech speed
@@ -273,7 +273,8 @@ class GameService extends AbstractGameService {
 		def unit
 		def initiative
 		int compareTo(other) {
-			this.initiative <=> other.initiative
+			// reversing order so higher initiative wins
+			other.initiative <=> this.initiative
 		}
 	}
 	
