@@ -1,18 +1,18 @@
 /**
- * You can make customizations directly to this configuration script before running/building, 
- * or copy and modify this script somewhere else and set its absolute path
- * as an Environment variable with the name ROGUEMEK_CONFIG (webapp restart required if running).
+ * You can make customizations directly to this configuration script before running app server, 
+ * or copy and modify this script somewhere else and set its absolute path as an
+ * Environment variable with the name ROGUEMEK_CONFIG (webapp restart required if running).
  * 
  * e.g. ROGUEMEK_CONFIG=C:\Users\roguemek\.grails\RogueMek-config.groovy
  */
 roguemek {
 	users {
-		admin {
+		admin {		// required super user administrator user to create during init
 			username = "admin@roguemek.com"
 			callsign = "SuperUser"
 			password = "AdminAdmin"
 		}
-//		tester {		// optional user to create during webapp init
+//		demo {		// optional initial demo user to create during init
 //			username = "demo@roguemek.com"
 //			callsign = "DemoUser"
 //			password = "DemoDemo"
@@ -20,10 +20,19 @@ roguemek {
 	}
 	game {
 		settings {
-			maxUserUnits = 12
-			maxBattleUnits = 24
-			userStagingLimit = 3
+			maxUserUnits = 12		// maximum units per user in a game
+			maxBattleUnits = 24		// maximum units total in a game
+			userStagingLimit = 3	// maximum staging battles per user
 		}
+	}
+	registration {
+		// Any new user attempting to register can be enabled by setting newUserEnable to one of the following settings:
+		//  "email"		// (recommended) confirmation email is sent to registered email address with a link to enable new accounts
+		//				// NOTE: "email" requires the grails mail settings to be provided or it will fail
+		//  "public"	// registered accounts are automatically enabled
+		//  "private"	// registered accounts must be enabled by an administrator
+		//	"disable"	// only administrators can create accounts
+		newUserEnable = "public"
 	}
 	external {
 		settings {
@@ -32,16 +41,23 @@ roguemek {
 	}
 }
 
+dataSource {
+//	driverClassName = "org.postgresql.Driver"
+//	username = System.env.ROGUEMEK_DB_USERNAME
+//	password = System.env.ROGUEMEK_DB_PASSWORD
+//	url = "jdbc:postgresql://"+System.env.ROGUEMEK_DB_HOST+":"+System.env.ROGUEMEK_DB_PORT+"/"+(System.env.ROGUEMEK_DB_NAME)
+}
+
 grails {
 	mail {
-		host = "smtp.gmail.com"
-		port = 465
-		username = "username@gmail.com"
-		password = "PASSWORD"
-		props = ["mail.smtp.auth":"true",
-				 "mail.smtp.socketFactory.port":"465",
-				 "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
-				 "mail.smtp.socketFactory.fallback":"false"]
+//		host = "smtp.gmail.com"
+//		port = 465
+//		username = "username@gmail.com"
+//		password = "PASSWORD"
+//		props = ["mail.smtp.auth":"true",
+//				 "mail.smtp.socketFactory.port":"465",
+//				 "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+//				 "mail.smtp.socketFactory.fallback":"false"]
 	}
 	plugin {
 		atmosphere_meteor {
@@ -58,7 +74,7 @@ grails {
 
 grails.plugin.springsecurity.secureChannel.definition = [
 	//'/**':    'REQUIRES_SECURE_CHANNEL'	// Require HTTPS for all pages
-  ]
+]
 
 log4j.external = {
 	//debug "roguemek"

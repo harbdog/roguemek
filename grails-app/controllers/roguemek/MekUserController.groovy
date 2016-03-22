@@ -12,6 +12,11 @@ class MekUserController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
+	private static String NEW_USER_EMAIL = "email"
+	private static String NEW_USER_PUBLIC = "public"
+	private static String NEW_USER_PRIVATE = "private"
+	private static String NEW_USER_DISABLE = "disable"
+	
 	transient springSecurityService
 	
 	def grailsApplication
@@ -74,6 +79,11 @@ class MekUserController {
 
 	@Transactional
     def register() {
+		if(grailsApplication.config.roguemek.registration.newUserEnable == NEW_USER_DISABLE) {
+			render(view: "success", model: [message: 'New accounts can only be created by an administrator.'])
+			return
+		}
+		
 		if(request.method == 'POST') {
 			MekUser u = new MekUser()
 			u.properties['username', 'password', 'callsign'] = params
@@ -82,16 +92,14 @@ class MekUserController {
 				return [user:u]
 			}
 			
-			// Only use email confirmation for new accounts if it was setup
-			def emailConfirmationRequired = (grailsApplication.config.grails.mail.password != "PASSWORD")
+			def autoEnableAccounts = (grailsApplication.config.roguemek.registration.newUserEnable == NEW_USER_PUBLIC)
+			def emailConfirmationRequired = (grailsApplication.config.roguemek.registration.newUserEnable == NEW_USER_EMAIL)
 			
 			if(emailConfirmationRequired) {
-				u.enabled = false
 				u.confirmCode = UUID.randomUUID().toString()
 			}
-			else {
-				u.enabled = true
-			}
+			
+			u.enabled = autoEnableAccounts
 			
 			if(u.save(flush: true)) {
 				if(emailConfirmationRequired) {
@@ -107,13 +115,19 @@ class MekUserController {
 					}
 				}
 				else {
-					log.warn("Grails mail not setup, skipping email registration for ${u.username}")
-					
 					// give the user role to the account
 					Role userRole = Role.findByAuthority(Role.ROLE_USER)
 					MekUserRole.create u, userRole, true
 					
-					render(view: "success", model: [message: "Your account is successfully registered as ${u.username}."])
+					if(autoEnableAccounts) {
+						log.debug("Automatically enabling account for ${u.username}")
+						render(view: "success", model: [message: "Your account is registered as ${u.username}. You may now login to your account!"])
+					}
+					else {
+						log.debug("New account created without enabling for ${u.username}")
+						render(view: "success", model: [message: "Your account is registered as ${u.username}. Activation will require an administrator to enable the account!"])
+					}
+					
 					return
 				}
 				
@@ -238,6 +252,10 @@ class MekUserController {
         }
 
         userInstance.save flush:true
+		
+		// give the user role to the account
+		Role userRole = Role.findByAuthority(Role.ROLE_USER)
+		MekUserRole.create userInstance, userRole, true
 
         request.withFormat {
             form multipartForm {

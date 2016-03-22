@@ -106,12 +106,12 @@ class BootStrap {
 		}
 		
 		// Create optional test user with User role
-		def createTester = grailsApplication.config.roguemek.users.tester?.username
+		def createTester = grailsApplication.config.roguemek.users.demo?.username
 		def testUser = MekUser.findByUsername(createTester)
 		def testPilot
 		if(createTester && !testUser) {
 			// initialize testing admin user
-			testUser = new MekUser(grailsApplication.config.roguemek.users.tester)
+			testUser = new MekUser(grailsApplication.config.roguemek.users.demo)
 			testUser.enabled = true
 			
 			if(!testUser.validate()) {

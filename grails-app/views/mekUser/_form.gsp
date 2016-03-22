@@ -2,75 +2,68 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'username', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'username', 'error')} required">
 	<label for="username">
-		<g:message code="user.username.label" default="Username" />
+		<g:message code="user.email.label" default="Email" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:field type="email" name="username" required="" value="${userInstance?.username}"/>
+	<g:field type="email" name="username" required="" value="${mekUserInstance?.username}"/>
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'callsign', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'callsign', 'error')} required">
 	<label for="callsign">
 		<g:message code="user.callsign.label" default="Callsign" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="callsign" required="" value="${userInstance?.callsign}"/>
+	<g:textField name="callsign" required="" value="${mekUserInstance?.callsign}"/>
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'password', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'password', 'error')} required">
 	<label for="password">
 		<g:message code="user.password.label" default="Password" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="password" required="" value="${userInstance?.password}"/>
+	<g:textField name="password" required="" value="${mekUserInstance?.password}"/>
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'accountExpired', 'error')} ">
+<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'accountExpired', 'error')} ">
 	<label for="accountExpired">
 		<g:message code="user.accountExpired.label" default="Account Expired" />
 		
 	</label>
-	<g:checkBox name="accountExpired" value="${userInstance?.accountExpired}" />
+	<g:checkBox name="accountExpired" value="${mekUserInstance?.accountExpired}" />
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'accountLocked', 'error')} ">
+<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'accountLocked', 'error')} ">
 	<label for="accountLocked">
 		<g:message code="user.accountLocked.label" default="Account Locked" />
 		
 	</label>
-	<g:checkBox name="accountLocked" value="${userInstance?.accountLocked}" />
+	<g:checkBox name="accountLocked" value="${mekUserInstance?.accountLocked}" />
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'enabled', 'error')} ">
+<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'enabled', 'error')} ">
 	<label for="enabled">
 		<g:message code="user.enabled.label" default="Enabled" />
 		
 	</label>
-	<g:checkBox name="enabled" value="${userInstance?.enabled}" />
+	<g:checkBox name="enabled" value="${mekUserInstance?.enabled}" />
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'passwordExpired', 'error')} ">
+<%--
+<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'passwordExpired', 'error')} ">
 	<label for="passwordExpired">
 		<g:message code="user.passwordExpired.label" default="Password Expired" />
 		
 	</label>
-	<g:checkBox name="passwordExpired" value="${userInstance?.passwordExpired}" />
+	<g:checkBox name="passwordExpired" value="${mekUserInstance?.passwordExpired}" />
 
 </div>
-
-<div class="fieldcontain ${hasErrors(bean: userInstance, field: 'pilots', 'error')} ">
-	<label for="pilots">
-		<g:message code="user.pilots.label" default="Pilots" />
-		
-	</label>
-	<g:select name="pilots" from="${roguemek.game.Pilot.list()}" multiple="multiple" optionKey="id" size="5" optionValue="${{it?.firstName+" "+it?.lastName}}" value="${userInstance?.pilots*.id}" class="many-to-many"/>
-
-</div>
+--%>
 
