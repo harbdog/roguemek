@@ -1,5 +1,8 @@
 package roguemek.model
 
+import org.apache.commons.logging.LogFactory
+import org.apache.commons.logging.Log
+
 import roguemek.mtf.*
 import roguemek.assets.ContextHelper
 
@@ -7,6 +10,8 @@ import roguemek.assets.ContextHelper
  * Represents the stock or core Mech configuration
  */
 class Mech extends Unit {
+	private static Log log = LogFactory.getLog(this)
+	
 	static searchable = {
 		only = ['name', 'description', 'chassis', 'variant']
 	}
@@ -43,6 +48,8 @@ class Mech extends Unit {
 		walkMP min: 1
 		jumpMP min: 0
 	}
+	
+	def mechService
 	
 	// static location indices
 	public static final HEAD = 0;
@@ -283,18 +290,7 @@ class Mech extends Unit {
 	 * @return
 	 */
 	public Equipment[] getCritSection(int critSectionIndex) {
-		int critSectionStart = Mech.getCritSectionStart(critSectionIndex)
-		int critSectionEnd = Mech.getCritSectionEnd(critSectionIndex)
-		
-		def critSection = []
-		
-		if(critSectionStart >= 0 && critSectionEnd < 78) {
-			for(int i=critSectionStart; i<=critSectionEnd; i++) {
-				critSection.add(this.getEquipmentAt(i))
-			}
-		}
-		
-		return critSection
+		return mechService.getCritSection(this, critSectionIndex)
 	}
 	
 	/**

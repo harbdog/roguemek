@@ -2,6 +2,7 @@ package roguemek.game
 
 import roguemek.model.*
 import roguemek.game.UnitService
+import roguemek.mtf.MechMTF
 
 /**
  * Represents the owned mech that can be taken into battle
@@ -31,7 +32,7 @@ class BattleMech extends BattleUnit {
 		physical size: 3..4		// Punch, Kick, and Charge, then DFA only if it has jump jets
     }
 	
-	def unitService
+	def mechService
 	
 	def beforeValidate() {
 
@@ -55,8 +56,25 @@ class BattleMech extends BattleUnit {
 			def prevCritEquip = ["-1": null]
 			def prevCritNum = ["-1": 0]
 			
+			// improved performance by making this method only perform a single query for all Equipment objects
+			def equipMap = [:]
+			def equipIds = mech.crits.unique(false)
+			def equipCriteria = Equipment.createCriteria()
+			def equipList = equipCriteria.list {
+				'in'("id", equipIds)
+				setReadOnly true
+			}
+			
+			// map each Equipment by id for quick lookup
+			equipList.each { Equipment equipObj ->
+				equipMap[equipObj.id] = equipObj
+			}
+			
+			// store map of BattleEquipment to id for easy lookup to not rely on database queries as much
+			def critMap = [:]
+			
 			mech.crits.each { equipId ->
-				Equipment thisEquip = Equipment.read(equipId)
+				Equipment thisEquip = equipMap[equipId]
 				int location = Mech.getCritSectionIndexOf(counter)
 				
 				int prevNum = prevCritNum[equipId] ?: 0
@@ -67,7 +85,7 @@ class BattleMech extends BattleUnit {
 					// this crit is a continuation of the same equipment before it
 					prevCritNum[equipId] = prevNum + 1
 					
-					BattleEquipment prevEquip = BattleEquipment.read(prevEquipId)
+					BattleEquipment prevEquip = critMap[prevEquipId]
 					
 					if(prevEquip.location != location &&
 							(location == Mech.CENTER_TORSO || location == Mech.LEFT_ARM || location == Mech.RIGHT_ARM)) {
@@ -76,6 +94,9 @@ class BattleMech extends BattleUnit {
 						prevEquip = BattleEquipment.get(prevEquipId)
 						prevEquip.location = location
 						prevEquip.save flush:true
+						
+						// store new version of object back to map
+						critMap[prevEquipId] = prevEquip
 					}
 					
 					crits[counter++] = prevEquipId
@@ -110,6 +131,9 @@ class BattleMech extends BattleUnit {
 						bEquip.save flush:true
 					}
 					
+					// store to map for easy lookup later
+					critMap[bEquip.id] = bEquip
+					
 					if(thisEquip.crits > 1) {
 						// this crit needs to continue to subsequent locations for the same item
 						prevCritNum[equipId] = 1
@@ -126,23 +150,23 @@ class BattleMech extends BattleUnit {
 			def hasJumpMP = (mech.jumpMP > 0)
 			def physicalWeapons = []
 			
-			BattleWeapon punch = new BattleWeapon(ownerUser: null, equipment: Equipment.findByName("Punch"), location: null)
+			BattleWeapon punch = new BattleWeapon(ownerUser: null, equipment: Equipment.findByShortName(MechMTF.MTF_SHORT_PUNCH), location: null)
 			punch.actualDamage = Math.ceil(mech.mass / 10)
 			punch.save flush:true
 			physicalWeapons.add(punch)
 			
-			BattleWeapon kick = new BattleWeapon(ownerUser: null, equipment: Equipment.findByName("Kick"), location: null)
+			BattleWeapon kick = new BattleWeapon(ownerUser: null, equipment: Equipment.findByShortName(MechMTF.MTF_SHORT_KICK), location: null)
 			kick.actualDamage = Math.ceil(mech.mass / 5)
 			kick.save flush:true
 			physicalWeapons.add(kick)
 			
-			BattleWeapon charge = new BattleWeapon(ownerUser: null, equipment: Equipment.findByName("Charge"), location: null)
+			BattleWeapon charge = new BattleWeapon(ownerUser: null, equipment: Equipment.findByShortName(MechMTF.MTF_SHORT_CHARGE), location: null)
 			charge.actualDamage = Math.ceil(mech.mass / 10)
 			charge.save flush:true
 			physicalWeapons.add(charge)
 			
 			if(hasJumpMP) {
-				BattleWeapon dfa = new BattleWeapon(ownerUser: null, equipment: Equipment.findByName("Death From Above"), location: null)
+				BattleWeapon dfa = new BattleWeapon(ownerUser: null, equipment: Equipment.findByShortName(MechMTF.MTF_SHORT_DFA), location: null)
 				dfa.actualDamage = Math.ceil(3 * mech.mass / 10)
 				dfa.save flush:true
 				physicalWeapons.add(dfa)
@@ -181,27 +205,23 @@ class BattleMech extends BattleUnit {
 	public void cleanEquipment() {
 		if(crits == null) return
 		
-		def cleanedIds = []
+		// improved performance by making this method only perform a single query for all BattleEquipment objects
 		
-		crits?.each { String equipId ->
-			// only delete equipment if it is not considered owned
-			if(cleanedIds.contains(equipId)) return
-			
-			BattleEquipment bEquip = BattleEquipment.get(equipId)
-			if(bEquip != null && bEquip.ownerUser == null && !bEquip.isEmpty()) {
-				bEquip.delete flush:true
-				
-				cleanedIds << equipId
-			}
+		// add normal equipment
+		def critIds = this.crits.unique(false)
+		
+		// add physical weapon equipment
+		def physicalIds = this.physical.unique(false)
+		critIds.addAll(physicalIds)
+		
+		def equipCriteria = BattleEquipment.createCriteria()
+		def equipList = equipCriteria.list {
+			'in'("id", critIds)
 		}
 		
-		physical?.each { String equipId ->
-			// all physical attack "equipment" needs to be deleted
-			BattleEquipment bEquip = BattleEquipment.get(equipId)
-			if(bEquip != null) {
+		equipList.each { BattleEquipment bEquip ->
+			if(bEquip.ownerUser == null && !bEquip.isEmpty()) {
 				bEquip.delete flush:true
-				
-				cleanedIds << equipId
 			}
 		}
 		
@@ -220,50 +240,6 @@ class BattleMech extends BattleUnit {
 	}
 	
 	/**
-	 * Gets only the BattleEquipment objects which match the base equipment object
-	 * @param equip
-	 * @return
-	 */
-	public BattleEquipment[] getEquipmentFromBaseObject(Equipment equip) {
-		def foundEquipment = []
-		
-		for(String equipId in crits) {
-			BattleEquipment thisEquip = BattleEquipment.get(equipId)
-			if(thisEquip == null) {
-				continue
-			}
-			
-			if(thisEquip.equipment.id == equip.id) {
-				foundEquipment.add(thisEquip)
-			}
-		}
-		
-		return foundEquipment
-	}
-	
-	/**
-	 * Gets only the BattleEquipment objects which match the base equipment object
-	 * @param equip
-	 * @return
-	 */
-	public BattleEquipment[] getEquipmentFromMTFNames(List MTF_NAMES) {
-		def foundEquipment = []
-		
-		for(String equipId in crits) {
-			BattleEquipment thisEquip = BattleEquipment.get(equipId)
-			if(thisEquip == null) {
-				continue
-			}
-			
-			if(MTF_NAMES.contains(thisEquip.getName())) {
-				foundEquipment.add(thisEquip)
-			}
-		}
-		
-		return foundEquipment
-	}
-	
-	/**
 	 * Gets the Critical section index of the given equipment index
 	 * @param critIndex
 	 * @return
@@ -278,15 +254,7 @@ class BattleMech extends BattleUnit {
 	 * @return
 	 */
 	public BattleEquipment[] getCritSection(int critSectionIndex) {
-		int critSectionStart = BattleMech.getCritSectionStart(critSectionIndex)
-		int critSectionEnd = BattleMech.getCritSectionEnd(critSectionIndex)
-		
-		def critSection = []
-		for(int i=critSectionStart; i<=critSectionEnd; i++) {
-			critSection.add(this.getEquipmentAt(i))
-		}
-		
-		return critSection
+		mechService.getCritSection(this, critSectionIndex)
 	}
 	
 	/**
@@ -294,13 +262,7 @@ class BattleMech extends BattleUnit {
 	 * @return Array of arrays with BattleEquipment objects
 	 */
 	public def getAllCritSections() {
-		def allCritSections = []
-		
-		for(int critSectionIndex in Mech.CRIT_LOCATIONS) {
-			allCritSections[critSectionIndex] = this.getCritSection(critSectionIndex)
-		}
-		
-		return allCritSections
+		return mechService.getAllCritSections(this)
 	}
 	
 	/**
@@ -315,33 +277,6 @@ class BattleMech extends BattleUnit {
 		}
 		
 		return false
-	}
-	
-	/**
-	 * Gets all weapons currently equipped
-	 * @return Array of BattleWeapon objects
-	 */
-	@Override
-	public def getWeapons() {
-		def weapons = []
-		
-		for(String equipId in physical) {
-			if(equipId == null) continue
-			BattleEquipment e = BattleEquipment.read(equipId)
-			if(e instanceof BattleWeapon && !weapons.contains(e)) {
-				weapons.add(e)
-			}
-		}
-		
-		for(String equipId in crits) {
-			if(equipId == null) continue
-			BattleEquipment e = BattleEquipment.read(equipId)
-			if(e instanceof BattleWeapon && !weapons.contains(e)) {
-				weapons.add(e)
-			}
-		}
-		
-		return weapons
 	}
 	
 	/**

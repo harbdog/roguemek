@@ -15,6 +15,7 @@ class StagingController {
 	
 	def gameChatService
 	def gameStagingService
+	def mechService
 	
 	@Transactional(readOnly = true)
 	def index() {
@@ -262,7 +263,12 @@ class StagingController {
 			externalUnitLink = null
 		}
 		
-		render (template: 'previewUnit', model: [unit: thisUnit, unitLink: externalUnitLink])
+		def unitCritsBySection
+		if(thisUnit instanceof Mech) {
+			unitCritsBySection = mechService.getAllCritSections(thisUnit)
+		}
+		
+		render (template: 'previewUnit', model: [unit: thisUnit, unitCritsBySection: unitCritsBySection, unitLink: externalUnitLink])
 	}
 	
 	/**

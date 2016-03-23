@@ -46,6 +46,8 @@ dataSource {
 //	username = System.env.ROGUEMEK_DB_USERNAME
 //	password = System.env.ROGUEMEK_DB_PASSWORD
 //	url = "jdbc:postgresql://"+System.env.ROGUEMEK_DB_HOST+":"+System.env.ROGUEMEK_DB_PORT+"/"+(System.env.ROGUEMEK_DB_NAME)
+//	logSql: true	// debugging option only
+//	formatSql: true	// debugging option only
 }
 
 grails {
@@ -77,5 +79,7 @@ grails.plugin.springsecurity.secureChannel.definition = [
 ]
 
 log4j.external = {
+	//trace "org.hibernate.type.descriptor.sql.BasicBinder"
+	//debug "org.hibernate.SQL"
 	//debug "roguemek"
 }

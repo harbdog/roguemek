@@ -56,7 +56,8 @@
 				def weaponAmmo = [:]// [[<weapon>:<ammoCount>], ...]
 				
 				for(def critSectionIndex in Mech.CRIT_LOCATIONS) {
-					def critEquipment = unit.getCritSection(critSectionIndex)
+					def critEquipment = unitCritsBySection[critSectionIndex]
+					if(critEquipment == null) continue
 					
 					for(def thisEquip in critEquipment) {
 						def map

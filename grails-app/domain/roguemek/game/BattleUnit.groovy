@@ -7,6 +7,8 @@ import roguemek.MekUser
 import roguemek.assets.ContextHelper
 import roguemek.game.Coords
 import roguemek.game.EntityImage
+import roguemek.game.UnitService
+import roguemek.model.Equipment
 
 /**
  * Represents the owned unit that can be taken into battle as a base class for BattleMech, BattleTank, etc
@@ -86,6 +88,8 @@ class BattleUnit {
 		
 		status inList: [STATUS_ACTIVE, STATUS_DESTROYED]
     }
+	
+	def unitService
 	
 	/**
 	 * Returns true if the status of the unit is destroyed
@@ -169,11 +173,29 @@ class BattleUnit {
 	}
 	
 	/**
-	 * Gets all weapons currently equipped (must be overridden by BattleUnit subclasses)
+	 * Gets all weapons currently equipped
 	 * @return Array of BattleWeapon objects
 	 */
 	public def getWeapons() {
-		return new BattleWeapon[0]
+		return unitService.getWeapons(this)
+	}
+	
+	/**
+	 * Gets only the BattleEquipment objects which match the base equipment object
+	 * @param equip
+	 * @return
+	 */
+	public BattleEquipment[] getEquipmentFromBaseObject(Equipment equip) {
+		return unitService.getEquipmentFromBaseObject(this, equip)
+	}
+	
+	/**
+	 * Gets only the BattleEquipment objects which match the base equipment object
+	 * @param equip
+	 * @return
+	 */
+	public BattleEquipment[] getEquipmentFromMTFNames(List MTF_NAMES) {
+		return unitService.getEquipmentFromMTFNames(this, MTF_NAMES)
 	}
 	
 	/**
