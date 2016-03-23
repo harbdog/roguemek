@@ -643,8 +643,14 @@ function showUnitSelect() {
 	var windowWidth = $(window).width();
 	var windowHeight = $(window).height();
 	
+	var dialogWidth = 3*windowWidth/4;
+	if(dialogWidth < 700) {
+		// make sure the width of the dialog in the window isn't too small to show everything
+		dialogWidth = windowWidth;
+	}
+	
 	unitSelectDialog.dialog("option", "position", {my: "top", at: "top", of: window});
-	unitSelectDialog.dialog("option", "width", 3*windowWidth/4);
+	unitSelectDialog.dialog("option", "width", dialogWidth);
 	//unitSelectDialog.dialog("option", "height", windowHeight);	// do not bound the height so it won't have an inner scroll pane
 	unitSelectDialog.dialog("open");
 	

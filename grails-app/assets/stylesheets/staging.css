@@ -90,12 +90,25 @@ span.chat-user {
 }
 
 /* Map/Unit selection table decoration */
+#map-selection td, th {
+	padding: 0.3em;
+}
+
+#map-selection tr>td:last-child, tr>th:last-child {
+	padding-right: 0;
+}
+
+#map-selection tr>td:last-child {
+	float: right;
+	padding-right: 1em;
+}
+
 div.unit-filters {
 	margin: 0 0 0.5em 0;
 }
 
 #unit-selection td, th {
-	padding: 2px;
+	padding: 0.2em;
 }
 
 #unit-selection tr>td:last-child, tr>th:last-child {
@@ -319,7 +332,7 @@ img.camo-unit-preview {
 #unit-selection-preview {
 	position: relative;
 	width: 50%;
-	margin-bottom: 1em;
+	margin-bottom: 0.5em;
 	border-left: 1px solid #999;
 	background-color: rgba(255, 255, 255, 0.15);
 }

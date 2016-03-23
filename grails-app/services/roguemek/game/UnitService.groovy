@@ -3,6 +3,7 @@ package roguemek.game
 import grails.transaction.Transactional
 import roguemek.model.*
 import roguemek.assets.ContextHelper
+import roguemek.cache.UnitSummaryCache
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -14,6 +15,8 @@ class UnitService {
 	public static String imagesExtension = "gif"
 	
 	private static String imagesBasePath = "units/mechs/"
+	
+	def mechService
 	
     /**
 	 * Used to determine the image to be used for the unit
@@ -45,7 +48,7 @@ class UnitService {
 					String testImage = imageName + "."+imagesExtension
 					InputStream imageFile = ContextHelper.getContextAsset("images/"+imagesBasePath + testImage)
 				
-					log.debug("testImage:"+testImage+", available="+imageFile.available())
+					log.trace("testImage:"+testImage+", available="+imageFile.available())
 					if(imageFile.available()) {
 						mechImage = testImage
 						break;
@@ -153,5 +156,123 @@ class UnitService {
 		}
 		
 		return foundEquipment
+	}
+	
+	/**
+	 * Generates Map of summary data for a given Unit, pulling from cache if it has already been generated
+	 * @param unit
+	 * @return
+	 */
+	public def getUnitSummaryData(Unit unit) {
+		if(unit == null) return [:]
+		
+		def unitSummary = UnitSummaryCache.findByUnitId(unit.id)
+		if(unitSummary) {
+			log.trace "UnitSummaryData for ${unit.name}(${unit.id}): using from cache"
+			return unitSummary.getCache()
+		}
+		
+		def unitSummaryData = [:]
+		
+		if(unit instanceof Mech) {
+			// AP calculated as runMP dividided by 2 (rounded up) plus 1
+			int runMP = Math.ceil(unit.walkMP * 1.5)
+			int unitAP = Math.floor(runMP / 2) + (runMP % 2) + 1
+			unitSummaryData.unitAP = unitAP
+			
+			// JP calculated as jumpMP divided by 2 (rounded up)
+			int unitJP = (unit.jumpMP > 0) ? Math.floor(unit.jumpMP / 2) + (unit.jumpMP % 2) : 0
+			unitSummaryData.unitJP = unitJP
+			
+			// count up all the armor
+			int totalArmor = 0
+			unit.armor?.each {
+				totalArmor += it
+			}
+			unitSummaryData.totalArmor = totalArmor
+			
+			// find and map out heat sinks, weapons, and other important equipment from criticals
+			def unitCritsBySection = mechService.getAllCritSections(unit)
+			
+			def heatsinks = [:] // [[<heatsink>:<critCount>], ...]
+			def weapons = [:]	// [[<weapon>:<critCount>], ...]
+			
+			def ammos = [:]		// [[<ammo>:<critCount>], ...]
+			def weaponAmmo = [:]// [[<weapon>:<ammoCount>], ...]
+			
+			for(def critSectionIndex in Mech.CRIT_LOCATIONS) {
+				def critEquipment = unitCritsBySection[critSectionIndex]
+				if(critEquipment == null) continue
+				
+				for(def thisEquip in critEquipment) {
+					def map
+					if(thisEquip instanceof Weapon) {
+						map = weapons
+					} else if(thisEquip instanceof HeatSink) {
+						map = heatsinks
+					}
+					else if(thisEquip instanceof Ammo) {
+						map = ammos
+					}
+					
+					if(map != null) {
+						if(map[thisEquip] == null) {
+							map[thisEquip] = 1
+						}
+						else {
+							map[thisEquip] += 1
+						}
+					}
+				}
+			}
+			
+			// adjust equipment for crit slots used per item
+			int numHeatSinks = 10
+			heatsinks.each { HeatSink heatsink, int critCount ->
+				numHeatSinks += (critCount / heatsink.crits)
+			}
+			unitSummaryData.numHeatSinks = numHeatSinks
+			
+			weapons.each { Weapon weapon, int critCount ->
+				weapons[weapon] = (critCount / weapon.crits)
+				
+				// calculate amount of ammo for weapons
+				if(weapon.ammoTypes) {
+					weapon.ammoTypes.each { Ammo at ->
+						if(weaponAmmo[weapon] == null) {
+							weaponAmmo[weapon] = 0
+						}
+						
+						def ammoCount = ammos[at]
+						if(ammoCount != null) {
+							weaponAmmo[weapon] += (ammoCount * at.ammoPerTon)
+						}
+					}
+				}
+			}
+			// each map and list key or value needs to be stored as string references only, no objects, since they will be JSON'ified in cache
+			unitSummaryData.weapons = weapons.collectEntries { weapon, weaponCount -> [(weapon.name): weaponCount] }
+			unitSummaryData.weaponAmmo = weaponAmmo.collectEntries { weapon, ammoCount -> [(weapon.name): ammoCount] }
+			
+			def sortedWeapons = weapons.sort( { k1, k2 -> k1.name <=> k2.name } as Comparator )*.key
+			unitSummaryData.sortedWeapons = sortedWeapons.collect { weapon -> weapon.name }
+		}
+		
+		if(unitSummaryData.size() > 0) {
+			UnitSummaryCache thisCache = new UnitSummaryCache(unitId: unit.id, cache: unitSummaryData)
+			def cacheResult = thisCache.save flush:true
+			if(!cacheResult) {
+				log.debug thisCache.errors
+				log.debug "UnitSummaryData for ${unit.name}(${unit.id}): could not save, retrying from cache"
+				// maybe another user cached at the same time and won, return that then
+				unitSummary = UnitSummaryCache.findByUnitId(unit.id)
+				if(unitSummary) return unitSummary.getCache()
+			}
+			else {
+				log.trace "UnitSummaryData for ${unit.name}(${unit.id}): ${thisCache.id}=${unitSummaryData}"
+			}
+		}
+		
+		return unitSummaryData
 	}
 }

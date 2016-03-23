@@ -68,6 +68,11 @@ img.unit-image {
 	background: #000 url("images/ui-bg_loop_25_000000_21x21.png") 50% 50% repeat;
 }
 
+div#version {
+    font-size: 0.85em;
+    color:  #3498DB;
+}
+
 /* replace with .no-boxshadow body if you have modernizr available */
 .ie6 body,
 .ie7 body,
@@ -459,7 +464,7 @@ table {
 	border-top: 1px solid #DFDFDF;
 	border-collapse: collapse;
 	width: 100%;
-	margin-bottom: 1em;
+	margin-bottom: 0.5em;
 }
 
 tr {
@@ -540,7 +545,7 @@ th:hover, tr:hover {
 
 .pagination {
 	border-top: 0;
-	margin: 0;
+	margin: 0 0 0.5em 0;
 	padding: 0.3em 0.2em;
 	text-align: center;
 	   -moz-box-shadow: 0 0 3px 1px #AAAAAA;
@@ -659,6 +664,11 @@ a.skip {
 /* just an icon span just to have a jquery-ui icon next to another element in the same line */
 span.just-icon {
 	display: inline-block;
+}
+
+/* dialog customization */
+div.ui-dialog div.ui-dialog-buttonpane {
+	margin-top: 0;
 }
 
 /* high scores decorations */

@@ -16,6 +16,7 @@ class StagingController {
 	def gameChatService
 	def gameStagingService
 	def mechService
+	def unitService
 	
 	@Transactional(readOnly = true)
 	def index() {
@@ -251,9 +252,10 @@ class StagingController {
 	/**
 	 * Allows for individual calls to render a unit preview
 	 */
-	@Transactional(readOnly = true)
 	def previewUnit() {
+		// Note: this method needs to be transactional since the summary data can be cached in the database
 		Unit thisUnit = Unit.read(params.unitId)
+		if(thisUnit == null) return
 		
 		String externalUnitLink = grailsApplication.config.roguemek.external.settings.externalUnitLink
 		if(thisUnit != null && externalUnitLink != null && externalUnitLink.length() > 0) {
@@ -263,12 +265,9 @@ class StagingController {
 			externalUnitLink = null
 		}
 		
-		def unitCritsBySection
-		if(thisUnit instanceof Mech) {
-			unitCritsBySection = mechService.getAllCritSections(thisUnit)
-		}
+		def unitSummary = unitService.getUnitSummaryData(thisUnit)
 		
-		render (template: 'previewUnit', model: [unit: thisUnit, unitCritsBySection: unitCritsBySection, unitLink: externalUnitLink])
+		render (template: 'previewUnit', model: [unit: thisUnit, unitSummary: unitSummary, unitLink: externalUnitLink])
 	}
 	
 	/**

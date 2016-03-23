@@ -29,98 +29,29 @@
 	
 	<div class="unit-stats">
 		<g:if test="${unit instanceof Mech}" >
-			<%	// AP calculated as runMP dividided by 2 (rounded up) plus 1
-				int runMP = Math.ceil(unit.walkMP * 1.5)
-				int unitAP = Math.floor(runMP / 2) + (runMP % 2) + 1
-				
-				// JP calculated as jumpMP divided by 2 (rounded up)
-				int unitJP = (unit.jumpMP > 0) ? Math.floor(unit.jumpMP / 2) + (unit.jumpMP % 2) : 0
-			%>
-			
-			<span><g:message code="unit.actionpoints.label" />: ${unitAP} AP</span>
+			<span><g:message code="unit.actionpoints.label" />: ${unitSummary.unitAP} AP</span>
 			
 			<g:if test="${unitJP > 0}">
-				<span class="right"><g:message code="unit.jumppoints.label" />: ${unitJP} JP</span>
+				<span class="right"><g:message code="unit.jumppoints.label" />: ${unitSummary.unitJP} JP</span>
 			</g:if>
 		</g:if>
 	</div>
 	
 	<div class="unit-equipment">
 		<g:if test="${unit instanceof Mech}" >
-			<%
-				// find and map out heat sinks, weapons, and other important equipment from criticals
-				def heatsinks = [:] // [[<heatsink>:<critCount>], ...]
-				def weapons = [:]	// [[<weapon>:<critCount>], ...]
-				
-				def ammos = [:]		// [[<ammo>:<critCount>], ...]
-				def weaponAmmo = [:]// [[<weapon>:<ammoCount>], ...]
-				
-				for(def critSectionIndex in Mech.CRIT_LOCATIONS) {
-					def critEquipment = unitCritsBySection[critSectionIndex]
-					if(critEquipment == null) continue
-					
-					for(def thisEquip in critEquipment) {
-						def map
-						if(thisEquip instanceof Weapon) {
-							map = weapons
-						} else if(thisEquip instanceof HeatSink) {
-							map = heatsinks
-						}
-						else if(thisEquip instanceof Ammo) {
-							map = ammos
-						}
-						
-						if(map != null) {
-							if(map[thisEquip] == null) {
-								map[thisEquip] = 1
-							}
-							else {
-								map[thisEquip] += 1
-							}
-						}
-					}
-				}
-				
-				// adjust equipment for crit slots used per item
-				int numHeatSinks = 10
-				heatsinks.each { HeatSink heatsink, int critCount ->
-					numHeatSinks += (critCount / heatsink.crits)
-				}
-				
-				weapons.each { Weapon weapon, int critCount ->
-					weapons[weapon] = (critCount / weapon.crits)
-					
-					// calculate amount of ammo for weapons
-					if(weapon.ammoTypes) {
-						weapon.ammoTypes.each { Ammo at ->
-							if(weaponAmmo[weapon] == null) {
-								weaponAmmo[weapon] = 0
-							}
-							
-							def ammoCount = ammos[at]
-							if(ammoCount != null) {
-								weaponAmmo[weapon] += (ammoCount * at.ammoPerTon)
-							}
-						}
-					} 
-				}
-				
-				def sortedWeapons = weapons.sort( { k1, k2 -> k1.name <=> k2.name } as Comparator )*.key
-			%>
-		
 			<g:if test="${unit.heatSinkType == Unit.HS_SINGLE}">
-				<div class="unit-heatsinks"><span><g:message code="unit.single.heatsinks.label" />: ${numHeatSinks}</span></div>
+				<div class="unit-heatsinks"><span><g:message code="unit.single.heatsinks.label" />: ${unitSummary.numHeatSinks}</span></div>
 			</g:if>
 			<g:elseif test="${unit.heatSinkType == Unit.HS_DOUBLE}">
-				<div class="unit-heatsinks"><span><g:message code="unit.double.heatsinks.label" />: ${numHeatSinks}</span></div>
+				<div class="unit-heatsinks"><span><g:message code="unit.double.heatsinks.label" />: ${unitSummary.numHeatSinks}</span></div>
 			</g:elseif>
 			
 			<div class="unit-weapons">
-				<g:each in="${sortedWeapons}" var="thisWeapon">
+				<g:each in="${unitSummary.sortedWeapons}" var="thisWeapon">
 					<p>
-						<span>${weapons[thisWeapon]}x</span>
-						<span>${thisWeapon.name}</span>
-						<g:if test="${weaponAmmo[thisWeapon]}"><span>[${weaponAmmo[thisWeapon]}]</span></g:if>
+						<span>${unitSummary.weapons[thisWeapon]}x</span>
+						<span>${thisWeapon}</span>
+						<g:if test="${unitSummary.weaponAmmo[thisWeapon]}"><span>[${unitSummary.weaponAmmo[thisWeapon]}]</span></g:if>
 					</p>
 				</g:each>
 			</div>
@@ -129,13 +60,7 @@
 	
 	<div class="unit-total-armor">
 		<g:if test="${unit instanceof Mech}" >
-			<%
-				int totalArmor = 0
-				unit.armor?.each {
-					totalArmor += it
-				}
-			%>
-			<span><g:message code="unit.armor.label" />: ${totalArmor}</span>
+			<span><g:message code="unit.armor.label" />: ${unitSummary.totalArmor}</span>
 		</g:if>
 	</div>
 	

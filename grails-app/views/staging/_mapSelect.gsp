@@ -3,6 +3,9 @@
  %>
 
 <div id="map-selection">
+	<div class="pagination">
+		<g:paginate total="${hexMapInstanceTotal ?: 0}" />
+	</div>
 	<table>
 		<thead>
 			<tr>
