@@ -1019,7 +1019,15 @@ function handleTargetChange(targetUnit) {
 		// hide the unit indicator on the new target
 		targetUnit.getUnitDisplay().setUnitIndicatorVisible(false);
 		
-		target(targetUnit);
+		// get the target info from server or from cache if available
+		var target_id = targetUnit.id;
+		var targetDataCache = getTargetCache(target_id);
+		if(targetDataCache != null) {
+			updateGameData(targetDataCache);
+		}
+		else{ 
+			target(targetUnit);
+		}
 	}
 }
 

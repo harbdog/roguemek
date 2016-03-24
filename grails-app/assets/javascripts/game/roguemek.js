@@ -57,7 +57,7 @@ var hexMap, units;
 var playerUnits;
 
 // Keep track of targets for each unit belonging to the player
-var unitTargets;
+var unitTargets, targetCache;
 
 // Keep track of which unit's turn it currently is
 var turnUnit;
@@ -224,6 +224,7 @@ function loadGameElements() {
 		  
 		  playerUnits = [];
 		  unitTargets = {};
+		  targetCache = {};
 		  
 		  numCols = data.board.numCols;
 		  numRows = data.board.numRows;
@@ -761,6 +762,31 @@ function loadChatUsersList() {
 }
 
 /**
+ * Stores JSON target data in the cache 
+ * @param data
+ */
+function storeTargetCache(data) {
+	if(data == null || data.target == null || data.weaponData == null) return;
+	
+	var targetId = data.target;
+	var weaponData = data.weaponData;
+	
+	targetCache[targetId] = weaponData;
+}
+
+/**
+ * Retrieves JSON target data from the cache, or null if it is not cached
+ * @param targetId
+ */
+function getTargetCache(targetId) {
+	return targetCache[targetId];
+}
+
+function clearTargetCache() {
+	targetCache = {};
+}
+
+/**
  * Handle all game and unit updates resulting from server actions
  * @param data
  */
@@ -919,7 +945,12 @@ function updateGameData(data) {
 	if(data.apRemaining != null) {
 		u.apRemaining = data.apRemaining;
 		
-		if(isPlayerU) updateUnitActionPoints(u);
+		if(isPlayerU) {
+			// the player unit moved or started a new turn, clear the cache
+			clearTargetCache();
+			
+			updateUnitActionPoints(u);
+		}
 	}
 	
 	if(data.jpRemaining != null) {
@@ -1044,7 +1075,12 @@ function updateGameData(data) {
 			}
 		});
 		
-		if(isPlayerU) updateWeapons = true;
+		if(isPlayerU) {
+			// the player unit targeted something, store it in cache
+			storeTargetCache(data);
+			
+			updateWeapons = true;
+		}
 	}
 	
 	if(data.weaponFire){
