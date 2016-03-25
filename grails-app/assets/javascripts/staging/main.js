@@ -517,9 +517,28 @@ function ajaxStageUser(userId) {
 		$this = $("<div>", {class: "team"});
 		$("div#teams").append($this);
 		
+		// TODO: when teams implemented, have a team template generate this stuff instead
+		/*<div class="team-header">
+			<h2>Team ${thisUser}</h2>
+			<span class="team-unit-count">${totalUnits} Units</span>
+			<span class="team-tonnage-count right">${totalTonnage} Tons</span>
+		</div>*/
+		
+		var divTeamHeader = $("<div>", {class: "team-header"});
+		
 		tempTeamHeader = $("<h2>");
 		tempTeamHeader.text("Team Temp");
-		$this.prepend(tempTeamHeader);
+		divTeamHeader.append(tempTeamHeader);
+		
+		var spanTeamUnitCount = $("<span>", {class: "team-unit-count"});
+		spanTeamUnitCount.text("0 Units");
+		divTeamHeader.append(spanTeamUnitCount);
+		
+		var spanTeamTonnageCount = $("<span>", {class: "team-tonnage-count right"});
+		spanTeamTonnageCount.text("0 Tons");
+		divTeamHeader.append(spanTeamTonnageCount);
+		
+		$this.prepend(divTeamHeader);
 	}
 	
 	$tempDiv.load("stageUser", inputMap, function() {
