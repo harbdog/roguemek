@@ -24,6 +24,7 @@ class StagingUser {
 		units:BattleUnit
 	]
 	
+	Boolean isReady = false
 	Boolean isSpectator = false
 	
 	String startingLocation = Game.STARTING_RANDOM

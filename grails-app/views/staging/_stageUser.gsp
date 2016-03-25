@@ -15,15 +15,15 @@
 		<g:else>
 			<g:set var="rgbCamoBackground" value="rgb(255, 0, 0)" />
 		</g:else>
-	
-		<g:if test="${gameInstance?.isInit() && userInstance?.id == user?.id}">
-			<button class="player-camo" data-userid="${user?.id}" style="background: ${rgbCamoBackground};"></button>
-		</g:if>
-		<g:else>
-			<span class="player-camo" style="background: ${rgbCamoBackground};"></span>
-		</g:else>
 		
 		<g:set var="startingLocation" value="${StagingHelper.getStartingLocationForUser(gameInstance, user)}" />
+		
+		<g:if test="${gameInstance?.isInit() && true}">
+			<g:set var="checkedReady" value="${StagingHelper.getStagingForUser(gameInstance, user)?.isReady ? 'checked' : ''}" />
+			<g:set var="disableReady" value="${(userInstance?.id == user?.id) ? '' : 'disabled'}" />
+			
+			<input type="checkbox" class="player-ready" id="${user?.id}" ${disableReady} ${checkedReady}><label class="player-ready" for="${user?.id}"></label></input>
+		</g:if>
 		
 		<span class="player-name">${user}</span>
 		
@@ -69,8 +69,14 @@
 		<g:render template="stageUnit" model="[unit: unit, showUnitDelete: (userInstance?.id == user?.id)]" />
 	</g:each>
 	
-	<g:if test="${userInstance?.id == user?.id}">
-		<g:set var="entityName" value="${message(code: 'game.unit.label', default: 'Unit')}" />
-		<button class="unit-add" data-userid="${user?.id}"><g:message code="default.add.label" args="[entityName]" /></button>
-	</g:if>
+	<div class="player-footer" data-userid="${user?.id}">
+		<g:if test="${userInstance?.id == user?.id}">
+			<g:set var="entityName" value="${message(code: 'game.unit.label', default: 'Unit')}" />
+			<button class="unit-add" data-userid="${user?.id}"><g:message code="default.add.label" args="[entityName]" /></button>
+		</g:if>
+		
+		<g:if test="${gameInstance?.isInit() && userInstance?.id == user?.id}">
+			<button class="player-camo" data-userid="${user?.id}" style="background: ${rgbCamoBackground};"></button>
+		</g:if>
+	</div>
 </div>

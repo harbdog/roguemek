@@ -230,6 +230,42 @@ function setupDynamicUI() {
     
     // setup editable users/units
     if(unitsEditable) {
+    	// setup ready button
+    	$("input.player-ready").each(function() {
+    		if($(this).button("instance") != null) return
+    		
+    		var checkedIcon = "ui-icon-check";
+    		var uncheckedIcon = "ui-icon-clock";
+    		
+			$(this).button({
+        		icons: {
+        			primary: ($(this).is(':checked')) ? checkedIcon : uncheckedIcon
+        		},
+        		text: false
+        	})
+        	.change(function() {
+        		var isReady = $(this).is(':checked');
+        		$(this).button("option", {
+        			icons: {
+            			primary: (isReady) ? checkedIcon : uncheckedIcon
+            		}
+        		});
+    		})
+        	.click(function() {
+        		var isReady = $(this).is(':checked');
+        		var inputMap = {ready: isReady};
+        		
+        		$.getJSON("readyUser", inputMap)
+        			.fail(function(jqxhr, textStatus, error) {
+        				var err = textStatus + ", " + error;
+        				console.log( "Request Failed: " + err );
+        			})
+        			.done(function() {
+        				// nothing to do here since it will be updated via atmosphere
+        			});
+        	});
+    	});
+    	
     	// setup camo button
     	$("button.player-camo").each(function() {
     		if($(this).button("instance") != null) return
@@ -805,7 +841,7 @@ function ajaxStageUnit(unitId, userId) {
 		$tempDiv.remove();
 		
 		// may need to move the "add unit" button back down to the bottom
-		$("button.unit-add[data-userid='"+userId+"']").appendTo(playerDiv);
+		$("div.player-footer[data-userid='"+userId+"']").appendTo(playerDiv);
 		
 		setupDynamicUI();
 		
@@ -1118,6 +1154,12 @@ function updateStagingData(data) {
 			alert("You have been removed from battle by the owner, returning to dropship");	// TODO: i18n this message
 			redirectToDropship();
 		}
+	}
+	else if(data.userReady != null) {
+		var isReady = data.userReady;
+		
+		var readyCheckbox = $("input#"+userId+".player-ready[type=checkbox]");
+		readyCheckbox.prop('checked', isReady).trigger("change");
 	}
 	else if(data.gameState != null) {
 		if(data.gameState == "A") {

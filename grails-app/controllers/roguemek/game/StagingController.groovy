@@ -419,6 +419,38 @@ class StagingController {
 	}
 	
 	/**
+	 * Sets the staged user to ready or not ready status
+	 * @return
+	 */
+	def readyUser() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		Game gameInstance = Game.read(session.game)
+		if(gameInstance == null) return
+		
+		boolean userReady = params.boolean('ready') ?: false
+		
+		StagingUser thisStagingData = StagingHelper.getStagingForUser(gameInstance, userInstance)
+		thisStagingData.isReady = userReady
+		def result = thisStagingData.save flush:true
+		
+		if(!result) {
+			log.debug result.errors
+			return
+		}
+		
+		def data = [
+			user: userInstance.id,
+			userReady: userReady
+		]
+		
+		gameStagingService.addStagingUpdate(gameInstance, data)
+		
+		render ([updated:true] as JSON)
+	}
+	
+	/**
 	 * Adds the current User to the game
 	 * @return
 	 */

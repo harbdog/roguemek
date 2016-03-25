@@ -144,12 +144,53 @@ class GameService extends AbstractGameService {
 	public def initializeGame(Game game) {
 		if(game.gameState != Game.GAME_INIT) return
 		
+		// first do some checks to make sure the game is ready to launch
 		def stageUsers = StagingUser.findAllByGame(game)
+		
+		// make sure all users are ready to launch
+		def allUsersReady = true
+		def allUsersHaveUnits = true
+		def numUsers = 0
+		stageUsers.each { StagingUser thisStagingData ->
+			numUsers ++
+			
+			if(thisStagingData.units.size() == 0) {
+				allUsersHaveUnits = false
+			}
+			
+			if(!thisStagingData.isReady) {
+				allUsersReady = false
+			}
+		}
+		
+		// do not allow the game to start if all not users are ready
+		if(!allUsersReady) {
+			Object[] messageArgs = []
+			gameChatService.addMessageUpdate(game, "staging.game.users.not.ready", messageArgs)
+			
+			return false
+		}
+		
+		// do not allow the game to start if it doesn't have at least 2 users
+		if(numUsers < 2) {
+			Object[] messageArgs = []
+			gameChatService.addMessageUpdate(game, "staging.game.not.enough.users", messageArgs)
+			
+			return false
+		}
+		
+		// do not allow the game to start if it doesn't have at least 1 unit per user
+		if(!allUsersHaveUnits) {
+			Object[] messageArgs = []
+			gameChatService.addMessageUpdate(game, "staging.game.not.enough.units", messageArgs)
+			
+			return false
+		}
 		
 		// place each StagingUser's users and units in the game
 		game.users = []
 		game.units = []
-		StagingUser.findAllByGame(game).each { StagingUser thisStagingData ->
+		stageUsers.each { StagingUser thisStagingData ->
 			if(!game.hasUser(thisStagingData.user)) {
 				game.users.add(thisStagingData.user)
 			}
@@ -161,24 +202,6 @@ class GameService extends AbstractGameService {
 		// for some reason adding to the users at this point needed  
 		// the game to be saved, otherwise concurrent exception was generated
 		game.save flush:true
-		
-		// do not allow the game to start if it doesn't have at least 2 users
-		if(game.users.size() < 2) {
-			Object[] messageArgs = []
-			gameChatService.addMessageUpdate(game, "staging.game.not.enough.users", messageArgs)
-			
-			return false
-		}
-		
-		// do not allow the game to start if it doesn't have at least 1 unit per user
-		for(MekUser chkUser in game.users) {
-			if(game.getUnitsForUser(chkUser).isEmpty()) {
-				Object[] messageArgs = []
-				gameChatService.addMessageUpdate(game, "staging.game.not.enough.units", messageArgs)
-				
-				return false
-			}
-		}
 		
 		// if the board is null, pick a random map
 		if(game.board.getHexMap() == null) {
