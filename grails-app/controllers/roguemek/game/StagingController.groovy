@@ -81,7 +81,7 @@ class StagingController {
 				[game: game, user: userInstance]
 		)
 		
-		def chatMessages = ChatMessage.findAllByOptGameId(game.id, [max: 100, sort: "time", order: "asc"])
+		def chatMessages = ChatMessage.findAllByOptGameId(game.id, [sort: "time", order: "asc"])
 		
 		session["game"] = game.id
 		
