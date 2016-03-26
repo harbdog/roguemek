@@ -126,15 +126,12 @@ class BattleUnit {
 	}
 	
 	/**
-	 * Returns just the Callsign of the pilot's user
+	 * Returns the name of the unit and callsign of the pilot user as one string, 
+	 * needs to be overridden to by extending classes if they want to include more than just callsign
 	 * @return
 	 */
-	public String getPilotCallsign() {
-		if(pilot == null || pilot.ownerUser == null) {
-			return "RogueMekWarrior"
-		}
-		
-		return pilot.ownerUser.callsign
+	public String getUnitCallsign() {
+		return pilot?.ownerUser?.callsign ?: ""
 	}
 	
 	/**

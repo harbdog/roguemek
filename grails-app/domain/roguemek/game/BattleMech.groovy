@@ -311,6 +311,19 @@ class BattleMech extends BattleUnit {
 		return percentage
 	}
 	
+	/**
+	 * Returns the name of the unit and callsign of the pilot user as one string
+	 * @return String Example: (CallSign) MechName CHA-VAR
+	 */
+	@Override
+	public String getUnitCallsign() {
+		def callsign = pilot?.ownerUser?.callsign
+		if(callsign) callsign = "(${callsign}) "
+		else callsign = ""
+		
+		return "${callsign}${this}"
+	}
+	
 	@Override
 	public String toString() {
 		return mech?.name +" "+ mech?.chassis+"-"+mech?.variant

@@ -366,7 +366,7 @@ class GameService extends AbstractGameService {
 		// return and add game message about the next unit's turn
 		BattleUnit turnUnit = game.getTurnUnit()
 		
-		Object[] messageArgs = [turnUnit.toString()]
+		Object[] messageArgs = [turnUnit.getUnitCallsign()]
 		Date update = addMessageUpdate(game, "game.unit.new.turn", messageArgs, data)
 		
 		if(turnUnit.isDestroyed() && (currentTurnUnit != null && nextTurnUnit.id != currentTurnUnit.id)) {
@@ -511,7 +511,7 @@ class GameService extends AbstractGameService {
 						
 						def locationStr = Mech.getLocationText(mostExplosiveAmmoLocation)
 						
-						Object[] messageArgs = [unit.toString(), String.valueOf(ammoExplosionDamage), locationStr]
+						Object[] messageArgs = [unit.getUnitCallsign(), String.valueOf(ammoExplosionDamage), locationStr]
 						Date update = addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, explosionData)
 						
 						// perform piloting check on target if certain criticals received damage from weapons fire
@@ -1310,7 +1310,7 @@ class GameService extends AbstractGameService {
 							: jumping ? "game.unit.jumped" 
 								: "game.unit.moved"
 					
-		Object[] messageArgs = [unit.toString(), unit.x, unit.y]
+		Object[] messageArgs = [unit.getUnitCallsign(), getHexLocationString(unit.x, unit.y)]
 		Date update = addMessageUpdate(
 				game, 
 				moveMessage, 
@@ -1434,7 +1434,7 @@ class GameService extends AbstractGameService {
 			moveAP: moveAP
 		]
 		
-		Object[] messageArgs = [unit.toString(), unit.heading]
+		Object[] messageArgs = [unit.getUnitCallsign(), getHeadingString(unit.heading)]
 		Date update = addMessageUpdate(
 				game, 
 				jumping ? "game.unit.jump.rotated" : "game.unit.rotated", 
@@ -1613,7 +1613,7 @@ class GameService extends AbstractGameService {
 				y: unit.y
 			]
 			
-			Object[] messageArgs = [unit.toString(), unit.x, unit.y]
+			Object[] messageArgs = [unit.getUnitCallsign(), getHexLocationString(unit.x, unit.y)]
 			Date update = addMessageUpdate(
 					game,
 					"game.unit.displaced",
@@ -1678,7 +1678,7 @@ class GameService extends AbstractGameService {
 				]
 				
 				def jumpMessage = "game.unit.jumping"
-				Object[] messageArgs = [unit.toString()]
+				Object[] messageArgs = [unit.getUnitCallsign()]
 				Date update = addMessageUpdate(
 								game,
 								jumpMessage,
@@ -2129,7 +2129,7 @@ class GameService extends AbstractGameService {
 								String selfAttackerDamage = String.valueOf(selfData.damage)
 								String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
 								
-								Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, weapon.getShortName(), selfLocationStr]
+								Object[] selfMessageArgs = [unit.getUnitCallsign(), selfAttackerDamage, weapon.getShortName(), selfLocationStr]
 								Date update = addMessageUpdate(
 										game,
 										"game.unit.damage.self",
@@ -2149,7 +2149,7 @@ class GameService extends AbstractGameService {
 				}
 				else{
 					messageCode = "game.weapon.hit"
-					messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName(), damageByLocationStr, locationStr]
+					messageArgs = [unit.getUnitCallsign(), target.getUnitCallsign(), weapon.getShortName(), damageByLocationStr, locationStr]
 				}
 			}
 			else if(weapon.isPhysical()) {
@@ -2204,7 +2204,7 @@ class GameService extends AbstractGameService {
 			if(!weaponHit) {
 				// set the message of the missed result
 				messageCode = "game.weapon.missed"
-				messageArgs = [unit.getPilotCallsign(), target.getPilotCallsign(), weapon.getShortName()]
+				messageArgs = [unit.getUnitCallsign(), target.getUnitCallsign(), weapon.getShortName()]
 			}
 			
 			weapon.save flush:true
@@ -2265,11 +2265,11 @@ class GameService extends AbstractGameService {
 	public def devTripTarget(Game game, BattleUnit target) {
 		if(!isRootUser()) return
 		
-		log.info("devTrip to "+target.toString())
+		log.info("devTrip to "+target.getUnitCallsign())
 		
 		def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, null)
 			
-		log.info("Modifiers for "+target.toString()+": "+modifiers)
+		log.info("Modifiers for "+target.getUnitCallsign()+": "+modifiers)
 		
 		def checkSuccess = doPilotSkillCheck(game, target, modifiers)
 		
@@ -2488,7 +2488,7 @@ class GameService extends AbstractGameService {
 				prone: unit.prone
 			]
 			
-			Object[] selfMessageArgs = [unit.toString()]
+			Object[] selfMessageArgs = [unit.getUnitCallsign()]
 			Date update = addMessageUpdate(
 					game,
 					"game.unit.stands",
@@ -2542,7 +2542,7 @@ class GameService extends AbstractGameService {
 				fallData.jumping = false
 			}
 			
-			Object[] fallMessageArgs = [unit.toString(), fallSideStr]
+			Object[] fallMessageArgs = [unit.getUnitCallsign(), fallSideStr]
 			Date fallUpdate = addMessageUpdate(
 					game,
 					"game.unit.falls",
@@ -2561,7 +2561,7 @@ class GameService extends AbstractGameService {
 					String selfAttackerDamage = String.valueOf(thisDamage)
 					String selfLocationStr = Mech.getLocationText(selfData.hitLocation)
 					
-					Object[] selfMessageArgs = [unit.toString(), selfAttackerDamage, "FALLING", selfLocationStr]	//TODO: i18n FALLING?
+					Object[] selfMessageArgs = [unit.getUnitCallsign(), selfAttackerDamage, "FALLING", selfLocationStr]	//TODO: i18n FALLING?
 					Date update = addMessageUpdate(
 							game,
 							"game.unit.damage.self",
@@ -2812,7 +2812,7 @@ class GameService extends AbstractGameService {
 									status: String.valueOf(unit.status)
 								]
 								
-								Object[] messageArgs = [unit.toString()]
+								Object[] messageArgs = [unit.getUnitCallsign()]
 								Date update = addMessageUpdate(game, "game.unit.destroyed.cockpit", messageArgs, destroyedUnitData)
 								
 								return critsHitList
@@ -2839,7 +2839,7 @@ class GameService extends AbstractGameService {
 							status: String.valueOf(unit.status)
 						]
 						
-						Object[] messageArgs = [unit.toString()]
+						Object[] messageArgs = [unit.getUnitCallsign()]
 						Date update = addMessageUpdate(game, "game.unit.destroyed.engine", messageArgs, destroyedUnitData)
 						
 						return critsHitList
@@ -2854,7 +2854,7 @@ class GameService extends AbstractGameService {
 							status: String.valueOf(unit.status)
 						]
 						
-						Object[] messageArgs = [unit.toString()]
+						Object[] messageArgs = [unit.getUnitCallsign()]
 						Date update = addMessageUpdate(game, "game.unit.destroyed.gyro", messageArgs, destroyedUnitData)
 						
 						return critsHitList
@@ -2876,7 +2876,7 @@ class GameService extends AbstractGameService {
 				status: String.valueOf(unit.status)
 			]
 			
-			Object[] messageArgs = [unit.toString()]
+			Object[] messageArgs = [unit.getUnitCallsign()]
 			Date update = addMessageUpdate(game, "game.unit.destroyed.head", messageArgs, destroyedUnitData)
 			
 			return critsHitList
@@ -2894,7 +2894,7 @@ class GameService extends AbstractGameService {
 				status: String.valueOf(unit.status)
 			]
 			
-			Object[] messageArgs = [unit.toString()]
+			Object[] messageArgs = [unit.getUnitCallsign()]
 			Date update = addMessageUpdate(game, "game.unit.destroyed.torso", messageArgs, destroyedUnitData)
 			
 			return critsHitList
@@ -2913,7 +2913,7 @@ class GameService extends AbstractGameService {
 				status: String.valueOf(unit.status)
 			]
 			
-			Object[] messageArgs = [unit.toString()]
+			Object[] messageArgs = [unit.getUnitCallsign()]
 			Date update = addMessageUpdate(game, "game.unit.destroyed.legs", messageArgs, destroyedUnitData)
 			
 			return critsHitList
@@ -3040,7 +3040,7 @@ class GameService extends AbstractGameService {
 					
 					// TODO: include data in the update for the lost limb
 					def data = [:]
-					Object[] messageArgs = [unit.toString(), locationStr]
+					Object[] messageArgs = [unit.getUnitCallsign(), locationStr]
 					Date update = addMessageUpdate(game, "game.unit.critical.limb", messageArgs, data)
 					
 					return [hitLocation]
@@ -3181,7 +3181,7 @@ class GameService extends AbstractGameService {
 				def criticalHitData = [id: critEquip.id, status: String.valueOf(critEquip.status)]
 				def data = [target: unit.id, criticalHit: criticalHitData]
 				
-				Object[] messageArgs = [unit.toString(), critEquip.toString(), locationStr]
+				Object[] messageArgs = [unit.getUnitCallsign(), critEquip.toString(), locationStr]
 				Date update = addMessageUpdate(game, "game.unit.critical.hit", messageArgs, data)
 				
 				numCrits --
@@ -3210,7 +3210,7 @@ class GameService extends AbstractGameService {
 						internalsHit: unit.internals
 					]
 					
-					Object[] messageArgs = [unit.toString(), String.valueOf(ammoExplosionDamage), locationStr]
+					Object[] messageArgs = [unit.getUnitCallsign(), String.valueOf(ammoExplosionDamage), locationStr]
 					Date update = addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, data)
 				}
 				
@@ -3628,7 +3628,7 @@ class GameService extends AbstractGameService {
 	public def devDamageTarget(Game game, int damage, BattleUnit target, int hitLocation) {
 		if(!isRootUser()) return
 		
-		log.info("devDamage to "+target.toString()+" for "+damage+" in the "+hitLocation)
+		log.info("devDamage to "+target.getUnitCallsign()+" for "+damage+" in the "+hitLocation)
 		
 		def critsHitList = applyDamage(game, null, damage, target, hitLocation)
 		
@@ -3653,7 +3653,7 @@ class GameService extends AbstractGameService {
 		def damageByLocationStr = String.valueOf(damage)
 		
 		def devMessageCode = "game.weapon.hit"
-		Object[] devMessageArgs = ["DEV", target.getPilotCallsign(), "BFG", damageByLocationStr, locationStr]
+		Object[] devMessageArgs = ["DEV", target.getUnitCallsign(), "BFG", damageByLocationStr, locationStr]
 		
 		Date update = addMessageUpdate(game, devMessageCode, devMessageArgs, devWeaponData)
 		
@@ -3671,7 +3671,7 @@ class GameService extends AbstractGameService {
 	public def devCritTarget(Game game, int crits, BattleUnit target, int hitLocation) {
 		if(!isRootUser()) return
 		
-		log.info("devCrit to "+target.toString()+" for "+crits+" in the "+hitLocation)
+		log.info("devCrit to "+target.getUnitCallsign()+" for "+crits+" in the "+hitLocation)
 		
 		def critsHitList = applyCriticalHit(game, null, target, hitLocation, crits)
 		
@@ -3698,7 +3698,7 @@ class GameService extends AbstractGameService {
 		def damageByLocationStr = String.valueOf(0)
 		
 		def devMessageCode = "game.weapon.hit"
-		Object[] devMessageArgs = ["DEV", target.getPilotCallsign(), "CRIT", damageByLocationStr, locationStr]
+		Object[] devMessageArgs = ["DEV", target.getUnitCallsign(), "CRIT", damageByLocationStr, locationStr]
 		
 		Date update = addMessageUpdate(game, devMessageCode, devMessageArgs, devWeaponData)
 		
@@ -3772,6 +3772,41 @@ class GameService extends AbstractGameService {
 		if(victimPilot != null && !victimPilot.isTemporary()) thisKD.victimPilot = victimPilot
 				
 		thisKD.save flush: true
+		
+		if(killerB && victimB) {
+			// broadcast kill message
+			Object[] messageArgs = [killerB.getUnitCallsign(), victimB.getUnitCallsign()]
+			Date update = addMessageUpdate(game, "game.killed.label", messageArgs, null)
+		}
+	}
+	
+	private static def HEADING_STRINGS = ["N", "NE", "SE", "S", "SW", "NW"]
+	
+	/**
+	 * Gets the simplest representation of a heading as a string (e.g. 'N', 'SE', etc)
+	 * @param heading
+	 * @return
+	 */
+	public static String getHeadingString(int heading) {
+		if(heading < 0 || heading >= HEADING_STRINGS.size()) return ""
+		
+		return HEADING_STRINGS[heading]
+	}
+	
+	/**
+	 * Gets the hex location row/col as a string (e.g. '0107', '1302')
+	 * @param hexCol
+	 * @param hexRow
+	 * @return
+	 */
+	public static String getHexLocationString(int hexCol, int hexRow) {
+		// TODO: getHexLocationString assumes board no larger than 99x99, will need to be adjusted if maps can be larger one day
+		
+		String colString = "${hexCol+1}".padLeft(2, '0')
+		String rowString = "${hexRow+1}".padLeft(2, '0')
+		
+		
+		return "${colString}${rowString}"
 	}
 	
 	/**
