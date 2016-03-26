@@ -5,6 +5,7 @@
 		<title>RogueMek</title>
 	</head>
 	<body id="body">
+	
 		<sec:ifLoggedIn>
 			<%-- high scores board only appears when logged in --%>
 			<g:render template="/rogueMek/highScores" />
@@ -16,8 +17,12 @@
 			</div>
 		</sec:ifNotLoggedIn>
 		
+		<div class="front-header">
+			<h1>${grailsApplication.config.roguemek.server.headerMessage}</h1>
+		</div>
+		
 		<%-- main page content that always appears whether logged in or not --%>
-		<div class="top-front">
+		<div class="front">
 			<p>Bacon ipsum dolor amet pig sirloin ground round, salami ribeye chuck ham flank meatball kevin beef ribs andouille. Leberkas boudin shank, tongue pig pancetta tri-tip chicken ham salami picanha prosciutto meatball. Tri-tip kevin meatloaf, t-bone pork chop pig beef ribs hamburger tenderloin pancetta. Tongue landjaeger shank, venison beef flank brisket strip steak doner sirloin ball tip. Ham hock salami shoulder, jowl pork belly pig corned beef drumstick ribeye ball tip chicken prosciutto. Turkey chuck cow hamburger pancetta chicken jowl alcatra sirloin shank meatball pig filet mignon porchetta. Pork ball tip flank, chuck pork belly ham pig prosciutto beef shankle turducken jerky rump porchetta swine.
 			</p><br/>
 			<p>Andouille salami landjaeger, ball tip pig shoulder chicken sausage doner chuck. Beef meatloaf landjaeger cupim. Pastrami shoulder tail drumstick flank jowl. Frankfurter hamburger kevin ham ribeye cupim. Cupim leberkas capicola corned beef. Beef ribs ham ground round biltong turducken flank, ribeye filet mignon pork belly swine spare ribs kielbasa pastrami short ribs short loin. Ground round hamburger cupim sirloin, cow corned beef rump chicken pork belly meatball pork ham hock swine andouille.

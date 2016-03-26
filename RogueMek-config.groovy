@@ -18,12 +18,8 @@ roguemek {
 //			password = "DemoDemo"
 //		}
 	}
-	game {
-		settings {
-			maxUserUnits = 12		// maximum units per user in a game
-			maxBattleUnits = 24		// maximum units total in a game
-			userStagingLimit = 3	// maximum staging battles per user
-		}
+	server {
+		headerMessage = "This is a RogueMek server"	// the message at the top of the root index page
 	}
 	registration {
 		// Any new user attempting to register can be enabled by setting newUserEnable to one of the following settings:
@@ -33,6 +29,13 @@ roguemek {
 		//  "private"	// registered accounts must be enabled by an administrator
 		//	"disable"	// only administrators can create accounts
 		newUserEnable = "public"
+	}
+	game {
+		settings {
+			maxUserUnits = 12		// maximum units per user in a game
+			maxBattleUnits = 24		// maximum units total in a game
+			userStagingLimit = 3	// maximum staging battles per user
+		}
 	}
 	external {
 		settings {

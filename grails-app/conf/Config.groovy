@@ -64,6 +64,7 @@ grails {
         // escapes all not-encoded output at final stage of outputting
         // filteringCodecForContentType.'text/html' = 'html'
     }
+	//gsp.enable.reload = true	// prod env by default doesn't enable reloading gsp changes
 }
 
 

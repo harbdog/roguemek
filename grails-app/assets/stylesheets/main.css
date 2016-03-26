@@ -65,8 +65,12 @@ div.top-login-register-info {
 	text-align:center
 }
 
-div.top-front {
+div.front-header {
 	margin: 1em 1em 0 1em;
+}
+
+div.front {
+	margin: 1em 2em 0 2em;
 }
 
 img.unit-image {
