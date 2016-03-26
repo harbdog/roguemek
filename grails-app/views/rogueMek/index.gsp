@@ -77,6 +77,9 @@
                 }
 				
 				gameList.addAll(inGameList)
+				
+				// ensure no duplicates show up in the list
+				gameList.unique { g1, g2 -> g1.id <=> g2.id }
 					
 				for(Game g in gameList) {
 					switch(g.gameState) {
