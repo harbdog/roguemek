@@ -75,7 +75,7 @@ class StagingController {
 			gameStagingService.addStagingUpdate(game, data)
 		}
 		
-		// show all users staged in the game, with the current user showing first
+		// get all users staged in the game, with the current user showing first
 		def stagingUsers = StagingUser.executeQuery(
 				'SELECT u FROM StagingUser u WHERE u.game=:game ORDER BY CASE WHEN u.user=:user THEN 0 ELSE 1 END',
 				[game: game, user: userInstance]

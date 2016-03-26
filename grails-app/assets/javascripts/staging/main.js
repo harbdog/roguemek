@@ -695,13 +695,20 @@ function loadUnitSelect() {
 }
 
 function showUnitSelect() {
+	var idealDialogWidth = 800;
+	
 	var windowWidth = $(window).width();
 	var windowHeight = $(window).height();
 	
 	var dialogWidth = 3*windowWidth/4;
-	if(dialogWidth < 700) {
+	if(dialogWidth < idealDialogWidth) {
 		// make sure the width of the dialog in the window isn't too small to show everything
-		dialogWidth = windowWidth;
+		if(windowWidth < idealDialogWidth) {
+			dialogWidth = windowWidth;
+		}
+		else {
+			dialogWidth = idealDialogWidth;
+		}
 	}
 	
 	unitSelectDialog.dialog("option", "position", {my: "top", at: "top", of: window});

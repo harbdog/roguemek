@@ -574,6 +574,10 @@ th:hover, tr:hover {
 	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
 }
 
+.pagination a:hover, .pagination a:focus {
+    background-color: #C0C0C0;
+}
+
 .no-borderradius .pagination a:hover, .no-borderradius .pagination a:focus,
 .no-borderradius .pagination .currentStep {
 	background-color: transparent;
