@@ -73,6 +73,19 @@ div.front {
 	margin: 1em 2em 0 2em;
 }
 
+div.bottom {
+	margin: 1em 1em 0 1em;
+}
+
+div.bottom p {
+	margin: 1em 1em 0 1em;
+}
+
+div.bottom ul, div.bottom li {
+	margin: 0 1em 0 1em;
+}
+
+
 img.unit-image {
 	-ms-transform: rotate(180deg); /* IE 9 */
     -webkit-transform: rotate(180deg); /* Safari */

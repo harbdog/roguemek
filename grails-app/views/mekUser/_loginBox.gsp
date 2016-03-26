@@ -1,5 +1,9 @@
 <div class="nav" role="navigation">
 	<ul>
+		<div>
+			<li><g:link uri="/#about"><g:message code="default.button.about.label" /></g:link></li>
+		</div>
+	
 		<div class="right">
 			<g:if test="${params.action != 'auth'}">
 				<li><link:login><g:message code="login.label" default="Login" /></link:login></li>

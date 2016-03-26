@@ -34,5 +34,19 @@
 			<p>Boudin pastrami brisket chicken tail tongue. Hamburger t-bone shank brisket sausage short ribs short loin meatloaf picanha beef ribs tail landjaeger bacon cupim. Tongue pork belly boudin fatback. Andouille turducken salami, venison ribeye shank picanha kevin chicken ground round cupim. Andouille chicken ball tip pork loin pork ribeye. Landjaeger venison andouille ribeye tri-tip, fatback boudin t-bone rump pork.
 			</p><br/>
 		</div>
+		
+		<div class="bottom"><a id="about"></a>
+			<h1>About RogueMek</h1>
+			<p>
+				RogueMek is an unofficial online web browser game based on the <a href="http://bg.battletech.com/" target="_blank">BattleTech</a> board game, using shared assets created by <a href="http://megamek.info/" target="_blank">MegaMek</a>.
+				RogueMek is open source, free software licensed under the <a href="http://www.gnu.org/licenses/licenses.html" target="_blank">GPL</a>.
+			</p>
+			<p>Browser Requirements:</p>
+			<ul>
+				<li>Personal Computer or Tablet - Phone sized displays not currently supported</li>
+				<li>An <a href="https://html5test.com/" target="_blank">HTML5</a> compatible browser - <a href="https://www.google.com/chrome/" target="_blank">Chrome</a> recommended</li>
+				
+			</ul>
+		</div>
 	</body>
 </html>

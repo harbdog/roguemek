@@ -48,7 +48,7 @@
 			</ol>
 			
 			<g:if test="${winLossList?.size()}">
-			<div id="winloss"><a name="winloss"></a>
+			<div id="winloss"><a id="winloss"></a>
 				<h1>${winLossRatio[0]} <g:message code="user.winloss.label" default="Win | Loss" /> ${winLossRatio[1]}</h1>
 				<ol class="property-list">
 				<g:each in="${winLossList}" var="thisWL">
@@ -79,7 +79,7 @@
 			</g:if>
 			
 			<g:if test="${killDeathList?.size()}">
-			<div id="killdeath"><a name="killdeath"></a>
+			<div id="killdeath"><a id="killdeath"></a>
 				<h1>${killDeathRatio[0]} <g:message code="user.killdeath.label" default="Kill | Death" /> ${killDeathRatio[1]}</h1>
 				<ol class="property-list">
 				<g:each in="${killDeathList}" var="thisKD">
