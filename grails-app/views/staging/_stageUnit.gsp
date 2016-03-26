@@ -1,8 +1,4 @@
 <div class="player-unit" data-unitid="${unit?.id}" data-unit-mass="${unit?.mech?.mass}">
-	<g:if test="${showUnitDelete}">
-		<button class="unit-delete" data-unitid="${unit?.id}"></button>
-	</g:if>
-	
 	<div id="unit-image">
  		<g:if test="${unit?.image}">
 			<%-- show stored byte array as an image on the page --%>
@@ -13,4 +9,8 @@
 	
 	<g:set var="pilot" value="${unit?.pilot}" />
 	<span class="unit-name">${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}</span>
+	
+	<g:if test="${showUnitDelete}">
+		<button class="unit-delete right" data-unitid="${unit?.id}"></button>
+	</g:if>
 </div>

@@ -1177,7 +1177,7 @@ function updateStagingData(data) {
 	else if(data.userReady != null) {
 		var isReady = data.userReady;
 		
-		var readyCheckbox = $("input#"+userId+".player-ready[type=checkbox]");
+		var readyCheckbox = $("input#ready-"+userId+".player-ready[type=checkbox]");
 		readyCheckbox.prop('checked', isReady).trigger("change");
 	}
 	else if(data.gameState != null) {

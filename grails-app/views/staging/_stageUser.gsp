@@ -21,8 +21,10 @@
 		<g:if test="${gameInstance?.isInit() && true}">
 			<g:set var="checkedReady" value="${StagingHelper.getStagingForUser(gameInstance, user)?.isReady ? 'checked' : ''}" />
 			<g:set var="disableReady" value="${(userInstance?.id == user?.id) ? '' : 'disabled'}" />
+			<g:set var="readyTitle" value="${(userInstance?.id == user?.id) ? message(code: 'staging.game.user.ready.title') : ''}" />
 			
-			<input type="checkbox" class="player-ready" id="${user?.id}" ${disableReady} ${checkedReady}><label class="player-ready" for="${user?.id}"></label></input>
+			<input type="checkbox" class="player-ready" id="ready-${user?.id}" ${disableReady} ${checkedReady} />
+			<label title="${readyTitle}" class="player-ready" for="ready-${user?.id}"></label>
 		</g:if>
 		
 		<span class="player-name">${user}</span>
