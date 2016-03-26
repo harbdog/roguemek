@@ -787,6 +787,15 @@ function setupAjaxUnitSelect() {
 	if($inputFilter && $inputFilter.length) {
 		setCaretToPos($inputFilter[0], $inputFilter.val().length);
 	}
+	
+	// allow clicking on a row to select the radio button for that entry
+	$("#unit-selection").find("tr").on({
+		click: function(event) {
+			if(event.target.type !== 'radio') {
+				$(":radio", this).trigger("click");
+			}
+		}
+	});
 }
 
 /**
@@ -980,6 +989,7 @@ function setupAjaxMapSelect() {
 		selectButton.button("enable");
 	});
 	
+	// enable ajax paging and sorting
 	$("#map-selection").find(".pagination a, th.sortable a").on({
 		click: function(event) {
 	        event.preventDefault();
@@ -999,6 +1009,15 @@ function setupAjaxMapSelect() {
 	        });
 		}
     });
+	
+	// allow clicking on a row to select the radio button for that entry
+	$("#map-selection").find("tr").on({
+		click: function(event) {
+			if(event.target.type !== 'radio') {
+				$(":radio", this).trigger("click");
+			}
+		}
+	});
 }
 
 function ajaxUpdateMapSelection() {

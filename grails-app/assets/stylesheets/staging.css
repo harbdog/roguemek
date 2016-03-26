@@ -94,12 +94,15 @@ span.chat-user {
 	padding: 0.3em;
 }
 
+#map-selection tr {
+	cursor: pointer;
+}
+
 #map-selection tr>td:last-child, tr>th:last-child {
 	padding-right: 0;
 }
 
 #map-selection tr>td:last-child {
-	float: right;
 	padding-right: 1em;
 }
 
@@ -109,6 +112,10 @@ div.unit-filters {
 
 #unit-selection td, th {
 	padding: 0.2em;
+}
+
+#unit-selection tr {
+	cursor: pointer;
 }
 
 #unit-selection tr>td:last-child, tr>th:last-child {
