@@ -769,9 +769,8 @@ function storeTargetCache(data) {
 	if(data == null || data.target == null || data.weaponData == null) return;
 	
 	var targetId = data.target;
-	var weaponData = data.weaponData;
 	
-	targetCache[targetId] = weaponData;
+	targetCache[targetId] = data;
 }
 
 /**
