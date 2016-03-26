@@ -75,18 +75,19 @@ class StagingController {
 			gameStagingService.addStagingUpdate(game, data)
 		}
 		
-		def stagingUsers = StagingUser.findAllByGame(game)
-		def chatUsers = GameChatUser.executeQuery(
-				'select u.chatUser from GameChatUser u where u.game=:game',
-				[game: game]
+		// show all users staged in the game, with the current user showing first
+		def stagingUsers = StagingUser.executeQuery(
+				'SELECT u FROM StagingUser u WHERE u.game=:game ORDER BY CASE WHEN u.user=:user THEN 0 ELSE 1 END',
+				[game: game, user: userInstance]
 		)
+		
 		def chatMessages = ChatMessage.findAllByOptGameId(game.id, [max: 100, sort: "time", order: "asc"])
 		
 		session["game"] = game.id
 		
 		respond game, model:[userInstance:userInstance, 
 				stagingUsers:stagingUsers, stagingInstance:stagingInstance, 
-				chatUsers:chatUsers, chatMessages:chatMessages]
+				chatMessages:chatMessages]
 	}
 	
 	/**
