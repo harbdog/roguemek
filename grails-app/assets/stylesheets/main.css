@@ -54,6 +54,17 @@ body {
 	        box-shadow: 0 0 0.3em #3498DB;
 }
 
+/* login/registration info decorations */
+div.top-login-register-info {
+	margin: 1em 1em 0 1em;
+	padding: 0.5em 0.5em 0.5em 0.5em;
+	border: 1px solid #3498DB;
+}
+
+.center {
+	text-align:center
+}
+
 div.top-front {
 	margin: 1em 1em 0 1em;
 }

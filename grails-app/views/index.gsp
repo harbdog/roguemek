@@ -6,10 +6,17 @@
 	</head>
 	<body id="body">
 		<sec:ifLoggedIn>
+			<%-- high scores board only appears when logged in --%>
 			<g:render template="/rogueMek/highScores" />
 		</sec:ifLoggedIn>
+		<sec:ifNotLoggedIn>
+			<%-- main page content that only appears when not logged in --%>
+			<div class="top-login-register-info">
+				<p class="center">To get started playing, <link:login><g:message code="login.label" default="Login" /></link:login> to an existing account or <link:register><g:message code="register.label" default="Register" /></link:register> to create a new account on this host</p>
+			</div>
+		</sec:ifNotLoggedIn>
 		
-		<%-- TODO: Any main page content that always appears whether logged in or not --%>
+		<%-- main page content that always appears whether logged in or not --%>
 		<div class="top-front">
 			<p>Bacon ipsum dolor amet pig sirloin ground round, salami ribeye chuck ham flank meatball kevin beef ribs andouille. Leberkas boudin shank, tongue pig pancetta tri-tip chicken ham salami picanha prosciutto meatball. Tri-tip kevin meatloaf, t-bone pork chop pig beef ribs hamburger tenderloin pancetta. Tongue landjaeger shank, venison beef flank brisket strip steak doner sirloin ball tip. Ham hock salami shoulder, jowl pork belly pig corned beef drumstick ribeye ball tip chicken prosciutto. Turkey chuck cow hamburger pancetta chicken jowl alcatra sirloin shank meatball pig filet mignon porchetta. Pork ball tip flank, chuck pork belly ham pig prosciutto beef shankle turducken jerky rump porchetta swine.
 			</p><br/>
