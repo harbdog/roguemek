@@ -39,14 +39,14 @@
 			<h1>About RogueMek</h1>
 			<p>
 				RogueMek is an unofficial online web browser game based on the <a href="http://bg.battletech.com/" target="_blank">BattleTech</a> board game, using shared assets created by <a href="http://megamek.info/" target="_blank">MegaMek</a>.
-				RogueMek is open source, free software licensed under the <a href="http://www.gnu.org/licenses/licenses.html" target="_blank">GPL</a>.
+				RogueMek is open source, free software licensed under the <a href="http://www.gnu.org/licenses/licenses.html" target="_blank">GPL</a>. The source code is hosted on <a href="https://github.com/harbdog/roguemek" target="_blank">GitHub</a>.
 			</p>
 			<p>Browser Requirements:</p>
 			<ul>
 				<li>Personal Computer or Tablet - Phone sized displays not currently supported</li>
 				<li>An <a href="https://html5test.com/" target="_blank">HTML5</a> compatible browser - <a href="https://www.google.com/chrome/" target="_blank">Chrome</a> recommended</li>
-				
 			</ul>
+			
 		</div>
 	</body>
 </html>
