@@ -254,7 +254,7 @@ class GameController {
 		}
 		
 		for(Game stagingGame in usersStagingGames) {
-			if(gameInstance.description == stagingGame.description) {
+			if(gameInstance.description.equalsIgnoreCase(stagingGame.description)) {
 				gameInstance.errors.reject('error.user.staging.game.exists', [gameInstance.description] as Object[], 'You already have a staged battle with description [{0}]')
 				respond gameInstance.errors, view: 'create'
 				return
