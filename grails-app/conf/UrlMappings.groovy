@@ -7,6 +7,8 @@ class UrlMappings {
             }
         }
 		
+		
+		
 		name mechDetails: "/showMech/$chassis/$variant"{
 			controller = 'mech'
 			action = 'showMech'
@@ -68,6 +70,16 @@ class UrlMappings {
 		name dropship: "/dropship"{
 			controller = 'rogueMek'
 			action = 'index'
+		}
+		
+		name createGame: "/create" {
+			controller = 'game'
+			action = 'create'
+		}
+		
+		name saveCreateGame: "/saveCreate" {
+			controller = 'game'
+			action = 'saveCreate'
 		}
 		
 		name stagingGame: "/staging/$id"{

@@ -20,6 +20,8 @@ class GameController {
 	GameControllerService gameControllerService
 	GameOverService gameOverService
 	
+	def grailsApplication
+	
 	def index() {
 		def doRedirect = false;
 		
@@ -211,10 +213,72 @@ class GameController {
 		respond gameInstance
 	}
 
-	@Secured(['ROLE_ROOT'])
+	@Transactional(readOnly = true)
     def create() {
         respond new Game(params)
     }
+	
+	/**
+	 * Creates the new battle as initializing
+	 * @param gameInstance
+	 * @return
+	 */
+	def saveCreate(Game gameInstance) {
+		if (gameInstance == null) {
+			notFound()
+			return
+		}
+		
+		def userInstance = currentUser()
+		if(!userInstance) {
+			redirect action: 'index'
+			return
+		}
+		
+		if(gameInstance.board == null) {
+			BattleHexMap battleMap = new BattleHexMap(game: gameInstance)
+			gameInstance.board = battleMap
+		}
+		
+		gameInstance.ownerUser = userInstance
+		gameInstance.users = [userInstance]
+		gameInstance.validate()
+		
+		// make sure the user creating the battle doesn't already own too many games in staging
+		int userStagingLimit = grailsApplication.config.roguemek.game.settings.userStagingLimit ?: 3
+		def usersStagingGames = Game.findAllByOwnerUserAndGameState(userInstance, Game.GAME_INIT)
+		if(usersStagingGames.size() >= userStagingLimit) {
+			gameInstance.errors.reject('error.user.too.many.staging.games', [userStagingLimit] as Object[], 'You have too many staged battles, limit is [{0}]')
+			respond gameInstance.errors, view: 'create'
+			return
+		}
+		
+		for(Game stagingGame in usersStagingGames) {
+			if(gameInstance.description == stagingGame.description) {
+				gameInstance.errors.reject('error.user.staging.game.exists', [gameInstance.description] as Object[], 'You already have a staged battle with description [{0}]')
+				respond gameInstance.errors, view: 'create'
+				return
+			}
+		}
+
+		if (gameInstance.hasErrors()) {
+			respond gameInstance.errors, view: 'create'
+			return
+		}
+
+		gameInstance.save flush:true
+		
+		// generate staging information for the owner user
+		gameStagingService.generateStagingForUser(gameInstance, userInstance)
+
+		request.withFormat {
+			form multipartForm {
+				flash.message = message(code: 'default.created.message', args: [message(code: 'battle.label', default: 'Battle'), gameInstance.description])
+				redirect mapping: 'stagingGame', id: gameInstance.id
+			}
+			'*' { respond gameInstance, [status: CREATED] }
+		}
+	}
 
 	@Secured(['ROLE_ROOT'])
     def save(Game gameInstance) {

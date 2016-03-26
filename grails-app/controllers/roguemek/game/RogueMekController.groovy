@@ -49,21 +49,6 @@ class RogueMekController {
 	}
 	
 	/**
-	 * Generates the info needed to create a new battle
-	 * @return
-	 */
-	@Transactional(readOnly = true)
-	def create() {
-		def userInstance = currentUser()
-		if(userInstance) {
-			respond userInstance
-		}
-		else {
-			redirect action: 'index'
-		}
-	}
-	
-	/**
 	 * Generates the info needed to join a battle
 	 * @return
 	 */
@@ -214,60 +199,6 @@ class RogueMekController {
 	}
 	
 	/**
-	 * Creates the new battle as initializing
-	 * @param gameInstance
-	 * @return
-	 */
-	def saveCreate(Game gameInstance) {
-		if (gameInstance == null) {
-			notFound()
-			return
-		}
-		
-		def userInstance = currentUser()
-		if(!userInstance) {
-			redirect action: 'index'
-			return
-		}
-		
-		if(gameInstance.board == null) {
-			BattleHexMap battleMap = new BattleHexMap(game: gameInstance)
-			gameInstance.board = battleMap
-		}
-		
-		gameInstance.ownerUser = userInstance
-		gameInstance.users = [userInstance]
-		gameInstance.validate()
-		
-		// make sure the user creating the battle doesn't already own too many games in staging
-		int userStagingLimit = grailsApplication.config.roguemek.game.settings.userStagingLimit ?: 3
-		def usersStagingGames = Game.findAllByOwnerUserAndGameState(userInstance, Game.GAME_INIT)
-		if(usersStagingGames.size() >= userStagingLimit) {
-			gameInstance.errors.reject('error.user.too.many.staging.games', [userStagingLimit] as Object[], '[You have too many games, limit is [{0}]')
-			respond gameInstance.errors, view:'create'
-			return
-		}
-
-		if (gameInstance.hasErrors()) {
-			respond gameInstance.errors, view:'create'
-			return
-		}
-
-		gameInstance.save flush:true
-		
-		// generate staging information for the owner user
-		gameStagingService.generateStagingForUser(gameInstance, userInstance)
-
-		request.withFormat {
-			form multipartForm {
-				flash.message = message(code: 'default.created.message', args: [message(code: 'battle.label', default: 'Battle'), gameInstance.description])
-				redirect mapping: 'stagingGame', id: gameInstance.id
-			}
-			'*' { respond gameInstance, [status: CREATED] }
-		}
-	}
-	
-	/**
 	 * Allows the game owner only to delete the game instance
 	 * @param gameInstance
 	 * @return
@@ -295,9 +226,6 @@ class RogueMekController {
 			'*'{ render status: NO_CONTENT }
 		}
 	}
-	
-	
-	
 	
 	private MekUser currentUser() {
 		return MekUser.get(springSecurityService.principal.id)

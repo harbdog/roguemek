@@ -26,7 +26,7 @@
 			<div class="nav subnav">
 				<g:set var="battleName" value="${message(code: 'battle.label', default: 'Battle')}" />
 				<ul>
-					<li><g:link class="create" action="create"><g:message code="default.new.label" args="[battleName]" /></g:link></li>
+					<li><g:link class="create" controller="game" action="create"><g:message code="default.new.label" args="[battleName]" /></g:link></li>
 					<li><g:link class="join" action="join"><g:message code="default.join.label" args="[battleName]" /></g:link></li>
 				</ul>
 			</div>
