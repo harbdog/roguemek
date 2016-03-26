@@ -781,6 +781,9 @@ function getTargetCache(targetId) {
 	return targetCache[targetId];
 }
 
+/**
+ * Clears JSON target data from the cache
+ */
 function clearTargetCache() {
 	targetCache = {};
 }

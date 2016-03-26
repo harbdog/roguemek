@@ -70,7 +70,15 @@ div.front-header {
 }
 
 div.front {
-	margin: 1em 2em 0 2em;
+	margin: 1em 1em 0 1em;
+}
+
+div.front ul {
+	padding-top: 0.25em;
+}
+
+div.front ul, div.front li {
+	margin: 0.1em 1em 0.1em 1em;
 }
 
 div.bottom {
@@ -81,8 +89,12 @@ div.bottom p {
 	margin: 1em 1em 0 1em;
 }
 
+div.bottom ul {
+	padding-top: 0.25em;
+}
+
 div.bottom ul, div.bottom li {
-	margin: 0 1em 0 1em;
+	margin: 0.1em 1em 0.1em 1.5em;
 }
 
 
