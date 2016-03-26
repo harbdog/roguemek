@@ -179,6 +179,9 @@ function initStaging() {
     // setup any dynamic UI pieces present at init
     setupDynamicUI();
     
+    // update icons for locations
+    updateLocationIcons();
+    
     // load list of chat users just before connecting to the Atmosphere server
     loadChatUsersList();
     
@@ -354,6 +357,34 @@ function setupDynamicUI() {
     }
 }
 
+/**
+ * Loops through each player location label and sets the appropriate directional label for it
+ */
+function updateLocationIcons() {
+	// first map out each location value to its icon class using the location selection shown for this player
+	var locationOptions = $("select.location[data-userid='"+currentUserId+"']  option");
+	
+	var locationClassMap = {};
+	$.each(locationOptions, function() {
+		var location = $(this).text();
+		var locationClass = $(this).attr("data-class");
+		
+		locationClassMap[location] = locationClass;
+	});
+	
+	// find each player location element and set the appropriate icon class
+	var locationLabels = $("div.player-info span.location, div.player-info select.location + span.ui-selectmenu-button");
+	$.each(locationLabels, function() {
+		var locationText = $(this).find("span.location-label, span.ui-selectmenu-text").text();
+		
+		var locationIconClass = locationClassMap[locationText];
+		var locationIconSpan = $(this).find("span.ui-icon");
+		
+		locationIconSpan.removeClass();
+		locationIconSpan.addClass("ui-icon "+locationIconClass);
+	});
+}
+
 function loadCamoSelect() {
 	
 	var $this = $(this);
@@ -489,7 +520,7 @@ function updateLocation(event, data) {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				console.log("updated location: "+locationValue)
+				//console.log("updated location: "+locationValue)
 			}
 		});
 }
@@ -826,33 +857,6 @@ function filterAjaxUnitSelect(filterBox) {
 	});
 }
 
-/**
- * Used to set the selection range of a given element 
- * from http://stackoverflow.com/a/499158/854696
- */
-function setSelectionRange(input, selectionStart, selectionEnd) {
-	if (input.setSelectionRange) {
-		input.focus();
-		input.setSelectionRange(selectionStart, selectionEnd);
-	}
-	else if (input.createTextRange) {
-		var range = input.createTextRange();
-		range.collapse(true);
-		range.moveEnd('character', selectionEnd);
-		range.moveStart('character', selectionStart);
-		range.select();
-	}
-}
-
-/**
- * Used to set the caret position of a given element
- * from http://stackoverflow.com/a/499158/854696
- */
-function setCaretToPos (input, pos) {
-	setSelectionRange(input, pos, pos);
-}
-
-
 function ajaxStageUnit(unitId, userId) {
 	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
 	dialogLoading.dialog("open");
@@ -1148,12 +1152,17 @@ function updateStagingData(data) {
 		var location = data.location;
 		
 		// update if it is a select menu
-		$("div[data-userid='"+userId+"'] select.location").val(location).iconselectmenu("refresh")
-				.iconselectmenu("widget").effect("highlight", effectOptions, 2000);
+		$("div.player-info[data-userid='"+userId+"'] select.location").val(location).iconselectmenu("refresh");
 		
 		// update if it is a label
-		$("div[data-userid='"+userId+"'] label.location").text(location)
-				.effect("highlight", effectOptions, 2000);
+		$("div.player-info[data-userid='"+userId+"'] span.location-label").text(location);
+		
+		// update the icons associated with the location
+		updateLocationIcons();
+		
+		// highlight only the location that got updated
+		var locationLabels = $("div.player-info[data-userid='"+userId+"'] span.location, div.player-info[data-userid='"+userId+"'] select.location + span.ui-selectmenu-button");
+		locationLabels.effect("highlight", effectOptions, 1500);
 	}
 	else if(data.rgbCamo != null && userId != null) {
 		// update the units on the page without forcing reload
@@ -1241,6 +1250,32 @@ function redirectToDropship() {
 		currentUserId = null;
 		window.location.replace(dropshipUrl);
 	}
+}
+
+/**
+ * Used to set the selection range of a given element 
+ * from http://stackoverflow.com/a/499158/854696
+ */
+function setSelectionRange(input, selectionStart, selectionEnd) {
+	if (input.setSelectionRange) {
+		input.focus();
+		input.setSelectionRange(selectionStart, selectionEnd);
+	}
+	else if (input.createTextRange) {
+		var range = input.createTextRange();
+		range.collapse(true);
+		range.moveEnd('character', selectionEnd);
+		range.moveStart('character', selectionStart);
+		range.select();
+	}
+}
+
+/**
+ * Used to set the caret position of a given element
+ * from http://stackoverflow.com/a/499158/854696
+ */
+function setCaretToPos (input, pos) {
+	setSelectionRange(input, pos, pos);
 }
 
 /**

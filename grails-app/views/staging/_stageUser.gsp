@@ -57,7 +57,10 @@
 			</select>
 		</g:if>
 		<g:else>
-			<label class="location">${startingLocation}</label>
+			<span class="location ui-widget ui-state-default ui-corner-all">
+				<span class="location-label">${startingLocation}</span>
+				<span class="ui-icon ui-icon-blank"></span>
+			</span>
 		</g:else>
 		
 		<g:if test="${gameInstance?.isInit() 

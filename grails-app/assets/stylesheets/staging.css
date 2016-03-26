@@ -258,9 +258,21 @@ button.unit-add {
 }
  
 /* Starting position menu/button */
-.player-info label.location {
+.player-info span.location {
 	cursor: default;
 	font-size: 0.8em;
+	margin: 0 0 -0.5em 0;
+	display: inline-flex;
+	background: none;
+}
+
+.player-info span.location-label {
+	padding: 0.5em 0 0.4em 1em;
+	line-height: 1.4;
+}
+
+.player-info span.location-label + span.ui-icon {
+	margin-top: 0.5em;
 }
 
 .player-info span.player-name {
@@ -278,7 +290,7 @@ button.unit-add {
 	text-align: center;
 }
 
-.player-info span.ui-selectmenu-button span.ui-icon.ui-icon-triangle-1-s {
+.player-info span.ui-selectmenu-button span.ui-icon {
 	right: 0;
 }
 
