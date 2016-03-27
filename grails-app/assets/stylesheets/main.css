@@ -81,6 +81,10 @@ div.front ul, div.front li {
 	margin: 0.1em 1em 0.1em 1em;
 }
 
+div.front img {
+	margin-bottom: -5px;
+}
+
 div.bottom {
 	margin: 1em 1em 0 1em;
 }
