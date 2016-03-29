@@ -821,9 +821,24 @@ function setupAjaxUnitSelect() {
 		return false;
 	});
 	
-	var $inputFilter = $("div.unit-filters input#name")
+	var $inputFilter = $("div.unit-filters input#name");
 	if($inputFilter && $inputFilter.length) {
 		setCaretToPos($inputFilter[0], $inputFilter.val().length);
+		
+		if($inputFilter.val().length > 0) {
+			// setup clear filter button only when a filter has been entered
+			var $clearFilter = $("button.clear-unit-filter");
+			$clearFilter.css({opacity: 0, "visibility": "visible"}).animate({opacity: 1.00}, 250);
+			$clearFilter.button({
+		    	icons: {
+					primary: "ui-icon-closethick"
+		    	},
+		        text: false
+		    }).click(function(event) {
+		    	// by not using event.preventDefault, it seems to automatically submit after clearing the field
+		    	$inputFilter.val("");
+		    });
+		}
 	}
 	
 	// allow clicking on a row to select the radio button for that entry

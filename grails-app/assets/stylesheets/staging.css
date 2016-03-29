@@ -110,6 +110,11 @@ div.unit-filters {
 	margin: 0 0 0.5em 0;
 }
 
+button.clear-unit-filter {
+    height: 1em;
+    width: 1em;
+}
+
 #unit-selection td, th {
 	padding: 0.2em;
 }

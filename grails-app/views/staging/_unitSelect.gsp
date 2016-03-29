@@ -7,6 +7,7 @@
 		<g:form action="unitSelect">
 			<g:submitButton name="unit-filter" value="Filter" />
 			<g:textField name="name" value="${filters?.name}" />
+			<button class="clear-unit-filter" style="visibility:hidden"></button>
 		</g:form>
 	</div>
 
