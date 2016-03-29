@@ -31,7 +31,7 @@
 		<g:if test="${unit instanceof Mech}" >
 			<span><g:message code="unit.actionpoints.label" />: ${unitSummary.unitAP} AP</span>
 			
-			<g:if test="${unitJP > 0}">
+			<g:if test="${unitSummary.unitJP > 0}">
 				<span class="right"><g:message code="unit.jumppoints.label" />: ${unitSummary.unitJP} JP</span>
 			</g:if>
 		</g:if>
