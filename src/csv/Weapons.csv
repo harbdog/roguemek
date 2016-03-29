@@ -1,8 +1,8 @@
 name,shortName,aliases,description,weaponType,mass,crits,heat,damage,cycle,projectiles,clusterHits,minRange,shortRange,mediumRange,longRange,ammoTypes,tech,year,cbills,battleValue
 Small Laser,SLAS,ISSmallLaser,,Energy,0.5,1,1,3,1,1,1,0,1,2,3,,I,0,0,0
-Medium Laser,MLAS,"Medium Laser,ISMediumLaser",,Energy,1,1,3,5,1,1,1,0,2,4,6,,I,0,0,0
-Large Laser,LLAS,ISLargeLaser,,Energy,5,2,5,8,2,1,1,0,3,6,9,,I,0,0,0
-Particle Projection Cannon,PPC,"PPC,ISPPC,Particle Cannon",,Energy,7,3,7,10,2,1,1,3,4,8,12,,I,0,0,0
+Medium Laser,MLAS,"Medium Laser,ISMediumLaser",,Energy,1,1,3,5,1,1,1,0,3,6,9,,I,0,0,0
+Large Laser,LLAS,ISLargeLaser,,Energy,5,2,5,8,2,1,1,0,5,10,15,,I,0,0,0
+Particle Projection Cannon,PPC,"PPC,ISPPC,Particle Cannon",,Energy,7,3,7,10,2,1,1,3,6,12,18,,I,0,0,0
 Flamer,FLAMR,ISFlamer,,Energy,1,1,3,2,1,1,1,0,1,2,3,,I,0,0,0
 Auto Cannon 20,AC/20,"ISAC20,ISAC20 (Split),Autocannon/20",,Ballistic,14,10,7,20,2,1,1,0,3,6,9,AC20AMMO,I,0,0,0
 Auto Cannon 10,AC/10,"ISAC10,Autocannon/10",,Ballistic,12,7,3,10,2,1,1,0,5,10,15,AC10AMMO,I,0,0,0
