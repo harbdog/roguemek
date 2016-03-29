@@ -147,7 +147,16 @@
 				</span>
 			</p>
 			<br/>
-			
+			<p>
+				The following factors influence the % chance to hit a target:
+			</p>
+			<ul>
+				<li>Range - weapons have varying minimum and maximum ranges</li>
+				<li>Terrain Modifiers - trees and other obstruction</li>
+				<li>Unit Speed - walking and running</li>
+				<li>Target Speed - the number of hexes the enemy target moved during its last turn</li>
+			</ul>
+			<br/>
 			<p>
 				After your weapon selections have been made, press the center rectangle control to fire all selected weapons at the target.
 			</p>
