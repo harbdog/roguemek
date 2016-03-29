@@ -11,6 +11,8 @@ class BattleMechController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
+	transient springSecurityService
+	
 	def displayImage() {
 		def bMech = BattleMech.findById(params.id)
 		byte[] imageInByte = bMech.image
@@ -29,7 +31,7 @@ class BattleMechController {
     }
 	
 	def battleInfo(BattleMech battleMechInstance) {
-		respond battleMechInstance
+		respond battleMechInstance, model:[userInstance: currentUser()]
 	}
 
     def create() {
@@ -114,4 +116,8 @@ class BattleMechController {
             '*'{ render status: NOT_FOUND }
         }
     }
+	
+	private currentUser() {
+		return MekUser.get(springSecurityService.principal.id)
+	}
 }

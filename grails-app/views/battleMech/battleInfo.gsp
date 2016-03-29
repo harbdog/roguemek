@@ -7,11 +7,18 @@
  <% 
 	def mechInstance = battleMechInstance?.mech
 	def pilotInstance = battleMechInstance?.pilot
+	def pilotUserInstance = battleMechInstance?.pilot?.ownerUser
 	
-	def allHeatEffects = HeatEffect.getAllHeatEffects()
-	def unitHeatEffects = HeatEffect.getHeatEffectsAt(battleMechInstance?.heat)
-	def heatAsPercent = 100 * (battleMechInstance?.heat / HeatEffect.MAX_HEAT_EFFECT)
-	if(heatAsPercent > 100) heatAsPercent = 100
+	// only calculate and display heat effects for the owner of the unit
+	def allHeatEffects = []
+	def unitHeatEffects = []
+	def heatAsPercent = 0
+	if(userInstance?.id == pilotUserInstance?.id) {
+		allHeatEffects = HeatEffect.getAllHeatEffects()
+		unitHeatEffects = HeatEffect.getHeatEffectsAt(battleMechInstance?.heat)
+		heatAsPercent = 100 * (battleMechInstance?.heat / HeatEffect.MAX_HEAT_EFFECT)
+		if(heatAsPercent > 100) heatAsPercent = 100
+	}
  %>
  
  <g:if test="${battleMechInstance?.isDestroyed()}">
@@ -102,7 +109,7 @@
 			</div>
 			
 			<div id="heat">
-				<g:if test="${battleMechInstance?.heat >= 0}">
+				<g:if test="${userInstance?.id == pilotUserInstance?.id && battleMechInstance?.heat >= 0}">
 					<style>
 						div#heat-bar {
 					 		width:${heatAsPercent}%;
