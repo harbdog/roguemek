@@ -101,6 +101,37 @@ div.bottom ul, div.bottom li {
 	margin: 0.1em 1em 0.1em 1.5em;
 }
 
+p.content-image-left {
+	display: flex;
+	align-items: flex-start;
+}
+
+p.content-image-left img:first-child {
+	margin: 0.25em 0.5em 0 0 ;
+}
+
+p.content-image-right {
+	display: flex;
+	align-items: flex-start;
+}
+
+p.content-image-right img:first-child {
+	margin: 0.25em 0 0 0.5em;
+}
+
+p.content-image-both {
+	display: flex;
+	align-items: flex-start;
+}
+
+p.content-image-both img:first-child {
+	margin: 0.25em 0.5em 0 0 ;
+}
+
+p.content-image-both img:last-child {
+	margin: 0.25em 0 0 0.5em;
+}
+
 
 img.unit-image {
 	-ms-transform: rotate(180deg); /* IE 9 */
