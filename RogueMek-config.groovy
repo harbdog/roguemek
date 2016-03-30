@@ -45,6 +45,12 @@ roguemek {
 }
 
 dataSource {
+	// default to local h2 database
+	driverClassName = "org.h2.Driver"
+	username = "sa"
+	password = "AdminAdmin"
+
+//	Example connection to a Postgres server using OS environment variables for the values:
 //	driverClassName = "org.postgresql.Driver"
 //	username = System.env.ROGUEMEK_DB_USERNAME
 //	password = System.env.ROGUEMEK_DB_PASSWORD
