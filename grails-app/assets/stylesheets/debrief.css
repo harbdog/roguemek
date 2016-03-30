@@ -17,26 +17,23 @@ div #spinner {
 }
 
 #chat-window {
-	display: table;
     margin-right: 1em;
     overflow: auto;
     margin: 1em 1em 1em 2.5em;
 }
 
 div.chat-line {
-	display: table-row;
 	word-wrap: break-word;
 }
 
 span.chat-time {
-	display: table-cell;
+	
 	padding-right: 0.5em;
 	color: #C0C0C0;
 	white-space: nowrap;
 }
 
 span.chat-message {
-	display: table-cell;
 }
 
 /* TODO: use #FF4646 for enemy chat? */
