@@ -404,6 +404,40 @@ img.unit-preview {
     animation:spin 8s linear infinite;
 }
 
+/* Map selection preview items */
+#map-selection-panel {
+	display: flex;
+	height: 100%;
+	width: 100%;
+}
+
+#map-selection-preview {
+	position: relative;
+	width: 100%;
+	margin-bottom: 0.5em;
+	border-left: 1px solid #999;
+}
+
+#map-info-preview {
+	position: absolute;
+	margin: auto;
+	top: 5em;
+	right: 1em;
+	left: 1em;
+	bottom: 1em;
+	width: 100%;
+}
+
+#map-image-preview {
+	margin-left: 0.5em;
+}
+
+#map-image-preview span {
+	margin-left: 1em;
+	font-color: #3498DB;
+	font-size: 1.25em;
+}
+
 /* http://stackoverflow.com/a/16771693/854696 */
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }

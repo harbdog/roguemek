@@ -993,12 +993,25 @@ function showMapSelect() {
 		$("input[type='radio'][name='map-radio'][value='"+selectedMapId+"']").prop("checked", true);
 	}
 	
+	var idealDialogWidth = 800;
+	
 	var windowWidth = $(window).width();
 	var windowHeight = $(window).height();
 	
-	mapSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
-	mapSelectDialog.dialog("option", "width", windowWidth/2);
-	mapSelectDialog.dialog("option", "height", windowHeight);
+	var dialogWidth = 3*windowWidth/4;
+	if(dialogWidth < idealDialogWidth) {
+		// make sure the width of the dialog in the window isn't too small to show everything
+		if(windowWidth < idealDialogWidth) {
+			dialogWidth = windowWidth;
+		}
+		else {
+			dialogWidth = idealDialogWidth;
+		}
+	}
+	
+	mapSelectDialog.dialog("option", "position", {my: "top", at: "top", of: window});
+	mapSelectDialog.dialog("option", "width", dialogWidth);
+	//mapSelectDialog.dialog("option", "height", windowHeight);
 	mapSelectDialog.dialog("open");
 	
 	setupAjaxMapSelect();
@@ -1013,6 +1026,29 @@ function setupAjaxMapSelect() {
 	$('input:radio[name="map-radio"]').change(function() {
 		// show the select button since a selection has been made
 		selectButton.button("enable");
+		
+		var mapId = $(this).val();
+        
+        var selection = $("#map-selection-preview");
+
+        $.ajax({
+            type: 'GET',
+            url: 'previewMap',
+            data: {mapId: mapId},
+            success: function(data) {
+            	// hide, load, then slide in the new unit preview
+                $(selection).hide({
+                	effect: 'fade',
+                	duration: 250,
+                	complete: function() {
+                		$(this).html(data).effect({
+                			effect: 'fade',
+                			duration: 350
+                		});
+                	}
+                })
+            }
+        });
 	});
 	
 	// enable ajax paging and sorting

@@ -3386,7 +3386,7 @@ class GameService extends AbstractGameService {
 			
 			// if the mech is in Water, increase heat dissipation by double for each heat sink in the water (max of 6)
 			Hex unitHex = game.board?.getHexAt(unit.x, unit.y)
-			int unitWaterLevel = unitHex.getTerrainLevel(Terrain.WATER)
+			int unitWaterLevel = unitHex?.getTerrainLevel(Terrain.WATER) ?: Terrain.LEVEL_NONE
 			
 			// find how many unique functional heat sinks are in the unit
 			def equipHeatSinks = [:]

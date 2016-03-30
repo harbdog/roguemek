@@ -127,7 +127,7 @@ class StagingController {
 	def mapSelect() {
 		def userInstance = currentUser()
 		if(userInstance) {
-			params.max = Math.min(params.max ? params.int('max') : 20, 100)
+			params.max = Math.min(params.max ? params.int('max') : 15, 100)
 			params.sort = params.sort ?: "name"
 			params.order = params.order ?: "asc"
 			
@@ -187,6 +187,17 @@ class StagingController {
 		b.loadMap()
 		
 		render ([updated:true] as JSON)
+	}
+	
+	/**
+	 * Allows for individual calls to render a map preview
+	 */
+	 @Transactional(readOnly = true)
+	def previewMap() {
+		HexMap map = HexMap.read(params.mapId)
+		if(map == null) return
+		
+		render (template: 'previewMap', model: [map: map])
 	}
 	
 	/**
