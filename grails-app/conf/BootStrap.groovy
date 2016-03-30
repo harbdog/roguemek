@@ -155,6 +155,15 @@ class BootStrap {
 		HexMap.init()
 		log.info('Initialized Maps')
 		
+		if(grailsApplication.config.roguemek.server.preloadMaps) {
+			HexMap.list().each { 
+				if(!it.mapLoaded) {
+					it.loadMap()
+					log.info("Pre Loaded Map ${it.name}")
+				}
+			}
+		}
+		
 		// Initialize factions
 		Faction.init()
 		log.info('Initialized Factions')

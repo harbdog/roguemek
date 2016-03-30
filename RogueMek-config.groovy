@@ -20,6 +20,7 @@ roguemek {
 	}
 	server {
 		headerMessage = "This is a RogueMek server"	// the message at the top of the root index page
+		preloadMaps = false	// set true to have all maps loaded during first server init (may take several minutes more)
 	}
 	registration {
 		// Any new user attempting to register can be enabled by setting newUserEnable to one of the following settings:

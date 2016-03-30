@@ -57,3 +57,14 @@
 	<g:select name="units" from="${roguemek.game.BattleUnit.list()}" multiple="multiple" optionKey="id" size="7" value="${gameInstance?.units*.id}" class="many-to-many"/>
 
 </div>
+
+<sec:ifAnyGranted roles="ROLE_ROOT">
+	<div class="fieldcontain ${hasErrors(bean: gameInstance, field: 'board.map', 'error')} ">
+		<label for="board.map">
+			<g:message code="game.map.label" default="Map" />
+			
+		</label>
+		<g:select name="board.map" from="${roguemek.model.HexMap.list()}" optionKey="id" value="${gameInstance?.board?.map?.id}"/>
+	
+	</div>
+</sec:ifAnyGranted>
