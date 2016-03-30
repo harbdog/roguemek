@@ -160,6 +160,11 @@ span.chat-user {
 	color: #99CCFF;
 }
 
+span.game-user {
+	margin-right: 5px;
+	color: #A0A0A0;
+}
+
 /* In-game Settings decoration */
 #settingsDiv span.property-heading {
 	margin-left: 10px;

@@ -36,30 +36,32 @@ class GameController {
 				if(g.isInit()) {
 					if(g.ownerUser == user) {
 						// TODO: give owner User a button to start the game instead of auto starting
-						log.debug("Game("+g.id+") owner User "+user?.username+" is starting the game")
+						log.trace("Game("+g.id+") owner User "+user?.username+" is starting the game")
 						
 						def initSuccess = gameService.initializeGame(g)
 						if(!initSuccess) {
 							// there was a failure, redirect back to staging
 							redirect controller: "staging", action: "staging", id: g.id
+							return
 						}
 					}
 					else {
 						// give participant pilots a screen showing they are waiting for the owner to start
 						redirect controller: "staging", action: "staging", id: g.id
+						return
 					}
 				}
 				else if(g.isOver()) {
 					// give a screen that the game is over with some results
 					redirect controller: "rogueMek", action: "debrief", id: g.id
+					return
 				}
-				else {
-					log.debug("User "+user?.username+" joining Game("+g.id+")")
-					
-					def chatMessages = ChatMessage.findAllByOptGameId(g.id, [max: 200, sort: "time", order: "asc"])
-					
-					respond g, model: [chatMessages:chatMessages]
-				}
+				
+				log.trace("User "+user?.username+" joining Game("+g.id+")")
+				
+				def chatMessages = ChatMessage.findAllByOptGameId(g.id, [max: 200, sort: "time", order: "asc"])
+				
+				respond g, model: [chatMessages:chatMessages]
 			}
 		}
 		else {

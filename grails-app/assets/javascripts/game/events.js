@@ -90,15 +90,16 @@ function handleChatUsersList(userDataList) {
  * @param userData
  */
 function handleChatUsersUpdate(userData) {
-	//<div><span class="chat-user">CapperDeluxe</span></div>
+	//<div data-chat-userid="ABCDEFG1234567"><span class="chat-user">CapperDeluxe</span></div>
 	var userId = userData.userid;
 	var userName = userData.username;
 	
 	var $chatUserDiv = $("div[data-chat-userid='"+userId+"']")
+	var $chatUserSpan = $chatUserDiv.find("span");
 	
 	if(userData.add) {
 		// first, make sure it doesn't already exist
-		if($chatUserDiv.length) {
+		/*if($chatUserDiv.length) {
 			$chatUserDiv.fadeIn();
 			return
 		}
@@ -110,14 +111,20 @@ function handleChatUsersUpdate(userData) {
 		var $chatUserSpan = $("<span>", {class: "chat-user"}).text(userName);
 		
 		$chatUserDiv.append($chatUserSpan);
-		$chatUsers.append($chatUserDiv);
+		$chatUsers.append($chatUserDiv);*/
 		
-		// TODO: allow customization of colors in chat!
-		var effectOptions = {color: shadeColor("#3399FF", -0.5)};
-		$chatUserDiv.effect("highlight", effectOptions, 1000);
+		if(!$chatUserSpan.hasClass("chat-user")) {
+		
+			$chatUserDiv.find("span")
+					.switchClass("game-user", "chat-user");
+			
+			// TODO: allow customization of colors in chat!
+			var effectOptions = {color: shadeColor("#3399FF", -0.5)};
+			$chatUserDiv.effect("highlight", effectOptions, 1000);
+		}
 	}
 	else if(userData.remove){
-		$chatUserDiv.fadeOut(function() {
+		/*$chatUserDiv.fadeOut(function() {
 			var $this = $(this);
 			// waiting a short while before complete removal just in case it was only a refresh event
 			setTimeout(function(){
@@ -125,7 +132,11 @@ function handleChatUsersUpdate(userData) {
 					$this.remove()
 				}
 			},500);
-		});
+		});*/
+		if(!$chatUserSpan.hasClass("game-user")) {
+			$chatUserDiv.find("span")
+					.switchClass("chat-user", "game-user");
+		}
 	}
 }
 

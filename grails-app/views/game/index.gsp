@@ -37,7 +37,9 @@
 					</g:if>
 				</div>
 			    <div id="chat-users">
-					<%-- chat users will be initialized by an ajax call after the game elements have loaded fully --%>
+					<g:each in="${gameInstance?.users}" var="thisUser">
+						<div data-chat-userid="${thisUser.id}"><span class="game-user">${thisUser.callsign}</span></div>
+					</g:each>
 				</div>
 			</div>
 		    <input id="chat-input" type="text"/>
