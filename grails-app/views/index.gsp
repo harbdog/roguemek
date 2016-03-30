@@ -27,7 +27,7 @@
 				RogueMek is a turn-based game that you can play in your web browser. This release highlights the following features:
 			</p>
 			<ul>
-				<li>2D Animated unit movement and weapons fire</li>
+				<li>2D Animated unit movement and weapons fire (no sound effects... yet)</li>
 				<li>Player versus Player (PvP) game play (no PvE or Co-op... yet)</li>
 				<li>Free For All game mode (no teams... yet)</li>
 				<li>Win/Loss and Kill/Death tracking (with front page leaderboard)</li>
