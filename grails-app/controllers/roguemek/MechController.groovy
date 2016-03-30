@@ -27,6 +27,9 @@ class MechController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
+		params.sort = params.sort ?: "name"
+		params.order = params.order ?: "asc"
+		
         respond Mech.list(params), model:[mechInstanceCount: Mech.count()]
     }
 	
@@ -52,8 +55,6 @@ class MechController {
     }
 	
 	def showMech() {
-		[mechPreview:Mech.list(max:5, sort:"name")]
-		
 		def chassisToSearchFor = params.chassis
 		def variantToSearchFor = params.variant
 		

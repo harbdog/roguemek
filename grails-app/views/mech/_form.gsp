@@ -8,12 +8,11 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'description', 'error')} required">
+<div class="fieldcontain ${hasErrors(bean: mechInstance, field: 'description', 'error')} ">
 	<label for="description">
 		<g:message code="mech.description.label" default="Description" />
-		<span class="required-indicator">*</span>
 	</label>
-	<g:textField name="description" required="" value="${mechInstance?.description}"/>
+	<g:textField name="description" value="${mechInstance?.description}"/>
 
 </div>
 

@@ -26,12 +26,8 @@
 					<span id="name-label" class="property-label"><g:message code="mech.name.label" default="Name" /></span>
 					
 						<span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${mechInstance}" field="name"/></span>
-						<% 
-							def mechImage = roguemek.game.BattleMech.initMechImage(mechInstance)
-						 %>
-						<g:if test="${mechImage}">
-							<span class="property-value" aria-labelledby="name-label"><asset:image class="unit-image" src="${mechImage}" /></span>
-						</g:if>
+						
+						<span class="property-value" aria-labelledby="name-label"><g:unitImage unitId="${mechInstance?.id}" animated="false" /></span>
 				</li>
 				</g:if>
 			

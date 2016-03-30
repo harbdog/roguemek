@@ -7,16 +7,14 @@
 		</sec:ifLoggedIn>
 		
 		<sec:ifAnyGranted roles="ROLE_ADMIN">
-		   
-		   <li><g:link controller="mekUserRole"
-	                action="index">Roles</g:link></li>
-	       
 	       <li><g:link controller="mekUser"
 	                action="index">Users</g:link></li>
-	       
-	       <li><g:link controller="pilot"
-	                action="index">Pilots</g:link></li>
-	       
+	                
+	       <li><g:link controller="mekUserRole"
+	                action="index">Roles</g:link></li>
+	    </sec:ifAnyGranted>
+	    
+	    <sec:ifAnyGranted roles="ROLE_ROOT">
 		   <li><g:link controller="battleMech"
 	                action="index">BattleMechs</g:link></li>
 	       
@@ -29,8 +27,6 @@
 	       <li><g:link controller="game"
 	                action="list">Games</g:link></li>
 	    </sec:ifAnyGranted>
-	    
-	    
 	    
 	    <g:if test="${params.action == 'register'}">
 			<%-- Hide login box while registering --%>

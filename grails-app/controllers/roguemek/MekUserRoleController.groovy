@@ -2,6 +2,7 @@ package roguemek
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+import grails.plugin.springsecurity.annotation.Secured
 
 @Transactional(readOnly = true)
 class MekUserRoleController {
@@ -15,11 +16,13 @@ class MekUserRoleController {
         respond MekUserRole.list(params), model:[userRoleInstanceCount: MekUserRole.count(), userInstance: currentUser()]
     }
 
+	@Secured(['ROLE_ROOT'])
     def create() {
         respond new MekUserRole(params)
     }
 
     @Transactional
+	@Secured(['ROLE_ROOT'])
     def save(MekUserRole mekUserRoleInstance) {
         if (mekUserRoleInstance == null) {
             notFound()
@@ -44,6 +47,7 @@ class MekUserRoleController {
     }
 
     @Transactional
+	@Secured(['ROLE_ROOT'])
     def delete() {
 		MekUser currentUser = currentUser()
 		

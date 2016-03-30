@@ -9,12 +9,15 @@
 	</head>
 	<body>
 		<a href="#list-userRole" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+		
+		<sec:ifAnyGranted roles="ROLE_ROOT">
 		<div class="nav" role="navigation">
 			<ul>
-				<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 				<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 			</ul>
 		</div>
+		</sec:ifAnyGranted>
+		
 		<div id="list-userRole" class="content scaffold-list" role="main">
 			<h1><g:message code="default.list.label" args="[entityName]" /></h1>
 			<g:if test="${flash.message}">
@@ -28,7 +31,9 @@
 					
 						<th><g:message code="userRole.user.label" default="User" /></th>
 						
-						<th><g:message code="userRole.delete.label" default="Delete" />?</th>
+						<sec:ifAnyGranted roles="ROLE_ROOT">
+							<th><g:message code="userRole.delete.label" default="Delete" />?</th>
+						</sec:ifAnyGranted>
 					
 					</tr>
 				</thead>
@@ -40,12 +45,14 @@
 					
 						<td><g:link controller="mekUser" action="show" id="${mekUserRoleInstance?.user?.id}">${mekUserRoleInstance?.user?.username}</g:link></td>
 						
-						<g:if test="${userInstance != null && userInstance.id != mekUserRoleInstance?.user?.id}">
-							<td><g:link action="delete" params="[authority: mekUserRoleInstance?.role?.authority, userid: mekUserRoleInstance?.user?.id]"><g:message code="userRole.delete.label" default="Delete" /></g:link></td>
-						</g:if>
-						<g:else>
-							<td></td>
-						</g:else>
+						<sec:ifAnyGranted roles="ROLE_ROOT">
+							<g:if test="${userInstance != null && userInstance.id != mekUserRoleInstance?.user?.id}">
+								<td><g:link action="delete" params="[authority: mekUserRoleInstance?.role?.authority, userid: mekUserRoleInstance?.user?.id]"><g:message code="userRole.delete.label" default="Delete" /></g:link></td>
+							</g:if>
+							<g:else>
+								<td></td>
+							</g:else>
+						</sec:ifAnyGranted>
 					</tr>
 				</g:each>
 				</tbody>

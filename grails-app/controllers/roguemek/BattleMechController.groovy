@@ -23,6 +23,9 @@ class BattleMechController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
+		params.sort = params.sort ?: "mech.name"
+		params.order = params.order ?: "asc"
+		
         respond BattleMech.list(params), model:[battleMechInstanceCount: BattleMech.count()]
     }
 
