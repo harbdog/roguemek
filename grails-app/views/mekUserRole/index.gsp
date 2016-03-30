@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'userRole.label', default: 'Role')}" />
+		<g:set var="entityName" value="${message(code: 'userRole.label', default: 'UserRole')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -27,17 +27,25 @@
 						<th><g:message code="userRole.role.label" default="Role" /></th>
 					
 						<th><g:message code="userRole.user.label" default="User" /></th>
+						
+						<th><g:message code="userRole.delete.label" default="Delete" />?</th>
 					
 					</tr>
 				</thead>
 				<tbody>
-				<g:each in="${mekUserRoleInstanceList}" status="i" var="userRoleInstance">
+				<g:each in="${mekUserRoleInstanceList}" status="i" var="mekUserRoleInstance">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
-						<td>${userRoleInstance?.role?.authority}</td>
+						<td>${mekUserRoleInstance?.role?.authority}</td>
 					
-						<td><g:link controller="mekUser" action="show" id="${userRoleInstance?.user?.id}">${userRoleInstance?.user?.username}</g:link></td>
-					
+						<td><g:link controller="mekUser" action="show" id="${mekUserRoleInstance?.user?.id}">${mekUserRoleInstance?.user?.username}</g:link></td>
+						
+						<g:if test="${userInstance != null && userInstance.id != mekUserRoleInstance?.user?.id}">
+							<td><g:link action="delete" params="[authority: mekUserRoleInstance?.role?.authority, userid: mekUserRoleInstance?.user?.id]"><g:message code="userRole.delete.label" default="Delete" /></g:link></td>
+						</g:if>
+						<g:else>
+							<td></td>
+						</g:else>
 					</tr>
 				</g:each>
 				</tbody>

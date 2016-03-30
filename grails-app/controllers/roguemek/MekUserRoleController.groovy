@@ -1,22 +1,18 @@
 package roguemek
 
-
-
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 
 @Transactional(readOnly = true)
 class MekUserRoleController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    static allowedMethods = [save: "POST", update: "PUT"]
+	
+	transient springSecurityService
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond MekUserRole.list(params), model:[userRoleInstanceCount: MekUserRole.count()]
-    }
-
-    def show(MekUserRole userRoleInstance) {
-        respond userRoleInstance
+        respond MekUserRole.list(params), model:[userRoleInstanceCount: MekUserRole.count(), userInstance: currentUser()]
     }
 
     def create() {
@@ -24,73 +20,64 @@ class MekUserRoleController {
     }
 
     @Transactional
-    def save(MekUserRole userRoleInstance) {
-        if (userRoleInstance == null) {
+    def save(MekUserRole mekUserRoleInstance) {
+        if (mekUserRoleInstance == null) {
             notFound()
             return
         }
 
-        if (userRoleInstance.hasErrors()) {
-            respond userRoleInstance.errors, view:'create'
+        if (mekUserRoleInstance.hasErrors()) {
+            respond mekUserRoleInstance.errors, view:'create'
             return
         }
 
-        userRoleInstance.save flush:true
+        mekUserRoleInstance.save flush:true
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'userRole.label', default: 'UserRole'), userRoleInstance.id])
-                redirect userRoleInstance
+                flash.message = message(code: 'default.created.message', args: [message(code: 'userRole.label', default: 'UserRole'),
+						"${mekUserRoleInstance.role.authority} - ${mekUserRoleInstance.user.username}"])
+                redirect action: "index", id: mekUserRoleInstance.user.id
             }
-            '*' { respond userRoleInstance, [status: CREATED] }
-        }
-    }
-
-    def edit(MekUserRole userRoleInstance) {
-        respond userRoleInstance
-    }
-
-    @Transactional
-    def update(MekUserRole userRoleInstance) {
-        if (userRoleInstance == null) {
-            notFound()
-            return
-        }
-
-        if (userRoleInstance.hasErrors()) {
-            respond userRoleInstance.errors, view:'edit'
-            return
-        }
-
-        userRoleInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'UserRole.label', default: 'UserRole'), userRoleInstance.id])
-                redirect userRoleInstance
-            }
-            '*'{ respond userRoleInstance, [status: OK] }
+            '*' { respond mekUserRoleInstance, [status: CREATED] }
         }
     }
 
     @Transactional
-    def delete(MekUserRole userRoleInstance) {
-
-        if (userRoleInstance == null) {
+    def delete() {
+		MekUser currentUser = currentUser()
+		
+		Role role = Role.findByAuthority(params.authority)
+		MekUser user = MekUser.get(params.userid)
+		
+		if (role == null || user == null || currentUser == null) {
+			notFound()
+			return
+		}
+		
+		if(currentUser.id == user.id) {
+			// do not allow user to remove roles from itself
+			notFound()
+			return
+		}
+		
+		MekUserRole mekUserRoleInstance = MekUserRole.findByRoleAndUser(role, user)
+		
+        if (mekUserRoleInstance == null) {
             notFound()
             return
         }
 
-        userRoleInstance.delete flush:true
+        mekUserRoleInstance.delete flush:true
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'UserRole.label', default: 'UserRole'), userRoleInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
+		flash.message = message(code: 'default.deleted.message', args: [message(code: 'UserRole.label', default: 'UserRole'), 
+				"${role.authority} - ${user.username}"])
+		redirect action: "index"
     }
+	
+	private MekUser currentUser() {
+		return MekUser.get(springSecurityService.principal.id)
+	}
 
     protected void notFound() {
         request.withFormat {

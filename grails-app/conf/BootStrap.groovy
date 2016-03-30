@@ -32,9 +32,9 @@ class BootStrap {
 		// Initialize the Hex Tileset
 		HexTileset.init()
 		
-		def rootRole = Role.findByAuthority(Role.ROLE_ROOT)
-		if(!rootRole) {
-			rootRole = new Role(authority: Role.ROLE_ROOT).save(flush: true)
+		def userRole = Role.findByAuthority(Role.ROLE_USER)
+		if(!userRole) {
+			userRole = new Role(authority: Role.ROLE_USER).save(flush: true)
 		}
 		
 		def adminRole = Role.findByAuthority(Role.ROLE_ADMIN)
@@ -42,9 +42,9 @@ class BootStrap {
 			adminRole = new Role(authority: Role.ROLE_ADMIN).save(flush: true)
 		}
 		
-		def userRole = Role.findByAuthority(Role.ROLE_USER)
-		if(!userRole) {
-			userRole = new Role(authority: Role.ROLE_USER).save(flush: true)
+		def rootRole = Role.findByAuthority(Role.ROLE_ROOT)
+		if(!rootRole) {
+			rootRole = new Role(authority: Role.ROLE_ROOT).save(flush: true)
 		}
 		
 		assert Role.count == 3
