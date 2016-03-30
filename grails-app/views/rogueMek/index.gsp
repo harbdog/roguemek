@@ -32,7 +32,7 @@
 			</div>
 			
 			<ul class="property-list user">
-			<g:if test="${mekUserInstance?.pilots}">
+
 			<%
                 // find all games owned by the user and that the user's pilots are in
                 def gameList = []
@@ -155,8 +155,6 @@
                     
                 </li>
 				</g:if>
-				
-			</g:if>
 			
 			</ul>
 		</div>
