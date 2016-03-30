@@ -10,6 +10,7 @@ import org.atmosphere.cpr.BroadcasterFactory
 
 import grails.converters.JSON
 import grails.transaction.Transactional
+import grails.util.Environment
 import roguemek.*
 import roguemek.model.*
 import roguemek.mtf.*
@@ -1047,8 +1048,8 @@ class GameService extends AbstractGameService {
 	 */
 	public def skipTurn(Game game, BattleUnit unit) {
 		if(unit != game.getTurnUnit()) {
-			if(isRootUser()) {
-				// allow root user to skip another unit's turns for testing purposes
+			if(isRootUser() && Environment.current == Environment.DEVELOPMENT) {
+				// allow root user to skip another unit's turns only for development purposes
 			}
 			else {
 				return
