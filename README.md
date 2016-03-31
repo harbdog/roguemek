@@ -9,4 +9,4 @@ RogueMek is a turn-based game that you can play in your web browser. The first r
 * Win/Loss and Kill/Death tracking (with front page leaderboard)
 * Battle log recording (no replays... yet)
 * 90+ stock 3025 era Inner Sphere units and technology (no Clans or customization... yet)
-* 30+ maps to wage battle on (no board previews or custom boards... yet)
+* 30+ maps to wage battle on (no custom boards... yet)
