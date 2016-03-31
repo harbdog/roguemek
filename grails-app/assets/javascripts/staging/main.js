@@ -1079,6 +1079,35 @@ function showMapSelect() {
 	mapSelectDialog.dialog("open");
 	
 	setupAjaxMapSelect();
+	
+	if(selectedMapId) {
+		// have the selected map show its preview after opening the dialog
+		ajaxUpdateMapPreview(selectedMapId);
+	}
+}
+
+// load the given map id into the map preview div using ajax
+function ajaxUpdateMapPreview(mapId) {
+	var selection = $("#map-selection-preview");
+	
+	$.ajax({
+        type: 'GET',
+        url: 'previewMap',
+        data: {mapId: mapId},
+        success: function(data) {
+        	// hide, load, then slide in the new unit preview
+            $(selection).hide({
+            	effect: 'fade',
+            	duration: 250,
+            	complete: function() {
+            		$(this).html(data).effect({
+            			effect: 'fade',
+            			duration: 350
+            		});
+            	}
+            })
+        }
+    });
 }
 
 //setup ajax paging and sorting for the map select
@@ -1093,51 +1122,8 @@ function setupAjaxMapSelect() {
 		
 		var mapId = $(this).val();
         
-        var selection = $("#map-selection-preview");
-
-        $.ajax({
-            type: 'GET',
-            url: 'previewMap',
-            data: {mapId: mapId},
-            success: function(data) {
-            	// hide, load, then slide in the new unit preview
-                $(selection).hide({
-                	effect: 'fade',
-                	duration: 250,
-                	complete: function() {
-                		$(this).html(data).effect({
-                			effect: 'fade',
-                			duration: 350
-                		});
-                	}
-                })
-            }
-        });
+		ajaxUpdateMapPreview(mapId);
 	});
-	
-	if(selectedMapId) {
-		// have the selected map show its preview on load
-		var selection = $("#map-selection-preview");
-		
-		$.ajax({
-            type: 'GET',
-            url: 'previewMap',
-            data: {mapId: selectedMapId},
-            success: function(data) {
-            	// hide, load, then slide in the new unit preview
-                $(selection).hide({
-                	effect: 'fade',
-                	duration: 250,
-                	complete: function() {
-                		$(this).html(data).effect({
-                			effect: 'fade',
-                			duration: 350
-                		});
-                	}
-                })
-            }
-        });
-	}
 	
 	// enable ajax paging and sorting
 	$("#map-selection").find(".pagination a, th.sortable a").on({
