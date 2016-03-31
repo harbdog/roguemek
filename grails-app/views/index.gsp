@@ -170,7 +170,7 @@
 			
 			<h1>Notes</h1>
 			<ul>
-				<li>There is currently no in-game explanation of the various weapon statistics, they are all based on their values in Battletech (search <a href="http://www.sarna.net/" target="_blank">Sarna</a> for their details)</li>
+				<li>There is currently no in-game explanation of the various weapon statistics (see the <a href="https://github.com/harbdog/roguemek/wiki/Weapons-Cheatsheet" target="_blank">Wiki</a>)</li>
 				<li>There is currently no torso twisting in this game</li>
 				<li>The isometric view can be toggled off in Settings, in case it gets in the way of things</li>
 				<li>If you would like to report a bug, please use the <a href="https://github.com/harbdog/roguemek/issues" target="_blank">issue tracker on GitHub</a>.</li>
