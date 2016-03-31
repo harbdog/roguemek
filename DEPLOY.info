@@ -1,0 +1,26 @@
+RogueMek Deployment Instructions for Linux, Windows, and OSX
+https://github.com/harbdog/roguemek
+
+-----------------------------------------------
+
+Required Software:
+Tomcat 7
+
+-----------------------------------------------
+
+1. Make sure the pre-requisite software is properly installed
+   Tomcat 7 - https://tomcat.apache.org/download-70.cgi
+   
+2. Download release war file "RogueMek.war", or build one yourself following the instructions in the BUILD.info file.
+
+3. Additional Tomcat JVM settings will be required before starting the Tomcat server:
+   + increase JVM max memory pool (-Xmx392m)
+   + increase PermGen space (-XX:MaxPermSize=128m)
+
+4. If not already customized in your own built war file, copy and modify RogueMek-config.groovy to change default passwords 
+   and other important things (such as external database settings), and reference its location path with an environment variable 
+   named ROGUEMEK_CONFIG. For example:
+        set ROGUEMEK_CONFIG=C:\MyRogueMek-config.groovy
+        
+5. Start the Tomcat server and wait for it to finish. If there are no further errors after it is finished starting up, 
+   point your browser to http://localhost:8080/RogueMek (assuming you kept the default port settings).
