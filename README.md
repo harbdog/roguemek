@@ -1,6 +1,12 @@
 RogueMek
 ========
 
-The next generation of RogueMek, originally created as a mini game in the MiniMek game collection (http://minimek.sourceforge.net/).
+RogueMek is a turn-based game that you can play in your web browser. The first release highlights the following features:
 
-The goal of this project is to move to 2D sprites instead of ASCII and a server based model using Grails for persistence of player. This will also allow multiplayer to be possible for both PvP and PvE style gameplay.
+* 2D Animated unit movement and weapons fire (no sound effects... yet)
+* Player versus Player (PvP) game play (no PvE or Co-op... yet)
+* Free For All game mode (no teams... yet)
+* Win/Loss and Kill/Death tracking (with front page leaderboard)
+* Battle log recording (no replays... yet)
+* 90+ stock 3025 era Inner Sphere units and technology (no Clans or customization... yet)
+* 30+ maps to wage battle on (no board previews or custom boards... yet)
