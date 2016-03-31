@@ -13,15 +13,23 @@
 	display: initial;
 }
 
+#map-selected {
+	font-size: 1em;
+}
+
+#map-selected .ui-button-text {
+	display: initial;
+}
+
 div #spinner {
 	background: url(../images/hex-spinner.gif) no-repeat transparent;
 	background-size: 64px;
 	width: 64px;
 	height: 64px;
-    padding: 0.5em;
-    position: absolute;
-    top: calc(50% - 32px);
-    left: calc(50% - 32px);
+	padding: 0.5em;
+	position: absolute;
+	top: calc(50% - 32px);
+	left: calc(50% - 32px);
 	text-indent: -9999px;
 }
 
@@ -36,7 +44,7 @@ div #spinner {
 }
 
 /* Launch dialog */
-#launch-button{
+#launch-button {
 	width: 98%;
 	font-size: 2em;
 }
@@ -48,19 +56,19 @@ div #spinner {
 
 #chat-window {
 	float: left;
-    width: 70%;
-    border: 1px solid black;
-    height: 100px;
-    overflow: auto;
+	width: 70%;
+	border: 1px solid black;
+	height: 100px;
+	overflow: auto;
 }
 
 #chat-users {
 	float: left;
-    width: 29%;
+	width: 29%;
 	border: 1px solid black;
-    border-left: 1px solid #CCCCCC;
-    height: 100px;
-    overflow: auto;
+	border-left: 1px solid #CCCCCC;
+	height: 100px;
+	overflow: auto;
 }
 
 #chat-users span {
@@ -111,8 +119,8 @@ div.unit-filters {
 }
 
 button.clear-unit-filter {
-    height: 1em;
-    width: 1em;
+	height: 1em;
+	width: 1em;
 }
 
 #unit-selection td, th {
@@ -134,39 +142,39 @@ button.clear-unit-filter {
 
 /* Map/Unit selection radio button decoration */
 label {
-    display: inline-block;
-    cursor: pointer;
-    position: relative;
-    padding-left: 25px;
-    margin-right: 15px;
+	display: inline-block;
+	cursor: pointer;
+	position: relative;
+	padding-left: 25px;
+	margin-right: 15px;
 }
 
 input[type=radio] {
-    display: none;
+	display: none;
 }
 
 label:before {
-    content: "";
-    display: inline-block;
+	content: "";
+	display: inline-block;
  
-    width: 16px;
-    height: 16px;
+	width: 16px;
+	height: 16px;
  
-    margin-right: 10px;
-    position: absolute;
-    left: 0;
-    bottom: 5px;
-    background-image: url("images/ui-icons_222222_256x240.png");
-    background-position: 16px 16px;	/* .ui-icon-blank */
+	margin-right: 10px;
+	position: absolute;
+	left: 0;
+	bottom: 5px;
+	background-image: url("images/ui-icons_222222_256x240.png");
+	background-position: 16px 16px; /* .ui-icon-blank */
 }
 
 .radio label:before {
-    border-radius: 8px;
+	border-radius: 8px;
 }
 
-input[type=radio]:checked + label:before {
-    background-image: url("images/ui-icons_4b8e0b_256x240.png");
-    background-position: -112px -192px; /* .ui-icon-circle-arrow-e */
+input[type=radio]:checked+label:before {
+	background-image: url("images/ui-icons_4b8e0b_256x240.png");
+	background-position: -112px -192px; /* .ui-icon-circle-arrow-e */
 }
 
 /* Player staging area */
@@ -189,17 +197,17 @@ input[type=radio]:checked + label:before {
 	margin: 0 0.5em 0.5em 0;
 	padding-bottom: 1em;
 	border: 3px solid #3399FF;
-			   -moz-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
 	-webkit-border-radius: 0.5em;
-	        border-radius: 0.5em;
+	border-radius: 0.5em;
 }
 
 .player {
 	margin: 0.5em 0.5em 0.5em 0.5em;
 	border: 1px solid #CCCCCC;
-		   -moz-border-radius: 0.3em;
+	-moz-border-radius: 0.3em;
 	-webkit-border-radius: 0.3em;
-	        border-radius: 0.3em;
+	border-radius: 0.3em;
 }
 
 .player-info {
@@ -221,7 +229,7 @@ img.unit-image {
 }
 
 span.unit-name {
-	margin: 0.5em 0.5em 0 0 ;
+	margin: 0.5em 0.5em 0 0;
 }
 
 /* User buttons */
@@ -230,17 +238,17 @@ button.user-delete {
 	height: 1.5em;
 }
 
-button.user-join{
+button.user-join {
 	float: right;
 	margin: 0.5em 0.5em 0.5em 0;
 	font-size: 0.75em;
 }
 
-input.player-ready[type=checkbox] + label {
+input.player-ready[type=checkbox]+label {
 	opacity: 1;
 }
 
-input.player-ready[type=checkbox]:checked + label {
+input.player-ready[type=checkbox]:checked+label {
 	background-color: #3498DB;
 }
 
@@ -261,7 +269,7 @@ button.unit-add {
 	margin: 0.5em 0 0.5em 0.25em;
 	font-size: 0.75em;
 }
- 
+
 /* Starting position menu/button */
 .player-info span.location {
 	cursor: default;
@@ -307,7 +315,7 @@ div#camoSelectDiv {
 div.camo-selection {
 	display: flex;
 	height: 100%;
-	width: 100%;	
+	width: 100%;
 }
 
 div#color-selection {
@@ -355,9 +363,9 @@ img.camo-unit-preview {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	-webkit-animation:spin 8s linear infinite;
-    -moz-animation:spin 8s linear infinite;
-    animation:spin 8s linear infinite;
+	-webkit-animation: spin 8s linear infinite;
+	-moz-animation: spin 8s linear infinite;
+	animation: spin 8s linear infinite;
 }
 
 /* Unit selection preview items */
@@ -399,9 +407,9 @@ img.unit-preview {
 	top: 0;
 	left: 0;
 	right: 0;
-	-webkit-animation:spin 8s linear infinite;
-    -moz-animation:spin 8s linear infinite;
-    animation:spin 8s linear infinite;
+	-webkit-animation: spin 8s linear infinite;
+	-moz-animation: spin 8s linear infinite;
+	animation: spin 8s linear infinite;
 }
 
 /* Map selection preview items */
@@ -433,6 +441,7 @@ img.unit-preview {
 }
 
 #map-image-preview span {
+	display: inherit;
 	margin-left: 1em;
 	font-color: #3498DB;
 	font-size: 1.25em;
@@ -512,27 +521,34 @@ img.unit-preview {
 	border: 1px groove #CCCCCC;
 	border-bottom: none;
 }
+
 #unit-info-preview #armor-CT {
 	border: 1px groove #CCCCCC;
 }
+
 #unit-info-preview #armor-LT {
 	border: 1px groove #CCCCCC;
 }
+
 #unit-info-preview #armor-RT {
 	border: 1px groove #CCCCCC;
 }
+
 #unit-info-preview #armor-LA {
 	border: 1px groove #CCCCCC;
 	border-right: none;
 }
+
 #unit-info-preview #armor-RA {
 	border: 1px groove #CCCCCC;
 	border-left: none;
 }
+
 #unit-info-preview #armor-LL {
 	border: 1px groove #CCCCCC;
 	border-top: none;
 }
+
 #unit-info-preview #armor-RL {
 	border: 1px groove #CCCCCC;
 	border-top: none;

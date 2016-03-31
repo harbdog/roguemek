@@ -5,6 +5,7 @@
 
 var dialogLoading;
 var mapSelectDialog;
+var mapPreviewDialog;
 var unitSelectDialog;
 var camoSelectDialog;
 var camoSelectUserID;
@@ -49,6 +50,26 @@ function initStaging() {
 			"Select": ajaxUpdateMapSelection,
 			Cancel: function() {
 				mapSelectDialog.dialog("close");
+			}
+		}
+    });
+	
+	// Initialize map preview dialog
+	mapPreviewDialog = $("#mapPreviewDiv").dialog({
+		title: "Preview Map",
+    	autoOpen: false,
+    	modal: true,
+		show: {
+			effect: "blind",
+			duration: 350
+		},
+		hide: {
+			effect: "blind",
+			duration: 250
+		},
+		buttons: {
+			Close: function() {
+				mapPreviewDialog.dialog("close");
 			}
 		}
     });
@@ -173,6 +194,12 @@ function initStaging() {
     		secondary: "ui-icon-carat-1-w"
     	}
     }).click(loadMapSelect);
+    
+    $("#map-selected").button({
+    	icons: {
+    		secondary: "ui-icon-image"
+    	}
+    }).click(previewMapSelect);
     
     $("button.disabled").button();
     
@@ -969,6 +996,43 @@ function transferPlayer($playerDiv, $teamDiv) {
 	// TODO: implement teams in the game and update the database data from the drop
 }
 
+/**
+ * Called when a game participant clicks to view the map preview
+ */
+function previewMapSelect() {
+	if(selectedMapId == null) return;
+	
+	// show a loading dialog while waiting to get the info display from the server
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+	
+	var data = {mapId: selectedMapId}
+	
+	mapPreviewDialog.load("previewMap", data, function() {
+		dialogLoading.dialog("close");
+		
+		var idealDialogWidth = 500;
+		
+		var windowWidth = $(window).width();
+		
+		// make sure the width of the dialog in the window isn't too small to show everything
+		if(windowWidth < idealDialogWidth) {
+			dialogWidth = windowWidth;
+		}
+		else {
+			dialogWidth = idealDialogWidth;
+		}
+		
+		mapPreviewDialog.dialog("option", "position", {my: "center", at: "center", of: window});
+		mapPreviewDialog.dialog("option", "width", dialogWidth);
+		//mapPreviewDialog.dialog("option", "height", windowHeight);
+		mapPreviewDialog.dialog("open");
+    });
+}
+
+/**
+ * Called when the game owner clicks to change the map
+ */
 function loadMapSelect() {
 	
 	// show a loading dialog while waiting to get the info display from the server
@@ -1051,6 +1115,30 @@ function setupAjaxMapSelect() {
         });
 	});
 	
+	if(selectedMapId) {
+		// have the selected map show its preview on load
+		var selection = $("#map-selection-preview");
+		
+		$.ajax({
+            type: 'GET',
+            url: 'previewMap',
+            data: {mapId: selectedMapId},
+            success: function(data) {
+            	// hide, load, then slide in the new unit preview
+                $(selection).hide({
+                	effect: 'fade',
+                	duration: 250,
+                	complete: function() {
+                		$(this).html(data).effect({
+                			effect: 'fade',
+                			duration: 350
+                		});
+                	}
+                })
+            }
+        });
+	}
+	
 	// enable ajax paging and sorting
 	$("#map-selection").find(".pagination a, th.sortable a").on({
 		click: function(event) {
@@ -1100,7 +1188,7 @@ function ajaxUpdateMapSelection() {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				$("#map-button").button("option", "label", selectedMapName);
+				// updateStagingData will handle updating the name on the button element
 			}
 		})
 		.always(function() {
@@ -1192,12 +1280,15 @@ function updateStagingData(data) {
 	}
 	else if(data.map != null) {
 		var mapName = data.map;
-		// since only the game owner can select using #map-button, others will get updates on the span #map-selection
-		$("#map-selection").text(mapName)
+		selectedMapId = data.mapId;
+		
+		// since only the game owner can select using #map-button, others will get updates on #map-selected
+		$("#map-selected").button("option", "label", mapName)
 				.effect("highlight", effectOptions, 2000);
 		
 		// show highlight effect if button showing
-		$("#map-button").effect("highlight", effectOptions, 2000);
+		$("#map-button").button("option", "label", mapName)
+				.effect("highlight", effectOptions, 2000);
 	}
 	else if(data.location != null && userId != null) {
 		var location = data.location;

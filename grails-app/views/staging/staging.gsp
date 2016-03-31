@@ -13,6 +13,7 @@
 	</head>
 	<body>
 		<div id="mapSelectDiv"></div>
+		<div id="mapPreviewDiv"></div>
 		<div id="unitSelectDiv"></div>
 		<div id="camoSelectDiv"></div>
 		<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
@@ -91,7 +92,7 @@
 							<button id="map-button" aria-labelledby="map-label">${mapName}</button>
 						</g:if>
 						<g:else>
-							<span id="map-selection" class="property-value" aria-labelledby="map-label">${mapName}</span>
+							<button id="map-selected" class="property-value" aria-labelledby="map-label">${mapName}</button>
 						</g:else>
 					</li>
 				</g:if>

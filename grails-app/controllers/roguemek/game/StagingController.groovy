@@ -175,7 +175,8 @@ class StagingController {
 		
 		def data = [
 			user: userInstance.id,
-			map: b.toString()
+			map: b.toString(),
+			mapId: b.mapId()
 		]
 		
 		Object[] messageArgs = [b.name()]
