@@ -1,14 +1,4 @@
-body {
-  margin: 0;
-  padding: 0;
-  background: #151515 url("../images/bkg.png") 0 0;
-  color: #eaeaea;
-  font: 16px;
-  line-height: 1.5;
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-}
-
-/* General & 'Reset' Stuff */
+/* GitHub IO page specific layout */
 
 .container {
   width: 90%;
@@ -21,10 +11,6 @@ section {
   margin: 0 0 20px 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 0 0 20px;
-}
-
 li {
   line-height: 1.4 ;
 }
@@ -35,21 +21,21 @@ li {
    h2       - project description
 */
 
-header {
+.front p {
+	margin-left: 1em;
+}
+
+.front-header {
   background: rgba(0, 0, 0, 0.1);
   width: 100%;
-  border-bottom: 1px dashed #b5e853;
   padding: 20px 0;
   margin: 0 0 40px 0;
 }
 
-header h1 {
-  font-size: 30px;
+.front-header h1 {
+  font-size: 2em;
   line-height: 1.5;
-  margin: 0 0 0 -40px;
   font-weight: bold;
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-  color: #b5e853;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
                0 0 5px rgba(181, 232, 83, 0.1),
                0 0 10px rgba(181, 232, 83, 0.1);
@@ -57,13 +43,8 @@ header h1 {
   -webkit-font-smoothing: antialiased;
 }
 
-header h1:before {
-  content: "./ ";
-  font-size: 24px;
-}
-
-header h2 {
-  font-size: 18px;
+.front-header h2 {
+  font-size: 1.25em;
   font-weight: 300;
   color: #666;
 }
@@ -87,41 +68,10 @@ section img {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-  color: #b5e853;
   letter-spacing: -0.03em;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
                0 0 5px rgba(181, 232, 83, 0.1),
                0 0 10px rgba(181, 232, 83, 0.1);
-}
-
-#main_content h1 {
-  font-size: 30px;
-}
-
-#main_content h2 {
-  font-size: 24px;
-}
-
-#main_content h3 {
-  font-size: 18px;
-}
-
-#main_content h4 {
-  font-size: 14px;
-}
-
-#main_content h5 {
-  font-size: 12px;
-  text-transform: uppercase;
-  margin: 0 0 5px 0;
-}
-
-#main_content h6 {
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #999;
-  margin: 0 0 5px 0;
 }
 
 dt {
@@ -135,9 +85,8 @@ ul li {
 
 ul li:before {
   content: ">>";
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
   font-size: 13px;
-  color: #b5e853;
+  color: #3498DB;
   margin-left: -37px;
   margin-right: 21px;
   line-height: 16px;
@@ -146,7 +95,6 @@ ul li:before {
 blockquote {
   color: #aaa;
   padding-left: 10px;
-  border-left: 1px dotted #666;
 }
 
 pre {
@@ -154,7 +102,7 @@ pre {
   border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 10px;
   font-size: 14px;
-  color: #b5e853;
+  color: #3498DB;
   border-radius: 2px;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
@@ -170,7 +118,6 @@ table {
 
 th {
   text-align: left;
-  border-bottom: 1px dashed #b5e853;
   padding: 5px 10px;
 }
 
@@ -181,8 +128,7 @@ td {
 hr {
   height: 0;
   border: 0;
-  border-bottom: 1px dashed #b5e853;
-  color: #b5e853;
+  color: #3498DB;
 }
 
 /* Buttons
@@ -190,7 +136,7 @@ hr {
 
 .btn {
   display: inline-block;
-  background: -webkit-linear-gradient(top, rgba(40, 40, 40, 0.3), rgba(35, 35, 35, 0.3) 50%, rgba(10, 10, 10, 0.3) 50%, rgba(0, 0, 0, 0.3));
+  background: #303030;
   padding: 8px 18px;
   border-radius: 50px;
   border: 2px solid rgba(0, 0, 0, 0.7);
@@ -206,7 +152,7 @@ hr {
 }
 
 .btn:hover {
-  background: -webkit-linear-gradient(top, rgba(40, 40, 40, 0.6), rgba(35, 35, 35, 0.6) 50%, rgba(10, 10, 10, 0.8) 50%, rgba(0, 0, 0, 0.8));
+  background: #606060;
 }
 
 .btn .icon {
