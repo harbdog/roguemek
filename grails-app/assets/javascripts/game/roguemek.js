@@ -1025,7 +1025,6 @@ function updateGameData(data) {
 	// update criticals hit on the target
 	if(data.criticalHit) {
 		var critHit = data.criticalHit;
-		console.log(critHit);
 		
 		var equipId = critHit.id;
 		var status = critHit.status;

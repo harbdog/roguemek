@@ -79,6 +79,7 @@ div #spinner {
 #chat-input {
 	width: 99%;
 	margin-right: 1em;
+	padding-left: 0.25em;
 	border: 1px solid black;
 }
 
