@@ -58,7 +58,7 @@ class ChatMeteorHandler extends HttpServlet {
 		}
 
 		m.setBroadcaster(b)
-		m.resumeOnBroadcast(m.transport() == LONG_POLLING ? true : false).suspend(-1)
+		m.resumeOnBroadcast(m.transport() == LONG_POLLING).suspend(-1)
 	}
 
 	@Override

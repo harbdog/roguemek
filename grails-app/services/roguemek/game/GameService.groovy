@@ -17,6 +17,9 @@ import roguemek.mtf.*
 import roguemek.stats.*
 import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 
+import grails.async.Promise
+import static grails.async.Promises.*
+
 @Transactional
 class GameService extends AbstractGameService {
 	
@@ -89,19 +92,19 @@ class GameService extends AbstractGameService {
 				if(chatUser == null) {
 					chatUser = new GameChatUser(game: game, chatUser: user)
 					chatUser.save flush:true
-				}
-				
-				// broadcast new user
-				def data = [
-					chatUser: [
-						add: true,
-						userid: user.id,
-						username:user.toString()
+					
+					// broadcast new user
+					def data = [
+						chatUser: [
+							add: true,
+							userid: user.id,
+							username:user.toString()
+						]
 					]
-				]
-				
-				Object[] messageArgs = []
-				Date update = addMessageUpdate(game, null, messageArgs, data)
+					
+					Object[] messageArgs = []
+					Date update = addMessageUpdate(game, null, messageArgs, data)
+				}
 			}
 		}
 	}
@@ -109,7 +112,7 @@ class GameService extends AbstractGameService {
 	/**
 	 * Handles disconnecting the user from the game chat
 	 */
-	def sendDisconnect(event, request) {
+	def sendDisconnect(request) {
 		def user = currentUser(request)
 		if(user == null) return
 		
@@ -119,6 +122,7 @@ class GameService extends AbstractGameService {
 			
 			// remove the user from the chat users list
 			if(game) {
+				// TODO: in case the same chat user is connected to same game in two windows, figure it out
 				GameChatUser chatUser = GameChatUser.findByGameAndChatUser(game, user)
 				if(chatUser != null) {
 					chatUser.delete flush:true

@@ -1,5 +1,8 @@
 package roguemek.game
 
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+
 import org.atmosphere.cpr.AtmosphereResourceEvent
 import org.atmosphere.cpr.AtmosphereResourceEventListenerAdapter
 import org.atmosphere.cpr.Broadcaster
@@ -20,6 +23,7 @@ import static org.atmosphere.cpr.AtmosphereResource.TRANSPORT.WEBSOCKET
 import static org.atmosphere.cpr.AtmosphereResource.TRANSPORT.LONG_POLLING;
 
 class GameMeteorHandler extends HttpServlet {
+	private static Log log = LogFactory.getLog(this)
 	
 	public static final String MAPPING_ROOT = "/atmosphere/action"
 	public static final String MAPPING_GAME = "/atmosphere/action/game"
@@ -46,22 +50,20 @@ class GameMeteorHandler extends HttpServlet {
 			m.addListener(new WebSocketEventListenerAdapter() {
 				@Override
 				void onDisconnect(AtmosphereResourceEvent event) {
-					gameService.sendDisconnect(event, request)
+					// nothing to see here yet
 				}
 			})
 		} else {
 			m.addListener(new AtmosphereResourceEventListenerAdapter() {
 				@Override
 				void onDisconnect(AtmosphereResourceEvent event) {
-					gameService.sendDisconnect(event, request)
+					// nothing to see here yet
 				}
 			})
 		}
 
 		m.setBroadcaster(b)
-		m.resumeOnBroadcast(m.transport() == LONG_POLLING ? true : false).suspend(-1)
-		
-		gameService.sendConnect(request)
+		m.resumeOnBroadcast(m.transport() == LONG_POLLING).suspend(-1)
 	}
 
 	@Override
@@ -73,16 +75,23 @@ class GameMeteorHandler extends HttpServlet {
 		def session = request.getSession(false)
 		
 		def jsonMap = JSON.parse(request.getReader().readLine().trim()) as Map
+		String action = jsonMap.containsKey("action") ? jsonMap.action.toString() : null
 		
-		// all game actions currently handled by the controller
-		//gameService.recordUnusedData(jsonMap)
-		
-		/*if(action == null) {
-			gameService.recordIncompleteData(jsonMap)
-		} 
-		else if(session.game != null &&
-				MAPPING_GAME.equals(mapping)){
-			// if there was something to do here
-		}*/
+		if(action != null && session.game != null 
+				&& MAPPING_GAME.equals(mapping)) {
+			// handle connection of the user to the game chat during staging
+			if(action == "connectUser") {
+				log.trace "Connecting game user ${session.game}"
+				gameService.sendConnect(request)
+			}
+			else if(action == "disconnectUser") {
+				log.trace "Disconnecting game user ${session.game}"
+				gameService.sendDisconnect(request)
+			}
+		}
+		else {
+			// all staging actions currently handled by the controller
+			//gameService.recordUnusedData(jsonMap)
+		}
 	}
 }

@@ -12,6 +12,9 @@ import roguemek.*
 import roguemek.model.*
 import static org.atmosphere.cpr.MetaBroadcaster.metaBroadcaster
 
+import grails.async.Promise
+import static grails.async.Promises.*
+
 @Transactional
 class GameStagingService extends AbstractGameService {
 	private static Log log = LogFactory.getLog(this)
@@ -33,6 +36,9 @@ class GameStagingService extends AbstractGameService {
 		log.warn "GameStagingService.recordMaliciousUseWarning: ${data}"
 	}
 	
+	/**
+	 * Handles connecting the user to the staging chat
+	 */
 	def sendConnect(request) {
 		def user = currentUser(request)
 		if(user == null) return
@@ -47,22 +53,25 @@ class GameStagingService extends AbstractGameService {
 				if(chatUser == null) {
 					chatUser = new GameChatUser(game: game, chatUser: user)
 					chatUser.save flush:true
-				}
-				
-				// broadcast new user
-				def data = [
-					chatUser: [
-						add: true,
-						userid: user.id,
-						username:user.toString()
+					
+					// broadcast new user
+					def data = [
+						chatUser: [
+							add: true,
+							userid: user.id,
+							username:user.toString()
+						]
 					]
-				]
-				addStagingUpdate(game, data)
+					addStagingUpdate(game, data)
+				}
 			}
 		}
 	}
 	
-	def sendDisconnect(event, request) {
+	/**
+	 * Handles disconnecting the user from the staging chat
+	 */
+	def sendDisconnect(request) {
 		def user = currentUser(request)
 		if(user == null) return
 		
