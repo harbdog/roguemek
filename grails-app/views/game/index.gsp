@@ -8,6 +8,8 @@
 		<title>RogueMek</title>
 	</head>
 	<body id="body">
+	
+		<script type="text/javascript">var hpgTransport = "${grailsApplication.config.roguemek.server.hpgTransport}";</script>
 		
 		<div id="canvasDiv">
 			<div id="pingDiv"></div>

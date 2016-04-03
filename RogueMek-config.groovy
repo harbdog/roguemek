@@ -21,6 +21,9 @@ roguemek {
 	server {
 		headerMessage = "This is a RogueMek server"	// the message at the top of the root index page
 		preloadMaps = false	// set true to have all maps loaded during first server init (may take several minutes more)
+		
+		// hpgTransport: some servers do not support websocket connections, set this to "long-polling" to prevent clients from trying websocket
+		hpgTransport = System.env.ROGUEMEK_HPG_TRANSPORT ?: "websocket"
 	}
 	registration {
 		// Any new user attempting to register can be enabled by setting newUserEnable to one of the following settings:

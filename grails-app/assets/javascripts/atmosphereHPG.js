@@ -25,8 +25,7 @@ var HPG = {
 			type: '',
 			contentType: "application/json",
 			shared: false,
-			//transport: 'websocket',
-			transport: 'long-polling',	// TESTING
+			transport: hpgTransport,	// "websocket" or "long-polling"
 			fallbackTransport: 'long-polling',
 			trackMessageLength: true
 		},
