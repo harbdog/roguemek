@@ -95,6 +95,30 @@ function initGame(){
 	// load default or stored settings
 	Settings.init();
 	
+	window.onbeforeunload = function(e) {
+		// disconnect the user from the game chat list
+		// if the user cancels navigation, the next ping will handleChatReconnect()
+		reconnectGameChat = true;
+		HPG.sendUserDisconnect(GAME_REQUEST_TYPE);
+		
+		// If we haven't been passed the event get the window.event
+	    e = e || window.event;
+
+	    var message = 'Embrace Cowardice?';	// TODO: i18n?
+	    // For IE6-8 and Firefox prior to version 4
+	    if(e) {
+	        e.returnValue = message;
+	    }
+	    // For Chrome, Safari, IE8+ and Opera 12+
+	    return message;
+	};
+	
+	window.onunload = function() {
+		// since we're not disconnecting entirely in onbeforeunload in order to confirm leaving, disconnecting only as last resort here 
+		// (since onunload is not called when closing the browser, only when reloading/navigating away)
+		HPG.disconnectUplink();
+	}
+	
 	// Create the EaselJS stage
 	rootStage = new createjs.Stage("canvas");
 	canvas = rootStage.canvas;
@@ -118,20 +142,7 @@ function initGame(){
 	
 	// add resizing event
 	window.addEventListener('resize', resize_canvas, false);
-	
-	window.onbeforeunload = function(e) {
-		// If we haven't been passed the event get the window.event
-	    e = e || window.event;
 
-	    var message = 'Embrace Cowardice?';	// TODO: i18n?
-	    // For IE6-8 and Firefox prior to version 4
-	    if(e) {
-	        e.returnValue = message;
-	    }
-	    // For Chrome, Safari, IE8+ and Opera 12+
-	    return message;
-	};
-	
 	// add keyboard listener
 	addEventHandlers();
 	

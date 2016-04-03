@@ -1,3 +1,10 @@
+/**
+ * This script contains the core functions for socket communication with the server
+ */
+var CHAT_REQUEST_TYPE = 'chat';
+var STAGING_REQUEST_TYPE = 'staging';
+var GAME_REQUEST_TYPE = 'game';
+
 /*
 The HPG variable holds all JavaScript code required for communicating with the atmosphere server.
 It basically wraps the functions in atmosphere.js and jquery.atmosphere.js.
@@ -18,8 +25,8 @@ var HPG = {
 			type: '',
 			contentType: "application/json",
 			shared: false,
-			transport: 'websocket',
-			//transport: 'long-polling',
+			//transport: 'websocket',
+			transport: 'long-polling',	// TESTING
 			fallbackTransport: 'long-polling',
 			trackMessageLength: true
 		},
@@ -56,13 +63,13 @@ var HPG = {
 		};
 		
 		switch (options.type) {
-			case 'chat':
+			case CHAT_REQUEST_TYPE:
 				HPG.chatSubscription = HPG.socket.subscribe(atmosphereRequest);
 				break;
-			case 'staging':
+			case STAGING_REQUEST_TYPE:
 				HPG.stagingSubscription = HPG.socket.subscribe(atmosphereRequest);
 				break;
-			case 'game':
+			case GAME_REQUEST_TYPE:
 				HPG.gameSubscription = HPG.socket.subscribe(atmosphereRequest);
 				break;
 			default:
@@ -88,10 +95,10 @@ var HPG = {
 		var subscription;
 		
 		switch (type) {
-			case 'staging':
+			case STAGING_REQUEST_TYPE:
 				subscription = HPG.stagingSubscription
 				break;
-			case 'game':
+			case GAME_REQUEST_TYPE:
 				subscription = HPG.gameSubscription
 				break;
 			default:
@@ -99,6 +106,8 @@ var HPG = {
 		}
 		
 		if(subscription) {
+			console.log("Connecting "+type+" chat user");
+			
 			// let the server handler know the user is connecting
 			var data = {
 				type: type,
@@ -112,10 +121,10 @@ var HPG = {
 		var subscription;
 		
 		switch (type) {
-			case 'staging':
+			case STAGING_REQUEST_TYPE:
 				subscription = HPG.stagingSubscription
 				break;
-			case 'game':
+			case GAME_REQUEST_TYPE:
 				subscription = HPG.gameSubscription
 				break;
 			default:
@@ -123,6 +132,8 @@ var HPG = {
 		}
 		
 		if(subscription) {
+			console.log("Disconnecting "+type+" chat user");
+			
 			// let the server handler know the user is connecting
 			var data = {
 				type: type,
@@ -130,25 +141,24 @@ var HPG = {
 			};
 			subscription.push(JSON.stringify(data));
 		}
-	}
-};
-
-window.onbeforeunload = function() {
-	// first, close all active connections
-	if(HPG.chatSubscription) {
-		console.log("disconnecting chat subscription");
-		HPG.chatSubscription.disconnect();
-	}
-	if(HPG.stagingSubscription) {
-		console.log("disconnecting staging subscription");
-		HPG.chatSubscription.disconnect();
-	}
-	if(HPG.gameSubscription) {
-		console.log("disconnecting game subscription");
-		HPG.chatSubscription.disconnect();
-	}
+	},
 	
-	// then unsubscribe from the socket connection
-	HPG.unsubscribe();
+	disconnectUplink: function() {
+		// first, close all active connections
+		if(HPG.chatSubscription) {
+			console.log("disconnecting chat subscription");
+			HPG.chatSubscription.disconnect();
+		}
+		if(HPG.stagingSubscription) {
+			console.log("disconnecting staging subscription");
+			HPG.chatSubscription.disconnect();
+		}
+		if(HPG.gameSubscription) {
+			console.log("disconnecting game subscription");
+			HPG.chatSubscription.disconnect();
+		}
+		
+		// then unsubscribe from the socket connection
+		HPG.unsubscribe();
+	}
 };
-

@@ -6,14 +6,14 @@ function initAtmosphere() {
 	
 	// setup game chat meteor
 	var chatRequest = {
-		type: 'chat',
+		type: CHAT_REQUEST_TYPE,
 		url: '../atmosphere/chat/game'
 	};
 	HPG.subscribe(chatRequest, handleChat);
 	
 	// setup game staging meteor
 	var stagingRequest = {
-		type: 'staging',
+		type: STAGING_REQUEST_TYPE,
 		url: '../atmosphere/staging/game'
 	};
 	HPG.subscribe(stagingRequest, handleStaging);
@@ -22,7 +22,7 @@ function initAtmosphere() {
 		if (event.which === 13) {
 			event.preventDefault();
 			var data = {
-				type: 'chat',
+				type: CHAT_REQUEST_TYPE,
 				message: $(this).val()
 			};
 			HPG.chatSubscription.push(JSON.stringify(data));

@@ -39,6 +39,17 @@ function pingResponse(data) {
 	if(pingDisplay != null) {
 		pingDisplay.htmlElement.innerHTML = milliseconds + " ms";
 	}
+	
+	// just in case there was a need to reconnect to chat...
+	handleChatReconnect();
+}
+
+function handleChatReconnect() {
+	if(reconnectGameChat) {
+		// reconnect the user to the game chat list (http://stackoverflow.com/a/14745026)
+		reconnectGameChat = false;
+		HPG.sendUserConnect(GAME_REQUEST_TYPE);
+	}
 }
 
 function handleChatControls(e, key) {

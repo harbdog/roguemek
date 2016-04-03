@@ -14,6 +14,10 @@ var camoSelectUserID;
  * Prepares staging page on load
  */
 function initStaging() {
+	window.onbeforeunload = function() {
+		HPG.disconnectUplink();
+	};
+	
 	// setup code to render custom icons on a dropdown menu
 	$.widget( "custom.iconselectmenu", $.ui.selectmenu, {
 	      _renderItem: function( ul, item ) {
