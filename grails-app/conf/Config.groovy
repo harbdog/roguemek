@@ -7,11 +7,11 @@ grails.config.locations = [
 ]
 
 if(System.getenv(ENV_NAME)) {
-	log.info "Including configuration file specified in environment: " + System.getenv(ENV_NAME)
+	log.info "Including configuration file specified as environment variable: " + System.getenv(ENV_NAME)
 	grails.config.locations << "file:" + System.getenv(ENV_NAME)
  
 } else if(System.getProperty(ENV_NAME)) {
-	log.info "Including configuration file specified on command line: " + System.getProperty(ENV_NAME)
+	log.info "Including configuration file specified as property: " + System.getProperty(ENV_NAME)
 	grails.config.locations << "file:" + System.getProperty(ENV_NAME)
  
 } else {
