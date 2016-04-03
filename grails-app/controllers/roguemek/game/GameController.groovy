@@ -4,7 +4,7 @@ import static org.springframework.http.HttpStatus.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import grails.converters.*
-import roguemek.*
+import roguemek.MekUser
 import roguemek.chat.*
 import roguemek.model.*
 
@@ -179,7 +179,7 @@ class GameController {
 		)
 		
 		def result = []
-		chatUsers.each { MekUser chatUser ->
+		chatUsers?.each { MekUser chatUser ->
 			def chatUserData = [userid: chatUser.id, username: chatUser.toString()]
 			result.add(chatUserData)
 		}
