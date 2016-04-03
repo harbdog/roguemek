@@ -101,6 +101,7 @@ environments {
     production {
         grails.logging.jul.usebridge = false
         // TODO: grails.serverURL = "http://www.changeme.com"
+		grails.dbconsole.enabled = true		// H2 dbconsole is secured behind ROOT role
     }
 }
 
