@@ -217,6 +217,7 @@ class StagingController {
 			def units = unitCriteria.list (max: params.max, offset: params.offset) {
 				if(params.name){
 					if(params.name.isFloat()) {
+						// allow user to enter a number value to find by exact tonnage (mass)
 						eq("mass", Float.valueOf(params.name))
 					}
 					else {
@@ -227,7 +228,13 @@ class StagingController {
 						}
 					}
 				}
-				order(params.sort, params.order)
+				and {
+					order(params.sort, params.order)
+					if(params.sort != "name") {
+						// make sure the secondary sort is always the name
+						order("name", "asc")
+					}
+				}
 			}
 			
 			def filters = [name: params.name]
