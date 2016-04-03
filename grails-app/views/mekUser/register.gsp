@@ -22,6 +22,7 @@
 					</label>
 					<g:textField name="callsign" required="" value="${user?.callsign}" autocomplete="false" autofocus="true"/>
 				</div>
+				
 				<div class="fieldcontain ${hasErrors(bean: user, field: 'username', 'error')} required">
 					<label for="username">
 						<g:message code="user.email.label" default="Email" />
@@ -29,6 +30,14 @@
 					</label>
 					<g:textField name="username" required="" value="${user?.username}" autocomplete="false"/>
 				</div>
+				<div class="fieldcontain ${hasErrors(bean: user, field: 'username', 'error')} required">
+                    <label for=emailConfirm>
+                        <g:message code="user.email.confirm.label" default="Confirm Email" />
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <g:textField name="emailConfirm" required="" value="${params?.emailConfirm}" autocomplete="false"/>
+                </div>
+				
 				<div class="fieldcontain ${hasErrors(bean: user, field: 'password', 'error')} required">
 					<label for="password">
 						<g:message code="user.password.label" default="Password" />
@@ -38,7 +47,7 @@
 				</div>
 				<div class="fieldcontain ${hasErrors(bean: user, field: 'password', 'error')} required">
 					<label for="confirm">
-						<g:message code="user.confirm.label" default="Confirm" />
+						<g:message code="user.password.confirm.label" default="Confirm Password" />
 						<span class="required-indicator">*</span>
 					</label>
 					<g:passwordField name="confirm" required="" value="${params?.confirm}" autocomplete="false"/>

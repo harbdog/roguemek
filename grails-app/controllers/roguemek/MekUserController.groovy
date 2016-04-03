@@ -87,6 +87,10 @@ class MekUserController {
 		if(request.method == 'POST') {
 			MekUser u = new MekUser()
 			u.properties['username', 'password', 'callsign'] = params
+			if(u.username != params.emailConfirm) {
+				u.errors.rejectValue("username", "user.email.dontmatch")
+				return [user:u]
+			}
 			if(u.password != params.confirm) {
 				u.errors.rejectValue("password", "user.password.dontmatch")
 				return [user:u]
