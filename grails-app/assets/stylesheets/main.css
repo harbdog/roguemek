@@ -143,8 +143,12 @@ img.unit-image {
 	background: #000 url("images/ui-bg_loop_25_000000_21x21.png") 50% 50% repeat;
 }
 
+span#backtotop {
+	font-size: 0.9em;
+}
+
 div#version {
-    font-size: 0.85em;
+    font-size: 0.9em;
     color:  #3498DB;
 }
 
@@ -229,7 +233,7 @@ img {
 	color: #F0F0F0;
 	clear: both;
 	font-size: 0.8em;
-	margin-top: 1.5em;
+	margin-top: 1em;
 	padding: 1em;
 	min-height: 1em;
 }

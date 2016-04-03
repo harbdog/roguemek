@@ -20,6 +20,7 @@
 		<g:layoutHead/>
 	</head>
 	<body>
+		<a id="top"></a>
 		<div id="grailsLogo" role="banner"><g:link uri="/"><asset:image src="roguemek_logo.png" alt="RogueMek"/></g:link></div>
 		
 		<div id="loginBox" class="loginBox">
@@ -34,6 +35,7 @@
 		<g:layoutBody/>
 		
 		<div class="footer" role="contentinfo">
+			<span id="backtotop"><a href="#top"><g:message code="default.page.top.label"/></a></span>
 			<div id="version" class="right"><g:meta name="app.name"/> v<g:meta name="app.version"/></div>
 		</div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
