@@ -216,10 +216,15 @@ class StagingController {
 			def unitCriteria = Unit.createCriteria()
 			def units = unitCriteria.list (max: params.max, offset: params.offset) {
 				if(params.name){
-					or {
-						ilike("name", "%${params.name}%")
-						ilike("chassis", "%${params.name}%")
-						ilike("variant", "%${params.name}%")
+					if(params.name.isFloat()) {
+						eq("mass", Float.valueOf(params.name))
+					}
+					else {
+						or {
+							ilike("name", "%${params.name}%")
+							ilike("chassis", "%${params.name}%")
+							ilike("variant", "%${params.name}%")
+						}
 					}
 				}
 				order(params.sort, params.order)
