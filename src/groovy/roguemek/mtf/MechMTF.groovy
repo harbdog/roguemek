@@ -22,7 +22,6 @@ class MechMTF {
 	public static final String MTF_CRIT_UP_LEG_ACT = "Upper Leg Actuator"
 	public static final String MTF_CRIT_LOW_LEG_ACT = "Lower Leg Actuator"
 	public static final String MTF_CRIT_FOOT_ACT = "Foot Actuator"
-	public static final String MTF_CRIT_ENGINE = "Engine"
 	public static final String MTF_CRIT_FUSION_ENGINE = "Fusion Engine"
 	public static final String MTF_CRIT_GYRO = "Gyro"
 	public static final String MTF_CRIT_LIFE_SUPPORT = "Life Support"
@@ -110,7 +109,20 @@ class MechMTF {
 		}
 		
 		if(mtf[MapMTF.MTF_ENGINE] instanceof List) {
-			// ignored (for now)
+			// example: "260 Fusion Engine"
+			String line = mtf[MapMTF.MTF_ENGINE].get(0)
+			
+			def engineRegex = ~/^(\d+) (.+)/
+			
+			// check for something in parentheses to also handle: "260 Fusion Engine(IS)"
+			if(line =~ /(\(.*?\))/) {
+				engineRegex = ~/^(\d+) (.+)\(.*?\)/
+			}
+			
+			line.find(engineRegex) { fullMatch, rating, type ->
+				map.engineRating = rating.toInteger()
+				map.engineType = type
+			}
 		}
 		
 		if(mtf[MapMTF.MTF_STRUCTURE] instanceof List) {
@@ -208,7 +220,7 @@ class MechMTF {
 				int subIndex = 0
 				mtf[mtfSection].each { String line ->
 					// add crits
-					addCriticalsFromMTF(map.mass, map.crits, line, mtfSection, subIndex ++)
+					addCriticalsFromMTF(map, line, mtfSection, subIndex ++)
 				}
 			}
 		}
@@ -229,7 +241,11 @@ class MechMTF {
 		return mech
 	}
 	
-	private static void addCriticalsFromMTF(def unitMass, List crits, String line, String mtfSectionIndex, int subSectionIndex){
+	private static void addCriticalsFromMTF(def map, String line, String mtfSectionIndex, int subSectionIndex){
+		
+		def unitMass = map.mass
+		List crits = map.crits
+		
 		// one crit is listed per line and in order, just push each entry after determining what it is
 		if(crits == null || line == null || line.length() == 0) {
 			return
@@ -277,6 +293,11 @@ class MechMTF {
 		def isRear = (critName.indexOf("(R)") != -1);
 		if(isRear){
 			critName = line.substring(0, critName.indexOf("(R)") - 1);
+		}
+		
+		// If it is an engine, its crit will be found named as its engine type
+		if(critName == MapMTF.MTF_ENGINE) {
+			critName = map.engineType
 		}
 		
 		def thisCrit = null

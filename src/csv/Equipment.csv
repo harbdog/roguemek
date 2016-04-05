@@ -7,7 +7,6 @@ Shoulder,SHOULDR,,,0,1,I,0,0,0
 Upper Arm Actuator,ARM_ACT,,,0,1,I,0,0,0
 Lower Arm Actuator,ARM_ACT,,,0,1,I,0,0,0
 Hand Actuator,HND_ACT,,,0,1,I,0,0,0
-Engine,ENGINE,,,0,6,I,0,0,0
 Fusion Engine,ENGINE,,,0,6,I,0,0,0
 Gyro,GYRO,,,0,4,I,0,0,0
 Hip,HIP,,,0,1,I,0,0,0

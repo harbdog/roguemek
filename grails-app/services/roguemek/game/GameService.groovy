@@ -31,6 +31,8 @@ class GameService extends AbstractGameService {
 	def gameStagingService
 	def gameOverService
 	
+	def mechService
+	
 	private static Log log = LogFactory.getLog(this)
 	
 	// TODO: move CombatStatus enum out to a separate class
@@ -2822,8 +2824,7 @@ class GameService extends AbstractGameService {
 								
 								return critsHitList
 							}
-							else if(MechMTF.MTF_CRIT_ENGINE == thisCrit.getName()
-									|| MechMTF.MTF_CRIT_FUSION_ENGINE == thisCrit.getName()) {
+							else if(MechMTF.MTF_CRIT_FUSION_ENGINE == thisCrit.getName()) {
 								// if the Engine takes 3 or more hits, the unit is dead
 								numEngineHits ++
 							}
@@ -3386,7 +3387,7 @@ class GameService extends AbstractGameService {
 			heatSinkTypeMultiplier = heatSink?.dissipation ?: 0
 			
 			// each mech starts with 10 heat sinks included in the engine
-			def engineHeatSinks = 10
+			def engineHeatSinks = mechService.getEngineHeatSinks(unit.mech)
 			
 			// if the mech is in Water, increase heat dissipation by double for each heat sink in the water (max of 6)
 			Hex unitHex = game.board?.getHexAt(unit.x, unit.y)
@@ -3414,8 +3415,7 @@ class GameService extends AbstractGameService {
 						}
 					}
 					else if(!equip.isActive() 
-							&& (MechMTF.MTF_CRIT_ENGINE == equip.getName()
-								|| MechMTF.MTF_CRIT_FUSION_ENGINE == equip.getName())) {
+							&& (MechMTF.MTF_CRIT_FUSION_ENGINE == equip.getName())) {
 						// reduce engine heat sink capability by 5 for each engine crit
 						def engineHitReduction = (engineHeatSinks >= 5) ? 5 : engineHeatSinks
 						if(engineHeatSinks > 0) {

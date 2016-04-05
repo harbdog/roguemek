@@ -165,4 +165,19 @@ class MechService {
 		
 		return allCritSections
 	}
+	
+	/**
+	 * Calculates the number of heat sinks included with the engine
+	 * (Engine Rating divided by 25, rounded down)
+	 * @param unit
+	 * @return
+	 */
+	public int getEngineHeatSinks(Mech mech) {
+		int heatSinks = 0
+		if(mech == null) return heatSinks
+		
+		heatSinks = Math.floor(mech.engineRating / 25)
+		
+		return heatSinks
+	}
 }

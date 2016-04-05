@@ -26,6 +26,9 @@ class Mech extends Unit {
 	List crits
 	static hasMany = [crits: long]
 	
+	Integer engineRating
+	String engineType
+	
 	Integer walkMP
 	Integer jumpMP
 	
@@ -44,6 +47,9 @@ class Mech extends Unit {
 		internals size: 8..8
 		
 		crits size: NUM_CRITS..NUM_CRITS
+		
+		engineRating min: 10
+		engineType blank: false
 		
 		walkMP min: 1
 		jumpMP min: 0

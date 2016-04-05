@@ -227,7 +227,7 @@ class UnitService {
 			}
 			
 			// adjust equipment for crit slots used per item
-			int numHeatSinks = 10
+			int numHeatSinks = mechService.getEngineHeatSinks(unit)
 			heatsinks.each { HeatSink heatsink, int critCount ->
 				numHeatSinks += (critCount / heatsink.crits)
 			}
