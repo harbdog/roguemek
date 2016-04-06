@@ -1,5 +1,6 @@
 // locations to search for config files that get merged into the main config:
 def ENV_NAME = "ROGUEMEK_CONFIG"
+def envFile
 
 grails.config.locations = [
 	"classpath:${appName}-config.groovy",
@@ -7,15 +8,26 @@ grails.config.locations = [
 ]
 
 if(System.getenv(ENV_NAME)) {
-	log.info "Including configuration file specified as environment variable: " + System.getenv(ENV_NAME)
-	grails.config.locations << "file:" + System.getenv(ENV_NAME)
- 
+	log.info "Configuration file location specified as environment variable: " + System.getenv(ENV_NAME)
+    envFile = new File(System.getenv(ENV_NAME))
 } else if(System.getProperty(ENV_NAME)) {
-	log.info "Including configuration file specified as property: " + System.getProperty(ENV_NAME)
-	grails.config.locations << "file:" + System.getProperty(ENV_NAME)
- 
+	log.info "Configuration file location specified as property: " + System.getProperty(ENV_NAME)
+    envFile = new File(System.getProperty(ENV_NAME))
 } else {
 	log.warn "No external configuration file defined with environment property name: ${ENV_NAME}"
+}
+
+if(envFile) {
+    if(!envFile.exists()) {
+        log.error "Configuration file does not exist: ${envFile.getCanonicalPath()}" 
+    }
+    else if(!envFile.canRead()) {
+        log.error "Configuration file does not have read permissions: ${envFile.getCanonicalPath()}" 
+    }
+    else {
+        log.info "Including external configuration file: ${envFile.getCanonicalPath()}"
+        grails.config.locations << "file:${envFile.getCanonicalPath()}"
+    }
 }
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
