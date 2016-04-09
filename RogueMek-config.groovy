@@ -60,12 +60,25 @@ dataSource {
 //	username = System.env.ROGUEMEK_DB_USERNAME
 //	password = System.env.ROGUEMEK_DB_PASSWORD
 //	url = "jdbc:postgresql://"+System.env.ROGUEMEK_DB_HOST+":"+System.env.ROGUEMEK_DB_PORT+"/"+(System.env.ROGUEMEK_DB_NAME)
-//	logSql: true	// debugging option only
-//	formatSql: true	// debugging option only
+
+//	Example connection to a MySQL server using OS environment variables for the values
+//  NOTE: Don't forget to uncomment hibernate.query.substitutions below
+//	driverClassName = "com.mysql.jdbc.Driver"
+//	username = System.env.ROGUEMEK_DB_USERNAME
+//	password = System.env.ROGUEMEK_DB_PASSWORD
+//  url = "jdbc:mysql://"+System.env.ROGUEMEK_DB_HOST+":"+System.env.ROGUEMEK_DB_PORT+"/"+(System.env.ROGUEMEK_DB_NAME)
+
+//  Debugging options:
+//	logSql: true
+//	formatSql: true
 }
+
+//  MySQL won't work unless its rand() function is referenced instead of random()
+//  hibernate.query.substitutions = 'random=rand()'
 
 grails {
 	mail {
+//      Setup the mail server connection information to support email confirmation for registration and/or password resets
 //		host = "smtp.gmail.com"
 //		port = 465
 //		username = "username@gmail.com"
