@@ -27,7 +27,7 @@ roguemek {
 	}
 	registration {
 		// Any new user attempting to register can be enabled by setting newUserEnable to one of the following settings:
-		//  "email"		// (recommended) confirmation email is sent to registered email address with a link to enable new accounts
+		//  "email"		// (recommended) confirmation email is sent to registered email address with a link to enable new accounts, and to reset password requests
 		//				// NOTE: "email" requires the grails mail settings to be provided or it will fail
 		//  "public"	// registered accounts are automatically enabled
 		//  "private"	// registered accounts must be enabled by an administrator
@@ -54,13 +54,7 @@ dataSource {
 	username = "sa"
 	password = ""	// h2 password not necessary since dbconsole requires ROOT role login to access
 	// url = "jdbc:h2:~/roguemekdb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"	// default h2 db location is ~ user home
-
-//	Example connection to a Postgres server using OS environment variables for the values:
-//	driverClassName = "org.postgresql.Driver"
-//	username = System.env.ROGUEMEK_DB_USERNAME
-//	password = System.env.ROGUEMEK_DB_PASSWORD
-//	url = "jdbc:postgresql://"+System.env.ROGUEMEK_DB_HOST+":"+System.env.ROGUEMEK_DB_PORT+"/"+(System.env.ROGUEMEK_DB_NAME)
-
+	
 //	Example connection to a MySQL server using OS environment variables for the values
 //  NOTE: Don't forget to uncomment hibernate.query.substitutions below
 //	driverClassName = "com.mysql.jdbc.Driver"
@@ -68,17 +62,23 @@ dataSource {
 //	password = System.env.ROGUEMEK_DB_PASSWORD
 //  url = "jdbc:mysql://"+System.env.ROGUEMEK_DB_HOST+":"+System.env.ROGUEMEK_DB_PORT+"/"+(System.env.ROGUEMEK_DB_NAME)
 
+//	Example connection to a Postgres server using OS environment variables for the values:
+//	driverClassName = "org.postgresql.Driver"
+//	username = System.env.ROGUEMEK_DB_USERNAME
+//	password = System.env.ROGUEMEK_DB_PASSWORD
+//	url = "jdbc:postgresql://"+System.env.ROGUEMEK_DB_HOST+":"+System.env.ROGUEMEK_DB_PORT+"/"+(System.env.ROGUEMEK_DB_NAME)
+
 //  Debugging options:
 //	logSql: true
 //	formatSql: true
 }
 
 //  MySQL won't work unless its rand() function is referenced instead of random()
-//  hibernate.query.substitutions = 'random=rand()'
+//hibernate.query.substitutions = 'random=rand()'
 
 grails {
 	mail {
-//      Setup the mail server connection information to support email confirmation for registration and/or password resets
+//      Setup the mail server connection information to support email confirmation for registration and password resets
 //		host = "smtp.gmail.com"
 //		port = 465
 //		username = "username@gmail.com"
