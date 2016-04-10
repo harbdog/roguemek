@@ -54,7 +54,7 @@ dataSource {
 	username = "sa"
 	password = ""	// h2 password not necessary since dbconsole requires ROOT role login to access
 	// url = "jdbc:h2:~/roguemekdb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"	// default h2 db location is ~ user home
-	
+
 //	Example connection to a MySQL server using OS environment variables for the values
 //  NOTE: Don't forget to uncomment hibernate.query.substitutions below
 //	driverClassName = "com.mysql.jdbc.Driver"

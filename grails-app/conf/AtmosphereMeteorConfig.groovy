@@ -18,7 +18,7 @@ defaultMapping = "/atmosphere/*"
 defaultInitParams = [
 		// Uncomment the line below use native WebSocket support with native Comet support.
 		//"org.atmosphere.useWebSocketAndServlet3": "false",
-		"org.atmosphere.cpr.broadcasterCacheClass": "roguemek.cache.RoguemekBroadcasterCache",
+		"org.atmosphere.cpr.broadcasterCacheClass": "org.atmosphere.cache.UUIDBroadcasterCache",
 		"org.atmosphere.cpr.AtmosphereInterceptor": """
 			org.atmosphere.client.TrackMessageSizeInterceptor,
 			org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor,
