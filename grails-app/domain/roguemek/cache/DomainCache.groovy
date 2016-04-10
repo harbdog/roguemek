@@ -5,16 +5,19 @@ package roguemek.cache
  */
 class DomainCache {
 	
+	String id
+	
 	String uuid
 	String broadcasterId
 	Long cacheHeaderTime
 	
 	static mapping = {
-		id generator: 'assigned', name: 'uuid'
+		id generator: 'uuid'
 		version false
 	}
 	
     static constraints = {
-		uuid unique: false
+		uuid nullable: true
+		broadcasterId nullable: true
     }
 }

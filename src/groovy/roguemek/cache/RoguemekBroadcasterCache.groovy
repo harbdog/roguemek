@@ -16,11 +16,15 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 import javax.servlet.http.HttpSession
 
+import grails.util.Holders
+
 /**
- * Custom Atmosphere session broadcaster cache using domain objects in the database to support scaling without needing an external service
+ * Custom Atmosphere broadcaster cache using domain objects in the database to support scaling without needing an external service
  */
 class RoguemekBroadcasterCache extends AbstractBroadcasterCache {
 	private static final Logger logger = LoggerFactory.getLogger(RoguemekBroadcasterCache.class)
+	
+	def domainCacheService = Holders.applicationContext.getBean("domainCacheService")
 	
 	@Override
 	public void start() {
@@ -28,15 +32,13 @@ class RoguemekBroadcasterCache extends AbstractBroadcasterCache {
 
 			public void run() {
 				readWriteLock.writeLock().lock()
+				
 				try {
 					long now = System.nanoTime()
 					long oldestCacheTime = now - maxCacheTime
 					
-					List<CacheMessage> expiredMessages = new ArrayList<CacheMessage>()
-					
 					// find all caches and messages that are old and need to expire
-					DomainCache.executeUpdate("DELETE DomainCache c WHERE c.cacheHeaderTime <= :time", [time: oldestCacheTime])
-					DomainCacheMessage.executeUpdate("DELETE DomainCacheMessage m WHERE m.createTime <= :time", [time: oldestCacheTime])
+					domainCacheService.expireCache(oldestCacheTime)
 					
 				} finally {
 					readWriteLock.writeLock().unlock()
@@ -54,17 +56,10 @@ class RoguemekBroadcasterCache extends AbstractBroadcasterCache {
 		readWriteLock.writeLock().lock()
 		CacheMessage cacheMessage = null
 		try {
-			def messageWithSameId = DomainCacheMessage.read(message.id())
-			if (messageWithSameId == null) {
-				DomainCacheMessage domainMessage = new DomainCacheMessage(
-						createTime: now,
-						message: message.message(),
-						uuid: uuid
-				)
-				
-				domainMessage.id = message.id()
-				domainMessage.save flush:true
-				
+			DomainCacheMessage domainMessage = domainCacheService.createCacheMessage(
+					message.id(), now, uuid, message.message())
+			
+			if(domainMessage) {
 				cacheMessage = domainMessage.getCacheMessage()
 			}
 		} finally {
@@ -78,7 +73,8 @@ class RoguemekBroadcasterCache extends AbstractBroadcasterCache {
 		List<Object> result = new ArrayList<Object>()
 		readWriteLock.readLock().lock()
 		try {
-			DomainCacheMessage.findAllByCreateTimeGreaterThan(cacheHeaderTime).each { DomainCacheMessage message ->
+			
+			domainCacheService.getCacheMessagesAfterTime(cacheHeaderTime).each { DomainCacheMessage message ->
 				result.add(message.getMessage())
 			}
 
@@ -97,13 +93,7 @@ class RoguemekBroadcasterCache extends AbstractBroadcasterCache {
 
 		if (uuid.equals(NULL)) return cacheMessage
 
-		DomainCache domainCache = new DomainCache(
-				broadcasterId: broadcasterId, 
-				cacheHeaderTime: now
-		)
-		domainCache.uuid = uuid
-		
-		domainCache.save flush:true
+		DomainCache domainCache = domainCacheService.createCache(broadcasterId, now, uuid)
 		
 		return cacheMessage
 	}
@@ -116,7 +106,7 @@ class RoguemekBroadcasterCache extends AbstractBroadcasterCache {
 
 		List<Object> result = new ArrayList<Object>()
 		
-		DomainCache domainCache = DomainCache.findByUuidAndBroadcasterId(uuid, broadcasterId)
+		DomainCache domainCache = domainCacheService.getCache(broadcasterId, uuid)
 		if(domainCache == null) return result
 		
 		Long cacheHeaderTime = domainCache.cacheHeaderTime
@@ -127,8 +117,7 @@ class RoguemekBroadcasterCache extends AbstractBroadcasterCache {
 	@Override
 	public BroadcasterCache clearCache(String broadcasterId, String uuid, CacheMessage cache) {
 		if (cache != null) {
-			DomainCache.executeUpdate("DELETE DomainCache c WHERE c.uuid = :uuid AND c.broadcasterId = :broadcasterId", [uuid: uuid, broadcasterId: broadcasterId])
-			DomainCacheMessage.executeUpdate("DELETE DomainCacheMessage m WHERE m.id = :id", [id: cache.getId()])
+			domainCacheService.clearCache(broadcasterId, uuid, cache.getId())
 		}
 		return this;
 	}
