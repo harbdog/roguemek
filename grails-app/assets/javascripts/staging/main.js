@@ -870,6 +870,17 @@ function setupAjaxUnitSelect() {
 		    	$inputFilter.val("");
 		    });
 		}
+		else {
+			var $clearFilter = $("button.clear-unit-filter");
+			$clearFilter.css({opacity: 0, "visibility": "visible"}).animate({opacity: 1.00}, 250);
+			$clearFilter.button({
+		    	icons: {
+					primary: "ui-icon-close"
+		    	},
+		        text: false,
+		        disabled: true
+		    });
+		}
 	}
 	
 	// allow clicking on a row to select the radio button for that entry
