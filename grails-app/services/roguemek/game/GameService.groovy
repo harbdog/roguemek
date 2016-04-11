@@ -529,12 +529,14 @@ class GameService extends AbstractGameService {
 				}
 			}
 			
+			def wasShutdown = unit.shutdown
+			
 			if(heatEffects.containsKey(HeatEffect.Effect.SHUTDOWN_RISK)) {
 				// Roll to see if an automatic shutdown is going to occur
 				int shutdownPercent = heatEffects.getAt(HeatEffect.Effect.SHUTDOWN_RISK)
 				
 				if(shutdownPercent >= 100) {
-					// TODO: Shutdown the unit
+					// Shutdown the unit
 					log.debug("Auto shutting down "+unit)
 					unit.shutdown = true
 				}
@@ -542,7 +544,7 @@ class GameService extends AbstractGameService {
 					int shutdownRoll = Roll.randomInt(100, 1)
 					
 					if(shutdownRoll < shutdownPercent) {
-						// TODO: Shutdown the unit
+						// Shutdown the unit
 						log.debug("Shutting down "+unit+" | "+shutdownRoll+"/"+shutdownPercent)
 						unit.shutdown = true
 					}
@@ -553,10 +555,24 @@ class GameService extends AbstractGameService {
 					}
 				}
 			}
-			else if(unit.shutdown) {
+			else if(wasShutdown) {
 				// Power up the unit if previously shutdown
 				log.debug("Shutdown ended "+unit)
 				unit.shutdown = false
+			}
+			
+			// add game message only if still shutdown, or going from shutdown to powered on
+			if(wasShutdown != unit.shutdown || unit.shutdown) {
+				if(unit.shutdown) {
+					def shutdownData = null
+					Object[] shutdownMessageArgs = [unit.getUnitCallsign()]
+					Date shutdownUpdate = addMessageUpdate(game, "game.unit.shutdown", shutdownMessageArgs, shutdownData)
+				}
+				else {
+					def shutdownData = null
+					Object[] shutdownMessageArgs = [unit.getUnitCallsign()]
+					Date shutdownUpdate = addMessageUpdate(game, "game.unit.poweron", shutdownMessageArgs, shutdownData)
+				}
 			}
 			
 			data.shutdown = unit.shutdown
