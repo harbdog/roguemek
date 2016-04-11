@@ -119,6 +119,26 @@ class Mech extends Unit {
 			95:		[ 3,16,20,30,20,16,20,20],
 			100:	[ 3,17,21,31,21,17,21,21],]
 	
+	public static final MAX_ARMOR = [
+		//	T:		MAX
+			20:		69,
+			25:		89,
+			30:		105,
+			35:		119,
+			40:		137,
+			45:		153,
+			50:		169,
+			55:		185,
+			60:		201,
+			65:		211,
+			70:		217,
+			75:		231,
+			80:		247,
+			85:		263,
+			90:		279,
+			95:		293,
+			100:	307,]
+	
 	// Mech weight class types
 	public static final LIGHT = "light"
 	public static final MEDIUM = "medium"

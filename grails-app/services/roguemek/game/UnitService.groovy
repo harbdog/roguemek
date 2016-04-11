@@ -190,6 +190,7 @@ class UnitService {
 				totalArmor += it
 			}
 			unitSummaryData.totalArmor = totalArmor
+			unitSummaryData.maxArmor = Mech.MAX_ARMOR[unit.mass.intValue()]
 			
 			// find and map out heat sinks, weapons, and other important equipment from criticals
 			def unitCritsBySection = mechService.getAllCritSections(unit)

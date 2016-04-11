@@ -60,7 +60,7 @@
 	
 	<div class="unit-total-armor">
 		<g:if test="${unit instanceof Mech}" >
-			<span><g:message code="unit.armor.label" />: ${unitSummary.totalArmor}</span>
+			<span><g:message code="unit.armor.label" />: ${unitSummary.totalArmor} / ${unitSummary.maxArmor}</span>
 		</g:if>
 	</div>
 	
