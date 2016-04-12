@@ -224,7 +224,7 @@ class GameService extends AbstractGameService {
 		game.units = doInitiativeRolls(game)
 		
 		// use staging data to set up the game elements
-		StagingHelper.stageGame(game)
+		gameStagingService.stageGame(game)
 		
 		// setup game states
 		game.gameState = Game.GAME_ACTIVE

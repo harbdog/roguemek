@@ -1,7 +1,5 @@
 package roguemek.game
 
-import java.util.List;
-
 import roguemek.MekUser
 
 /** 

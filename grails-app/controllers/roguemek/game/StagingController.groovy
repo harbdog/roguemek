@@ -171,6 +171,18 @@ class StagingController {
 			return
 		}
 		
+		// unready all staged users just before saving
+		def gameUsers = gameStagingService.setAllUsersReady(game, false)
+		gameUsers.each { MekUser rUser ->
+			def rData = [
+				user: rUser.id,
+				userReady: false
+			]
+			
+			gameStagingService.addStagingUpdate(game, rData)
+		}
+		
+		// now we're ready to save
 		b.save flush:true
 		
 		def data = [
@@ -355,6 +367,16 @@ class StagingController {
 		
 		if(battleUnitInstance == null) return
 		
+		// unready the user before adding just in case
+		if(gameStagingService.setUserReady(game, userInstance, false)) {
+			// send update that the user is no longer ready
+			def rData = [
+				user: userInstance.id,
+				userReady: false
+			]
+			gameStagingService.addStagingUpdate(game, rData)
+		}
+		
 		if(!battleUnitInstance.validate()) {
 			log.error("Errors with battle unit "+battleUnitInstance.mech?.name+":\n")
 			battleUnitInstance.errors.allErrors.each {
@@ -369,7 +391,7 @@ class StagingController {
 			log.debug('Initialized battle unit '+battleUnitInstance.mech?.name+" with ID="+battleUnitInstance.id)
 		}
 		
-		def result = StagingHelper.addUnitForUser(game, userInstance, battleUnitInstance)
+		def result = gameStagingService.addUnitForUser(game, userInstance, battleUnitInstance)
 		if(!result) {
 			return
 		}
@@ -405,7 +427,17 @@ class StagingController {
 		// make sure only the unit owner can remove the unit
 		if(!unitInstance.isUsedBy(userInstance)) return
 		
-		def result = StagingHelper.removeUnitForUser(game, userInstance, unitInstance)
+		// unready the user before removing just in case
+		if(gameStagingService.setUserReady(game, userInstance, false)) {
+			// send update that the user is no longer ready
+			def rData = [
+				user: userInstance.id,
+				userReady: false
+			]
+			gameStagingService.addStagingUpdate(game, rData)
+		}
+		
+		def result = gameStagingService.removeUnitForUser(game, userInstance, unitInstance)
 		if(!result) {
 			return
 		}
@@ -560,7 +592,17 @@ class StagingController {
 		// make sure only the user or the game owner can update the user
 		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
 		
-		def locationUpdated = StagingHelper.setStartingLocationForUser(game, userToUpdate, startingLocation)
+		// unready the user before updating just in case
+		if(gameStagingService.setUserReady(game, userToUpdate, false)) {
+			// send update that the user is no longer ready
+			def rData = [
+				user: userToUpdate.id,
+				userReady: false
+			]
+			gameStagingService.addStagingUpdate(game, rData)
+		}
+		
+		def locationUpdated = gameStagingService.setStartingLocationForUser(game, userToUpdate, startingLocation)
 		
 		if(locationUpdated) {
 			def data = [
@@ -632,7 +674,17 @@ class StagingController {
 		// make sure only the user or the game owner can update the user
 		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
 		
-		def camoUpdated = StagingHelper.setCamoForUser(game, userToUpdate, rgbCamo)
+		// unready the user before updating just in case
+		if(gameStagingService.setUserReady(game, userInstance, false)) {
+			// send update that the user is no longer ready
+			def rData = [
+				user: userInstance.id,
+				userReady: false
+			]
+			gameStagingService.addStagingUpdate(game, rData)
+		}
+		
+		def camoUpdated = gameStagingService.setCamoForUser(game, userToUpdate, rgbCamo)
 		
 		// apply the new camo to the first unit for the user so it can be displayed as a preview
 		BattleUnit u = StagingUser.findByGameAndUser(game, userToUpdate)?.units[0]
