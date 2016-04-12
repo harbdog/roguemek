@@ -12,24 +12,42 @@
 			</div>
 		</g:hasErrors>
 		
-		<g:form action="updatePassword" name="passwordForm" params="[id: user?.confirmCode]">
-			<div class="formField">
-				<label for="username">Email:</label>
-				<span>${user?.username}</span>
-			</div>
-			<div class="formField">
-				<label for="callsign">Call Sign:</label>
-				<span>${user?.callsign}</span>
-			</div>
-			<div class="formField">
-				<label for="password">Password:</label>
-				<g:passwordField name="password" value=""/>
-			</div>
-			<div class="formField">
-				<label for="confirm">Confirm Password:</label>
-				<g:passwordField name="confirm" value=""/>
-			</div>
-			<g:submitButton class="formButton" name="password" value="Update"></g:submitButton>
+		<g:if test="${confirmCode}">
+			<g:set var="formParams" value="[id: confirmCode]"/>
+		</g:if>
+		<g:else>
+			<g:set var="formParams" value="" />
+		</g:else>
+		
+		<g:form action="updatePassword" name="passwordForm" params="${formParams}">
+			<fieldset class="form">
+				<div class="formField fieldcontain">
+					<label for="username"><g:message code="user.email.label" default="Email" /></label>
+					<span>${user?.username}</span>
+				</div>
+				<div class="formField fieldcontain">
+					<label for="callsign"><g:message code="user.callsign.label" default="Callsign" /></label>
+					<span>${user?.callsign}</span>
+				</div>
+				<div class="formField fieldcontain ${hasErrors(bean: user, field: 'password', 'error')} required">
+					<label for="password">
+						<g:message code="user.password.label" default="Password" />
+						<span class="required-indicator">*</span>
+					</label>
+					<g:passwordField name="password" value=""/>
+				</div>
+				<div class="formField fieldcontain ${hasErrors(bean: user, field: 'password', 'error')} required">
+					<label for="confirm">
+						<g:message code="user.password.confirm.label" default="Confirm Password" />
+						<span class="required-indicator">*</span>
+					</label>
+					<g:passwordField name="confirm" value=""/>
+				</div>
+			</fieldset>
+			
+			<fieldset class="buttons">
+				<g:submitButton class="formButton" name="updatePassword" value="Update"></g:submitButton>
+			</fieldset>
 		</g:form>
 	</body>
 </html>

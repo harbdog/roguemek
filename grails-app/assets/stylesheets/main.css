@@ -744,6 +744,11 @@ a.skip {
 	left: -9999px;
 }
 
+.forgotPassword {
+    margin-left: 0.5em;
+    font-size: 0.75em;
+}
+
 /* just an icon span just to have a jquery-ui icon next to another element in the same line */
 span.just-icon {
 	display: inline-block;

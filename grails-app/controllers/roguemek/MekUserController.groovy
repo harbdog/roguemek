@@ -69,8 +69,12 @@ class MekUserController {
 				order("time", "desc")
 			}
 			
+			// some things show only to the user of the profile
+			boolean isCurrentUser = (currentUser()?.id == userInstance.id) 
+			
 			respond userInstance, model: [winLossList: winLossList, winLossRatio: winLossRatio, 
-											killDeathList: killDeathList, killDeathRatio: killDeathRatio]
+											killDeathList: killDeathList, killDeathRatio: killDeathRatio,
+											isCurrentUser: isCurrentUser]
 		}
 		else {
 			redirect url: "/"
@@ -136,7 +140,7 @@ class MekUserController {
 				}
 				
 				render(view: "index", model: [userInstance: u])
-				redirect(action: "success")
+				redirect(action: "success", model: [message: 'Your account has been created, it can be activated by visiting the confirmation link sent to your provided email address.'])
 			}
 			else {
 				return [user:u]
@@ -169,32 +173,49 @@ class MekUserController {
 	}
 	
 	def success(){
-		render(view:'success', model: [message: 'Your account has been created, it can be activated by visiting the confirmation link sent to your provided email address.']);
+		render(view:'success', model: [message: 'Success!']);
 	}
 	
 	@Transactional
-	def forgotPassword(String userid) {
-		MekUser u = MekUser.get(userid)
+	def forgotPassword() {
+		MekUser u = MekUser.findByUsername(params?.username)
+		
 		if(!u) {
-			redirect action: 'index'
+			if(params?.username?.length() > 0) {
+				// for security purposes, don't let them know the email wasn't a register username
+				render(view: "success", model: [message: "The password reset link has been sent to ${params?.username}."])
+			}
+			
 			return
 		}
 		
 		u.confirmCode = UUID.randomUUID().toString()
 		
 		if(u.save(flush: true)) {
-			try{
-				mailService.sendMail {
-					to u.username
-					subject "RogueMek Password Reset for ${u.callsign}"
-					html g.render(template:"mailResetPassword", model:[code:u.confirmCode])
+			boolean mailSent = false
+			
+			if(grailsApplication.config.grails.mail?.host) {
+				// only attempt to send mail if it looks like it might be configured
+				try{
+					mailService.sendMail {
+						to u.username
+						subject "RogueMek Password Reset for ${u.callsign}"
+						html g.render(template:"mailResetPassword", model:[code:u.confirmCode])
+					}
+					
+					mailSent = true
+				}
+				catch(org.springframework.mail.MailAuthenticationException e) {
+					log.error e.toString()
 				}
 			}
-			catch(org.springframework.mail.MailAuthenticationException e) {
-				log.error e.toString()
-			}
 			
-			render(view: "success", model: [message: 'The password reset link has been sent to your provided email address.'])
+			if(mailSent) {
+				render(view: "success", model: [message: "The password reset link has been sent to ${params?.username}."])
+			}
+			else {
+				render(view: "success", model: [message: 'Contact an administrator of this RogueMek site to provide a temporary password. You can change it after logging in and visiting your Profile page.'])
+			}
 		}
 		else {
 			return [user:u]
@@ -202,38 +223,62 @@ class MekUserController {
 	}
 	
 	def resetPassword(String id) {
-		MekUser u = MekUser.findByConfirmCode(id)
+		MekUser u
+		if(id != null && id.length() > 0) {
+			// user was sent here by confirmation code to reset the password
+			u = MekUser.findByConfirmCode(id)
+		}
+		else {
+			// logged in user was sent here by wanting to update their own password
+			u = currentUser()
+		}
+		
 		if(!u) {
 			redirect action: 'index'
 			return
 		}
 		
-		render(view: "updatePassword", model: [user: u])
+		render(view: "updatePassword", model: [user: u, confirmCode: u.confirmCode])
 	}
 	
 	@Transactional
-	def updatePassword(String id) {
-		MekUser u = MekUser.findByConfirmCode(id)
-		if(!u) {
-			redirect action: 'index'
-			return
-		}
-		
-		// password is coming in as an array? password:[<passwd>, Update]
-		u.password = params.password?.first()
-		
-		if(u.password != params.confirm) {
-			u.errors.rejectValue("password", "user.password.dontmatch")
-			return [user:u]
-		}
-		
-		u.confirmCode = null
-		
-		if(u.save(flush: true)) {
-			render(view: "success", model: [message: 'Your have successfully updated your password.'])
-		}
-		else {
-			return [user:u]
+	def updatePassword() {
+		if(request.method == 'POST') {
+			String confirmId = params.id
+			
+			MekUser u
+			if(confirmId != null && confirmId.length() > 0) {
+				// user was sent here by confirmation code to reset the password
+				u = MekUser.findByConfirmCode(confirmId)
+			}
+			else {
+				// logged in user was sent here by wanting to update their own password
+				u = currentUser()
+			}
+			
+			if(!u) {
+				redirect action: 'index'
+				return
+			}
+			
+			// password is coming in as an array? password:[<passwd>, Update]
+			u.password = params.password
+			
+			if(u.password != params.confirm) {
+				u.errors.rejectValue("password", "user.password.dontmatch")
+				u.discard()
+				return [user: u, confirmCode: confirmId]
+			}
+			
+			u.confirmCode = null
+			
+			if(u.save(flush: true)) {
+				render(view: "success", model: [message: 'You have successfully updated your password.'])
+			}
+			else {
+				u.discard()
+				return [user: u, confirmCode: confirmId]
+			}
 		}
 	}
 
@@ -334,7 +379,7 @@ class MekUserController {
     }
 	
 	private MekUser currentUser() {
-		return MekUser.get(springSecurityService.principal.id)
+		return springSecurityService.isLoggedIn() ? MekUser.get(springSecurityService.principal.id) : null
 	}
 }
 

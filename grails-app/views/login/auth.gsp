@@ -33,6 +33,10 @@
 				<input type='submit' id="submit" value='${message(code: "springSecurity.login.button")}'/>
 			</p>
 		</form>
+		
+		<div class="forgotPassword">
+			<g:link controller="mekUser" action="forgotPassword"><g:message code="user.forgot.password.label" default="Forgot Password?" /></g:link>
+		</div>
 	</div>
 </div>
 </body>

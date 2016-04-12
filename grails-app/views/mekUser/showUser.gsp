@@ -44,6 +44,15 @@
 						
 					</li>
 				</g:if>
+				
+				<g:if test="${isCurrentUser}">
+					<li class="fieldcontain">
+						<span id="updatepass-label" class="property-label"><g:message code="user.password.label" default="Password" /></span>
+						
+							<span class="property-value" aria-labelledby="updatepass-label"><g:link controller="mekUser" action="resetPassword"><g:message code="user.update.password.label" default="Update Password" /></g:link></span>
+						
+					</li>
+				</g:if>
 			
 			</ol>
 			
