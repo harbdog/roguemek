@@ -1,3 +1,6 @@
+<%@ page import="roguemek.MekUser" 
+%>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -5,8 +8,16 @@
 		<title>Registration</title>
 	</head>
 	<body id="body">
-		<h1>Registration</h1>
-		<p>Complete the form below to create an account</p>
+		<g:if test="${( !grailsApplication.config.roguemek.users.admin?.username && MekUser.count() == 0) }">
+			<%-- only appears because the first user to register needs to be a superuser/admin --%>
+			<h1>Administrator Registration</h1>
+			<p>Complete the form below to create the first administrator account</p>
+		</g:if>
+		<g:else>
+			<h1>Registration</h1>
+			<p>Complete the form below to create an account</p>
+		</g:else>
+		
 		<g:hasErrors bean="${user}">
 			<div class="errors">
 				<g:renderErrors bean="${user}"></g:renderErrors>

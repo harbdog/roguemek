@@ -1,3 +1,6 @@
+<%@ page import="roguemek.MekUser" 
+%>
+
 <html>
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -11,10 +14,18 @@
 			<g:render template="/rogueMek/highScores" />
 		</sec:ifLoggedIn>
 		<sec:ifNotLoggedIn>
-			<%-- main page content that only appears when not logged in --%>
-			<div class="top-login-register-info">
-				<p class="center">To get started playing, <link:login><g:message code="login.label" default="Login" /></link:login> to an existing account or <link:register><g:message code="register.label" default="Register" /></link:register> to create a new account on this host</p>
-			</div>
+			<g:if test="${( !grailsApplication.config.roguemek.users.admin?.username && MekUser.count() == 0) }">
+				<%-- main page content that only appears because the first user to register needs to be a superuser/admin --%>
+				<div class="top-login-register-info">
+					<p class="center" style="font-size: 1.5em;">To get started, <link:register><g:message code="register.label" default="Register" /></link:register> to create the first administrator account on this host</p>
+				</div>
+			</g:if>
+			<g:else>
+				<%-- main page content that only appears when not logged in --%>
+				<div class="top-login-register-info">
+					<p class="center">To get started playing, <link:login><g:message code="login.label" default="Login" /></link:login> to an existing account or <link:register><g:message code="register.label" default="Register" /></link:register> to create a new account on this host</p>
+				</div>
+			</g:else>
 		</sec:ifNotLoggedIn>
 		
 		<div class="front-header">

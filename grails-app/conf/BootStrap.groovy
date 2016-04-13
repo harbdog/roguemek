@@ -64,9 +64,10 @@ class BootStrap {
 		// use RogueMek-config.groovy to define initial users
 		
 		// Create Admin user with all Roles
-		def adminUser = MekUser.findByUsername(grailsApplication.config.roguemek.users.admin.username)
+		def createAdmin = grailsApplication.config.roguemek.users.admin?.username
+		def adminUser = MekUser.findByUsername(createAdmin)
 		def adminPilot
-		if(!adminUser) {
+		if(createAdmin && !adminUser) {
 			// initialize testing admin user
 			adminUser = new MekUser(grailsApplication.config.roguemek.users.admin)
 			adminUser.enabled = true
@@ -88,6 +89,9 @@ class BootStrap {
 				log.info('Initialized admin user '+adminUser.username)
 			}
 			
+			assert MekUser.count() >= 1
+			assert MekUserRole.count() >= 1
+			
 			if(Environment.current == Environment.DEVELOPMENT){
 				// only creating test pilot in dev environment
 				adminPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: adminUser, status: Pilot.STATUS_ACTIVE, temporary: false)
@@ -102,6 +106,8 @@ class BootStrap {
 					
 					log.info('Initialized admin pilot '+adminPilot.toString())
 				}
+				
+				assert Pilot.count() >= 1
 			}
 		}
 		
@@ -129,6 +135,9 @@ class BootStrap {
 				log.info('Initialized test user '+testUser.username)
 			}
 			
+			assert MekUser.count() >= 1
+			assert MekUserRole.count() >= 1
+			
 			if(Environment.current == Environment.DEVELOPMENT){
 				// only creating test pilot in dev environment
 				testPilot = new Pilot(firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: testUser, status: Pilot.STATUS_ACTIVE, temporary: false)
@@ -147,9 +156,6 @@ class BootStrap {
 				assert Pilot.count() >= 1
 			}
 		}
-		
-		assert MekUser.count() >= 1
-		assert MekUserRole.count() >= 1
 		
 		// Initialize maps
 		HexMap.init()

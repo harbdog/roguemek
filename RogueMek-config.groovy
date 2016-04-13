@@ -6,12 +6,12 @@
  * e.g. ROGUEMEK_CONFIG=C:\Users\roguemek\.grails\RogueMek-config.groovy
  */
 roguemek {
-	users {
-		admin {		// required super user administrator user to create during init
-			username = "admin@roguemek.com"
-			callsign = "SuperUser"
-			password = "AdminAdmin"
-		}
+	users {	// If no users are predefined, the first user that registers will be an admin user
+//		admin {		// optional super user administrator user to create during init
+//			username = "admin@roguemek.com"
+//			callsign = "SuperUser"
+//			password = "AdminAdmin"
+//		}
 //		demo {		// optional initial demo user to create during init
 //			username = "demo@roguemek.com"
 //			callsign = "DemoUser"

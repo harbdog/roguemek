@@ -110,6 +110,31 @@ class MekUserController {
 			u.enabled = autoEnableAccounts
 			
 			if(u.save(flush: true)) {
+				
+				if(MekUser.count() == 1) {
+					// only here because the first user to register needs to be a superuser/admin
+					
+					// give the user, admin, and root roles to the first account
+					Role userRole = Role.findByAuthority(Role.ROLE_USER)
+					MekUserRole.create u, userRole, true
+					
+					Role adminRole = Role.findByAuthority(Role.ROLE_ADMIN)
+					MekUserRole.create u, adminRole, true
+					
+					Role rootRole = Role.findByAuthority(Role.ROLE_ROOT)
+					MekUserRole.create u, rootRole, true
+					
+					if(!u.enabled) {
+						u.enabled = true
+						u.save flush:true
+					}
+					
+					log.info("Automatically enabling administrator account for ${u.username}")
+					render(view: "success", model: [message: "Your administrator account is registered as ${u.username}. You may now login to your account!"])
+					
+					return
+				}
+				
 				if(emailConfirmationRequired) {
 					try{
 						mailService.sendMail {
