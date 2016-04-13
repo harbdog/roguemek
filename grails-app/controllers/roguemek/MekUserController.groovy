@@ -83,7 +83,8 @@ class MekUserController {
 
 	@Transactional
     def register() {
-		if(grailsApplication.config.roguemek.registration.newUserEnable == NEW_USER_DISABLE) {
+		if(grailsApplication.config.roguemek.registration.newUserEnable == NEW_USER_DISABLE
+				&& MekUser.count() > 0) {
 			render(view: "success", model: [message: 'New accounts can only be created by an administrator.'])
 			return
 		}
@@ -136,15 +137,26 @@ class MekUserController {
 				}
 				
 				if(emailConfirmationRequired) {
+					def mailSent = false
 					try{
 						mailService.sendMail {
 							to u.username
 							subject "RogueMek Registration for ${u.callsign}"
 							html g.render(template:"mailConfirmUser", model:[code:u.confirmCode])
 						}
+						
+						mailSent = true
 					}
 					catch(org.springframework.mail.MailAuthenticationException e) {
+						log.error "Authentication Error! ${e.toString()}"
+					}
+					catch(Exception e) {
 						log.error e.toString()
+					}
+					
+					if(mailSent) {
+						render(view: "success", model: [message: "Your account has been created, it can be activated by visiting the confirmation link sent to ${u.username}."])
+						return
 					}
 				}
 				else {
@@ -155,17 +167,13 @@ class MekUserController {
 					if(autoEnableAccounts) {
 						log.debug("Automatically enabling account for ${u.username}")
 						render(view: "success", model: [message: "Your account is registered as ${u.username}. You may now login to your account!"])
+						return
 					}
-					else {
-						log.debug("New account created without enabling for ${u.username}")
-						render(view: "success", model: [message: "Your account is registered as ${u.username}. Activation will require an administrator to enable the account!"])
-					}
-					
-					return
 				}
 				
-				render(view: "index", model: [userInstance: u])
-				redirect(action: "success", model: [message: 'Your account has been created, it can be activated by visiting the confirmation link sent to your provided email address.'])
+				log.debug("New account created without enabling for ${u.username}")
+				render(view: "success", model: [message: "Your account is registered as ${u.username}. Activation will require an administrator to enable the account!"])
+				return
 			}
 			else {
 				return [user:u]
