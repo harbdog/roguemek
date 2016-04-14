@@ -332,8 +332,9 @@ function setupDynamicUI() {
 				.addClass("ui-menu-icons");
     	});
     	
-    	// setup user join button
-    	$("button.user-join").each(function() {
+    	// setup user join button - the join button does not currently exist
+    	// but may be added back when teams are enabled
+    	/*$("button.user-join").each(function() {
     		if($(this).button("instance") != null) return
     		
     		$(this).button({
@@ -341,7 +342,7 @@ function setupDynamicUI() {
         			secondary: "ui-icon-arrowreturnthick-1-n"
     	    	}
         	}).click(addUser);
-    	});
+    	});*/
     	
     	// setup user delete button
     	$("button.user-delete").each(function() {
@@ -557,9 +558,6 @@ function updateLocation(event, data) {
 }
 
 function ajaxStageUser(userId) {
-	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
-	dialogLoading.dialog("open");
-
 	var inputMap = {
 		userId: userId
 	};
@@ -624,8 +622,6 @@ function ajaxStageUser(userId) {
 		
 		var effectOptions = {color: "#3399FF"};
 		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
-		
-		dialogLoading.dialog("close");
     });
 }
 
@@ -914,10 +910,12 @@ function filterAjaxUnitSelect(filterBox) {
 	});
 }
 
+/**
+ * Stages a unit added by another player
+ * @param unitId
+ * @param userId
+ */
 function ajaxStageUnit(unitId, userId) {
-	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
-	dialogLoading.dialog("open");
-
 	var inputMap = {
 		userId: userId,
 		unitId: unitId
@@ -946,8 +944,6 @@ function ajaxStageUnit(unitId, userId) {
 		
 		// update displayed counts of units/tonnage
 		updateUnitCounts(userId);
-		
-		dialogLoading.dialog("close");
     });
 }
 
