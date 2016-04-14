@@ -30,15 +30,20 @@
 						<g:sortableColumn property="callsign" title="${message(code: 'user.callsign.label', default: 'Callsign')}" />
 					
 						<sec:ifAnyGranted roles="ROLE_ADMIN">
-							<g:sortableColumn property="username" title="${message(code: 'user.username.label', default: 'Username')}" />
+							<g:sortableColumn property="username" title="${message(code: 'user.email.label', default: 'Username/Email')}" />
 							
-							<g:sortableColumn property="accountExpired" title="${message(code: 'user.accountExpired.label', default: 'Account Expired')}" />
+							<g:sortableColumn property="signupDate" title="${message(code: 'user.signupDate.label', default: 'Registered')}" />
 					
-							<g:sortableColumn property="accountLocked" title="${message(code: 'user.accountLocked.label', default: 'Account Locked')}" />
+							<g:sortableColumn property="accountLocked" title="${message(code: 'user.accountLocked.label', default: 'Locked')}" />
 						
 							<g:sortableColumn property="enabled" title="${message(code: 'user.enabled.label', default: 'Enabled')}" />
+							
+							<g:sortableColumn property="lastLoginDate" title="${message(code: 'user.lastLogin.label', default: 'Last Login')}" />
 						</sec:ifAnyGranted>
 						
+						<sec:ifAnyGranted roles="ROLE_ROOT">
+							<g:sortableColumn property="country" title="${message(code: 'user.country.label', default: 'Country')}" />
+						</sec:ifAnyGranted>
 					</tr>
 				</thead>
 				<tbody>
@@ -50,11 +55,17 @@
 						<sec:ifAnyGranted roles="ROLE_ADMIN">
 							<td><g:link action="show" id="${mekUserInstance.id}">${fieldValue(bean: mekUserInstance, field: "username")}</g:link></td>
 							
-							<td><g:formatBoolean boolean="${mekUserInstance.accountExpired}" /></td>
+							<td><span class="property-value"><g:formatDate format="yyyy-MM-dd" date="${mekUserInstance.signupDate}"/></span></td>
 						
 							<td><g:formatBoolean boolean="${mekUserInstance.accountLocked}" /></td>
 						
 							<td><g:formatBoolean boolean="${mekUserInstance.enabled}" /></td>
+							
+							<td><span class="property-value"><g:formatDate date="${mekUserInstance.lastLoginDate}"/></span></td>
+						</sec:ifAnyGranted>
+						
+						<sec:ifAnyGranted roles="ROLE_ROOT">
+							<td><span class="property-value">${mekUserInstance.country}</span></td>
 						</sec:ifAnyGranted>
 					</tr>
 				</g:each>

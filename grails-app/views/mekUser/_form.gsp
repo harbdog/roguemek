@@ -29,15 +29,6 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'accountExpired', 'error')} ">
-	<label for="accountExpired">
-		<g:message code="user.accountExpired.label" default="Account Expired" />
-		
-	</label>
-	<g:checkBox name="accountExpired" value="${mekUserInstance?.accountExpired}" />
-
-</div>
-
 <div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'accountLocked', 'error')} ">
 	<label for="accountLocked">
 		<g:message code="user.accountLocked.label" default="Account Locked" />
@@ -55,15 +46,3 @@
 	<g:checkBox name="enabled" value="${mekUserInstance?.enabled}" />
 
 </div>
-
-<%--
-<div class="fieldcontain ${hasErrors(bean: mekUserInstance, field: 'passwordExpired', 'error')} ">
-	<label for="passwordExpired">
-		<g:message code="user.passwordExpired.label" default="Password Expired" />
-		
-	</label>
-	<g:checkBox name="passwordExpired" value="${mekUserInstance?.passwordExpired}" />
-
-</div>
---%>
-
