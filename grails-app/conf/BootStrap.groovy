@@ -11,6 +11,8 @@ class BootStrap {
 
 	def grailsApplication
 	
+	def nameService
+	
     def init = { ServletContext servletContext ->
 		
 		/* Sample code for determining environment from grails.util.Environment */
@@ -50,18 +52,57 @@ class BootStrap {
 		assert Role.count == 3
 		
 		// Initialize names
-		log.info('Initializing Names/Surnames... this may take a while if first time')
-		Name.init()
-		Surname.init()
+		log.info('Initializing Names/Surnames...')
+		nameService.initNames()
 		
-		// random query name test
-		log.info('Initialized Names/Surnames. Random query names test:')
-		log.info("R: "+ Name.getRandom().name)
-		log.info("F: "+ Name.getRandom(Name.GENDER_FEMALE).name)
-		log.info("M: "+ Name.getRandom(Name.GENDER_MALE).name)
-		log.info("S: "+ Surname.getRandom().surname)
+		if(Environment.current == Environment.DEVELOPMENT){
+			// random query name test
+			try{
+				log.info('Random query names test:')
+				log.info("R: "+ Name.getRandom().name)
+				log.info("F: "+ Name.getRandom(Name.GENDER_FEMALE).name)
+				log.info("M: "+ Name.getRandom(Name.GENDER_MALE).name)
+				log.info("S: "+ Surname.getRandom().surname)
+			} catch(Exception e) {
+				log.error e.toString
+			}
+		}
 		
-		// use RogueMek-config.groovy to define initial users
+		// Initialize maps
+		log.info('Initializing Maps')
+		HexMap.init()
+		
+		if(grailsApplication.config.roguemek.server.preloadMaps) {
+			HexMap.list().each {
+				if(!it.mapLoaded) {
+					it.loadMap()
+					log.info("Pre Loaded Map ${it.name}")
+				}
+			}
+		}
+		
+		// Initialize factions
+		Faction.init()
+		log.info('Initialized Factions')
+		
+		// Initialize equipment, weapons, ammo, and heat sinks
+		Equipment.init()
+		JumpJet.init()
+		HeatSink.init()
+		Ammo.init()
+		Weapon.init()
+		log.info('Initialized Equipment')
+		
+		// Initialize stock mechs
+		Mech.init()
+		log.info('Initialized Mechs')
+		
+		// Initialize heat effects
+		HeatEffect.initializeHeatEffects()
+		
+		////////////////////////////////////////////////////////
+		// use RogueMek-config.groovy to define initial users //
+		////////////////////////////////////////////////////////
 		
 		// Create Admin user with all Roles
 		def createAdmin = grailsApplication.config.roguemek.users.admin?.username
@@ -156,38 +197,6 @@ class BootStrap {
 				assert Pilot.count() >= 1
 			}
 		}
-		
-		// Initialize maps
-		HexMap.init()
-		log.info('Initialized Maps')
-		
-		if(grailsApplication.config.roguemek.server.preloadMaps) {
-			HexMap.list().each { 
-				if(!it.mapLoaded) {
-					it.loadMap()
-					log.info("Pre Loaded Map ${it.name}")
-				}
-			}
-		}
-		
-		// Initialize factions
-		Faction.init()
-		log.info('Initialized Factions')
-		
-		// Initialize equipment, weapons, ammo, and heat sinks
-		Equipment.init()
-		JumpJet.init()
-		HeatSink.init()
-		Ammo.init()
-		Weapon.init()
-		log.info('Initialized Equipment')
-		
-		// Initialize stock mechs
-		Mech.init()
-		log.info('Initialized Mechs')
-		
-		// Initialize heat effects
-		HeatEffect.initializeHeatEffects()
 		
 		// setting up some test BattleMech instances for the test game
 		def battleMechA
