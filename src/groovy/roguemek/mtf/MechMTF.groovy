@@ -368,7 +368,7 @@ class MechMTF {
 							thisCrit = findCorrectHatchet(unitMass)
 							break
 						}
-						else if(MTF_SHORT_JUMPJET.equals(foundEquip.shortName)) {
+						else if(MTF_SHORT_JUMPJET.equals(thisEquip.shortName)) {
 							thisCrit = findCorrectJumpJet(unitMass)
 							break
 						}
