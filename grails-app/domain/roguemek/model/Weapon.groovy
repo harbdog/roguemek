@@ -5,15 +5,15 @@ import roguemek.assets.ContextHelper
 
 class Weapon extends Equipment {
 	String weaponType
-	
+
 	Integer damage
 	Integer heat
 	Integer cycle
-	
+
 	Integer clusterHits
 	Integer projectiles
 	static hasMany = [ammoTypes:Ammo]
-	
+
 	Integer minRange
 	Integer shortRange
 	Integer mediumRange
@@ -23,63 +23,30 @@ class Weapon extends Equipment {
 	public static final String TYPE_BALLISTIC = "Ballistic"
 	public static final String TYPE_MISSILE = "Missile"
 	public static final String TYPE_PHYSICAL = "Physical"
-	
+
     static constraints = {
 		weaponType inList: [TYPE_ENERGY, TYPE_BALLISTIC, TYPE_MISSILE, TYPE_PHYSICAL]
-		
+
 		damage min: 0
 		heat min: 0
 		cycle min: 1
-		
+
 		clusterHits min: 1
 		projectiles min: 1
-		
+
 		minRange min: 0
 		shortRange min: 0
 		mediumRange min: 0
 		longRange min: 0
     }
-	
+
 	static mapping = {
 		// Model classes do not change values, versioning not needed
 		version false
 	}
-	
-	static void init() {
-		// Create all objects for the game from csv
-		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Weapons.csv"))).eachLine { map ->
-			// using name and mass since Hatchets have the same name but differ in mass based on mech tonnage
-			def weapon = Weapon.findByNameAndMass(map.name, map.mass)
-			if(weapon) return
-			
-			// update Aliases to be multiple strings in an array instead of one string
-			Weapon.updateAliases(map)
-			
-			// update the ammoTypes to be a map of the Ammo class by shortName
-			def ammoTypesStr = map.ammoTypes
-			if(ammoTypesStr != null) {
-				
-				def ammoTypesArr = []
-				ammoTypesStr.split(":").each {
-					Ammo.findAllByShortName(it).each { Ammo itAmmo ->
-						ammoTypesArr.add(itAmmo)
-					}
-				}
-				map.ammoTypes = ammoTypesArr
-			}
-			
-			weapon = new Weapon(map)
-			if(!weapon.validate()) {
-				log.error("Errors with weapon "+weapon.name+":\n")
-				weapon.errors.allErrors.each {
-					log.error(it)
-				}
-			}
-			else {
-				weapon.save flush:true
-				log.info("Created weapon "+weapon.name)
-			}
-		}
-		
+
+	@Override
+	public String toString() {
+		return "<Weapon:"+name+">"
 	}
 }

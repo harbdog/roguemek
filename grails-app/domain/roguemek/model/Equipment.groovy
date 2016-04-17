@@ -12,22 +12,22 @@ class Equipment {
 	String shortName
 	static hasMany = [aliases:String]
 	String description
-	
+
 	Character tech
 	Faction faction
 	Integer year
-	
+
 	Double mass
 	Integer crits
 	Long cbills
 	Integer battleValue
-	
+
 	// STATIC value mappings
 	public static final Character TECH_IS = 'I'
 	public static final Character TECH_CLAN = 'C'
-	
+
 	public static final String EMPTY = "-Empty-"
-	
+
 	static mapping = {
 		// All extending classes will get their own tables
 		tablePerHierarchy false
@@ -39,41 +39,17 @@ class Equipment {
 		name blank: false
 		shortName nullable: true
 		description nullable: true
-		
+
 		tech inList: [TECH_IS, TECH_CLAN]
 		faction nullable: true
 		year range: 0..3132
-		
+
 		mass min: 0.0D
 		crits min: 0
 		cbills min: 0L
 		battleValue min: 0
     }
-	
-	static void init() {
-		// Create all objects for the game from csv
-		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Equipment.csv"))).eachLine { map ->
-			def equip = Equipment.findByName(map.name)
-			if(equip) return
-			
-			// update Aliases to be multiple strings in an array instead of one string
-			Equipment.updateAliases(map)
-			
-			equip = new Equipment(map)
-			
-			if(!equip.validate()) {
-				log.error("Errors with equipment "+equip.name+":\n")
-				equip.errors.allErrors.each {
-					log.error(it)
-				}
-			}
-			else {
-				equip.save()
-				log.info("Created equipment "+equip.name)
-			}
-		}
-	}
-	
+
 	/**
 	 * Method used for converting the input aliases comma separated string into an array
 	 * @param map
@@ -87,11 +63,11 @@ class Equipment {
 			}
 		}
 	}
-	
+
 	public boolean isEmpty() {
 		return EMPTY.equals(this.name)
 	}
-	
+
 	@Override
 	public String toString() {
 		return "<Equipment:"+name+">"

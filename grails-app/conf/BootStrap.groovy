@@ -8,9 +8,10 @@ import roguemek.game.*
 import roguemek.model.*
 
 class BootStrap {
-
+	
 	def grailsApplication
 	
+	def equipmentService
 	def nameService
 	
     def init = { ServletContext servletContext ->
@@ -20,19 +21,16 @@ class BootStrap {
 			// insert Development environment specific code here
 			printClassPath this.class.classLoader
 			log.debug("mail: "+grailsApplication.config.grails.mail)
-        } 
+        }
 		else if (Environment.current == Environment.TEST) {
             // insert Test environment specific code here
-        } 
+        }
 		else if (Environment.current == Environment.PRODUCTION) {
             // insert Production environment specific code here
         }
 		
 		// Initialize the Context helping for determining location of resource with or without using the war
 		ContextHelper.setContext(servletContext)
-		
-		// Initialize the Hex Tileset
-		HexTileset.init()
 		
 		def userRole = Role.findByAuthority(Role.ROLE_USER)
 		if(!userRole) {
@@ -68,6 +66,14 @@ class BootStrap {
 			}
 		}
 		
+		// Initialize equipment, weapons, ammo, and heat sinks
+		log.info('Initializing Equipment')
+		equipmentService.initEquipment()
+		
+		// Initialize the Hex Tileset
+		log.info('Initializing Hexes')
+		HexTileset.init()
+		
 		// Initialize maps
 		log.info('Initializing Maps')
 		HexMap.init()
@@ -82,20 +88,12 @@ class BootStrap {
 		}
 		
 		// Initialize factions
+		log.info('Initializing Factions')
 		Faction.init()
-		log.info('Initialized Factions')
-		
-		// Initialize equipment, weapons, ammo, and heat sinks
-		Equipment.init()
-		JumpJet.init()
-		HeatSink.init()
-		Ammo.init()
-		Weapon.init()
-		log.info('Initialized Equipment')
 		
 		// Initialize stock mechs
+		log.info('Initializing Mechs')
 		Mech.init()
-		log.info('Initialized Mechs')
 		
 		// Initialize heat effects
 		HeatEffect.initializeHeatEffects()
@@ -126,7 +124,7 @@ class BootStrap {
 				MekUserRole.create adminUser, rootRole, true
 				MekUserRole.create adminUser, adminRole, true
 				MekUserRole.create adminUser, userRole, true
-			
+				
 				log.info('Initialized admin user '+adminUser.username)
 			}
 			
@@ -172,7 +170,7 @@ class BootStrap {
 				
 				// assign user role to test user
 				MekUserRole.create testUser, userRole, true
-			
+				
 				log.info('Initialized test user '+testUser.username)
 			}
 			
@@ -190,7 +188,7 @@ class BootStrap {
 				}
 				else {
 					testPilot.save flush:true
-				
+					
 					log.info('Initialized test pilot '+testPilot.toString())
 				}
 				
@@ -215,7 +213,7 @@ class BootStrap {
 			}
 			else {
 				battleMechA.save flush:true
-			
+				
 				log.info('Initialized battle mech '+battleMechA.mech.name+" with ID="+battleMechA.id)
 			}
 			
@@ -229,7 +227,7 @@ class BootStrap {
 			}
 			else {
 				battleMechB.save flush:true
-			
+				
 				log.info('Initialized battle mech '+battleMechB.mech.name+" with ID="+battleMechB.id)
 			}
 			
@@ -255,7 +253,7 @@ class BootStrap {
 			}
 			else {
 				battleMech2.save flush:true
-			
+				
 				log.info('Initialized battle mech '+battleMech2.mech.name+" with ID="+battleMech2.id)
 			}
 			
@@ -269,7 +267,7 @@ class BootStrap {
 			}
 			else {
 				battleMech3.save flush:true
-			
+				
 				log.info('Initialized battle mech '+battleMech3.mech.name+" with ID="+battleMech3.id)
 			}
 		}
@@ -299,15 +297,15 @@ class BootStrap {
 				
 				// create staging data for the sample game
 				StagingUser stagingAdmin = new StagingUser(
-						game: sampleGame, user: adminUser, 
-						startingLocation: Game.STARTING_NW, 
+						game: sampleGame, user: adminUser,
+						startingLocation: Game.STARTING_NW,
 						rgbCamo: [255, 0, 0],
 						units: [battleMechA, battleMechB])
 				stagingAdmin.save flush:true
 				
 				StagingUser stagingTester = new StagingUser(
-						game: sampleGame, user: testUser, 
-						startingLocation: Game.STARTING_N, 
+						game: sampleGame, user: testUser,
+						startingLocation: Game.STARTING_N,
 						rgbCamo: [0, 0, 255],
 						units: [battleMech2, battleMech3])
 				stagingTester.save flush:true
@@ -343,8 +341,8 @@ class BootStrap {
 						victimUnit = battleMechA.mech
 					}
 					
-					def thisKD = new roguemek.stats.KillDeath(game: sampleGame, 
-																killer: killer, killerUnit: killerUnit, 
+					def thisKD = new roguemek.stats.KillDeath(game: sampleGame,
+																killer: killer, killerUnit: killerUnit,
 																victim: victim, victimUnit: victimUnit)
 					thisKD.save flush:true
 					
