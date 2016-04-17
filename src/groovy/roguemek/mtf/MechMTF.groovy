@@ -3,7 +3,8 @@ package roguemek.mtf
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
 
-import roguemek.model.*;
+import roguemek.model.*
+import roguemek.assets.ContextHelper
 
 class MechMTF {
 	private static Log log = LogFactory.getLog(this)
@@ -35,6 +36,22 @@ class MechMTF {
 	public static final String MTF_SHORT_CHARGE = "CHARGE"
 	public static final String MTF_SHORT_DFA = "DFA"
 	public static final String MTF_SHORT_JUMPJET = "JJ"
+	
+	/**
+	 * Initializes mechs from a list of MTF mech file paths
+	 */
+	public static def initMechs() {
+		Set<String> mechPaths = ContextHelper.getResourcePaths("/src/mtf/mechs/")
+		
+		for(String path in mechPaths) {
+			if(path.toLowerCase().endsWith(MechMTF.MTF_EXTENSION)) {
+				InputStream mtfFile = ContextHelper.getResource(path)
+				if(mtfFile.available()) {
+					MechMTF.createMechFromMTF(mtfFile)
+				}
+			}
+		}
+	}
 	
 	/**
 	 * Generates a Mech instance from an MTF format file

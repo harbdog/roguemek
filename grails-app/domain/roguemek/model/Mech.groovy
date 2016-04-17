@@ -144,19 +144,6 @@ class Mech extends Unit {
 	public static final MEDIUM = "medium"
 	public static final HEAVY = "heavy"
 	public static final ASSAULT = "assault"
-
-	static void init() {
-		Set<String> mechPaths = ContextHelper.getResourcePaths("/src/mtf/mechs/")
-		
-		for(String path in mechPaths) {
-			if(path.toLowerCase().endsWith(MechMTF.MTF_EXTENSION)) {
-				InputStream mtfFile = ContextHelper.getResource(path)
-				if(mtfFile.available()) {
-					MechMTF.createMechFromMTF(mtfFile)
-				}
-			}
-		}
-	}
 	
 	/**
 	 * returns shortened text of the hit location index

@@ -6,6 +6,7 @@ import roguemek.assets.*
 import roguemek.board.*
 import roguemek.game.*
 import roguemek.model.*
+import roguemek.mtf.*
 
 class BootStrap {
 	
@@ -93,7 +94,7 @@ class BootStrap {
 		
 		// Initialize stock mechs
 		log.info('Initializing Mechs')
-		Mech.init()
+		MechMTF.initMechs()
 		
 		// Initialize heat effects
 		HeatEffect.initializeHeatEffects()
