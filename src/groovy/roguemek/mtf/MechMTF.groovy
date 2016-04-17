@@ -34,6 +34,7 @@ class MechMTF {
 	public static final String MTF_SHORT_KICK = "KICK"
 	public static final String MTF_SHORT_CHARGE = "CHARGE"
 	public static final String MTF_SHORT_DFA = "DFA"
+	public static final String MTF_SHORT_JUMPJET = "JJ"
 	
 	/**
 	 * Generates a Mech instance from an MTF format file
@@ -345,12 +346,12 @@ class MechMTF {
 			
 			if(foundEquip) {
 				if(MTF_SHORT_HATCHET.equals(foundEquip.shortName)) {
-					// if this is a hatchet, make sure the correct one is chosen based on mech tonnage
-					def foundAllEquip = Equipment.findAllByName(critName)
-					for(Equipment thisEquip in foundAllEquip) {
-						thisCrit = findCorrectHatchet(unitMass)
-						break
-					}
+					// this is a hatchet, make sure the correct one is chosen based on mech tonnage
+					thisCrit = findCorrectHatchet(unitMass)
+				}
+				else if(MTF_SHORT_JUMPJET.equals(foundEquip.shortName)) {
+					// this is a jump jet, make sure the correct one is chosen based on mech tonnage
+					thisCrit = findCorrectJumpJet(unitMass)
 				}
 				else{
 					thisCrit = foundEquip
@@ -406,16 +407,28 @@ class MechMTF {
 	 */
 	private static Equipment findCorrectHatchet(def unitMass) {
 		def hatchetMass = Math.ceil(unitMass / 15)
-		
-		def foundAllEquip = Equipment.findAllByShortName(MTF_SHORT_HATCHET)
-		for(Equipment thisEquip in foundAllEquip) {
-			
-			if(thisEquip.mass == hatchetMass) {
-				return thisEquip
-			}
+		def foundEquip = Equipment.findByShortNameAndMass(MTF_SHORT_HATCHET, hatchetMass)
+		return foundEquip
+	}
+	
+	/**
+	 * Gets the correct sized jump jet based on the unit mass
+	 * 10-55 = 0.5 tons
+	 * 60-85 = 1 ton
+	 * 90-100 = 2 tons
+	 * @param unitMass
+	 * @return
+	 */
+	private static Equipment findCorrectJumpJet(def unitMass) {
+		def jumpJetMass = 0.5
+		if(unitMass >= 90) {
+			jumpJetMass = 2
+		}
+		else if(unitMass >= 60) {
+			jumpJetMass = 1
 		}
 		
-		
-		return null
+		def foundEquip = Equipment.findByShortNameAndMass(MTF_SHORT_JUMPJET, jumpJetMass)
+		return foundEquip
 	}
 }
