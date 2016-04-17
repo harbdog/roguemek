@@ -37,6 +37,9 @@ class MechMTF {
 	public static final String MTF_SHORT_DFA = "DFA"
 	public static final String MTF_SHORT_JUMPJET = "JJ"
 	
+	// store the crit name mapped to Equipment objects found as each Mech is created
+	private static def equipCacheMap = [:]
+	
 	/**
 	 * Initializes mechs from a list of MTF mech file paths
 	 */
@@ -51,6 +54,8 @@ class MechMTF {
 				}
 			}
 		}
+		
+		equipCacheMap.clear()
 	}
 	
 	/**
@@ -228,7 +233,6 @@ class MechMTF {
 			// Weapons are generated dynamically from their crits
 		}
 		
-		
 		def mtfCritSections = [MapMTF.MTF_LEFT_ARM, MapMTF.MTF_RIGHT_ARM, 
 			MapMTF.MTF_LEFT_TORSO, MapMTF.MTF_RIGHT_TORSO, MapMTF.MTF_CENTER_TORSO, 
 			MapMTF.MTF_HEAD, MapMTF.MTF_LEFT_LEG, MapMTF.MTF_RIGHT_LEG]
@@ -242,7 +246,6 @@ class MechMTF {
 				}
 			}
 		}
-		
 		
 		mech = new Mech(map)
 		if(!mech.validate()) {
@@ -359,7 +362,7 @@ class MechMTF {
 		
 		if(thisCrit == null){
 			// search all Equipment for the item, if it is not found then create a new one with some default info
-			def foundEquip = Equipment.findByName(critName)
+			def foundEquip = equipCacheMap[critName] ?: Equipment.findByName(critName)
 			
 			if(foundEquip) {
 				if(MTF_SHORT_HATCHET.equals(foundEquip.shortName)) {
@@ -416,6 +419,10 @@ class MechMTF {
 		
 		if(thisCrit == null) {
 			log.error("null crit? "+critName)
+		}
+		else if(!equipCacheMap[critName]) {
+			// add the found equipment to the cache for quick access later
+			equipCacheMap[critName] = thisCrit
 		}
 		
 		crits[critStart + subSectionIndex] = thisCrit.id
