@@ -16,157 +16,147 @@ class EquipmentService {
 		def sql = new Sql(dataSource)
 
         // Create all generic Equipment for the game from csv
-		def generics = batchInsertEquipment(sql, "csv/Equipment.csv")
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Equipment.csv"))).eachLine { map ->
+			def equip = Equipment.findByName(map.name)
+			if(equip) return
+			
+			// update Aliases to be multiple strings in an array instead of one string
+			Equipment.updateAliases(map)
+			
+			equip = new Equipment(map)
+			
+			if(!equip.validate()) {
+				log.error("Errors with equipment "+equip.name+":\n")
+				equip.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				equip.save()
+				log.info("Created equipment "+equip.name)
+			}
+		}
 
         // Create JumpJets from csv
-        //JumpJet.init()
-        def jumpJets = batchInsertEquipment(sql, "csv/JumpJets.csv")
-        if(jumpJets.size() > 0) {
-			// handle JumpJet table specific inserts
-            sql.withBatch(20, "insert into jump_jet (id) "
-                    + "values ((SELECT id FROM equipment WHERE name = :name AND short_name = :shortName AND mass = :mass))".toString()) { preparedStatement ->
-
-                jumpJets.each { map ->
-                    preparedStatement.addBatch(map)
-                    log.info("Mapped as jumpjet: ${map.name} (${map.mass}T)")
-                }
-            }
-        }
+        initJumpJets()
 
         // Create HeatSinks from csv
-        //HeatSink.init()
-		def heatSinks = batchInsertEquipment(sql, "csv/HeatSinks.csv")
-        if(heatSinks.size() > 0) {
-			// handle HeatSink table specific inserts
-            sql.withBatch(20, "insert into heat_sink (id, dissipation) "
-                    + "values ((SELECT id FROM equipment WHERE name = :name AND short_name = :shortName AND mass = :mass), "
-					+ ":dissipation)".toString()) { preparedStatement ->
-
-                heatSinks.each { map ->
-                    preparedStatement.addBatch(map)
-                    log.info("Mapped as heatsink: ${map.name}")
-                }
-            }
-        }
+        initHeatSinks()
 
         // Create Ammo from csv
-        //Ammo.init()
-		def ammo = batchInsertEquipment(sql, "csv/Ammo.csv")
-        if(ammo.size() > 0) {
-			// handle Ammo table specific inserts
-            sql.withBatch(20, "insert into ammo (id, ammo_per_ton, explosive_damage) "
-                    + "values ((SELECT id FROM equipment WHERE name = :name AND short_name = :shortName AND mass = :mass), "
-					+ ":ammoPerTon, :explosiveDamage)".toString()) { preparedStatement ->
-
-                ammo.each { map ->
-                    preparedStatement.addBatch(map)
-                    log.info("Mapped as ammo: ${map.name}")
-                }
-            }
-        }
+        initAmmo()
 
         // Create Weapons from csv
-        //Weapon.init()
-		def weapons = batchInsertEquipment(sql, "csv/Weapons.csv")
-        if(weapons.size() > 0) {
-			// ammo types per weapon is mapped to separate table
-			def ammoTypeMaps = []
-
-			// handle Weapon table specific inserts
-            sql.withBatch(20, "insert into weapon (id, cluster_hits, cycle, damage, heat, long_range, medium_range, min_range, projectiles, short_range, weapon_type) "
-                    + "values ((SELECT id FROM equipment WHERE name = :name AND short_name = :shortName AND mass = :mass), "
-					+ ":clusterHits, :cycle, :damage, :heat, :longRange, :mediumRange, :minRange, :projectiles, :shortRange, :weaponType)".toString()) { preparedStatement ->
-
-                weapons.each { map ->
-                    preparedStatement.addBatch(map)
-                    log.info("Mapped as weapon: ${map.name}")
-
-					if(map.ammoTypes?.length() > 0) {
-						map.ammoTypes = map.ammoTypes.split(":")
-						ammoTypeMaps.add(map)
-	                }
-                }
-            }
-
-			if(ammoTypeMaps.size() > 0) {
-				// update the ammoTypes to be a map of the Ammo class by shortName
-				sql.withBatch(20, "insert into weapon_ammo (weapon_ammo_types_id, ammo_id) "
-	                    + "values ((SELECT id FROM equipment WHERE name = :name AND short_name = :shortName AND mass = :mass), "
-						+ ":ammoId)".toString()) { preparedStatement ->
-
-	                ammoTypeMaps.each { map ->
-						map.ammoTypes.each { ammoShortName ->
-							Equipment.findAllByShortName(ammoShortName).each { Equipment itAmmo ->
-								map.ammoId = itAmmo.id
-								preparedStatement.addBatch(map)
-
-								log.info("Mapped as ammo type: ${map.name} -> ${itAmmo}")
-							}
-						}
-	                }
-	            }
-			}
-        }
-
-        sql.close()
+        initWeapons()
 	}
+	
+	private def initJumpJets() {
+		// Create all objects for the game from csv
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/JumpJets.csv"))).eachLine { map ->
+			// using name and mass since Jump Jets have the same name but differ in mass based on mech tonnage
+			def jumpjet = JumpJet.findByNameAndMass(map.name, map.mass)
+			if(jumpjet) return
 
-	/**
-	 * Batch loads all base Equipment objects from the given csv file and returns
-	 * a list of maps that were used to generate the records
-	 */
-	private def batchInsertEquipment(Sql sql, String equipmentCsvFile) {
-		// store all data maps so they can be returned
-		def equipMaps = []
+			// update Aliases to be multiple strings in an array instead of one string
+			JumpJet.updateAliases(map)
 
-		// equipment_aliases is a separate table that will need its own batch call after all equipment has loaded already
-		def equipAliases = []
+			jumpjet = new JumpJet(map)
 
-		// Create all Equipment for the game from csv
-        // TODO: create common method for the base equipment batch insert
-        sql.withBatch(20, "insert into equipment (name,short_name,description,mass,crits,tech,year,cbills,battle_value) "
-                + "values (:name,:shortName,:description,:mass,:crits,:tech,:year,:cbills,:battleValue)".toString()) { preparedStatement ->
-
-    		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource( equipmentCsvFile ))).eachLine { map ->
-    			def equip = Equipment.findByName(map.name)
-    			if(equip) return
-
-    			preparedStatement.addBatch(map)
-                log.info("Created equipment ${map.name}")
-
-                // store aliases list for batch insert later
-                if(map.aliases?.length() > 0) {
-					map.aliases = map.aliases.split(",")
-					equipAliases.add(map)
-                }
-
-				equipMaps.add(map)
-    		}
-        }
-
-		if(equipAliases.size() > 0) {
-            // link equipment aliases
-            sql.withBatch(20, "insert into equipment_aliases (equipment_id, aliases_string) "
-                    + "values (:equipId, :alias)".toString()) { preparedStatement ->
-
-                equipAliases.each { map ->
-					// keying by name, short name, and mass to make sure the right objects are mapped
-                    def equipFound = Equipment.findAllByNameAndShortNameAndMass(map.name, map.shortName, map.mass)
-                    if(!equipFound) {
-                        log.error("No equipment found for aliases: ${map.aliases}")
-                        return
-                    }
-
-                    equipFound.each { equip ->
-                        map.aliases.each { alias ->
-                            preparedStatement.addBatch(equipId:equip.id, alias:alias)
-                        }
-                        log.debug("Linked ${equip} aliases: ${map.aliases}")
-                    }
-                }
-            }
-        }
-
-		return equipMaps
+			if(!jumpjet.validate()) {
+				log.error("Errors with jumpjet "+jumpjet.name+":\n")
+				jumpjet.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				jumpjet.save()
+				log.info("Created jumpjet "+jumpjet.name)
+			}
+		}
+	}
+	
+	private def initHeatSinks() {
+		// Create all objects for the game from csv
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/HeatSinks.csv"))).eachLine { map ->
+			def heatsink = HeatSink.findByName(map.name)
+			if(heatsink) return
+			
+			// update Aliases to be multiple strings in an array instead of one string
+			HeatSink.updateAliases(map)
+			
+			heatsink = new HeatSink(map)
+			
+			if(!heatsink.validate()) {
+				log.error("Errors with heatsink "+heatsink.name+":\n")
+				heatsink.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				heatsink.save()
+				log.info("Created heatsink "+heatsink.name)
+			}
+		}
+	}
+	
+	private def initAmmo() {
+		// Create all objects for the game from csv
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Ammo.csv"))).eachLine { map ->
+			def ammo = Ammo.findByName(map.name)
+			if(ammo) return
+			
+			// update Aliases to be multiple strings in an array instead of one string
+			Ammo.updateAliases(map)
+			
+			ammo = new Ammo(map)
+			
+			if(!ammo.validate()) {
+				log.error("Errors with ammo "+ammo.name+":\n")
+				ammo.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				ammo.save flush:true
+				log.info("Created ammo "+ammo.name)
+			}
+		}
+	}
+	
+	private def initWeapons() {
+		// Create all objects for the game from csv
+		new CSVMapReader(new InputStreamReader(ContextHelper.getContextSource("csv/Weapons.csv"))).eachLine { map ->
+			// using name and mass since Hatchets have the same name but differ in mass based on mech tonnage
+			def weapon = Weapon.findByNameAndMass(map.name, map.mass)
+			if(weapon) return
+			
+			// update Aliases to be multiple strings in an array instead of one string
+			Weapon.updateAliases(map)
+			
+			// update the ammoTypes to be a map of the Ammo class by shortName
+			def ammoTypesStr = map.ammoTypes
+			if(ammoTypesStr != null) {
+				
+				def ammoTypesArr = []
+				ammoTypesStr.split(":").each {
+					Ammo.findAllByShortName(it).each { Ammo itAmmo ->
+						ammoTypesArr.add(itAmmo)
+					}
+				}
+				map.ammoTypes = ammoTypesArr
+			}
+			
+			weapon = new Weapon(map)
+			if(!weapon.validate()) {
+				log.error("Errors with weapon "+weapon.name+":\n")
+				weapon.errors.allErrors.each {
+					log.error(it)
+				}
+			}
+			else {
+				weapon.save flush:true
+				log.info("Created weapon "+weapon.name)
+			}
+		}
 	}
 }
