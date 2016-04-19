@@ -51,7 +51,7 @@ var ACTION_BACKWARD = "backward";
 
 // Global variables used throughout the game
 var queue, progress;
-var hexMap, units;
+var hexMap, units, unitsOrder;
 
 // Keep track of which units belong to the player
 var playerUnits;
@@ -231,6 +231,7 @@ function loadGameElements() {
 		  var alreadyManifested = {};
 		  
 		  units = {};
+		  unitsOrder = data.turnOrder;
 		  hexMap = [];
 		  
 		  playerUnits = [];
@@ -853,6 +854,7 @@ function updateGameData(data) {
 		turnUnit = getUnit(data.turnUnit);
 		
 		updatePlayerUnitListDisplay();
+		updateUnitTurnListDisplay();
 	}
 	
 	// determine what units are being referenced
@@ -1169,6 +1171,13 @@ function updateGameData(data) {
 		// update unit info display to show any effects
 		updateInfoDisplay = true;
 		updateUnitDisplay = true;
+	}
+	
+	if(data.turnOrder != null) {
+		unitsOrder = data.turnOrder;
+		
+		// update the UI component that shows the unit order
+		updateUnitTurnListDisplay();
 	}
 	
 	if(updatePosition) {

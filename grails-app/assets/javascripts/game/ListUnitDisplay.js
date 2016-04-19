@@ -85,8 +85,15 @@ c.updateArmorBar = function(doAnimate) {
 	
 	var percentArmor = (currentArmor/totalArmor);
 	
-	// blend color as percent goes down
-	var barColor = blendColors("#FF0000", "#3399FF", percentArmor);
+	// use different color as percent changes
+	var barColor = "#3498DB";
+	if(percentArmor <= 0.35) {
+		barColor = "#FF0000"
+	}
+	else if(percentArmor <= 0.65) {
+		barColor = "#5D79CA"
+	}
+	
 	this.armorBar.graphics.beginFill(barColor)
 			.drawRect(this.image.width/8, 10*this.image.height/12, percentArmor * (6*this.image.width/8), this.image.height/8)
 			.endFill()
@@ -110,35 +117,48 @@ c.updateArmorBar = function(doAnimate) {
 	}
 }
 
-c.setSelected = function(selected, isOtherUnit) {
+c.setSelected = function(selected, isOtherUnit, surroundSelect) {
 	this.uncache();
 	this.foreground.graphics.clear();
 	this.background.graphics.clear();
 	
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
-	if(selected && isOtherUnit){
-		this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
-				.drawRect(0, 0, this.image.width, this.image.height)
-				.endFill();
-		this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
-				.moveTo(0, this.image.height)
-				.lineTo(0, 0)
-				.lineTo(this.image.width, 0)
-				.endStroke();
+	var strokeColor = Settings.get(Settings.UI_FG_COLOR);
+	if(selected) {
+		if(isOtherUnit) {
+			strokeColor = Settings.get(Settings.UI_ENEMY_COLOR);
+		}
+		else {
+			strokeColor = Settings.get(Settings.UI_PLAYER_COLOR);
+		}
 	}
-	else if(selected) {
-		this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
-				.drawRect(0, 0, this.image.width, this.image.height)
-				.endFill();
-		this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke(Settings.get(Settings.UI_PLAYER_COLOR))
-				.moveTo(0, this.image.height)
-				.lineTo(0, 0)
-				.lineTo(this.image.width, 0)
-				.endStroke();
+	
+	if(selected){
+		if(surroundSelect) {
+			// draw a selection border around entire display square
+			this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
+					.drawRect(0, 0, this.image.width, this.image.height)
+					.endFill();
+			this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke(strokeColor)
+					.drawRect(0, 0, this.image.width, this.image.height)
+					.endStroke();
+		}
+		else {
+			// draw a selection border only for the left and top display corner
+			this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
+					.drawRect(0, 0, this.image.width, this.image.height)
+					.endFill();
+			this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke(strokeColor)
+					.moveTo(0, this.image.height)
+					.lineTo(0, 0)
+					.lineTo(this.image.width, 0)
+					.endStroke();
+		}
+		
 	}
 	else{
-		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_FG_COLOR))
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(strokeColor)
 				.drawRect(0, 0, this.image.width, this.image.height);
 	}
 	
@@ -157,8 +177,15 @@ c.doCache = function() {
 	if(Settings.get(Settings.GFX_CACHING) < Settings.GFX_QUALITY) {
 		// no caching at only the highest quality setting
 		this.cache(-BORDER_WIDTH, -BORDER_WIDTH, 
-				BORDER_WIDTH + this.image.width, BORDER_WIDTH + this.image.height);
+				3*BORDER_WIDTH + this.image.width, 3*BORDER_WIDTH + this.image.height);
 	}
+}
+
+c.getUnitId = function() {
+	if(this.unit != null) {
+		return this.unit.id;
+	}
+	return null;
 }
 
 c.toString = function() {

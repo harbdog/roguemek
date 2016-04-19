@@ -76,6 +76,9 @@ function initPlayerUI() {
 	// create other unit displays
 	initOtherUnitDisplay();
 	
+	// create turn order display
+	initUnitTurnListDisplay();
+	
 	// create the player unit weapons displays
 	initPlayerWeaponsDisplay();
 	
@@ -163,6 +166,7 @@ function updatePlayerUI() {
 	
 	updatePlayerUnitDisplay();
 	updateOtherUnitDisplay();
+	updateUnitTurnListDisplay();
 	
 	updatePlayerUnitControls();
 	
@@ -965,6 +969,75 @@ function applyUnitDamage(unit, index, isInternal, doAnimate) {
 			listUnit.updateArmorBar(doAnimate);
 		}
 	}
+}
+
+/**
+ * Creates the unit turn display list
+ */
+function initUnitTurnListDisplay() {
+	if(unitTurnDisplay == null) {
+		// create container as background for the display
+		unitTurnDisplay = new createjs.Container();
+		overlay.addChild(unitTurnDisplay);
+		
+		unitTurnDisplayArray = [];
+	}
+	
+	$.each(units, function(index, unit) {
+		var thisDisplayUnit = unit.getUnitDisplay();
+		
+		var listUnit = new ListUnitDisplay(thisDisplayUnit);
+		listUnit.init();
+		unitTurnDisplay.addChild(listUnit);
+		
+		unitTurnDisplayArray.push(listUnit);
+	});
+}
+
+/**
+ * Updates the unit turn display list
+ */
+function updateUnitTurnListDisplay() {
+	if(unitTurnDisplayArray == null) return;
+	
+	// make sure the list unit displays are in turn order
+    var numUnits = unitTurnDisplayArray.length;
+	unitTurnDisplayArray.sort(function(a, b) {
+		return unitsOrder.indexOf(a.getUnitId()) - unitsOrder.indexOf(b.getUnitId());
+	})
+	
+	$.each(unitTurnDisplayArray, function(index, listUnit) {
+		// update the selected status in case it's the unit's turn
+		var selected = isTurnUnit(listUnit.unit);
+		var isOtherUnit = !isPlayerUnit(listUnit.unit);
+		
+		listUnit.update();
+		listUnit.setSelected(selected, isOtherUnit, true);
+		
+		if(selected) {
+			// bring the selected unit to front of the list container
+			unitTurnDisplay.setChildIndex(listUnit, unitTurnDisplay.getNumChildren()-1);
+		}
+        
+        // if the x position is changing, animate to its new place
+        var xPosition = (canvas.width/2*(1/overlay.scaleY)) - (numUnits/2*listUnit.getDisplayWidth()) + (index*listUnit.getDisplayWidth());
+        var yPosition = 100;
+        if(listUnit.x == 0 && listUnit.y == 0) {
+            listUnit.alpha = 0;
+            listUnit.x = xPosition;
+            createjs.Tween.get(listUnit).to({alpha:1.0, y:yPosition}, 750);
+        }
+		else if(listUnit.x != xPosition || listUnit.y != yPosition) {
+            listUnit.alpha = 1;
+            createjs.Tween.get(listUnit).to({x:xPosition, y:yPosition}, 500);
+            listUnit.y = yPosition;
+        }
+        else {
+            listUnit.alpha = 1;
+            listUnit.x = xPosition;
+            listUnit.y = yPosition;
+        }
+	});
 }
 
 /**

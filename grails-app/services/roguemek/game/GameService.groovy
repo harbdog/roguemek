@@ -269,12 +269,19 @@ class GameService extends AbstractGameService {
 	 */
 	public List doInitiativeRolls(Game game) {
 		def unitInitiatives = []
+		def destroyedUnits = []
 		
 		for(BattleUnit unit in game.units) {
+			if(unit instanceof BattleMech && unit.isDestroyed()) {
+				// destroyed units will be going in at the end of the new order
+				destroyedUnits << unit
+				continue
+			}
+			
 			// TODO: alter initiative roll based on mech weight, pilot skill, etc...
 			
 			// highest number wins initiative
-			def initiativeMultiplier = 1
+			def initiativeMultiplier = 0.1
 			if(unit instanceof BattleMech) {
 				// for now, just altering the highest random number based on mech speed
 				initiativeMultiplier = (unit.mech.walkMP / 10)
@@ -289,6 +296,10 @@ class GameService extends AbstractGameService {
 		def newOrder = []
 		unitInitiatives.sort().each { UnitOrder thisOrder ->
 			newOrder << thisOrder.unit
+		}
+		
+		destroyedUnits.each { unit ->
+			newOrder << unit
 		}
 		
 		return newOrder
@@ -349,9 +360,18 @@ class GameService extends AbstractGameService {
 					// perform initiative roll every 4 turns to change up the order of the units turn
 					game.units = doInitiativeRolls(game)
 					
+					def turnOrder = []
+					game.units.each { unit ->
+						turnOrder.add(unit.id)
+					}
+					
+					def turnOrderData = [
+						turnOrder: turnOrder
+					]
+					
 					// message the initiative change, or better, update UI to indicate unit turn order at all times
 					Object[] messageArgs = []
-					gameChatService.addMessageUpdate(game, "game.initiative.changed", messageArgs)
+					addMessageUpdate(game, "game.initiative.changed", messageArgs, turnOrderData)
 				}
 			}
 			

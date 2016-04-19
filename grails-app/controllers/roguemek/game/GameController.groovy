@@ -97,14 +97,17 @@ class GameController {
 		
 		// find any units the user controls
 		def playerUnits = []
-		for(BattleUnit unit in g.units) {
+		def turnOrder = []
+		g.units.each { BattleUnit unit ->
 			Pilot pilot = unit.pilot
-			
 			for(Pilot p in user.pilots) {
 				if(pilot.id == p.id) {
 					playerUnits.add(unit.id)
+					break
 				}
 			}
+			
+			turnOrder.add(unit.id)
 		}
 		
 		BattleUnit turnUnit = g.getTurnUnit()
@@ -125,6 +128,7 @@ class GameController {
 			units: gameService.getUnitsRender(g),
 			playerUnits: playerUnits,
 			turnUnit: turnUnit.id,
+			turnOrder: turnOrder,
 			moveAP: moveAP
 		]
 		
