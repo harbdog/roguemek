@@ -1529,8 +1529,7 @@ function centerDisplayOnHexAt(hexCoords, doAnimate) {
     var boardX = -((hexCoords.x+1) * (3 * scaledHexWidth / 4)) + canvas.width/2;
 	var boardY = -((hexCoords.y+1) * scaledHexHeight) + canvas.height/2;
 	
-	// Keep the board from going off the window too much
-	var boardPoint = getBoardPointInWindow(new Point(boardX, boardY), 1);
+	var boardPoint = new Point(boardX, boardY);
 	
 	if(doAnimate) {
 		var aTime = 500;
@@ -1563,7 +1562,7 @@ function centerDisplayOnHexAt(hexCoords, doAnimate) {
  * @param boardPoint
  * @returns
  */
-function getBoardPointInWindow(boardPoint, maxBoundedHexes) {
+function getBoardPointInWindow(boardPoint) {
 	if(boardPoint == null || boardPoint.x == null || boardPoint.y == null) return boardPoint;
 	
 	var inX = boardPoint.x;
@@ -1572,25 +1571,30 @@ function getBoardPointInWindow(boardPoint, maxBoundedHexes) {
 	var scaledHexWidth = hexWidth * stage.scaleX;
     var scaledHexHeight = hexHeight * stage.scaleY;
     
-    if(maxBoundedHexes == null) maxBoundedHexes = 4;
-    var maxBoundedX = maxBoundedHexes*(3 * scaledHexWidth / 4);
-    var maxBoundedY = maxBoundedHexes*(3 * scaledHexHeight / 4);
-    
-    // Keep the board from going off the window too much
-    if(inX < -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width - maxBoundedX) {
-    	inX = -((numCols+1) * (3 * scaledHexWidth / 4)) + canvas.width - maxBoundedX;
-    }
-    if(inX > 10 + maxBoundedX) {
-    	inX = 10 + maxBoundedX;
-    }
-    
-    if(inY < -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height - maxBoundedY) {
-    	inY = -((scaledHexHeight / 2) + (numRows * scaledHexHeight)) + canvas.height - maxBoundedY;
-    }
-    if(inY > 10 + (isometricPadding * stage.scaleY) + maxBoundedY) {
-    	inY = 10 + (isometricPadding * stage.scaleY) + maxBoundedY;
-    }
-    
+	// make sure at least one complete hex remains visible on screen on any side
+	var boardWidth = ((numCols+1) * (3 * scaledHexWidth / 4));
+	var boardHeight = ((scaledHexHeight / 2) + (numRows * scaledHexHeight));
+	
+	// left bounds
+	if(inX > canvas.width - scaledHexWidth) {
+		inX = canvas.width - scaledHexWidth;
+	}
+	
+	// right bounds
+	if(inX < -boardWidth + scaledHexWidth) {
+		inX = -boardWidth + scaledHexWidth;
+	}
+	
+	// top bounds
+	if(inY > canvas.height - scaledHexHeight) {
+		inY = canvas.height - scaledHexHeight;
+	}
+	
+	// bottom bounds
+	if(inY < -boardHeight + scaledHexHeight) {
+		inY = -boardHeight + scaledHexHeight;
+	}
+	
     return new Point(inX, inY);
 }
 

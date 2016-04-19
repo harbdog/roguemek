@@ -788,14 +788,8 @@ function handleStageDrag(evt) {
 }
 
 // stage onmousewheel event triggers this method
-var allowMouseWheelZoom = true;
 function handleMouseWheel(evt) {
 	evt.preventDefault();
-	
-	if(allowMouseWheelZoom === false) return;
-	
-	// TODO: allow animations to be turned off
-	var doAnimate = true;
 	
 	// need to handle different browsers differently based on event and property type defined when mouse scroll is used
 	if (!evt) evt = event;
