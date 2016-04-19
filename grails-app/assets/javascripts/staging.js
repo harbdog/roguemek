@@ -3,6 +3,7 @@
 //= require jquery.form.js
 //= require atmosphere-meteor-jquery
 //= require spectrum-1.7.1.js
+//= require modernizr-touch.js
 //= require atmosphereHPG.js
 //= require staging/main.js
 //= require_self

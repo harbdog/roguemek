@@ -850,7 +850,12 @@ function setupAjaxUnitSelect() {
 	
 	var $inputFilter = $("div.unit-filters input#name");
 	if($inputFilter && $inputFilter.length) {
-		setCaretToPos($inputFilter[0], $inputFilter.val().length);
+		if (Modernizr.touchevents) {
+			// touch supported, don't focus the input
+		} else {
+			// touch not-supported, focus the input
+			setCaretToPos($inputFilter[0], $inputFilter.val().length);
+		}
 		
 		if($inputFilter.val().length > 0) {
 			// setup clear filter button only when a filter has been entered
