@@ -888,6 +888,9 @@ function updateGameData(data) {
 			
 			// show ejection pod from the unit
 			animateEjectionPod(u);
+			
+			// center on the destruction
+			centerDisplayOnHexAt(u.getHexLocation(), true);
 		}
 		
 		// re-initialize unit display to show as destroyed
@@ -947,8 +950,11 @@ function updateGameData(data) {
 		var floatMessageStr = u.shutdown ? "SHUTDOWN" : "POWER ON";	// TODO: localize this message
 		
 		// determine location of message and create it
-		var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);
-		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+		setTimeout(function(){
+			// delay this message just a short while so it has a better chance of being seen
+			var floatMessagePoint = new Point(u.getUnitDisplay().x, u.getUnitDisplay().y);
+			createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+		}, getAnimatingTime()+5);
 		
 		// update the UI on being shutdown or not
 		updateUnitDisplay = true;
@@ -1129,6 +1135,9 @@ function updateGameData(data) {
 			});
 		}
 		
+		// focus display on the unit being shot at
+		centerDisplayOnHexAt(t.getHexLocation(), true);
+		
 		if(isPlayerU) updateWeapons = true;
 	}
 	
@@ -1246,7 +1255,11 @@ function updateGameData(data) {
 			showPlayerUnitControls(null);
 		}
 		
-		centerDisplayOnHexAt(turnUnit.getHexLocation(), true);
+		// don't center on the new turn unit's hex until after animations for weapons/float messages are done
+		var animatingWaitTime = getAnimatingTime();
+		setTimeout(function(){
+			centerDisplayOnHexAt(turnUnit.getHexLocation(), true);
+		}, animatingWaitTime);
 	}
 	
 	update = true;

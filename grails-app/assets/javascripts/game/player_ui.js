@@ -1543,7 +1543,7 @@ function centerDisplayOnHexAt(hexCoords, doAnimate) {
 		var aTime = 500;
 		createjs.Tween.removeTweens(stage);
 		createjs.Tween.get(stage)
-				.to({x: boardPoint.x, y: boardPoint.y}, aTime, createjs.Ease.cubicOut)
+				.to({x: boardPoint.x, y: boardPoint.y}, aTime, createjs.Ease.cubicInOut)
 				.call(function() {
 					update = true;
 				})

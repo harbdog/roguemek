@@ -12,6 +12,29 @@ var PROJECTILE_SPEED_FLAMER = 400;
 
 var EJECTION_POD_SPEED = 150;
 
+// keep track of the last time in which an animation will still be playing
+var lastAnimationTimeMs = 0;
+
+/**
+ * Returns if something is still animating, as the time in milliseconds until the last animation is done
+ */
+function getAnimatingTime() {
+	var nowTime = new Date().getTime();
+	var finishTime = lastAnimationTimeMs - nowTime;
+	if(finishTime <= 0) {
+		return 0;
+	}
+	
+	return finishTime;
+}
+
+function addAnimatingTime(animationTimeMs) {
+	var thisTime = new Date().getTime() + animationTimeMs;
+	if(thisTime > lastAnimationTimeMs) {
+		lastAnimationTimeMs = thisTime;
+	}
+}
+
 function animateEjectionPod(srcUnit) {
 	var point = new Point(srcUnit.getUnitDisplay().x, srcUnit.getUnitDisplay().y);
 	
@@ -99,6 +122,8 @@ function animateAmmoExplosion(srcUnit, ammoObj) {
 		else {
 			console.error("Ammo explosion animation not defined for weapon type "+ammoWeaponObj.weaponType);
 		}
+		
+		addAnimatingTime(durationMs);
 	}
 	else {
 		console.error("Could not find corresponding weapon for exploded ammo "
@@ -164,6 +189,8 @@ function animateWeaponFire(srcUnit, weapon, tgtUnit, hitLocations) {
 					: "MISS";
 					
 			createFloatMessage(floatMessagePoint, floatMessageStr, null, firstLocationEndPoint.projectileTime, 1.0, false);
+			
+			addAnimatingTime(firstLocationEndPoint.projectileTime);
 		}
 	});
 }
@@ -388,6 +415,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			
 			createjs.Tween.get(laser).wait(initialDelay).to({visible:true}).wait(laser.getDuration()).to({alpha:0}, 200).call(removeThisFromStage, null, laser);
 			
+			addAnimatingTime(initialDelay + laser.getDuration());
+			
 			if(hit) {
 				// instantly create the laser's particle hit effect on the target if it hit
 				var emitter = new LaserHitEmitter(laser, laser.getDuration());
@@ -404,6 +433,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			
 			createjs.Tween.get(lightning).wait(initialDelay).to({visible:true}).wait(ppcDuration).to({alpha:0}, 200).call(removeThisFromStage, null, lightning);
 			
+			addAnimatingTime(initialDelay + ppcDuration);
+			
 			if(hit) {
 				// instantly create the laser's particle hit effect on the target if it hit
 				var emitter = new PPCHitEmitter(lightning, ppcDuration);
@@ -418,6 +449,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 			stage.addChild(flames);
 			
 			createjs.Tween.get(flames).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).to({alpha:0}, 100).call(removeThisFromStage, null, flames);
+			
+			addAnimatingTime(initialDelay + projectileTime);
 			
 			if(hit) {
 				// delay the particle hit effect until after the initial delay and missile travel time
@@ -487,6 +520,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 				initialDelay
 			);
 			
+			addAnimatingTime(initialDelay + projectileTime);
+			
 			if(hit) {
 				// delay the particle hit effect until after the initial delay and projectile travel time
 				setTimeout(
@@ -535,6 +570,8 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		
 		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, missile);
 		
+		addAnimatingTime(initialDelay + projectileTime);
+		
 		if(hit) {
 			// delay the particle hit effect until after the initial delay and missile travel time
 			setTimeout(
@@ -562,10 +599,10 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
  * @param staticMessage
  */
 function createFloatMessage(srcPoint, message, color, delay, durationMultiplier, staticMessage){
+	var floatDuration = 2000 * durationMultiplier;
 	
 	var floatMessageBox = new FloatMessage(message);
 	floatMessageBox.visible = false;
-	
 	stage.addChild(floatMessageBox);
 	
 	setTimeout(function() {
@@ -602,6 +639,8 @@ function createFloatMessage(srcPoint, message, color, delay, durationMultiplier,
 			endPoint.y = floatBox.y - 100;
 		}
 		
-		createjs.Tween.get(floatMessageBox).to({visible:true}).to({x:endPoint.x, y:endPoint.y}, 2000 * durationMultiplier).to({alpha:0}, 200).call(removeFloatMessage, null, floatMessageBox);
+		createjs.Tween.get(floatMessageBox).to({visible:true}).to({x:endPoint.x, y:endPoint.y}, floatDuration).to({alpha:0}, 200).call(removeFloatMessage, null, floatMessageBox);
 	}, delay);
+	
+	addAnimatingTime(delay + (floatDuration*0.8));
 }
