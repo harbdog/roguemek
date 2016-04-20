@@ -830,8 +830,7 @@ function handleZoomOut() {
  */
 function handleZoomBoard(newScale, zoomPoint) {
 	// TODO: allow animations to be turned off as its own setting?
-	// TODO: fix animated zoom not centering on zoomPoint properly when scale is over 1.3 or so
-	var doAnimate = false;
+	var doAnimate = (Settings.get(Settings.GFX_CACHING) != Settings.GFX_PERFORMANCE);
 	
 	var currentScale = parseFloat(Settings.get(Settings.BOARD_SCALE));
 	newScale = parseFloat(newScale);
@@ -852,8 +851,8 @@ function handleZoomBoard(newScale, zoomPoint) {
 		var innerY = zoomPoint.y - stage.y;
 		
 		// find new board inner point at the new scale
-		var newInnerX = innerX * (newScale / currentScale);
-		var newInnerY = innerY * (newScale / currentScale);
+		var newInnerX = innerX * (newScale / stage.scaleX);
+		var newInnerY = innerY * (newScale / stage.scaleY);
 		
 		// determine where the stage will need to be translated to for the zoomPoint
 		var translatedX = zoomPoint.x - newInnerX;
