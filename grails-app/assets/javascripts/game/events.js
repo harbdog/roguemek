@@ -828,6 +828,7 @@ function handleZoomOut() {
  * Zooms the board in or out based on the zoom value given
  * @param zoom
  */
+ var firstZoomBoard = true;	// for some reason the first zoom doesn't work properly when animated
 function handleZoomBoard(newScale, zoomPoint) {
 	// TODO: allow animations to be turned off as its own setting?
 	var doAnimate = (Settings.get(Settings.GFX_CACHING) != Settings.GFX_PERFORMANCE);
@@ -858,7 +859,7 @@ function handleZoomBoard(newScale, zoomPoint) {
 		var translatedX = zoomPoint.x - newInnerX;
 		var translatedY = zoomPoint.y - newInnerY;
 		
-		if(doAnimate) {
+		if(doAnimate && !firstZoomBoard) {
 			var aTime = 250;
 			createjs.Tween.removeTweens(stage);
 			createjs.Tween.get(stage)
@@ -901,6 +902,8 @@ function handleZoomBoard(newScale, zoomPoint) {
 		    
 		    update = true;
 		}
+		
+		firstZoomBoard = false;
 	}
 }
 
