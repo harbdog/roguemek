@@ -165,25 +165,50 @@ function initStaging() {
     
     // setup a confirmation dialog for starting battle
     $("#start-link").click(function() {
-		$("<div style='font-size:0.8em;'>Launch into combat?</div>").dialog({	// TODO: i18n for deletion message
-			title: "Launch Battle",
-			autoOpen: true,
-			resizable: false,
-			modal: true,
-			buttons: {
-				"Launch": function() {
-					$(this).dialog("close");
-					var launchUrl = $("#start-link").attr("data-start-link");
-					if(launchUrl != null) {
-						window.location.replace(launchUrl);
+		// make sure all "ready" boxes are checked first
+		var allReady = true;
+		$("input.player-ready").each(function() {
+    		if(!$(this).is(':checked')) {
+				allReady = false;
+			}
+		});
+		
+		if(allReady) {
+			$("<div style='font-size:0.8em;'>Launch into combat?</div>").dialog({	// TODO: i18n for deletion message
+				title: "Launch Battle",
+				autoOpen: true,
+				resizable: false,
+				modal: true,
+				buttons: {
+					"Launch": function() {
+						$(this).dialog("close");
+						var launchUrl = $("#start-link").attr("data-start-link");
+						if(launchUrl != null) {
+							window.location.replace(launchUrl);
+						}
+					},
+					Cancel: function() {
+						$(this).dialog("close");
 					}
 				},
-				Cancel: function() {
-					$(this).dialog("close");
-				}
-			},
-			position: {my: "center", at: "center", of: window}
-		});
+				position: {my: "center", at: "center", of: window}
+			});
+		}
+		else {
+			// let them know everyone is not ready
+			$("<div style='font-size:0.8em;'>Each combatant must be ready before launching the battle</div>").dialog({	// TODO: i18n for message
+				title: "Not Ready",
+				autoOpen: true,
+				resizable: false,
+				modal: true,
+				buttons: {
+					Close: function() {
+						$(this).dialog("close");
+					}
+				},
+				position: {my: "center", at: "center", of: window}
+			});
+		}
     });
     
     // setup a confirmation dialog for leaving
