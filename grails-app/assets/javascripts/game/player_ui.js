@@ -90,8 +90,6 @@ function initPlayerUI() {
 		showPlayerUnitDisplay(playerUnits[0]);
 	}
 	
-	centerDisplayOnHexAt(turnUnit.getHexLocation());
-	
 	// Initialize FPS counter
 	var fpsDiv = document.getElementById("fpsDiv");
 	fpsDisplay = new createjs.DOMElement(fpsDiv);
@@ -1558,6 +1556,22 @@ function centerDisplayOnHexAt(hexCoords, doAnimate) {
 }
 
 /**
+ * Gets the displayed width of the hex board (takes scaling into account)
+ */
+function getBoardWidth() {
+	var scaledHexWidth = hexWidth * stage.scaleX;
+	return ((numCols+1) * (3 * scaledHexWidth / 4));
+}
+
+/**
+ * Gets the displayed height of the hex board (takes scaling into account)
+ */
+function getBoardHeight() {
+	var scaledHexHeight = hexHeight * stage.scaleY;
+	return ((scaledHexHeight / 2) + (numRows * scaledHexHeight));
+}
+
+/**
  * Gets an XY point for the board stage that will not make the board go off screen too much
  * @param boardPoint
  * @returns
@@ -1565,15 +1579,15 @@ function centerDisplayOnHexAt(hexCoords, doAnimate) {
 function getBoardPointInWindow(boardPoint) {
 	if(boardPoint == null || boardPoint.x == null || boardPoint.y == null) return boardPoint;
 	
+	// make sure at least one complete hex remains visible on screen on any side
 	var inX = boardPoint.x;
 	var inY = boardPoint.y;
 	
 	var scaledHexWidth = hexWidth * stage.scaleX;
     var scaledHexHeight = hexHeight * stage.scaleY;
     
-	// make sure at least one complete hex remains visible on screen on any side
-	var boardWidth = ((numCols+1) * (3 * scaledHexWidth / 4));
-	var boardHeight = ((scaledHexHeight / 2) + (numRows * scaledHexHeight));
+	var boardWidth = getBoardWidth();
+	var boardHeight = getBoardHeight();
 	
 	// left bounds
 	if(inX > canvas.width - scaledHexWidth) {

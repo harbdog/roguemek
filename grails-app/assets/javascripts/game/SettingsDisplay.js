@@ -65,11 +65,12 @@ s.init = function() {
 	this.boardScaleSlider = SettingsDisplay.createSliderSetting(
 			settingsDiv,
 			"boardScale", "Board Scale", 
-			Settings.get(Settings.BOARD_SCALE),
-			0.2, 3.0, 0.1,
+			parseInt(Settings.get(Settings.BOARD_SCALE) * 100),
+			20, 300, 10,
 			function(value) {
-				handleZoomBoard(value);
-			}
+				handleZoomBoard(parseFloat(value / 100));
+			},
+			true
 	); 
 	
 	/////////////////////////////////
@@ -77,11 +78,12 @@ s.init = function() {
 	this.uiScaleSlider = SettingsDisplay.createSliderSetting(
 			settingsDiv,
 			"uiScale", "UI Scale", 
-			Settings.get(Settings.UI_SCALE),
-			0.3, 3.0, 0.05,
+			parseInt(Settings.get(Settings.UI_SCALE) * 100),
+			30, 300, 5,
 			function(value) {
-				handleScaleOverlay(value);
-			}
+				handleScaleOverlay(parseFloat(value / 100).toFixed(2));
+			},
+			true
 	); 
 	
 	///////////////////////////////////
@@ -168,8 +170,8 @@ s.update = function() {
 	// update any values that need to be updated between showing settings
 	// such as zoom/scale that can be adjusted without using the settings menu
 	this.boardIsometricToggle.updateValue(Settings.get(Settings.BOARD_ISOMETRIC));
-	this.boardScaleSlider.slider("option", "value", Settings.get(Settings.BOARD_SCALE));
-	this.uiScaleSlider.slider("option", "value", Settings.get(Settings.UI_SCALE));
+	this.boardScaleSlider.slider("option", "value", parseInt(Settings.get(Settings.BOARD_SCALE) * 100));
+	this.uiScaleSlider.slider("option", "value", parseInt(Settings.get(Settings.UI_SCALE) * 100));
 	
 	if (fullScreenApi.supportsFullScreen) this.fullscreenIsometricToggle.updateValue(fullScreenApi.isFullScreen());
 }
@@ -230,7 +232,7 @@ SettingsDisplay.createToggleSetting = function(settingsDiv, toggleName, toggleTe
 /**
  * Creates a slider settings option and returns the slider object
  */
-SettingsDisplay.createSliderSetting = function(settingsDiv, sliderName, sliderText, sliderValue, sliderMin, sliderMax, sliderStep, callFunction) {
+SettingsDisplay.createSliderSetting = function(settingsDiv, sliderName, sliderText, sliderValue, sliderMin, sliderMax, sliderStep, callFunction, showPercentSymbol) {
 	var settingOuterDiv = $("<div>", {id: sliderName+"Div"});
 	settingsDiv.append(settingOuterDiv);
 	
@@ -277,11 +279,15 @@ SettingsDisplay.createSliderSetting = function(settingsDiv, sliderName, sliderTe
 	    max: sliderMax,
 	    step: sliderStep,
 	    change: function(event, ui) {
-	    	settingValue.text(ui.value);
+			var valueText = ui.value;
+			if(showPercentSymbol) valueText += "%";
+	    	settingValue.text(valueText);
 	    	callFunction(ui.value);
 	    },
 	    slide: function(event, ui) {
-	    	settingValue.text(ui.value);
+			var valueText = ui.value;
+			if(showPercentSymbol) valueText += "%";
+	    	settingValue.text(valueText);
 	    	callFunction(ui.value);
 	    }
 	});

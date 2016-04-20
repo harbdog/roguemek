@@ -525,7 +525,10 @@ function handleComplete(event) {
 			    // resize the canvas and adjust the board to the canvas on first load
 				initializing = false;
 				resize_canvas();
-			    
+				
+				// center on current turn unit
+			    centerDisplayOnHexAt(turnUnit.getHexLocation());
+				
 			    update = true;
 			    firstUpdate = false;
 			}
@@ -794,25 +797,28 @@ function handleMouseWheel(evt) {
 	// need to handle different browsers differently based on event and property type defined when mouse scroll is used
 	if (!evt) evt = event;
 	var direction = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1;
+	var newScale = parseFloat(Settings.get(Settings.BOARD_SCALE)) + (direction * 0.1);
 	
-	var mouseX = evt.clientX - stage.x;
-	var mouseY = evt.clientY - stage.y;
+	// center zoom on mouse point
+	var mouseX = evt.clientX;
+	var mouseY = evt.clientY;
+	var mousePoint = new Point(mouseX, mouseY);
 	
-	handleZoomBoard(stage.scaleX + (direction * 0.1));
+	handleZoomBoard(newScale, mousePoint);
 
 	// update in settings in case it is showing
 	settingsDisplay.update();
 }
 
 function handleZoomIn() {
-	var newScale = Settings.get(Settings.BOARD_SCALE) + 0.25;
+	var newScale = parseFloat(Settings.get(Settings.BOARD_SCALE)) + 0.2;
 	handleZoomBoard(newScale);
 	
 	// update in settings in case it is showing
 	settingsDisplay.update();
 }
 function handleZoomOut() {
-	var newScale = Settings.get(Settings.BOARD_SCALE) - 0.25;
+	var newScale = parseFloat(Settings.get(Settings.BOARD_SCALE)) - 0.2;
 	handleZoomBoard(newScale);
 	
 	// update in settings in case it is showing
@@ -822,19 +828,44 @@ function handleZoomOut() {
  * Zooms the board in or out based on the zoom value given
  * @param zoom
  */
-function handleZoomBoard(newScale) {
-	// TODO: allow animations to be turned off
-	var doAnimate = true;
+function handleZoomBoard(newScale, zoomPoint) {
+	// TODO: allow animations to be turned off as its own setting?
+	// TODO: fix animated zoom not centering on zoomPoint properly when scale is over 1.3 or so
+	var doAnimate = false;
 	
-	if(newScale > 0 && newScale <= 4) {
+	var currentScale = parseFloat(Settings.get(Settings.BOARD_SCALE));
+	newScale = parseFloat(newScale);
+	
+	if(newScale >= 0.2 && newScale <= 3 && currentScale != newScale) {
 		// put the new scale in local storage
-		Settings.set(Settings.BOARD_SCALE, newScale);
+		Settings.set(Settings.BOARD_SCALE, newScale.toFixed(1));
+		
+		if(!zoomPoint) {
+			// use center point for zooming
+			var centerX = canvas.width/2;
+			var centerY = canvas.height/2;
+			zoomPoint = new Point(centerX, centerY);
+		}
+		
+		// determine board inner point of the focus at the current scale
+		var innerX = zoomPoint.x - stage.x;
+		var innerY = zoomPoint.y - stage.y;
+		
+		// find new board inner point at the new scale
+		var newInnerX = innerX * (newScale / currentScale);
+		var newInnerY = innerY * (newScale / currentScale);
+		
+		// determine where the stage will need to be translated to for the zoomPoint
+		var translatedX = zoomPoint.x - newInnerX;
+		var translatedY = zoomPoint.y - newInnerY;
 		
 		if(doAnimate) {
 			var aTime = 250;
 			createjs.Tween.removeTweens(stage);
 			createjs.Tween.get(stage)
-					.to({scaleX: newScale, scaleY: newScale}, aTime, createjs.Ease.quadOut)
+					.to({x: translatedX, y: translatedY, 
+						scaleX: newScale, scaleY: newScale}, 
+						aTime, createjs.Ease.quadOut)
 					.call(function() {
 						update = true;
 						
@@ -855,8 +886,13 @@ function handleZoomBoard(newScale) {
 					});
 		}
 		else{
+			// scale the stage
 			stage.scaleX = newScale;
 			stage.scaleY = newScale;
+			
+			// transform the location of the stage by appropriate amount
+			stage.x = translatedX;
+			stage.y = translatedY;
 			
 			// Keep the board from going off the window too much
 		    keepBoardInWindow();
@@ -870,14 +906,14 @@ function handleZoomBoard(newScale) {
 }
 
 function handleScaleUp() {
-	var newScale = Settings.get(Settings.UI_SCALE) + 0.05;
+	var newScale = parseFloat(Settings.get(Settings.UI_SCALE)) + 0.05;
 	handleScaleOverlay(newScale);
 	
 	// update in settings in case it is showing
 	settingsDisplay.update();
 }
 function handleScaleDown() {
-	var newScale = Settings.get(Settings.UI_SCALE) - 0.05;
+	var newScale = parseFloat(Settings.get(Settings.UI_SCALE)) - 0.05;
 	handleScaleOverlay(newScale);
 	
 	// update in settings in case it is showing
@@ -888,7 +924,7 @@ function handleScaleDown() {
  * @param scale
  */
 function handleScaleOverlay(newScale) {
-	if(newScale > 0 && newScale <= 3) {
+	if(newScale >= 0.3 && newScale <= 3) {
 		// put the new scale in local storage
 		Settings.set(Settings.UI_SCALE, newScale);
 		
