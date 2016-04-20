@@ -36,7 +36,11 @@
 		
 		<div class="footer" role="contentinfo">
 			<span id="backtotop"><a href="#top"><g:message code="default.page.top.label"/></a></span>
-			<div id="version" class="right"><g:meta name="app.name"/> v<g:meta name="app.version"/></div>
+			<div id="version" class="right">
+				<g:set var="vText" value="v${grailsApplication.metadata.'app.version'}"/>
+				<g:meta name="app.name"/>
+				<a href="https://github.com/harbdog/roguemek/releases/tag/${vText}" target="_blank">${vText}</a>
+			</div>
 		</div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
 		
