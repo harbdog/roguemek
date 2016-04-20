@@ -1004,9 +1004,19 @@ function updateUnitTurnListDisplay() {
 		return unitsOrder.indexOf(a.getUnitId()) - unitsOrder.indexOf(b.getUnitId());
 	})
 	
+	// find the index of the current turn unit so it can be the in the middle of the display
+	var selectedIndex = 0;
+	for(var i=0; i<unitTurnDisplayArray.length; i++) {
+		var listUnit = unitTurnDisplayArray[i];
+		if(isTurnUnit(listUnit.unit)) {
+			selectedIndex = i;
+			break;
+		}
+	}
+	
 	$.each(unitTurnDisplayArray, function(index, listUnit) {
 		// update the selected status in case it's the unit's turn
-		var selected = isTurnUnit(listUnit.unit);
+		var selected = (index == selectedIndex);
 		var isOtherUnit = !isPlayerUnit(listUnit.unit);
 		
 		listUnit.update();
@@ -1018,16 +1028,16 @@ function updateUnitTurnListDisplay() {
 		}
         
         // if the x position is changing, animate to its new place
-        var xPosition = (canvas.width/2*(1/overlay.scaleY)) - (numUnits/2*listUnit.getDisplayWidth()) + (index*listUnit.getDisplayWidth());
+        var xPosition = (canvas.width/2*(1/overlay.scaleX)) - ((selectedIndex+1)*listUnit.getDisplayWidth()) + (index*listUnit.getDisplayWidth());
         var yPosition = 100;
         if(listUnit.x == 0 && listUnit.y == 0) {
             listUnit.alpha = 0;
             listUnit.x = xPosition;
-            createjs.Tween.get(listUnit).to({alpha:1.0, y:yPosition}, 750);
+            createjs.Tween.get(listUnit).to({alpha:1.0, y:yPosition}, 750, createjs.Ease.cubicIn);
         }
 		else if(listUnit.x != xPosition || listUnit.y != yPosition) {
             listUnit.alpha = 1;
-            createjs.Tween.get(listUnit).to({x:xPosition, y:yPosition}, 500);
+            createjs.Tween.get(listUnit).to({x:xPosition, y:yPosition}, 500, createjs.Ease.cubicIn);
             listUnit.y = yPosition;
         }
         else {
