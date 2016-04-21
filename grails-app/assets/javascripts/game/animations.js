@@ -570,6 +570,14 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		
 		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, missile);
 		
+		// add missile smoke trail
+		setTimeout(
+			function() {
+				var emitter = new MissileTrailEmitter(missile, projectileTime);
+			}, 
+			initialDelay
+		);
+		
 		addAnimatingTime(initialDelay + projectileTime);
 		
 		if(hit) {
