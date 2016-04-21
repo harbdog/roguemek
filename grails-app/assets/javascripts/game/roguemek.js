@@ -134,8 +134,8 @@ function initGame(){
 	rootStage.addChild(overlay);
 	
 	// apply stored scaling to the stage and overlay if available
-	stage.scaleX = stage.scaleY = amplify.store("BOARD_SCALE") || 1.0;
-	overlay.scaleX = overlay.scaleY = amplify.store("UI_SCALE") || 1.0;
+	stage.scaleX = stage.scaleY = parseFloat(Settings.get(Settings.BOARD_SCALE)) || 1.0;
+	overlay.scaleX = overlay.scaleY = parseFloat(Settings.get(Settings.UI_SCALE)) || 1.0;
 	
 	// apply Touch capability for touch screens
 	createjs.Touch.enable(rootStage);
