@@ -4,8 +4,11 @@
 "use strict";
 
 function handleActionJSON(inputMap) {
+	// don't perform new actions until after animations are done
+	var animatingWaitTime = getAnimatingTime();
+	
 	// make sure the player can't make another request until this one is complete
-	if(playerActionReady) {
+	if(playerActionReady && animatingWaitTime == 0) {
 		playerActionReady = false;
 	
 		$.getJSON("game/action", inputMap)

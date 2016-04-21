@@ -829,7 +829,7 @@ function initPlayerUnitControls() {
 		if(!isPlayerUnit(unit)) return;
 		
 		var controlDisplay = new PlayerControlsDisplay(unit);
-		controlDisplay.visible = false;
+		controlDisplay.alpha = 0;
 		controlDisplay.init();
 		
 		controlDisplay.x = unitDisplay.x;
@@ -866,8 +866,16 @@ function showPlayerUnitControls(unit) {
 	if(unitControls == null) return;
 	
 	$.each(unitControls, function(unitId, controlDisplay) {
-		var visible = (unit != null && unit.id == unitId);
-		controlDisplay.visible = visible;
+		var alpha = (unit != null && unit.id == unitId) ? 1 : 0;
+		
+		if(controlDisplay.alpha != alpha) {
+			// animate alpha change
+			createjs.Tween.get(controlDisplay)
+					.to({alpha: alpha}, 250)
+					.addEventListener("change", function() {
+						update = true;
+					});	
+		}
 	});
 }
 

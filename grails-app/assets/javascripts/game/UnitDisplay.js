@@ -487,6 +487,9 @@ c.animateUpdateDisplay = function(coords, heading, callFunction) {
 			update = true;
 		});
 	}
+	
+	// make sure certains actions are put on hold until the animation is completed
+	addAnimatingTime(aTime);
 }
 
 c.setUnitIndicatorVisible = function(visible) {

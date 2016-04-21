@@ -849,6 +849,12 @@ function updateGameData(data) {
 			
 			// update selected weapons display that also updates the heat display
 			updateSelectedWeapons();
+			
+			var animatingWaitTime = getAnimatingTime();
+			if(animatingWaitTime > 0) {
+				// hide controls while any animations are playing
+				showPlayerUnitControls(null);
+			}
 		}
 		
 		turnUnit = getUnit(data.turnUnit);
@@ -1220,44 +1226,44 @@ function updateGameData(data) {
 	
 	// do some final UI updates from turn changes
 	if(prevTurnUnit != null && data.turnUnit) {
-		if(isPlayerUnit(prevTurnUnit)) {
-			if(!isPlayerUnitTurn()) {
-				setPlayerTarget(null);
-			}
-			
-			if(prevTurnTarget != null) {
-				prevTurnTarget.getUnitDisplay().setUnitIndicatorVisible(true);
-			}
-		}
-		
-		var prevUnitDisplay = prevTurnUnit.getUnitDisplay();
-		var turnUnitDisplay = turnUnit.getUnitDisplay();
-		
-		prevUnitDisplay.updateUnitIndicator();
-		turnUnitDisplay.updateUnitIndicator();
-		
-		if(isPlayerUnitTurn()) {
-			// update player unit displays to prepare for its new turn
-			showPlayerUnitDisplay(turnUnit);
-			showPlayerUnitControls(turnUnit);
-			
-			setPlayerTarget(newTurnTarget);
-			if(newTurnTarget != null) {
-				newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
-				
-				// to to force the action to true to re-acquire the target at the start of the new turn
-				playerActionReady = true;
-				target(newTurnTarget);
-			}
-		}
-		else {
-			showOtherUnitDisplay(turnUnit);
-			showPlayerUnitControls(null);
-		}
-		
-		// don't center on the new turn unit's hex until after animations for weapons/float messages are done
+		// don't perform new turn updates until after animations are done
 		var animatingWaitTime = getAnimatingTime();
 		setTimeout(function(){
+			if(isPlayerUnit(prevTurnUnit)) {
+				if(!isPlayerUnitTurn()) {
+					setPlayerTarget(null);
+				}
+				
+				if(prevTurnTarget != null) {
+					prevTurnTarget.getUnitDisplay().setUnitIndicatorVisible(true);
+				}
+			}
+			
+			var prevUnitDisplay = prevTurnUnit.getUnitDisplay();
+			var turnUnitDisplay = turnUnit.getUnitDisplay();
+			
+			prevUnitDisplay.updateUnitIndicator();
+			turnUnitDisplay.updateUnitIndicator();
+			
+			if(isPlayerUnitTurn()) {
+				// update player unit displays to prepare for its new turn
+				showPlayerUnitDisplay(turnUnit);
+				showPlayerUnitControls(turnUnit);
+				
+				setPlayerTarget(newTurnTarget);
+				if(newTurnTarget != null) {
+					newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
+					
+					// to to force the action to true to re-acquire the target at the start of the new turn
+					playerActionReady = true;
+					target(newTurnTarget);
+				}
+			}
+			else {
+				showOtherUnitDisplay(turnUnit);
+				showPlayerUnitControls(null);
+			}
+			
 			centerDisplayOnHexAt(turnUnit.getHexLocation(), true);
 		}, animatingWaitTime);
 	}
