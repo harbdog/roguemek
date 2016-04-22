@@ -48,10 +48,7 @@ class MechMTF {
 		
 		for(String path in mechPaths) {
 			if(path.toLowerCase().endsWith(MechMTF.MTF_EXTENSION)) {
-				InputStream mtfFile = ContextHelper.getResource(path)
-				if(mtfFile.available()) {
-					MechMTF.createMechFromMTF(mtfFile)
-				}
+				MechMTF.createMechFromMTF(path, true)
 			}
 		}
 		
@@ -60,29 +57,32 @@ class MechMTF {
 	
 	/**
 	 * Generates a Mech instance from an MTF format file
-	 * @param mtfFile
+	 * @param path
 	 * @return Mech created from the file
 	 */
-	public static Mech createMechFromMTF(InputStream mtfStream) {
+	public static Mech createMechFromMTF(String path) {
+		return createMechFromMTF(path, false)
+	}
+	
+	/**
+	 * Generates a Mech instance from an MTF format file
+	 * @param path
+	 * @param initOnly if true it does not fully load the Mech, just quickly sets up the basics
+	 * @return Mech created from the file
+	 */
+	public static Mech createMechFromMTF(String path, boolean initOnly) {
+		InputStream mtfStream = ContextHelper.getResource(path)
+		if(!mtfStream.available()) {
+			return null
+		}
 		
 		def mtf = MapMTF.createMapFromMTF(mtfStream)
 		if(mtf == null) {
 			return null
 		}
 		
-		def map = [:]
 		Mech mech
-		
-		// initialize values not in the MTF spec
-		map.cbills = 0
-		map.battleValue = 0
-		map.faction = null
-		
-		// initialize arrays
-		map.armor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-		map.internals = [0, 0, 0, 0, 0, 0, 0, 0]
-		map.crits = []
-		
+		def map = [:]
 		
 		if(mtf[MapMTF.MTF_VERSION] instanceof List) {
 			map.name = mtf[MapMTF.MTF_VERSION].get(1)
@@ -100,10 +100,32 @@ class MechMTF {
 			
 			mech = Mech.findByNameAndChassisAndVariant(map.name, map.chassis, map.variant)
 			if(mech) {
-				log.info("Mech already loaded: "+mech.toString())
-				return mech
+				if(mech.unitLoaded) {
+					log.info("Mech already loaded: "+mech.toString())
+					return mech
+				}
+				else if(initOnly) {
+					log.info("Mech already init: "+mech.toString())
+					return mech
+				}
+				else {
+					// TODO: figure out why in the hell when "map = mech.properties",
+					//       it fails due to null internals/armor/crits on save,
+					//       even though they are in the map!!!
+					log.trace("Mech updating: ${mech}\n${mech.properties}")
+				}
+			}
+			else {
+				mech = new Mech()
+				
+				map.unitSource = path
 			}
 		}
+		
+		// initialize arrays
+		map.armor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		map.internals = [0, 0, 0, 0, 0, 0, 0, 0]
+		map.crits = []
 		
 		if(mtf[MapMTF.MTF_TECHBASE] instanceof List) {
 			String line = mtf[MapMTF.MTF_TECHBASE].get(0)
@@ -233,30 +255,51 @@ class MechMTF {
 			// Weapons are generated dynamically from their crits
 		}
 		
-		def mtfCritSections = [MapMTF.MTF_LEFT_ARM, MapMTF.MTF_RIGHT_ARM, 
-			MapMTF.MTF_LEFT_TORSO, MapMTF.MTF_RIGHT_TORSO, MapMTF.MTF_CENTER_TORSO, 
-			MapMTF.MTF_HEAD, MapMTF.MTF_LEFT_LEG, MapMTF.MTF_RIGHT_LEG]
 		
-		mtfCritSections.each { mtfSection ->
-			if(mtf[mtfSection] instanceof List) {
-				int subIndex = 0
-				mtf[mtfSection].each { String line ->
-					// add crits
-					addCriticalsFromMTF(map, line, mtfSection, subIndex ++)
+		if(initOnly) {
+			// skip loading the criticals until later...
+			def empty = Equipment.getEmpty()
+			(1..Mech.NUM_CRITS).each {
+				map.crits << empty.id
+			}
+			
+			map.unitLoaded = false
+		}
+		else {
+			def mtfCritSections = [MapMTF.MTF_LEFT_ARM, MapMTF.MTF_RIGHT_ARM, 
+				MapMTF.MTF_LEFT_TORSO, MapMTF.MTF_RIGHT_TORSO, MapMTF.MTF_CENTER_TORSO, 
+				MapMTF.MTF_HEAD, MapMTF.MTF_LEFT_LEG, MapMTF.MTF_RIGHT_LEG]
+			
+			mtfCritSections.each { mtfSection ->
+				if(mtf[mtfSection] instanceof List) {
+					int subIndex = 0
+					mtf[mtfSection].each { String line ->
+						// add crits
+						addCriticalsFromMTF(map, line, mtfSection, subIndex ++)
+					}
 				}
 			}
+			
+			map.unitLoaded = true
 		}
 		
-		mech = new Mech(map)
+		mech.properties = map
+		
 		if(!mech.validate()) {
 			log.error("Errors with mech "+mech.name+":\n")
 			mech.errors.allErrors.each {
 				log.error(it)
 			}
+			return null
 		}
 		else {
 			mech.save flush:true
-			log.info("Created mech "+mech.name)
+			if(initOnly) {
+				log.info("Created mech "+mech.name)
+			}
+			else {
+				log.info("Updated mech "+mech.name)
+			}
 		}
 		
 		return mech

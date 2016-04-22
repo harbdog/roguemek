@@ -20,8 +20,11 @@ class Unit {
 	Float mass
 	Character heatSinkType = HS_SINGLE
 	
-	Long cbills
-	Integer battleValue
+	Long cbills = 0L
+	Integer battleValue = 0
+    
+    String unitSource
+    Boolean unitLoaded = true
 	
 	// STATIC value mappings
 	public static final Character TECH_IS = 'I'
@@ -48,7 +51,19 @@ class Unit {
 		
 		cbills min: 0L
 		battleValue min: 0
+        
+        unitSource nullable: true
 	}
+    
+    /**
+     * Overridable method each Unit subclass can use when called 
+     * to make sure it is fully loaded before use
+     */
+    public Unit loadUnit() {
+        // unitLoaded: flag to tell if it has been fully loaded
+        // unitSource: source path of the file to load unit data
+        return this
+    }
 	
 	@Override
 	public String toString() {

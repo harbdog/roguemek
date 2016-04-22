@@ -27,6 +27,8 @@ class Equipment {
 	public static final Character TECH_CLAN = 'C'
 
 	public static final String EMPTY = "-Empty-"
+	
+	private static Equipment emptyEquip
 
 	static mapping = {
 		// All extending classes will get their own tables
@@ -62,6 +64,13 @@ class Equipment {
 				map.aliases.add(it)
 			}
 		}
+	}
+	
+	public static Equipment getEmpty() {
+		if(emptyEquip == null) {
+			emptyEquip = Equipment.findByName(Equipment.EMPTY)
+		}
+		return emptyEquip
 	}
 
 	public boolean isEmpty() {

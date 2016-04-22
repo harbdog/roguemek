@@ -62,7 +62,7 @@ class BattleEquipment {
 	
 	public static BattleEquipment getEmpty() {
 		if(emptyEquip == null) {
-			Equipment e = Equipment.findByName(Equipment.EMPTY)
+			Equipment e = Equipment.getEmpty()
 			emptyEquip = (e != null) ? BattleEquipment.findByEquipment(e) : null
 		}
 		return emptyEquip

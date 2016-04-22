@@ -172,6 +172,10 @@ class UnitService {
 			return unitSummary.getCache()
 		}
 		
+		if(!unit.unitLoaded) {
+			unit.loadUnit()
+		}
+		
 		def unitSummaryData = [:]
 		
 		if(unit instanceof Mech) {

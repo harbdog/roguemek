@@ -205,12 +205,14 @@ class BootStrap {
 		
 		if(adminPilot) {
 			// Initialize a sample BattleMech
-			battleMechA = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Stalker"), rgb: [255, 0, 0])
+			Mech mechA = Mech.findByName("Stalker")
+			battleMechA = new BattleMech(pilot: adminPilot, mech: mechA.loadUnit(), rgb: [255, 0, 0])
 			if(!battleMechA.validate()) {
 				log.error("Errors with battle mech "+battleMechA.mech?.name+":\n")
 				battleMechA.errors.allErrors.each {
 					log.error(it)
 				}
+				assert false
 			}
 			else {
 				battleMechA.save flush:true
@@ -219,12 +221,14 @@ class BootStrap {
 			}
 			
 			// and a 2nd mech for the admin pilot
-			battleMechB = new BattleMech(pilot: adminPilot, mech: Mech.findByName("Firestarter"), rgb: [255, 105, 105])
+			Mech mechB = Mech.findByName("Firestarter")
+			battleMechB = new BattleMech(pilot: adminPilot, mech: mechB.loadUnit(), rgb: [255, 105, 105])
 			if(!battleMechB.validate()) {
 				log.error("Errors with battle mech "+battleMechB.mech?.name+":\n")
 				battleMechB.errors.allErrors.each {
 					log.error(it)
 				}
+				assert false
 			}
 			else {
 				battleMechB.save flush:true
@@ -245,12 +249,14 @@ class BootStrap {
 		
 		if(testPilot) {
 			// and another BattleMech
-			battleMech2 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Warhammer"), rgb: [0, 0, 255])
+			Mech mech2 = Mech.findByName("Warhammer")
+			battleMech2 = new BattleMech(pilot: testPilot, mech: mech2.loadUnit(), rgb: [0, 0, 255])
 			if(!battleMech2.validate()) {
 				log.error("Errors with battle mech "+battleMech2.mech?.name+":\n")
 				battleMech2.errors.allErrors.each {
 					log.error(it)
 				}
+				assert false
 			}
 			else {
 				battleMech2.save flush:true
@@ -259,12 +265,14 @@ class BootStrap {
 			}
 			
 			// yet another BattleMech
-			battleMech3 = new BattleMech(pilot: testPilot, mech: Mech.findByName("Blackjack"), rgb: [0, 255, 0])
+			Mech mech3 = Mech.findByName("Blackjack")
+			battleMech3 = new BattleMech(pilot: testPilot, mech: mech3.loadUnit(), rgb: [0, 255, 0])
 			if(!battleMech3.validate()) {
 				log.error("Errors with battle mech "+battleMech3.mech?.name+":\n")
 				battleMech3.errors.allErrors.each {
 					log.error(it)
 				}
+				assert false
 			}
 			else {
 				battleMech3.save flush:true
@@ -291,6 +299,7 @@ class BootStrap {
 				sampleGame.errors.allErrors.each {
 					log.error(it)
 				}
+				assert false
 			}
 			else {
 				sampleGame.save flush:true

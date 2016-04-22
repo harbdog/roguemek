@@ -329,6 +329,19 @@ class Mech extends Unit {
 		}
 	}
 	
+	/**
+     * Called to make sure it is fully loaded before use
+     */
+	 @Override
+    public Mech loadUnit() {
+		if(unitLoaded) {
+			return this
+		}
+		else{
+			return MechMTF.createMechFromMTF(unitSource)
+		}
+    }
+	
 	@Override
 	public String toString() {
 		return name+" "+chassis+"-"+variant
