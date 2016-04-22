@@ -7,6 +7,8 @@ grails.config.locations = [
 	"file:${appName}-config.groovy"
 ]
 
+log.info "Starting RogueMek v${grailsApplication.metadata['app.version']}"
+
 if(System.getenv(ENV_NAME)) {
 	log.info "Configuration file location specified as environment variable: " + System.getenv(ENV_NAME)
     envFile = new File(System.getenv(ENV_NAME))
