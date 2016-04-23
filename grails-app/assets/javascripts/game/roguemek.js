@@ -1254,7 +1254,7 @@ function updateGameData(data) {
 				if(newTurnTarget != null) {
 					newTurnTarget.getUnitDisplay().setUnitIndicatorVisible(false);
 					
-					// to to force the action to true to re-acquire the target at the start of the new turn
+					// force the action ready to true to re-acquire the target at the start of the new turn
 					playerActionReady = true;
 					target(newTurnTarget);
 				}

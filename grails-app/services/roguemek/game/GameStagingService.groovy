@@ -81,10 +81,9 @@ class GameStagingService extends AbstractGameService {
 			// remove the user from the chat users list
 			if(game) {
 				// TODO: in case the same chat user is connected to same game in two windows, figure it out
-				GameChatUser chatUser = GameChatUser.findByGameAndChatUser(game, user)
-				if(chatUser != null) {
-					chatUser.delete flush:true
-				}
+				GameChatUser.executeUpdate(
+						"delete GameChatUser gcu where gcu.game=:game and gcu.chatUser=:user",
+						[game: game, user: user])
 				
 				// broadcast removed user
 				def data = [

@@ -161,7 +161,7 @@ function handleKeyPress(e, key) {
 	e.preventDefault();
 	
 	if(!playerActionReady){
-		// TODO: alternate actions if pressed when player turns but between being ready for another action
+		// TODO: alternate actions if pressed when player's turn but between being ready for another action
 		console.log("Waiting...")
 		return;
 	}
@@ -546,6 +546,12 @@ function handleComplete(event) {
  */
 function handleControls(event) {
 	if(!isPlayerUnitTurn()) return;
+	
+	if(!playerActionReady){
+		// TODO: alternate actions if pressed when player's turn but between being ready for another action
+		console.log("Waiting...")
+		return;
+	}
 	
 	var x = event.stageX;
 	var y = event.stageY;

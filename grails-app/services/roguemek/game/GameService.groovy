@@ -86,7 +86,7 @@ class GameService extends AbstractGameService {
 		
 		def session = request.getSession(false)
 		if(session.game != null){
-			Game game = Game.load(session.game)
+			Game game = Game.read(session.game)
 			
 			// add the user to the chat users list
 			if(game) {
@@ -120,15 +120,14 @@ class GameService extends AbstractGameService {
 		
 		def session = request.getSession(false)
 		if(session.game != null){
-			Game game = Game.load(session.game)
+			Game game = Game.read(session.game)
 			
 			// remove the user from the chat users list
 			if(game) {
 				// TODO: in case the same chat user is connected to same game in two windows, figure it out
-				GameChatUser chatUser = GameChatUser.findByGameAndChatUser(game, user)
-				if(chatUser != null) {
-					chatUser.delete flush:true
-				}
+				GameChatUser.executeUpdate(
+						"delete GameChatUser gcu where gcu.game=:game and gcu.chatUser=:user",
+						[game: game, user: user])
 				
 				// broadcast removed user
 				def data = [
