@@ -77,7 +77,7 @@ class BootStrap {
 		
 		// Initialize maps
 		log.info('Initializing Maps')
-		HexMap.init()
+		MapBoard.initBoards()
 		
 		if(grailsApplication.config.roguemek.server.preloadMaps) {
 			HexMap.list().each {
@@ -94,7 +94,14 @@ class BootStrap {
 		
 		// Initialize stock mechs
 		log.info('Initializing Mechs')
-		MechMTF.initMechs()
+		if(grailsApplication.config.roguemek.server.preloadUnits) {
+			// fully load units
+			MechMTF.initMechs(false)
+		}
+		else {
+			// only initialize the unit basics
+			MechMTF.initMechs(true)
+		}
 		
 		// Initialize heat effects
 		HeatEffect.initializeHeatEffects()

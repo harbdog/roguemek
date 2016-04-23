@@ -43,12 +43,12 @@ class MechMTF {
 	/**
 	 * Initializes mechs from a list of MTF mech file paths
 	 */
-	public static def initMechs() {
+	public static def initMechs(boolean initOnly) {
 		Set<String> mechPaths = ContextHelper.getResourcePaths("/src/mtf/mechs/")
 		
 		for(String path in mechPaths) {
 			if(path.toLowerCase().endsWith(MechMTF.MTF_EXTENSION)) {
-				MechMTF.createMechFromMTF(path, true)
+				MechMTF.createMechFromMTF(path, initOnly)
 			}
 		}
 		
@@ -298,7 +298,7 @@ class MechMTF {
 				log.info("Created mech "+mech.name)
 			}
 			else {
-				log.info("Updated mech "+mech.name)
+				log.info("Loaded mech "+mech.name)
 			}
 		}
 		

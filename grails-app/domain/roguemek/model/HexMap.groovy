@@ -38,10 +38,6 @@ class HexMap {
 		size = "${numCols}x${numRows}"
 	}
 	
-	public static void init() {
-		MapBoard.initBoards()
-	}
-	
 	public def loadMap() {
 		if(mapLoaded) {
 			return this
