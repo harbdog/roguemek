@@ -6,7 +6,7 @@
 	<div class="unit-filters">
 		<g:form action="unitSelect">
 			<g:submitButton name="unit-filter" value="Filter" />
-			<g:textField name="name" value="${filters?.name}" />
+			<g:textField name="name" value="${filters?.name}" size="14" />
 			<button class="clear-unit-filter" style="visibility:hidden"></button>
 		</g:form>
 	</div>
@@ -19,8 +19,6 @@
 					
 						<g:sortableColumn property="name" title="${message(code: 'unit.name.label', default: 'Name')}" params="${filters}" />
 						
-						<g:sortableColumn property="chassis" title="${message(code: 'unit.chassis.label', default: 'Chassis')}" params="${filters}" />
-						
 						<g:sortableColumn property="mass" title="${message(code: 'unit.tonnage.label', default: 'Tonnage')}" params="${filters}" />
 					
 					</tr>
@@ -29,33 +27,40 @@
 				
 				<%
 					// if the unitInstanceList is less than 12, make it 12 so the table can be sized consistently
-					def numUnits = unitInstanceList.size() 
+					def numUnits = unitList.size()
 					if(numUnits < 12) {
 						(numUnits+1).upto(12) {
-							unitInstanceList.add(null)
+							unitList.add(null)
 						}
 					}
 				%>
 				
-				<g:each in="${unitInstanceList}" status="i" var="thisUnit">
+				<g:set var="prevName" value="${null}" />
+				
+				<g:each in="${unitList}" status="i" var="thisUnit">
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 						<g:if test="${thisUnit}">
-							<td>
-								<input type="radio" name="unit-radio" value="${thisUnit.id}" id="${thisUnit.id}">
-								<label for="${thisUnit.id}">${thisUnit.name}</label>
-							</td>
+							<g:set var="name" value="${thisUnit.name}"/>
+							<g:set var="id" value="${thisUnit.id}"/>
+							<g:set var="mass" value="${thisUnit.mass}"/>
 							
-							<td>
-								<g:if test="${thisUnit instanceof Mech}">
-									${thisUnit.chassis}-${thisUnit.variant}
-								</g:if>
-							</td>
-							
-							<td>${fieldValue(bean: thisUnit, field: "mass")}</td>
+							<g:if test="${prevName != name}">
+								<td>
+									<input type="radio" name="unit-radio" value="${id}" id="${id}">
+									<label for="${id}">${name}</label>
+								</td>
+								
+								<td>${(int) mass}</td>
+								
+								<g:set var="prevName" value="${name}"/>
+							</g:if>
+							<g:else>
+								<input type="radio" name="unit-radio" value="${id}" id="${id}">
+							</g:else>
 						</g:if>
 						<g:else>
 							<%-- Filling up space so the dialog looks good --%>
-							<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+							<td>&nbsp;</td><td>&nbsp;</td>
 						</g:else>
 					</tr>
 				</g:each>
@@ -69,6 +74,6 @@
 	</div>
 	
 	<div class="pagination">
-		<g:paginate total="${unitInstanceTotal ?: 0}" params="${filters}" />
+		<g:paginate total="${unitTotal ?: 0}" params="${filters}" />
 	</div>
 </div>

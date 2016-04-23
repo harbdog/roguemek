@@ -101,11 +101,11 @@ class MechMTF {
 			mech = Mech.findByNameAndChassisAndVariant(map.name, map.chassis, map.variant)
 			if(mech) {
 				if(mech.unitLoaded) {
-					log.info("Mech already loaded: "+mech.toString())
+					log.debug("Mech already loaded: "+mech.toString())
 					return mech
 				}
 				else if(initOnly) {
-					log.info("Mech already init: "+mech.toString())
+					log.debug("Mech already init: "+mech.toString())
 					return mech
 				}
 				else {
@@ -286,7 +286,7 @@ class MechMTF {
 		mech.properties = map
 		
 		if(!mech.validate()) {
-			log.error("Errors with mech "+mech.name+":\n")
+			log.error("Errors with mech "+mech.toString()+":\n")
 			mech.errors.allErrors.each {
 				log.error(it)
 			}
@@ -295,10 +295,10 @@ class MechMTF {
 		else {
 			mech.save flush:true
 			if(initOnly) {
-				log.info("Created mech "+mech.name)
+				log.info("Created mech "+mech.toString())
 			}
 			else {
-				log.info("Loaded mech "+mech.name)
+				log.info("Loaded mech "+mech.toString())
 			}
 		}
 		

@@ -369,6 +369,22 @@ img.camo-unit-preview {
 }
 
 /* Unit selection preview items */
+div.unit-preview-top {
+	flex-grow: 0;
+}
+
+div.unit-preview-middle {
+	flex-grow: 1;
+}
+
+div.unit-preview-bottom {
+	flex-grow: 0;
+	position: relative;
+	height: 3.8em;
+	overflow-y: auto;
+	background: #424242;
+}
+
 #unit-selection-panel {
 	display: flex;
 	height: 100%;
@@ -376,37 +392,41 @@ img.camo-unit-preview {
 }
 
 #unit-selection-preview {
-	position: relative;
-	width: 50%;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
 	margin-bottom: 0.5em;
 	border-left: 1px solid #999;
 	background-color: rgba(255, 255, 255, 0.15);
 }
 
+#unit-image-preview {
+	height: 42px;
+}
+
 #unit-info-preview {
+	font-family: UbuntuMono;
+	margin: 0 1em 1em 1em;
+}
+
+#variant-selection-table {
 	position: absolute;
 	margin: auto;
-	top: 5em;
-	right: 1em;
-	left: 1em;
-	bottom: 1em;
 	width: 100%;
 }
 
+#variant-selection-table table {
+	margin-bottom: 0px;
+}
+
 img.unit-preview-static {
-	position: absolute;
-	margin: auto;
-	top: 0;
-	left: 0;
-	right: 0;
+	display: block;
+    margin: 0 auto;
 }
 
 img.unit-preview {
-	position: absolute;
-	margin: auto;
-	top: 0;
-	left: 0;
-	right: 0;
+	display: block;
+    margin: 0 auto;
 	-webkit-animation: spin 8s linear infinite;
 	-moz-animation: spin 8s linear infinite;
 	animation: spin 8s linear infinite;
@@ -451,10 +471,6 @@ img.unit-preview {
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
-
-#unit-info-preview {
-	font-family: UbuntuMono;
-}
 
 #unit-info-preview div.unit-info-header {
 	font-size: 1.25em;

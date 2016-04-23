@@ -225,8 +225,9 @@ class StagingController {
 			params.sort = params.sort ?: "name"
 			params.order = params.order ?: "asc"
 			
+			// compile list of units grouped by name, sorted and paginated
 			def unitCriteria = Unit.createCriteria()
-			def units = unitCriteria.list (max: params.max, offset: params.offset) {
+			def units = unitCriteria.list(max: params.max, offset: params.offset) {
 				if(params.name){
 					if(params.name.isFloat()) {
 						// allow user to enter a number value to find by exact tonnage (mass)
@@ -241,17 +242,47 @@ class StagingController {
 					}
 				}
 				and {
+					// make sure the secondary sort is always the name
 					order(params.sort, params.order)
 					if(params.sort != "name") {
 						// make sure the secondary sort is always the name
 						order("name", "asc")
 					}
 				}
+				projections {
+					// the main selection table will only display the chassis name and mass
+					groupProperty("name")
+				}
 			}
+			
+			// Use the names from the first result set to create the list that will be displayed
+			def unitNames = []
+			units.each { name ->
+				unitNames << name
+			}
+			
+			// within the given list of names, get and sort further by variant
+			def listCriteria = Unit.createCriteria()
+			def unitList = listCriteria.list {
+				'in'("name", unitNames)
+				and {
+					order(params.sort, params.order)
+					if(params.sort != "name") {
+						// make sure the secondary sort is always the name
+						order("name", "asc")
+					}
+					if(params.sort != "variant") {
+						// make sure the tertiary sort is always the variant
+						order("variant", "asc")
+					}
+				}
+			}
+			
+			log.info "UNIT LIST:\n${unitList}"
 			
 			def filters = [name: params.name]
 			
-			def model = [unitInstanceList: units, unitInstanceTotal: units.totalCount, filters: filters]
+			def model = [unitList: unitList, unitTotal: units.totalCount, filters: filters]
 			
 			//if(request.xhr)
 			// ajax request code from http://www.craigburke.com/2011/01/01/grails-ajax-list-with-paging-and-sorting.html
@@ -304,7 +335,20 @@ class StagingController {
 		
 		def unitSummary = unitService.getUnitSummaryData(thisUnit)
 		
-		render (template: 'previewUnit', model: [unit: thisUnit, unitSummary: unitSummary, unitLink: externalUnitLink])
+		def variantCriteria = Unit.createCriteria()
+		def variants
+		
+		if(thisUnit instanceof Mech) {
+			variants = variantCriteria.list {
+				and {
+					eq("name", thisUnit.name)
+					eq("chassis", thisUnit.chassis)
+					order("variant", "asc")
+				}
+			}
+		}
+		
+		render (template: 'previewUnit', model: [unit: thisUnit, unitSummary: unitSummary, unitLink: externalUnitLink, variants: variants])
 	}
 	
 	/**
