@@ -409,13 +409,13 @@ div.unit-preview-bottom {
 	margin: 0 1em 1em 1em;
 }
 
-#variant-selection-table {
+#variant-selection {
 	position: absolute;
 	margin: auto;
 	width: 100%;
 }
 
-#variant-selection-table table {
+#variant-selection table {
 	margin-bottom: 0px;
 }
 

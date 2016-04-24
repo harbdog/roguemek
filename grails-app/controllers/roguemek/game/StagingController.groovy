@@ -278,8 +278,6 @@ class StagingController {
 				}
 			}
 			
-			log.info "UNIT LIST:\n${unitList}"
-			
 			def filters = [name: params.name]
 			
 			def model = [unitList: unitList, unitTotal: units.totalCount, filters: filters]

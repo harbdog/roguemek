@@ -46,7 +46,7 @@
 							
 							<g:if test="${prevName != name}">
 								<td>
-									<input type="radio" name="unit-radio" value="${id}" id="${id}">
+									<input type="radio" name="unit-chassis-radio" value="${id}" id="${id}">
 									<label for="${id}">${name}</label>
 								</td>
 								

@@ -140,13 +140,14 @@
 </div>
 
 <div class="unit-preview-bottom">
-	<div id="variant-selection-table">
+	<div id="variant-selection">
 		<table>
 			<tbody>
 				<g:each in="${variants}" status="i" var="variantUnit">
+					<g:set var="checked" value="${(unit.id == variantUnit.id) ? 'checked' : ''}"/>
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 						<td>
-							<input type="radio" name="unit-variant-radio" value="${variantUnit.id}" id="${variantUnit.id}">
+							<input type="radio" name="unit-variant-radio" value="${variantUnit.id}" id="${variantUnit.id}" ${checked}>
 							<label for="${variantUnit.id}">
 								<g:if test="${variantUnit instanceof Mech}">
 									${variantUnit.chassis}-${variantUnit.variant}

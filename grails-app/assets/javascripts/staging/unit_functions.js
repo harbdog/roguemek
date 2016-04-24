@@ -171,7 +171,7 @@ function setupAjaxUnitSelect() {
 	var selectButton = $("div.ui-dialog-buttonpane button:contains('Select')").button("disable");
 	
 	// setup radio change events
-	$('input:radio[name="unit-radio"]').change(function() {
+	$('input:radio[name="unit-chassis-radio"]').change(function() {
 		// show the select button since a selection has been made
 		selectButton.button("enable");
 		
@@ -198,6 +198,9 @@ function setupAjaxUnitSelect() {
                 				$(".unit-preview-static")
                 						.removeClass("unit-preview-static")
                 						.addClass("unit-preview");
+								
+								// setup the variant sub selection functions
+								setupAjaxVariantSelect();
                 			}
                 		});
                 	}
@@ -273,6 +276,73 @@ function setupAjaxUnitSelect() {
 	
 	// allow clicking on a row to select the radio button for that entry
 	$("#unit-selection").find("tr").on({
+		click: function(event) {
+			if(event.target.type !== 'radio') {
+				$(":radio", this).trigger("click");
+			}
+		}
+	});
+}
+
+/**
+ * setup ajax filters, paging and sorting for the variant subselect for units
+ */
+function setupAjaxVariantSelect() {
+	
+	// make sure to scroll to the currently selected variant
+	var offset = 0;
+	$('#variant-selection input').each(function() {
+		var radioInput = $(this);
+		
+		if(radioInput.is(':checked')) {
+			console.log("I'm checked!!! offset="+offset);
+			$('#variant-selection').parent('div').scrollTo(offset);
+		}
+		
+		console.log("adding offset: "+radioInput.parent('td').height());
+		
+		offset += radioInput.parent('td').height();
+	});
+	
+	// setup radio change events
+	$('input:radio[name="unit-variant-radio"]').change(function() {
+		
+		var unitId = $(this).val();
+        
+        var selection = $("#unit-selection-preview");
+
+        $.ajax({
+            type: 'GET',
+            url: 'previewUnit',
+            data: {unitId: unitId},
+            success: function(data) {
+            	// hide, load, then slide in the new unit preview
+                $(selection).hide({
+                	effect: 'slide',
+                	duration: 250,
+                	complete: function() {
+                		$(this).html(data).effect({
+                			effect: 'slide',
+                			duration: 350,
+                			complete: function() {
+                				// swap out the static for the animated preview image class
+                				// since it jitters if it starts out animated on load
+                				$(".unit-preview-static")
+                						.removeClass("unit-preview-static")
+                						.addClass("unit-preview");
+										
+								// setup the variant sub selection functions
+								setupAjaxVariantSelect();
+                			}
+                		});
+                	}
+                })
+            }
+        });
+	});
+	
+	// allow clicking on a row to select the radio button for that entry
+	$("#variant-selection").find("tr").on({
 		click: function(event) {
 			if(event.target.type !== 'radio') {
 				$(":radio", this).trigger("click");
@@ -370,8 +440,8 @@ function updateUnitCounts(userId) {
  */
 function ajaxAddUnit() {
 	// add selected unit to the battle
-	var selectedUnitId = $("input[type='radio'][name='unit-radio']:checked").val();
-	var selectedUnitName = $($("input[type='radio'][name='unit-radio']:checked").prop("labels")).text();
+	var selectedUnitId = $("input[type='radio'][name='unit-variant-radio']:checked").val();
+	var selectedUnitName = $($("input[type='radio'][name='unit-variant-radio']:checked").prop("labels")).text();
 	var inputMap = {unitId: selectedUnitId};
 	
 	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
