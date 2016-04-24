@@ -291,15 +291,11 @@ function setupAjaxVariantSelect() {
 	
 	// make sure to scroll to the currently selected variant
 	var offset = 0;
-	$('#variant-selection input').each(function() {
+	$('input:radio[name="unit-variant-radio"]').each(function() {
 		var radioInput = $(this);
-		
 		if(radioInput.is(':checked')) {
-			console.log("I'm checked!!! offset="+offset);
-			$('#variant-selection').parent('div').scrollTo(offset);
+			$('#variant-selection').parent('div').scrollTo(offset, {duration: 250});
 		}
-		
-		console.log("adding offset: "+radioInput.parent('td').height());
 		
 		offset += radioInput.parent('td').height();
 	});

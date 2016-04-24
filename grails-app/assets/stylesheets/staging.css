@@ -172,6 +172,11 @@ label:before {
 	border-radius: 8px;
 }
 
+#unit-selection-table input[type=radio]:checked+label:before {
+	background-image: url("images/ui-icons_ffffff_256x240.png");
+	background-position: 0 -160px; /* .ui-icon-play */
+}
+
 input[type=radio]:checked+label:before {
 	background-image: url("images/ui-icons_4b8e0b_256x240.png");
 	background-position: -112px -192px; /* .ui-icon-circle-arrow-e */
