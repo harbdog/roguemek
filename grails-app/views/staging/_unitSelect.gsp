@@ -27,9 +27,8 @@
 				
 				<%
 					// if the unitInstanceList is less than 12, make it 12 so the table can be sized consistently
-					def numUnits = unitList.size()
-					if(numUnits < 12) {
-						(numUnits+1).upto(12) {
+					if(chassisTotal < 12) {
+						(chassisTotal+1).upto(12) {
 							unitList.add(null)
 						}
 					}
@@ -43,10 +42,13 @@
 							<g:set var="name" value="${thisUnit.name}"/>
 							<g:set var="id" value="${thisUnit.id}"/>
 							<g:set var="mass" value="${thisUnit.mass}"/>
+							<g:set var="chassis" value="${thisUnit.chassis}"/>
+							<g:set var="variant" value="${thisUnit.variant}"/>
 							
 							<g:if test="${prevName != name}">
 								<td>
-									<input type="radio" name="unit-chassis-radio" value="${id}" id="${id}">
+									<input type="radio" name="unit-chassis-radio" value="${id}" id="${id}"
+											data-unit-chassis="${chassis}" data-unit-variant="${variant}">
 									<label for="${id}">${name}</label>
 								</td>
 								
@@ -55,7 +57,13 @@
 								<g:set var="prevName" value="${name}"/>
 							</g:if>
 							<g:else>
-								<input type="radio" name="unit-radio" value="${id}" id="${id}">
+								<td class="hidden">
+									<%-- Any variants beyond first for chassis will be hidden 
+										 until it can be shown dynamically when selected --%>
+									<input type="radio" name="unit-chassis-radio" value="${id}"
+											data-unit-chassis="${chassis}" data-unit-variant="${variant}">
+								</td>
+								<td class="hidden"></td>
 							</g:else>
 						</g:if>
 						<g:else>
@@ -68,8 +76,13 @@
 			</table>
 		</div>
 		
-		<div id="unit-selection-preview">
-			<%-- unit previews will load here using ajax --%>
+		<div id="unit-preview-panel">
+			<div id="unit-selection-preview">
+				<%-- unit previews will load here using ajax --%>
+			</div>
+			<div id="unit-selection-variant" class="clear">
+				<%-- variant selection will load here dyamically --%>
+			</div>
 		</div>
 	</div>
 	

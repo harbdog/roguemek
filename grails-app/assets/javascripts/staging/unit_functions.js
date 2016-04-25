@@ -176,8 +176,11 @@ function setupAjaxUnitSelect() {
 		selectButton.button("enable");
 		
 		var unitId = $(this).val();
+		var unitChassis = $(this).attr("data-unit-chassis");
+		var unitVariant = $(this).attr("data-unit-variant");
         
         var selection = $("#unit-selection-preview");
+		var variantSelection = $('#unit-selection-variant');
 
         $.ajax({
             type: 'GET',
@@ -185,9 +188,11 @@ function setupAjaxUnitSelect() {
             data: {unitId: unitId},
             success: function(data) {
             	// hide, load, then slide in the new unit preview
+				var hideDuration = ($(selection).children().length == 0) ? 0 : 250;
+				
                 $(selection).hide({
                 	effect: 'slide',
-                	duration: 250,
+                	duration: hideDuration,
                 	complete: function() {
                 		$(this).html(data).effect({
                 			effect: 'slide',
@@ -198,13 +203,54 @@ function setupAjaxUnitSelect() {
                 				$(".unit-preview-static")
                 						.removeClass("unit-preview-static")
                 						.addClass("unit-preview");
-								
-								// setup the variant sub selection functions
-								setupAjaxVariantSelect();
                 			}
                 		});
                 	}
-                })
+                });
+				
+				// also hide, load, and slide in the variant selection list
+				$(variantSelection).hide({
+					effect: 'slide',
+					direction: 'down',
+                	duration: hideDuration,
+                	complete: function() {
+						variantSelection.removeClass("clear");
+						
+						// generate the variants table before showing again
+						var variantTable = $("<table>");
+						$("input[data-unit-chassis='"+unitChassis+"']").each(function(index) {
+							var subVariant = $(this).attr("data-unit-variant");
+							var subVariantId = $(this).val();
+							
+							var variantRow = $("<tr>", {class: (index % 2 == 0) ? 'even' : 'odd'}).appendTo(variantTable);
+							var variantCell = $("<td>").appendTo(variantRow);
+							var placeholderCell = $("<td>").appendTo(variantRow);
+							
+							var variantInput = $("<input>", {type:"radio",
+									name:"unit-variant-radio",
+									value:subVariantId,
+									id:subVariantId})
+									.appendTo(variantCell);
+							var variantLabel = $("<label>", {for: subVariantId})
+									.text(unitChassis+"-"+subVariant)
+									.appendTo(variantCell);
+									
+							if(unitVariant == subVariant) {
+								variantInput.prop("checked", true);
+							}
+						});
+												
+                		$(this).html(variantTable).effect({
+							effect: 'slide',
+							direction: 'down',
+							duration: 350,
+							complete: function() {
+								// setup the variant sub selection functions
+								setupAjaxVariantSelect();
+							}
+						});
+                	}
+				});
             }
         });
 	});
@@ -223,7 +269,9 @@ function setupAjaxUnitSelect() {
 	            url: url,
 	            success: function(data) {
 	            	selectButton.button("disable");
-	                $(selection).fadeOut('fast', function() {$(this).html(data).fadeIn({complete: setupAjaxUnitSelect});});
+	                $(selection).fadeOut('fast', function() {$(this).html(data)
+						.fadeIn({complete: setupAjaxUnitSelect});}
+					);
 	            }
 	        });
 		}
@@ -289,17 +337,6 @@ function setupAjaxUnitSelect() {
  */
 function setupAjaxVariantSelect() {
 	
-	// make sure to scroll to the currently selected variant
-	var offset = 0;
-	$('input:radio[name="unit-variant-radio"]').each(function() {
-		var radioInput = $(this);
-		if(radioInput.is(':checked')) {
-			$('#variant-selection').parent('div').scrollTo(offset, {duration: 250});
-		}
-		
-		offset += radioInput.parent('td').height();
-	});
-	
 	// setup radio change events
 	$('input:radio[name="unit-variant-radio"]').change(function() {
 		
@@ -326,9 +363,6 @@ function setupAjaxVariantSelect() {
                 				$(".unit-preview-static")
                 						.removeClass("unit-preview-static")
                 						.addClass("unit-preview");
-										
-								// setup the variant sub selection functions
-								setupAjaxVariantSelect();
                 			}
                 		});
                 	}
@@ -338,7 +372,7 @@ function setupAjaxVariantSelect() {
 	});
 	
 	// allow clicking on a row to select the radio button for that entry
-	$("#variant-selection").find("tr").on({
+	$("#unit-selection-variant").find("tr").on({
 		click: function(event) {
 			if(event.target.type !== 'radio') {
 				$(":radio", this).trigger("click");
@@ -363,7 +397,9 @@ function filterAjaxUnitSelect(filterBox) {
 		url: url,
 		data: data,
 		success: function(data) {
-			$(selection).fadeOut('fast', function() {$(this).html(data).fadeIn({complete: setupAjaxUnitSelect});});
+			$(selection).fadeOut('fast', function() {$(this).html(data)
+				.fadeIn({complete: setupAjaxUnitSelect});
+			});
 		}
 	});
 }

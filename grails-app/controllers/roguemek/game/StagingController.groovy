@@ -280,7 +280,7 @@ class StagingController {
 			
 			def filters = [name: params.name]
 			
-			def model = [unitList: unitList, unitTotal: units.totalCount, filters: filters]
+			def model = [unitList: unitList, unitTotal: units.totalCount, chassisTotal: unitNames.size(), filters: filters]
 			
 			//if(request.xhr)
 			// ajax request code from http://www.craigburke.com/2011/01/01/grails-ajax-list-with-paging-and-sorting.html
@@ -333,20 +333,7 @@ class StagingController {
 		
 		def unitSummary = unitService.getUnitSummaryData(thisUnit)
 		
-		def variantCriteria = Unit.createCriteria()
-		def variants
-		
-		if(thisUnit instanceof Mech) {
-			variants = variantCriteria.list {
-				and {
-					eq("name", thisUnit.name)
-					eq("chassis", thisUnit.chassis)
-					order("variant", "asc")
-				}
-			}
-		}
-		
-		render (template: 'previewUnit', model: [unit: thisUnit, unitSummary: unitSummary, unitLink: externalUnitLink, variants: variants])
+		render (template: 'previewUnit', model: [unit: thisUnit, unitSummary: unitSummary, unitLink: externalUnitLink])
 	}
 	
 	/**

@@ -382,27 +382,38 @@ div.unit-preview-middle {
 	flex-grow: 1;
 }
 
-div.unit-preview-bottom {
-	flex-grow: 0;
-	position: relative;
-	height: 3.8em;
-	overflow-y: auto;
-	background: #424242;
-}
-
 #unit-selection-panel {
 	display: flex;
 	height: 100%;
 	width: 100%;
 }
 
-#unit-selection-preview {
+#unit-preview-panel {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
 	margin-bottom: 0.5em;
 	border-left: 1px solid #999;
 	background-color: rgba(255, 255, 255, 0.15);
+}
+
+#unit-selection-variant {
+	flex-grow: 0;
+	position: relative;
+	height: 3.8em;
+	overflow-y: auto;
+	background: #424242;
+	border-top: 1px solid #DFDFDF;
+}
+
+#unit-selection-variant table {
+	border-top: none;
+}
+
+#unit-selection-preview {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
 }
 
 #unit-image-preview {
@@ -412,16 +423,6 @@ div.unit-preview-bottom {
 #unit-info-preview {
 	font-family: UbuntuMono;
 	margin: 0 1em 1em 1em;
-}
-
-#variant-selection {
-	position: absolute;
-	margin: auto;
-	width: 100%;
-}
-
-#variant-selection table {
-	margin-bottom: 0px;
 }
 
 img.unit-preview-static {

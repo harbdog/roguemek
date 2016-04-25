@@ -749,6 +749,18 @@ a.skip {
     font-size: 0.75em;
 }
 
+.hidden {
+	display: none;
+}
+
+.invisible {
+	visibility: hidden;
+}
+
+.clear {
+	opacity: 0;
+}
+
 /* just an icon span just to have a jquery-ui icon next to another element in the same line */
 span.just-icon {
 	display: inline-block;
