@@ -242,7 +242,7 @@ class WeaponModifier {
 				
 				// A charging mech must have enough AP to enter the target's hex
 				int apRequired = GameService.getHexRequiredAP(game, srcLocation, tgtLocation)
-				if(apRequired > srcUnit.apRemaining) {
+				if(apRequired == -1 || apRequired > srcUnit.apRemaining) {
 					toHitMods.push(new WeaponModifier(Modifier.IMPOSSIBLE, AUTO_MISS))
 					return toHitMods
 				}
