@@ -276,13 +276,14 @@ class StagingController {
 				projections {
 					// the main selection table will only display the chassis name and mass
 					groupProperty("name")
+					groupProperty("mass")
 				}
 			}
 			
 			// Use the names from the first result set to create the list that will be displayed
 			def unitNames = []
-			units.each { name ->
-				unitNames << name
+			units.each { row ->
+				unitNames << row[0]
 			}
 			
 			// within the given list of names, get and sort further by variant
