@@ -225,19 +225,43 @@ class StagingController {
 			params.sort = params.sort ?: "name"
 			params.order = params.order ?: "asc"
 			
+			// check to see if the name param is only numbers, if so it can be used as a mass filter
+			def nameParam = params.name
+			float floatParam = 0
+			
+			// check to see if the name param is "CHA-VAR" format for chassis-variant search
+			def chassisParam
+			def variantParam
+			
+			if(nameParam ==~ /\d+/) {		// RegEx for entire string to match pattern of digits only
+				floatParam = Float.valueOf(nameParam)
+			}
+			else if(nameParam =~ /-/) {
+				// query contains a dash, use as basis for chassis-variant
+				int dashIndex = nameParam.indexOf('-')
+				chassisParam = nameParam.substring(0, dashIndex)
+				variantParam = nameParam.substring(dashIndex + 1)
+			}
+			
 			// compile list of units grouped by name, sorted and paginated
 			def unitCriteria = Unit.createCriteria()
 			def units = unitCriteria.list(max: params.max, offset: params.offset) {
-				if(params.name){
-					if(params.name.isFloat()) {
+				if(nameParam){
+					if(floatParam > 0) {
 						// allow user to enter a number value to find by exact tonnage (mass)
-						eq("mass", Float.valueOf(params.name))
+						eq("mass", floatParam)
+					}
+					else if(chassisParam && variantParam) {
+						and {
+							eq("chassis", chassisParam, [ignoreCase: true])
+							eq("variant", variantParam, [ignoreCase: true])
+						}
 					}
 					else {
 						or {
-							ilike("name", "%${params.name}%")
-							ilike("chassis", "%${params.name}%")
-							ilike("variant", "%${params.name}%")
+							ilike("name", "%${nameParam}%")
+							ilike("chassis", "%${nameParam}%")
+							ilike("variant", "%${nameParam}%")
 						}
 					}
 				}
@@ -265,6 +289,25 @@ class StagingController {
 			def listCriteria = Unit.createCriteria()
 			def unitList = listCriteria.list {
 				'in'("name", unitNames)
+				if(nameParam){
+					if(floatParam > 0) {
+						// allow user to enter a number value to find by exact tonnage (mass)
+						eq("mass", floatParam)
+					}
+					else if(chassisParam && variantParam) {
+						and {
+							eq("chassis", chassisParam, [ignoreCase: true])
+							eq("variant", variantParam, [ignoreCase: true])
+						}
+					}
+					else {
+						or {
+							ilike("name", "%${nameParam}%")
+							ilike("chassis", "%${nameParam}%")
+							ilike("variant", "%${nameParam}%")
+						}
+					}
+				}
 				and {
 					order(params.sort, params.order)
 					if(params.sort != "name") {
