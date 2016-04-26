@@ -53,6 +53,7 @@ class Unit {
 		battleValue min: 0
         
         unitSource nullable: true
+        unitLoaded nullable: true
 	}
     
     /**
