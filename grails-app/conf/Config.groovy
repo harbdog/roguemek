@@ -217,3 +217,6 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/weapon/**':					['ROLE_ROOT'],
 	'/dbconsole/**':				['ROLE_ROOT'],
 ]
+
+// preload all units by default
+roguemek.server.preloadUnits = true

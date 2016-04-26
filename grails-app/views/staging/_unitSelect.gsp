@@ -48,7 +48,7 @@
 							<g:if test="${prevName != name}">
 								<td>
 									<input type="radio" name="unit-chassis-radio" value="${id}" id="${id}"
-											data-unit-chassis="${chassis}" data-unit-variant="${variant}">
+											data-unit-name="${name}" data-unit-chassis="${chassis}" data-unit-variant="${variant}">
 									<label for="${id}">${name}</label>
 								</td>
 								
@@ -61,7 +61,7 @@
 									<%-- Any variants beyond first for chassis will be hidden 
 										 until it can be shown dynamically when selected --%>
 									<input type="radio" name="unit-chassis-radio" value="${id}"
-											data-unit-chassis="${chassis}" data-unit-variant="${variant}">
+											data-unit-name="${name}" data-unit-chassis="${chassis}" data-unit-variant="${variant}">
 								</td>
 								<td class="hidden"></td>
 							</g:else>

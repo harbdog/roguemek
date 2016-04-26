@@ -46,10 +46,16 @@ class MechMTF {
 	public static def initMechs(boolean initOnly) {
 		Set<String> mechPaths = ContextHelper.getResourcePaths("/src/mtf/mechs/")
 		
+		// go through the files after sorting them just to make logging better
+		def sortedPaths = []
 		for(String path in mechPaths) {
 			if(path.toLowerCase().endsWith(MechMTF.MTF_EXTENSION)) {
-				MechMTF.createMechFromMTF(path, initOnly)
+				sortedPaths << path
 			}
+		}
+		
+		sortedPaths.sort().each { path ->
+			MechMTF.createMechFromMTF(path, initOnly)
 		}
 		
 		equipCacheMap.clear()
@@ -443,19 +449,9 @@ class MechMTF {
 				}
 				
 				if(thisCrit == null) {
-					// create Equipment based on the incoming name so it has an object
-					thisCrit = new Equipment([
-							name:critName,
-							shortName:critName,
-							mass:0,
-							crits:1,
-							tech:Mech.TECH_IS,
-							year:2014,
-							cbills:0,
-							battleValue:0])
-					
-					thisCrit.save()
-					log.error("CREATED MISSING EQUIPMENT "+thisCrit.name)
+					// log missing equipment and load as empty slot
+					log.error("MISSING EQUIPMENT: "+critName)
+					thisCrit = Equipment.getEmpty()
 				}
 			}
 		}

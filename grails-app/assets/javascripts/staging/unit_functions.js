@@ -176,6 +176,7 @@ function setupAjaxUnitSelect() {
 		selectButton.button("enable");
 		
 		var unitId = $(this).val();
+		var unitName = $(this).attr("data-unit-name");
 		var unitChassis = $(this).attr("data-unit-chassis");
 		var unitVariant = $(this).attr("data-unit-variant");
         
@@ -218,7 +219,7 @@ function setupAjaxUnitSelect() {
 						
 						// generate the variants table before showing again
 						var variantTable = $("<table>");
-						$("input[data-unit-chassis='"+unitChassis+"']").each(function(index) {
+						$("input:radio[name='unit-chassis-radio'][data-unit-name='"+unitName+"']").each(function(index) {
 							var subVariant = $(this).attr("data-unit-variant");
 							var subVariantId = $(this).val();
 							

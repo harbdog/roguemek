@@ -278,9 +278,16 @@ class StagingController {
 				}
 			}
 			
+			// the totalCount using groupProperty projection was incorrect, going to need a separate query
+			def distinctCount = Unit.createCriteria().get {
+				projections {
+					countDistinct "name"
+				}
+			}
+			
 			def filters = [name: params.name]
 			
-			def model = [unitList: unitList, unitTotal: units.totalCount, chassisTotal: unitNames.size(), filters: filters]
+			def model = [unitList: unitList, unitTotal: distinctCount, chassisTotal: unitNames.size(), filters: filters]
 			
 			//if(request.xhr)
 			// ajax request code from http://www.craigburke.com/2011/01/01/grails-ajax-list-with-paging-and-sorting.html
