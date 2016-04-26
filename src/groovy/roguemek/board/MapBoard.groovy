@@ -27,7 +27,7 @@ class MapBoard {
 		// check to see if the board is already loaded into the database
 		HexMap board = HexMap.findByPath(path)
 		if(board != null) {
-			log.info("Board already loaded: "+path)
+			log.debug("Board already loaded: "+path)
 			return board
 		}
 		else if(!path.toLowerCase().endsWith(BOARD_EXTENSION)) {

@@ -34,7 +34,7 @@ class Faction {
 			}
 			else {
 				faction.save()
-				log.info("Created faction "+faction.name)
+				log.debug("Created faction "+faction.name)
 			}
 		}
 		
