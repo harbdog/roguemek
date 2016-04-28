@@ -194,6 +194,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':              ['permitAll'],
 	'/login/**':          			['permitAll'],
 	'/logout/**':					['permitAll'],
+	'/timezone/**':					['permitAll'],
 	
 	'/showUser/**':					['ROLE_USER'],
 	'/mekUser/**':					['ROLE_USER'],

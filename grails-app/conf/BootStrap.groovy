@@ -17,6 +17,8 @@ class BootStrap {
 	
     def init = { ServletContext servletContext ->
 		
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+		
 		/* Sample code for determining environment from grails.util.Environment */
 		if (Environment.current == Environment.DEVELOPMENT) {
 			// insert Development environment specific code here

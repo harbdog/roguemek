@@ -17,6 +17,8 @@
   		<asset:stylesheet src="game.css"/>
 		<asset:javascript src="game.js"/>
 		
+		<tz:detect />
+		
 		<g:layoutHead/>
 	</head>
 	<body>

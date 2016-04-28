@@ -17,6 +17,8 @@
   		<asset:stylesheet src="application.css"/>
 		<asset:javascript src="application.js"/>
 		
+		<tz:detect />
+		
 		<g:layoutHead/>
 	</head>
 	<body>
