@@ -27,7 +27,7 @@ c.update = function() {
 	this.uncache();
 	this.cleanChildren();
 	
-	var xOffset = this.xCoords() * (3 * hexWidth / 4);
+	var xOffset = (this.xCoords() * (3 * hexWidth / 4)) - this.xCoords()/2;
 	var yOffset = this.yCoords() * hexHeight;
 	
 	if(this.isXOdd()){
