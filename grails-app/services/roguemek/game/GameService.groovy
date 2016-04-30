@@ -170,7 +170,10 @@ class GameService extends AbstractGameService {
 		}
 		
 		// do not allow the game to start if all not users are ready
-		if(!allUsersReady) {
+		if(isRootUser() && Environment.current == Environment.DEVELOPMENT) {
+			// allow root user to start if not all ready only for development purposes
+		}
+		else if(!allUsersReady) {
 			Object[] messageArgs = []
 			gameChatService.addMessageUpdate(game, "staging.game.users.not.ready", messageArgs)
 			

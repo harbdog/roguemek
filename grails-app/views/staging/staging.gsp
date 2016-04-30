@@ -18,6 +18,10 @@
 		<div id="camoSelectDiv"></div>
 		<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
 		
+		<g:if env="development">
+		    <script type="text/javascript">var devMode = true;</script>
+		</g:if>
+		
 		<script type="text/javascript">var hpgTransport = "${grailsApplication.config.roguemek.server.hpgTransport}";</script>
 		<script type="text/javascript">var currentUserId = "${userInstance?.id}";</script>
 

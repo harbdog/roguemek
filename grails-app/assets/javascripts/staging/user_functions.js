@@ -75,7 +75,7 @@ function initUserUI() {
 			}
 		});
 		
-		if(allReady) {
+		if(allReady || devMode) { // only allow development mode to skip the allReady check
 			$("<div style='font-size:0.8em;'>Launch into combat?</div>").dialog({	// TODO: i18n for deletion message
 				title: "Launch Battle",
 				autoOpen: true,
