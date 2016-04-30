@@ -137,6 +137,15 @@ class Game {
 	}
 	
 	/**
+	 * Gets the team number for the given user in this game
+	 * @return -1 if the user has no team, or a positive integer if it does
+	 */
+	public int getTeamForUser(MekUser userInstance) {
+		GameTeam gTeam = GameTeam.findByGameAndUser(this, userInstance)
+		return gTeam?.team ?: -1
+	}
+	
+	/**
 	 * Gets a list of units owned by the given user
 	 * @return
 	 */
