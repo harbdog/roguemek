@@ -146,6 +146,67 @@ class Game {
 	}
 	
 	/**
+	 * Gets the team number for each user in this game
+	 * @return keyed by user ID, value is negative number if the user has no team or a positive integer if it does
+	 */
+	public def getTeamsByUser() {
+		def userTeams = [:]
+		def noTeamNum = -1	// users not in a team will have negative "team" number to set them apart
+		
+		def gameTeams = GameTeam.findAllByGame(this)
+		gameTeams?.each { gTeam ->
+			userTeams[gTeam.user.id] = gTeam.team
+		}
+		
+		users.each { user ->
+			if(userTeams[user.id] == null) {
+				userTeams[user.id] = noTeamNum --
+			}
+		}
+		
+		return userTeams
+	}
+	
+	/**
+	 * Returns true if all of the given users for this game are on the same team
+	 * @return
+	 */
+	public boolean isSameTeam(List<MekUser> userInstanceList) {
+		def teamUserCriteria = GameTeam.createCriteria()
+		def teamUserList = teamUserCriteria.list {
+			and {
+				eq("game", this)
+				'in'("user", userInstanceList)
+			}
+		}
+		
+		def prevTeamNum
+		for(MekUser userInstance in userInstanceList) {
+			def teamFound = false
+			for(GameTeam gTeam in teamUserList) {
+				if(gTeam.user.id == userInstance.id) {
+					teamFound = true
+					
+					if(prevTeamNum == null) {
+						prevTeamNum = gTeam.team
+					}
+					else if(prevTeamNum != gTeam.team){
+						return false
+					}
+					
+					break
+				}
+			}
+			
+			if(!teamFound) {
+				return false
+			}
+		}
+		
+		return true
+	}
+	
+	/**
 	 * Gets a list of units owned by the given user
 	 * @return
 	 */

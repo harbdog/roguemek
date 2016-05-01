@@ -36,14 +36,11 @@ class GameOverService {
 		
 		// sort each user out by team, then determine which teams have active units
 		def activeTeams = [:]
-		def noTeamNum = -1	// users not in a team will have negative "team" number to set them apart
+		def userTeams = game.getTeamsByUser()
 		
 		def unitsByUserMap = game.getUnitsByUser()
 		unitsByUserMap.each { user, unitList ->
-			def teamNum = game.getTeamForUser(user)
-			if(teamNum < 0) {
-				teamNum = noTeamNum --
-			}
+			def teamNum = userTeams[user.id]
 			
 			for(BattleUnit unit in unitList) {
 				if(unit.isActive()) {

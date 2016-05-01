@@ -1782,6 +1782,14 @@ class GameService extends AbstractGameService {
 			weaponData: weaponData
 		]
 		
+		MekUser unitUser = unit.pilot?.ownerUser
+		MekUser targetUser = target.pilot?.ownerUser
+		
+		if(game.isSameTeam([unitUser, targetUser])) {
+			// units on the same team cannot shoot each other
+			return data
+		}
+		
 		if(unit instanceof BattleMech) {
 			BattleWeapon[] weapons = unit.getWeapons()
 			for(BattleWeapon w in weapons) {
@@ -1919,6 +1927,14 @@ class GameService extends AbstractGameService {
 	public def fireWeaponsAtUnit(Game game, BattleUnit unit, ArrayList weapons, BattleUnit target) {
 		if(unit != game.getTurnUnit()) return
 		else if(unit.shutdown) return
+		
+		MekUser unitUser = unit.pilot?.ownerUser
+		MekUser targetUser = target.pilot?.ownerUser
+		
+		if(game.isSameTeam([unitUser, targetUser])) {
+			// units on the same team cannot shoot each other
+			return new GameMessage("game.you.cannot.fire.same.team", null, null)
+		}
 		
 		if(unit.apRemaining == 0 && unit.actionPoints > 0) {
 			// not enough action points to fire, but allow firing weapons when AP starts the round as zero due to MP reductions

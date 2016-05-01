@@ -135,7 +135,7 @@ class BootStrap {
 				MekUserRole.create adminUser, adminRole, true
 				MekUserRole.create adminUser, userRole, true
 				
-				log.info('Initialized admin user '+adminUser.username)
+				log.info "Initialized admin user ${adminUser.username} (${adminUser.id})"
 			}
 			
 			assert MekUser.count() >= 1
@@ -181,7 +181,7 @@ class BootStrap {
 				// assign user role to test user
 				MekUserRole.create testUser, userRole, true
 				
-				log.info('Initialized test user '+testUser.username)
+				log.info "Initialized test user ${testUser.username} (${testUser.id})"
 			}
 			
 			assert MekUser.count() >= 1
@@ -313,6 +313,15 @@ class BootStrap {
 			else {
 				sampleGame.save flush:true
 				log.info('Initialized game '+sampleGame.id)
+				
+				// setup teams for the sample game
+				GameTeam adminTeam = new GameTeam(
+						game: sampleGame, user: adminUser, team: 1)
+				adminTeam.save flush:true
+				
+				GameTeam testTeam = new GameTeam(
+						game: sampleGame, user: testUser, team: 2)
+				testTeam.save flush:true	
 				
 				// create staging data for the sample game
 				StagingUser stagingAdmin = new StagingUser(
