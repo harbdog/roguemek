@@ -35,23 +35,23 @@ class GameOverService {
 		}
 		
 		// sort each user out by team, then determine which teams have active units
-		def activeTeams = [:]
-		def userTeams = game.getTeamsByUser()
+		def activeTeams = []
+		def teams = game.getUsersByTeam()
 		
-		def unitsByUserMap = game.getUnitsByUser()
-		unitsByUserMap.each { user, unitList ->
-			def teamNum = userTeams[user.id]
-			
-			for(BattleUnit unit in unitList) {
-				if(unit.isActive()) {
-					def activeUsers = activeTeams[teamNum]
-					if(activeUsers == null) {
-						activeUsers = []
-						activeTeams[teamNum] = activeUsers
+		teams.each { teamNum, teamUserList ->
+			for(MekUser user in teamUserList) {
+				def unitList = game.getUnitsForUser(user)
+				def foundActiveTeamUnit = false
+				
+				for(BattleUnit unit in unitList) {
+					if(unit.isActive()) {
+						activeTeams << teamNum
+						foundActiveTeamUnit = true
+						break
 					}
-					activeUsers.add(user)
-					break
 				}
+				
+				if(foundActiveTeamUnit) break
 			}
 		}
 		
@@ -62,15 +62,12 @@ class GameOverService {
 			game.save flush: true
 			
 			// record the winners and losers to the database
-			unitsByUserMap.each { user, unitList ->
-				boolean isWinner = false
-				activeTeams.each { teamNum, activeUsers ->
-					if(activeUsers.contains(user)) {
-						isWinner = true
-					}
-				}
+			teams.each { teamNum, teamUserList ->
+				boolean isWinner = (activeTeams.contains(teamNum))
 				
-				recordWinLoss(game, user, isWinner)
+				for(MekUser user in teamUserList) {
+					recordWinLoss(game, user, isWinner)
+				}
 			}
 			
 			endGameData = getEndGameData(game)
