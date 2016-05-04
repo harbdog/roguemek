@@ -844,6 +844,53 @@ class StagingController {
 		render result as JSON
 	}
 	
+	/**
+	 * Updates the team of the given user
+	 * @return
+	 */
+	def teamUpdate() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		def teamNum = params.int('teamNum', -1)
+		
+		// users can only be updated in the Init stage
+		Game game = Game.read(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.userId == null) return
+		MekUser userToUpdate = MekUser.read(params.userId)
+		if(userToUpdate == null) return
+		
+		// make sure only the user or the game owner can update the user
+		if(userInstance != game.ownerUser && userInstance != userToUpdate) return
+		
+		// unready the user before updating just in case
+		if(gameStagingService.setUserReady(game, userToUpdate, false)) {
+			// send update that the user is no longer ready
+			def rData = [
+				user: userToUpdate.id,
+				userReady: false
+			]
+			gameStagingService.addStagingUpdate(game, rData)
+		}
+		
+		def teamUpdated = gameStagingService.setTeamForUser(game, userToUpdate, teamNum)
+		
+		if(teamUpdated) {
+			def data = [
+				user: userToUpdate.id,
+				teamNum: teamNum
+			]
+			Object[] messageArgs = [userToUpdate.toString(), teamNum]
+			gameChatService.addMessageUpdate(game, (teamNum >= 0) ? "staging.team.changed" : "staging.team.changed.noteam", messageArgs)
+			
+			gameStagingService.addStagingUpdate(game, data)
+		}
+		
+		render ([updated:teamUpdated] as JSON)
+	}
+	
 	private MekUser currentUser() {
 		return MekUser.get(springSecurityService.principal.id)
 	}

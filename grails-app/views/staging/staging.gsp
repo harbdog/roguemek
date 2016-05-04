@@ -19,6 +19,8 @@
 		<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
 		
 		<g:if env="development">
+			<%-- NOTE: client devMode should never be used to potentially give advantage, 
+				 only to provide tools for development that do nothing for normal users --%>
 		    <script type="text/javascript">var devMode = true;</script>
 		</g:if>
 		
@@ -99,6 +101,21 @@
 						<g:else>
 							<button id="map-selected" class="property-value" aria-labelledby="map-label">${mapName}</button>
 						</g:else>
+					</li>
+					
+					<%-- show team selection dropdown menu --%>
+					<g:set var="userInstanceTeamNum" value="${gameInstance.getTeamForUser(userInstance)}" />
+					<%	// create map of team selections
+						def teamSelections = [:]
+						teamSelections[-1] = "No Team"	// TODO: i18n for this and following "Team #"
+						(1..8).each {
+							teamSelections[it] = "Team ${it}"	
+						}
+					%>
+					<li class="fieldcontain">
+						<span id="team-label" class="property-label"><g:message code="team.label" default="Team" /></span>
+						
+							<g:select from="${teamSelections.entrySet()}" name="team-select" optionKey="key" optionValue="value" value="${userInstanceTeamNum}"></g:select>
 					</li>
 				</g:if>
 				<g:else>

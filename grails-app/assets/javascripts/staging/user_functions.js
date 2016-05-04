@@ -221,17 +221,14 @@ function setupDynamicUserUI() {
 				.addClass("ui-menu-icons");
     	});
     	
-    	// setup user join button - the join button does not currently exist
-    	// but may be added back when teams are enabled
-    	/*$("button.user-join").each(function() {
-    		if($(this).button("instance") != null) return
-    		
-    		$(this).button({
-        		icons: {
-        			secondary: "ui-icon-arrowreturnthick-1-n"
-    	    	}
-        	}).click(addUser);
-    	});*/
+    	// setup user team selection menu
+    	$("#team-select").selectmenu({
+            change: function( event, data ) {
+                // send request to server to change the user's team
+                var newTeamNum = data.item.value;
+                updateUserTeam(currentUserId, newTeamNum);
+            }
+        });
     	
     	// setup user delete button
     	$("button.user-delete").each(function() {
@@ -253,7 +250,7 @@ function setupDynamicUserUI() {
 }
 
 /**
- * Used with the click and drag to move players to another team
+ * Used with the click and drag to move players to another team (only game owner can do this)
  */
 function transferPlayer($playerDiv, $teamDiv) {
 	$playerDiv.fadeOut(function() {
@@ -261,6 +258,29 @@ function transferPlayer($playerDiv, $teamDiv) {
 	})
 	
 	// TODO: implement teams in the game and update the database data from the drop
+}
+
+/**
+ * Sends update for player starting location to server
+ */
+function updateUserTeam(userId, teamNum) {
+	console.log("Updating team for "+userId+": "+teamNum);
+	
+	var inputMap = {
+		userId: userId,
+		teamNum: teamNum
+	};
+	
+	$.getJSON("teamUpdate", inputMap)
+		.fail(function(jqxhr, textStatus, error) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		})
+		.done(function(data) {
+			if(data != null && data.updated == true) {
+				console.log("updated team: "+teamNum)
+			}
+		});
 }
 
 /**

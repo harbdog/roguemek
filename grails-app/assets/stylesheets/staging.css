@@ -4,6 +4,16 @@
 	src: url('images/UbuntuMono.ttf');
 }
 
+#team-select-button {
+	display: initial;
+	margin: 0 0 0.1em 1em;
+	font-size: 1em;
+}
+
+#team-select-button .ui-selectmenu-text {
+	display: initial;
+}
+
 #map-button {
 	margin: 0 0 0.1em 1em;
 	font-size: 1em;

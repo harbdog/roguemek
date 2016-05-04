@@ -484,6 +484,40 @@ class GameStagingService extends AbstractGameService {
 	}
 	
 	/**
+	 * Sets the team for the user
+	 * @param game
+	 * @param userInstance
+	 * @param teamNum
+	 * @return
+	 */
+	boolean setTeamForUser(Game game, MekUser userInstance, int teamNum) {
+		if(game == null || userInstance == null) return false
+		
+		StagingUser thisStagingData = getStagingForUser(game, userInstance)
+		if(thisStagingData == null) return false
+		
+		GameTeam userTeam = GameTeam.findByGameAndUser(game, userInstance)
+		if(teamNum < 0) {
+			// delete the team for the user
+			if(userTeam) {
+				userTeam.delete flush:true
+			}
+		}
+		else{
+			if(userTeam) {
+				userTeam.team = teamNum
+			}
+			else {
+				userTeam = new GameTeam(game: game, user: userInstance, team: teamNum)
+			}
+			
+			userTeam.save flush:true
+		}
+		
+		return true
+	}
+	
+	/**
 	 * Returns true if the staged user is denoted as ready
 	 * @param game
 	 * @param userInstance
