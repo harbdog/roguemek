@@ -128,6 +128,40 @@ class Game {
 	}
 	
 	/**
+	 * Gets the list of staged users for each team number in this game
+	 * @return keyed by team number (negative number if the user has no team or a positive integer if it does), value is list of staged users in the team
+	 */
+	public def getStagingUsersByTeam() {
+		def teams = [:]
+		def noTeamNum = -1	// users not in a team will have negative "team" number to set them apart
+		
+		// keep track of users in teams to look up users with no teams easier
+		def teamedUserIds = []
+		
+		def gameTeams = GameTeam.findAllByGame(this)
+		gameTeams?.each { gTeam ->
+			def teamUserList = teams[gTeam.team]
+			if(!teamUserList) {
+				teamUserList = []
+				teams[gTeam.team] = teamUserList
+			}
+			
+			teamUserList << StagingUser.findByGameAndUser(this, gTeam.user)
+			teamedUserIds << gTeam.user.id
+		}
+		
+		// handle users not in a team
+		StagingUser.findAllByGame(this).each { stageUser ->
+			if(!teamedUserIds.contains(stageUser.user.id)) {
+				def teamUserList = [stageUser]
+				teams[noTeamNum --] = teamUserList
+			}
+		}
+		
+		return teams
+	}
+	
+	/**
 	 * Clears chat data for when the game is deleted or becomes inactive for play
 	 */
 	public void clearChatData() {

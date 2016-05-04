@@ -123,45 +123,53 @@
 				
 			</ol>
 		</div>
-		
+        
 		<div id="teams">
 			<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
-			<g:set var="showJoin" value="${stagingInstance == null && gameInstance?.isInit()}" />
 			<script type="text/javascript">var playersEditable = ${isEditable};</script>
 			<script type="text/javascript">var unitsEditable = ${gameInstance?.isInit()};</script>
 			
 			<g:if test="${gameInstance?.isInit()}">
-				<g:each in="${stagingUsers}" var="thisStagingUser">
-					<g:set var="thisUser" value="${thisStagingUser.user}" />
-					
-					<%
-						// TODO: when teams are implement, this will need to be calculated for the entire team instead
-						int totalUnits = thisStagingUser.units?.size() ?: 0
-						int totalTonnage = 0
-						thisStagingUser.units?.each { BattleUnit unit ->
-							if(unit instanceof BattleMech) {
-								totalTonnage += unit.mech.mass
-							}
-						}
-					%>
-					
-					<div class="team">
-						<div class="team-header">
-							<h2>Team ${thisUser}</h2>
-							<span class="team-unit-count">${totalUnits} Units</span>
-							<span class="team-tonnage-count right">${totalTonnage} Tons</span>
-						</div>
-						
-						<g:render template="stageUser" model="[user: thisUser]" />
-						
-						<g:if test="${showJoin}">
-							<button class="user-join"><g:message code="default.button.join.label" /></button>
-						</g:if>
-					</div>
-				</g:each>
+                
+                <g:each in="${stagingUsers}" var="entry">
+                    <g:set var="teamNum" value="${entry.key}" />
+                    <g:set var="teamStagingUsers" value="${entry.value}" />
+                    
+                    <%
+                        // calculate team totals
+                        int totalUnits = 0
+                        int totalTonnage = 0
+                        teamStagingUsers.each { teamStagingUser ->
+                            totalUnits += teamStagingUser.units?.size() ?: 0
+                            teamStagingUser.units?.each { BattleUnit unit ->
+                                if(unit instanceof BattleMech) {
+                                    totalTonnage += unit.mech.mass
+                                }
+                            }
+                        }
+                    %>
+                    
+                    <div class="team">
+                        <div class="team-header">
+                            <g:if test="${(teamNum >= 0)}">
+                                <h2>Team ${teamNum}</h2>
+                            </g:if>
+                            <span class="team-unit-count">${totalUnits} Units</span>
+                            <span class="team-tonnage-count right">${totalTonnage} Tons</span>
+                        </div>
+                    
+                        <g:each in="${teamStagingUsers}" var="teamStagingUser">
+                            <g:set var="teamUser" value="${teamStagingUser.user}" />
+                            
+    						<g:render template="stageUser" model="[user: teamUser]" />
+                            
+                        </g:each>
+                    </div>
+                </g:each>
+            
 			</g:if>
 			<g:else>
-				<%
+				<%  // TODO: display users grouped and identified with their team
 					def sortedUsers = gameInstance?.users?.sort(false, { u1, u2 ->
 						u1.callsign <=> u2.callsign
 					})
@@ -188,17 +196,6 @@
 	                </g:each>
 				</ol>
 			</g:else>
-			
-			<%-- TODO: only show the "new team" option when at least one team has >1 members --%>
-			<%-- <g:if test="${showJoin || (gameInstance?.ownerUser == userInstance && gameInstance?.isInit())}">
-				<div class="team">
-					<h2>New Team</h2>
-						
-					<g:if test="${showJoin}">
-						<button class="user-join"><g:message code="default.button.join.label" /></button>
-					</g:if>
-				</div>
-			</g:if> --%>
 		</div>
 			
 		<div class="buttons">
