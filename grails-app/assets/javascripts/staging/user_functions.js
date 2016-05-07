@@ -339,19 +339,19 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
                 $tempDiv.children().detach().hide().appendTo($allTeamsDiv).fadeIn();
         		$tempDiv.remove();
         		
-        		setupDynamicUI();
-        		
         		var effectOptions = {color: "#3399FF"};
         		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
             }
             
             if($playerDiv != null && $playerDiv.length > 0) {
                 $playerDiv.fadeOut(function() {
-                    $playerDiv.detach();
+                    $playerDiv.remove();
+                    setupDynamicUI();
                     updateUnitCounts();
                 });
             }
             else {
+                setupDynamicUI();
                 updateUnitCounts();
             }
         });
