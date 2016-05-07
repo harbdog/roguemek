@@ -24,7 +24,7 @@
 	<div id="camo-preview">
 		<g:if test="${previewUnit != null && previewUnit.image != null}">
 			<%-- show stored byte array as an image on the page --%>
-			<img class="camo-unit-preview" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': previewUnit?.id])}"/>
+			<img class="camo-unit-preview" src="${createLink(controller: 'BattleMech', action: 'displayImage', params: ['id': previewUnit?.id, 'rgb': rgbCamoBackground])}"/>
 		</g:if>
 	</div>
 </div>

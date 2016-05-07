@@ -145,9 +145,11 @@ class Game {
 				teamUserList = []
 				teams[gTeam.team] = teamUserList
 			}
-			
-			teamUserList << StagingUser.findByGameAndUser(this, gTeam.user)
-			teamedUserIds << gTeam.user.id
+			StagingUser stageUser = StagingUser.findByGameAndUser(this, gTeam.user)
+			if(stageUser) {
+				teamUserList << stageUser
+				teamedUserIds << gTeam.user.id
+			}
 		}
 		
 		// handle users not in a team

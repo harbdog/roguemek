@@ -438,30 +438,56 @@ function ajaxStageUnit(unitId, userId) {
 		$("div.player-unit[data-unitid='"+unitId+"']").effect("highlight", effectOptions, 2000);
 		
 		// update displayed counts of units/tonnage
-		updateUnitCounts(userId);
+		updateUserUnitCounts(userId);
     });
+}
+
+/**
+ * Updates the displayed unit and tonnage count for all teams
+ */
+function updateUnitCounts() {
+	var allTeamDivs = $("div.team[data-teamnum]");
+	$.each(allTeamDivs, function() {
+		var teamNum = $(this).attr("data-teamnum");
+		updateTeamUnitCounts(teamNum);
+	});
 }
 
 /**
  * Updates the displayed unit and tonnage count for when a given userId has had changes to units made
  * @param userId
  */
-function updateUnitCounts(userId) {
+function updateUserUnitCounts(userId) {
 	if(userId == null) return;
 	
 	var playerDiv = $("div.player[data-userid='"+userId+"']");
+	var playerTeamDiv = playerDiv.closest("div.team[data-teamnum]");
+	var playerTeamNum = playerTeamDiv.attr("data-teamnum");
+	if(playerTeamNum) {
+		updateTeamUnitCounts(playerTeamNum);
+	}
+}
+
+/**
+ * Updates the displayed unit and tonnage count for when a given teamNum has had changes to units made
+ * @param userId
+ */
+function updateTeamUnitCounts(teamNum) {
+	if(teamNum == null) return;
+	
+	var teamDiv = $("div.team[data-teamnum='"+teamNum+"']");
 	
 	// update the total unit count
-	var unitCountSpan = playerDiv.closest(".team").find(".team-unit-count");
+	var unitCountSpan = teamDiv.find(".team-unit-count");
 	var unitCountString = unitCountSpan.text();
-	var unitCount = playerDiv.find(".player-unit").length;
+	var unitCount = teamDiv.find(".player-unit").length;
 	unitCountSpan.text(unitCountString.replace(/\d+/, unitCount));
 	
 	// update the total tonnage
-	var tonnageCountSpan = playerDiv.closest(".team").find(".team-tonnage-count");
+	var tonnageCountSpan = teamDiv.find(".team-tonnage-count");
 	var tonnageCountString = tonnageCountSpan.text();
 	var tonnageCount = 0;
-	$.each(playerDiv.find(".player-unit"), function() {
+	$.each(teamDiv.find(".player-unit"), function() {
 		tonnageCount += parseInt($(this).attr("data-unit-mass"));
 	});
 	tonnageCountSpan.text(tonnageCountString.replace(/\d+/, tonnageCount));

@@ -202,7 +202,7 @@ function updateStagingData(data) {
 	}
 	else if(data.rgbCamo != null && userId != null) {
 		// update the units on the page without forcing reload
-		ajaxStageUser(userId);
+		ajaxStageTeamOrUser(null, userId, true);
 	}
 	else if(data.unitAdded != null) {
 		var unitId = data.unitAdded;
@@ -217,7 +217,7 @@ function updateStagingData(data) {
 				$(this).remove();
 				
 				// update displayed counts of units/tonnage
-				updateUnitCounts(userId);
+				updateUserUnitCounts(userId);
 			}
 		);
 	}
@@ -225,7 +225,7 @@ function updateStagingData(data) {
 		var userId = data.userAdded;
 		
 		// update the users and teams on the page without forcing reload
-		ajaxStageUser(userId);
+		ajaxStageTeamOrUser(-1, userId);
 	}
 	else if(data.userRemoved != null) {
 		var userId = data.userRemoved;
@@ -250,6 +250,12 @@ function updateStagingData(data) {
 		
 		var readyCheckbox = $("input#ready-"+userId+".player-ready[type=checkbox]");
 		readyCheckbox.prop('checked', isReady).trigger("change");
+	}
+	else if(data.teamNum != null) {
+		var teamNum = data.teamNum;
+		
+		// move the player div to the correct new team div
+		ajaxStageTeamOrUser(teamNum, userId);
 	}
 	else if(data.gameState != null) {
 		if(data.gameState == "A") {

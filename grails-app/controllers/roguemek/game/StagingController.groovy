@@ -78,6 +78,8 @@ class StagingController {
 		// get all users staged in the game
 		def stagingUsers = game.getStagingUsersByTeam()
 		
+		log.info "stagingUsers: ${stagingUsers}"
+		
 		def chatMessages = ChatMessage.findAllByOptGameId(game.id, [sort: "time", order: "asc"])
 		
 		session["game"] = game.id
@@ -630,6 +632,10 @@ class StagingController {
 		// make sure only the user or the game owner can remove the user
 		if(userInstance != game.ownerUser && userInstance != userToRemove) return
 
+		GameTeam.executeUpdate(
+				"delete GameTeam gt where gt.game=:game and gt.user=:user",
+				[game: game, user: userToRemove])
+
 		StagingUser thisStagingData = StagingHelper.getStagingForUser(game, userToRemove)
 		thisStagingData.delete flush:true
 		
@@ -889,6 +895,41 @@ class StagingController {
 		}
 		
 		render ([updated:teamUpdated] as JSON)
+	}
+	
+	/**
+	 * Allows for individual calls to render a team on the stage
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	def stageTeam() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		Game gameInstance = Game.read(session.game)
+		if(gameInstance == null) return
+		
+		if(params.userId == null) return
+		MekUser thisUser = MekUser.read(params.userId)
+		if(thisUser == null) return
+		
+		def teamNum = -1
+		def teamStagingUsers = []
+		
+		GameTeam gTeam = GameTeam.findByGameAndUser(gameInstance, thisUser)
+		if(gTeam) {
+			// TODO: make a single query to do this
+			teamNum = gTeam.team
+			def gTeamUsers = GameTeam.findByGameAndTeam(gameInstance, teamNum)
+			gTeamUsers.each { gUserTeam ->
+				teamStagingUsers << StagingUser.findByGameAndUser(gameInstance, gUserTeam.user)
+			}
+		}
+		else {
+			teamStagingUsers << StagingUser.findByGameAndUser(gameInstance, thisUser)
+		}
+		
+		render ( template: 'stageTeam', model: [gameInstance: gameInstance, userInstance: userInstance, teamNum: teamNum, teamStagingUsers: teamStagingUsers])
 	}
 	
 	private MekUser currentUser() {

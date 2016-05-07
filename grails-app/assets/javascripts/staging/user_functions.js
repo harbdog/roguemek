@@ -227,6 +227,7 @@ function setupDynamicUserUI() {
                 // send request to server to change the user's team
                 var newTeamNum = data.item.value;
                 updateUserTeam(currentUserId, newTeamNum);
+                $("#team-select").blur();
             }
         });
     	
@@ -255,9 +256,9 @@ function setupDynamicUserUI() {
 function transferPlayer($playerDiv, $teamDiv) {
 	$playerDiv.fadeOut(function() {
 		$playerDiv.appendTo($teamDiv).fadeIn();
-	})
+	});
 	
-	// TODO: implement teams in the game and update the database data from the drop
+	// TODO: update the database data from the team drop move
 }
 
 /**
@@ -278,9 +279,129 @@ function updateUserTeam(userId, teamNum) {
 		})
 		.done(function(data) {
 			if(data != null && data.updated == true) {
-				console.log("updated team: "+teamNum)
+				//console.log("updated team: "+teamNum)
 			}
 		});
+}
+
+/**
+ * Stages the given user/team update by fetching their info from the server and updating the page
+ */
+function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
+    var inputMap = {
+		userId: userId
+	};
+	
+    var $allTeamsDiv = $("div#teams");
+    
+    // find out if the user is already staged
+    var $playerDiv = $("div.player[data-userid='"+userId+"']");
+    
+    var $playerTeamDiv = null;
+    if($playerDiv != null && $playerDiv.length > 0) {
+        // find the team div for the already staged user
+        $playerTeamDiv = $playerDiv.parents('div.team').eq(0);
+        if(teamNum == null) {
+            // determine existing team number from the existing player div
+            teamNum = $playerTeamDiv.attr("data-teamnum");
+        }
+    }
+    
+    // find out if the team is already staged
+    var $teamDiv;
+    if(teamNum >= 0) {
+        $teamDiv = $("div.team[data-teamnum='"+teamNum+"']");
+    }
+    else {
+        // users without a positive teamNum will instead be found using their userid
+        $teamDiv = $("div.team[data-teamnum='"+userId+"']");
+    }
+    
+	var $tempDiv = $("<div>");
+    if($teamDiv == null || $teamDiv.length == 0) {
+        // the team doesn't yet exist on the stage, load it
+        $tempDiv.load("stageTeam", inputMap, function() {
+    		// move the content to the teams area
+            if($playerTeamDiv != null && $playerTeamDiv.children("div.player").length <= 1) {
+                // the old player team has no other children, replace it with this new team
+                $playerTeamDiv.fadeOut(function() {
+                    $playerTeamDiv.replaceWith($tempDiv.children()).fadeIn();
+            		$tempDiv.remove();
+            		
+            		setupDynamicUI();
+            		
+            		var effectOptions = {color: "#3399FF"};
+            		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
+                });
+            } 
+            else {
+                // load the new team section
+                $tempDiv.children().detach().hide().appendTo($allTeamsDiv).fadeIn();
+        		$tempDiv.remove();
+        		
+        		setupDynamicUI();
+        		
+        		var effectOptions = {color: "#3399FF"};
+        		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
+            }
+            
+            if($playerDiv != null && $playerDiv.length > 0) {
+                $playerDiv.fadeOut(function() {
+                    $playerDiv.detach();
+                    updateUnitCounts();
+                });
+            }
+            else {
+                updateUnitCounts();
+            }
+        });
+    }
+    else if($playerDiv == null || $playerDiv.length == 0 || forceLoadPlayer) {
+        // the team exists but the player doesn't yet, load it
+        $tempDiv.load("stageUser", inputMap, function() {
+    		// move the content to the teams area
+            if($playerDiv != null && $playerDiv.length > 0) {
+                $playerDiv.fadeOut(function() {
+            		$playerDiv.replaceWith($tempDiv.children()).fadeIn();
+                    $tempDiv.remove();
+                    
+                    setupDynamicUI();
+                    updateUnitCounts();
+                    
+                    var effectOptions = {color: "#3399FF"};
+            		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
+            	});
+            }
+            else {
+        		$tempDiv.children().detach().hide().appendTo($teamDiv).fadeIn();
+                $tempDiv.remove();
+                
+                setupDynamicUI();
+                updateUnitCounts();
+                
+                var effectOptions = {color: "#3399FF"};
+        		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
+            }
+        });
+    }
+	else {
+        // the team and player exist, just move the player over
+        $playerDiv.fadeOut(function() {
+    		$playerDiv.detach().appendTo($teamDiv).fadeIn();
+            
+            updateUnitCounts();
+            
+            var effectOptions = {color: "#3399FF"};
+            $("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
+    	});
+        
+        // check to see if the old player team has no other children, if so then remove it
+        if($playerTeamDiv != null && $playerTeamDiv.children("div.player").length <= 1) {
+            $playerTeamDiv.fadeOut(function() {
+                $playerTeamDiv.remove();
+            });
+        }
+    }
 }
 
 /**
@@ -335,77 +456,6 @@ function updateLocation(event, data) {
 				//console.log("updated location: "+locationValue)
 			}
 		});
-}
-
-/**
- * Stages the given user by fetching their info from the server and updating the page with ajax
- */
-function ajaxStageUser(userId) {
-	var inputMap = {
-		userId: userId
-	};
-	
-	var $tempDiv = $("<div>", {class: "player"});
-	
-	var playerDiv = $("div.player[data-userid='"+userId+"']");
-	
-	var $this = null;
-	if(playerDiv != null) {
-		$this = $("div.player[data-userid='"+userId+"']").parents('div').eq(0);
-	}
-	
-	var tempTeamHeader = null;
-	if($this == null || $this.length == 0) {
-		// create a new temporary team div for the player until teams are introduced to the game
-		$this = $("<div>", {class: "team"});
-		$("div#teams").append($this);
-		
-		// TODO: when teams implemented, have a team template generate this stuff instead
-		/*<div class="team-header">
-			<h2>Team ${thisUser}</h2>
-			<span class="team-unit-count">${totalUnits} Units</span>
-			<span class="team-tonnage-count right">${totalTonnage} Tons</span>
-		</div>*/
-		
-		var divTeamHeader = $("<div>", {class: "team-header"});
-		
-		tempTeamHeader = $("<h2>");
-		tempTeamHeader.text("Team Temp");
-		divTeamHeader.append(tempTeamHeader);
-		
-		var spanTeamUnitCount = $("<span>", {class: "team-unit-count"});
-		spanTeamUnitCount.text("0 Units");
-		divTeamHeader.append(spanTeamUnitCount);
-		
-		var spanTeamTonnageCount = $("<span>", {class: "team-tonnage-count right"});
-		spanTeamTonnageCount.text("0 Tons");
-		divTeamHeader.append(spanTeamTonnageCount);
-		
-		$this.prepend(divTeamHeader);
-	}
-	
-	$tempDiv.load("stageUser", inputMap, function() {
-		
-		if(playerDiv != null) {
-			playerDiv.remove();
-		}
-		
-		// move the unit content to the player area
-		$tempDiv.children().appendTo($this);
-		$tempDiv.remove();
-		
-		// rename team header (for now, just the name of the player since teams aren't implemented yet)
-		if(tempTeamHeader != null) {
-			var playerName = $("div.player[data-userid='"+userId+"'] span.player-name").text();
-			tempTeamHeader.text("Team "+playerName);
-		}
-		
-		// TODO: implement actual Teams
-		setupDynamicUI();
-		
-		var effectOptions = {color: "#3399FF"};
-		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
-    });
 }
 
 /**

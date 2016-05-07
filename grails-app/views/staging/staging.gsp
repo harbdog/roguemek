@@ -152,38 +152,8 @@
                     <g:set var="teamNum" value="${entry.key}" />
                     <g:set var="teamStagingUsers" value="${entry.value}" />
                     
-                    <%
-                        // calculate team totals
-                        int totalUnits = 0
-                        int totalTonnage = 0
-                        teamStagingUsers.each { teamStagingUser ->
-                            totalUnits += teamStagingUser.units?.size() ?: 0
-                            teamStagingUser.units?.each { BattleUnit unit ->
-                                if(unit instanceof BattleMech) {
-                                    totalTonnage += unit.mech.mass
-                                }
-                            }
-                        }
-                    %>
-                    
-                    <div class="team">
-                        <div class="team-header">
-                            <g:if test="${(teamNum >= 0)}">
-                                <h2>Team ${teamNum}</h2>
-                            </g:if>
-                            <span class="team-unit-count">${totalUnits} Units</span>
-                            <span class="team-tonnage-count right">${totalTonnage} Tons</span>
-                        </div>
-                    
-                        <g:each in="${teamStagingUsers}" var="teamStagingUser">
-                            <g:set var="teamUser" value="${teamStagingUser.user}" />
-                            
-    						<g:render template="stageUser" model="[user: teamUser]" />
-                            
-                        </g:each>
-                    </div>
-                </g:each>
-            
+                    <g:render template="stageTeam" model="[teamNum: teamNum, teamStagingUsers: teamStagingUsers]" />
+            	</g:each>
 			</g:if>
 			<g:else>
 				<%  // TODO: display users grouped and identified with their team
