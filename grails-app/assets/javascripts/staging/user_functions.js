@@ -122,7 +122,7 @@ function setupDynamicUserUI() {
     if(playersEditable) {
     	// setup draggable/droppable elements
 	    var teams = $(".team");
-	    var players = $(".player");
+	    var players = $(".player .player-name");
 	    
 	    players.each(function() {
 	    	if($(this).draggable("instance") != null) return
@@ -141,7 +141,7 @@ function setupDynamicUserUI() {
 	    	if($(this).droppable("instance") != null) return
 	    	
 	    	$(this).droppable({
-		    	accept: ".player",
+		    	accept: ".player-name",
 		    	hoverClass: "ui-state-active",
 		    	tolerance: "pointer",
 		    	drop: function(event, ui) {
@@ -253,19 +253,21 @@ function setupDynamicUserUI() {
 /**
  * Used with the click and drag to move players to another team (only game owner can do this)
  */
-function transferPlayer($playerDiv, $teamDiv) {
-	$playerDiv.fadeOut(function() {
-		$playerDiv.appendTo($teamDiv).fadeIn();
-	});
-	
-	// TODO: update the database data from the team drop move
+function transferPlayer($playerNameDiv, $teamDiv) {
+    var userId = $playerNameDiv.parents(".player").eq(0).attr("data-userid");
+    var teamNum = $teamDiv.attr("data-teamnum");
+    
+    // update the database data from the team drop move
+    if(userId != null && teamNum != null) {
+        updateUserTeam(userId, teamNum);
+    }
 }
 
 /**
  * Sends update for player starting location to server
  */
 function updateUserTeam(userId, teamNum) {
-	console.log("Updating team for "+userId+": "+teamNum);
+	//console.log("Updating team for "+userId+": "+teamNum);
 	
 	var inputMap = {
 		userId: userId,
@@ -291,6 +293,11 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
     var inputMap = {
 		userId: userId
 	};
+    
+    // if the user is the current user, update the team select menu
+    if(currentUserId == userId) {
+        $("select#team-select").val(teamNum).selectmenu("refresh");
+    }
 	
     var $allTeamsDiv = $("div#teams");
     
@@ -344,16 +351,12 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
             }
             
             if($playerDiv != null && $playerDiv.length > 0) {
-                $playerDiv.fadeOut(function() {
-                    $playerDiv.remove();
-                    setupDynamicUI();
-                    updateUnitCounts();
-                });
+                $playerDiv.remove();
             }
-            else {
-                setupDynamicUI();
-                updateUnitCounts();
-            }
+            
+            setupDynamicUI();
+            updateUnitCounts();
+            
         });
     }
     else if($playerDiv == null || $playerDiv.length == 0 || forceLoadPlayer) {

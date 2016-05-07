@@ -502,10 +502,20 @@ class GameStagingService extends AbstractGameService {
 			if(userTeam) {
 				userTeam.delete flush:true
 			}
+			else {
+				// user already has no team, nothing to be done
+				return false
+			}
 		}
 		else{
 			if(userTeam) {
-				userTeam.team = teamNum
+				if(userTeam.team != teamNum) {
+					userTeam.team = teamNum
+				}
+				else {
+					// user already in that team, nothing to be done
+					return false
+				}
 			}
 			else {
 				userTeam = new GameTeam(game: game, user: userInstance, team: teamNum)
