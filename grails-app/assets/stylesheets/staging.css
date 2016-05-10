@@ -5,8 +5,8 @@
 }
 
 #team-select-button {
-	display: initial;
-	margin: 0 0 0.1em 1em;
+	display: table;
+	margin: 0 auto;
 	font-size: 1em;
 }
 
@@ -15,12 +15,12 @@
 }
 
 #map-button {
-	margin: 0 0 0.1em 1em;
+	margin: 0;
 	font-size: 1em;
 }
 
 #map-button .ui-button-text {
-	display: initial;
+	display: block;
 }
 
 #map-selected {
@@ -106,6 +106,35 @@ span.chat-time {
 span.chat-user {
 	margin-right: 5px;
 	color: #3498DB;
+}
+
+/* game content div */
+#game-content {
+	display: flex;
+}
+
+/* game details sidebar div */
+#game-details {
+	border-right: 1px solid #CCCCCC;
+	padding: 0 0.5em 0 0.5em;
+	margin: 0 0 0.9em 0;
+}
+
+#game-details ol.game {
+	margin: 0;
+	padding: 0;
+}
+
+#game-details .property-label {
+	float: inherit;
+	display: block;
+	text-align: center;
+	width: 100%;
+}
+
+#game-details .property-value {
+	text-align: center;
+	margin: 0;
 }
 
 /* Map/Unit selection table decoration */
@@ -208,6 +237,7 @@ input[type=radio]:checked+label:before {
 }
 
 .team {
+	width: 100%;
 	display: inline-table;
 	margin: 0 0.5em 0.5em 0;
 	padding-bottom: 1em;

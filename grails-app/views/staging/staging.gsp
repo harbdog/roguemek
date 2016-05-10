@@ -62,129 +62,133 @@
 				</div>
 				<input id="chat-input" type="text"/>
 			</div>
-			
-			<ol class="property-list game">
-			
-				<li class="fieldcontain">
-					<span id="owner-label" class="property-label"><g:message code="owner.label" default="Owner" /></span>
-					
-					<g:if test="${gameInstance?.ownerUser == userInstance}">
-						<span class="property-value" aria-labelledby="owner-label"><g:message code="you.label" default="You" /></span>
-					</g:if>
-					<g:else>
-						<span class="property-value" aria-labelledby="owner-label">${gameInstance?.ownerUser}</span>
-					</g:else>
-				</li>
-			
-				<g:if test="${gameInstance?.isInit()}">
-					<%-- store the selected HexMap ID where the javascript can get to it later --%>
-					<g:if test="${gameInstance?.board?.mapId()}">
-						<script type="text/javascript">var selectedMapId = "${gameInstance?.board?.mapId()}";</script>
-					</g:if>
-					<g:else>
-						<script type="text/javascript">var selectedMapId = null;</script>
-					</g:else>
+		</div>
+		
+		<div id="game-content">
+			<div id="game-details" class="content scaffold-show" role="main">
+				<ol class="property-list game">
 				
-					<g:if test="${gameInstance?.board?.name() != null}">
-						<g:set var="mapName" value="${gameInstance?.board?.toString()}" />
-					</g:if>
-					<g:else>
-						<g:set var="mapName" value="${g.message(code: 'default.button.random.label')}" />
-					</g:else>
-					
 					<li class="fieldcontain">
-						<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
+						<span id="owner-label" class="property-label"><g:message code="owner.label" default="Owner" /></span>
 						
 						<g:if test="${gameInstance?.ownerUser == userInstance}">
-							<button id="map-button" aria-labelledby="map-label">${mapName}</button>
+							<span class="property-value" aria-labelledby="owner-label"><g:message code="you.label" default="You" /></span>
 						</g:if>
 						<g:else>
-							<button id="map-selected" class="property-value" aria-labelledby="map-label">${mapName}</button>
+							<span class="property-value" aria-labelledby="owner-label">${gameInstance?.ownerUser}</span>
 						</g:else>
 					</li>
+				
+					<g:if test="${gameInstance?.isInit()}">
+						<%-- store the selected HexMap ID where the javascript can get to it later --%>
+						<g:if test="${gameInstance?.board?.mapId()}">
+							<script type="text/javascript">var selectedMapId = "${gameInstance?.board?.mapId()}";</script>
+						</g:if>
+						<g:else>
+							<script type="text/javascript">var selectedMapId = null;</script>
+						</g:else>
 					
-					<%-- show team selection dropdown menu --%>
-					<g:set var="userInstanceTeamNum" value="${gameInstance.getTeamForUser(userInstance)}" />
-					<%	// create map of team selections
-						def teamSelections = [:]
-						teamSelections[-1] = "No Team"	// TODO: i18n for this and following "Team #"
-						(1..8).each {
-							teamSelections[it] = "Team ${it}"	
-						}
-					%>
-					<li class="fieldcontain">
-						<span id="team-label" class="property-label"><g:message code="team.label" default="Team" /></span>
+						<g:if test="${gameInstance?.board?.name() != null}">
+							<g:set var="mapName" value="${gameInstance?.board?.toString()}" />
+						</g:if>
+						<g:else>
+							<g:set var="mapName" value="${g.message(code: 'default.button.random.label')}" />
+						</g:else>
 						
-							<g:select from="${teamSelections.entrySet()}" name="team-select" optionKey="key" optionValue="value" value="${userInstanceTeamNum}"></g:select>
-					</li>
+						<li class="fieldcontain">
+							<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
+							
+							<g:if test="${gameInstance?.ownerUser == userInstance}">
+								<button id="map-button" aria-labelledby="map-label">${mapName}</button>
+							</g:if>
+							<g:else>
+								<button id="map-selected" class="property-value" aria-labelledby="map-label">${mapName}</button>
+							</g:else>
+						</li>
+						
+						<%-- show team selection dropdown menu --%>
+						<g:set var="userInstanceTeamNum" value="${gameInstance.getTeamForUser(userInstance)}" />
+						<%	// create map of team selections
+							def teamSelections = [:]
+							teamSelections[-1] = "No Team"	// TODO: i18n for this and following "Team #"
+							(1..8).each {
+								teamSelections[it] = "Team ${it}"	
+							}
+						%>
+						<li class="fieldcontain">
+							<span id="team-label" class="property-label"><g:message code="team.label" default="Team" /></span>
+							
+								<g:select from="${teamSelections.entrySet()}" name="team-select" optionKey="key" optionValue="value" value="${userInstanceTeamNum}"></g:select>
+						</li>
+					</g:if>
+					<g:else>
+						<li class="fieldcontain">
+							<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
+							
+								<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.toString()}</span>
+						</li>
+						
+						<li class="fieldcontain">
+							<span id="turn-label" class="property-label"><g:message code="turn.label" default="Turn" /></span>
+							
+								<span class="property-value" aria-labelledby="turn-label">${gameInstance?.gameTurn+1}</span>
+						</li>
+						
+						<li class="fieldcontain">
+							<span id="update-label" class="property-label"><g:message code="last.update.label" default="Last Update" /></span>
+							
+								<span class="property-value" aria-labelledby="update-label"><g:formatDate date="${gameInstance?.updateDate}"/></span>
+						</li>
+					</g:else>
+					
+				</ol>
+			</div>
+        
+			<div id="teams">
+				<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
+				<script type="text/javascript">var playersEditable = ${isEditable};</script>
+				<script type="text/javascript">var unitsEditable = ${gameInstance?.isInit()};</script>
+				
+				<g:if test="${gameInstance?.isInit()}">
+	                
+	                <g:each in="${stagingUsers}" var="entry">
+	                    <g:set var="teamNum" value="${entry.key}" />
+	                    <g:set var="teamStagingUsers" value="${entry.value}" />
+	                    
+	                    <g:render template="stageTeam" model="[teamNum: teamNum, teamStagingUsers: teamStagingUsers]" />
+	            	</g:each>
 				</g:if>
 				<g:else>
-					<li class="fieldcontain">
-						<span id="map-label" class="property-label"><g:message code="map.label" default="Map" /></span>
+					<%  // TODO: display users grouped and identified with their team
+						def sortedUsers = gameInstance?.users?.sort(false, { u1, u2 ->
+							u1.callsign <=> u2.callsign
+						})
+					%>
+					<ol class="property-list game">
+						<g:each in="${sortedUsers}" var="thisUser">
 						
-							<span class="property-value" aria-labelledby="map-label">${gameInstance?.board?.toString()}</span>
-					</li>
-					
-					<li class="fieldcontain">
-						<span id="turn-label" class="property-label"><g:message code="turn.label" default="Turn" /></span>
+							<h3>
+								${thisUser.callsign}
+							</h3>
 						
-							<span class="property-value" aria-labelledby="turn-label">${gameInstance?.gameTurn+1}</span>
-					</li>
-					
-					<li class="fieldcontain">
-						<span id="update-label" class="property-label"><g:message code="last.update.label" default="Last Update" /></span>
-						
-							<span class="property-value" aria-labelledby="update-label"><g:formatDate date="${gameInstance?.updateDate}"/></span>
-					</li>
+		                	<g:set var="unitList" value="${gameInstance?.getUnitsForUser(thisUser)}" /> 
+		                	
+		                	<li class="fieldcontain">
+		                		<span id="units-label" class="property-label"><g:message code="game.status.label" default="Status" /></span>
+		                		
+		                		<g:each in="${unitList}" var="unit">
+		                			<g:set var="pilot" value="${unit.pilot}" />
+		                			<span class="property-value" aria-labelledby="units-label">
+		                				${unit.getHealthPercentage().round()}% : ${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}
+		               				</span>
+		                		</g:each>
+		                	</li>
+		                </g:each>
+					</ol>
 				</g:else>
-				
-			</ol>
+			</div>
 		</div>
-        
-		<div id="teams">
-			<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
-			<script type="text/javascript">var playersEditable = ${isEditable};</script>
-			<script type="text/javascript">var unitsEditable = ${gameInstance?.isInit()};</script>
-			
-			<g:if test="${gameInstance?.isInit()}">
-                
-                <g:each in="${stagingUsers}" var="entry">
-                    <g:set var="teamNum" value="${entry.key}" />
-                    <g:set var="teamStagingUsers" value="${entry.value}" />
-                    
-                    <g:render template="stageTeam" model="[teamNum: teamNum, teamStagingUsers: teamStagingUsers]" />
-            	</g:each>
-			</g:if>
-			<g:else>
-				<%  // TODO: display users grouped and identified with their team
-					def sortedUsers = gameInstance?.users?.sort(false, { u1, u2 ->
-						u1.callsign <=> u2.callsign
-					})
-				%>
-				<ol class="property-list game">
-					<g:each in="${sortedUsers}" var="thisUser">
-					
-						<h3>
-							${thisUser.callsign}
-						</h3>
-					
-	                	<g:set var="unitList" value="${gameInstance?.getUnitsForUser(thisUser)}" /> 
-	                	
-	                	<li class="fieldcontain">
-	                		<span id="units-label" class="property-label"><g:message code="game.status.label" default="Status" /></span>
-	                		
-	                		<g:each in="${unitList}" var="unit">
-	                			<g:set var="pilot" value="${unit.pilot}" />
-	                			<span class="property-value" aria-labelledby="units-label">
-	                				${unit.getHealthPercentage().round()}% : ${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}
-	               				</span>
-	                		</g:each>
-	                	</li>
-	                </g:each>
-				</ol>
-			</g:else>
-		</div>
-			
+		
 		<div class="buttons">
 			<g:if test="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}">
 				<span class="left" id="start-link" data-start-link="<g:createLink mapping='startGame' params='[game:gameInstance?.id]'></g:createLink>">
