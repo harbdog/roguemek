@@ -264,6 +264,61 @@ function transferPlayer($playerNameDiv, $teamDiv) {
 }
 
 /**
+ * Used to keep the player and team divs sorted as they get updated
+ */
+function sortTeamsAndPlayers() {
+    // keep team and player divs sorted
+    var teamChildren = $("#teams").children(".team");
+    
+    var sortedChildren = [];
+    $.each(teamChildren, function() {
+        sortedChildren.push($(this));
+    });
+    
+    sortedChildren.sort(function($x, $y) {
+        var xTeamNum = $x.attr('data-teamnum');
+        var xIsNum = $.isNumeric(xTeamNum);
+        
+        var yTeamNum = $y.attr('data-teamnum');
+        var yIsNum = $.isNumeric(yTeamNum);
+        
+        if(xIsNum || yIsNum) {
+            return xTeamNum > yTeamNum;
+        }
+        else{
+            // both comparisons are not numbers, so are user id's representing players with no team
+            var $xPlayerDiv = $("div.player[data-userid='"+xTeamNum+"']");
+            var $yPlayerDiv = $("div.player[data-userid='"+yTeamNum+"']");
+            
+            var xUserName = $xPlayerDiv.attr('data-username');
+            var yUserName = $yPlayerDiv.attr('data-username');
+            
+            return xUserName > yUserName;
+        }
+    });
+    
+    $.each(sortedChildren, function(index, $team) {
+        $("#teams").append($team);
+        
+        var playerChildren = $team.children(".player");
+        
+        var sortedPlayerChildren = [];
+        $.each(playerChildren, function() {
+            sortedPlayerChildren.push($(this));
+            $(this).detach();
+        });
+        
+        sortedPlayerChildren.sort(function($x, $y) {
+            return $x.attr('data-username') > $y.attr('data-username');
+        });
+        
+        $.each(sortedPlayerChildren, function(index, $player) {
+            $team.append($player);
+        });
+    });
+}
+
+/**
  * Sends update for player starting location to server
  */
 function updateUserTeam(userId, teamNum) {
@@ -328,14 +383,22 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
     if($teamDiv == null || $teamDiv.length == 0) {
         // the team doesn't yet exist on the stage, load it
         $tempDiv.load("stageTeam", inputMap, function() {
+            
+            if($playerDiv != null && $playerDiv.length > 0) {
+                // the old player div is no longer needed
+                $playerDiv.remove();
+            }
+            
     		// move the content to the teams area
-            if($playerTeamDiv != null && $playerTeamDiv.children("div.player").length <= 1) {
+            if($playerTeamDiv != null && $playerTeamDiv.children("div.player").length == 0) {
                 // the old player team has no other children, replace it with this new team
                 $playerTeamDiv.fadeOut(function() {
                     $playerTeamDiv.replaceWith($tempDiv.children()).fadeIn();
             		$tempDiv.remove();
-            		
+                    
+                    sortTeamsAndPlayers();
             		setupDynamicUI();
+                    updateUnitCounts();
             		
             		var effectOptions = {color: "#3399FF"};
             		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
@@ -345,18 +408,14 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
                 // load the new team section
                 $tempDiv.children().detach().hide().appendTo($allTeamsDiv).fadeIn();
         		$tempDiv.remove();
+                
+                sortTeamsAndPlayers();
+                setupDynamicUI();
+                updateUnitCounts();
         		
         		var effectOptions = {color: "#3399FF"};
         		$("div.player-info[data-userid='"+userId+"']").effect("highlight", effectOptions, 2000);
             }
-            
-            if($playerDiv != null && $playerDiv.length > 0) {
-                $playerDiv.remove();
-            }
-            
-            setupDynamicUI();
-            updateUnitCounts();
-            
         });
     }
     else if($playerDiv == null || $playerDiv.length == 0 || forceLoadPlayer) {
@@ -368,6 +427,7 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
             		$playerDiv.replaceWith($tempDiv.children()).fadeIn();
                     $tempDiv.remove();
                     
+                    sortTeamsAndPlayers();
                     setupDynamicUI();
                     updateUnitCounts();
                     
@@ -379,6 +439,7 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
         		$tempDiv.children().detach().hide().appendTo($teamDiv).fadeIn();
                 $tempDiv.remove();
                 
+                sortTeamsAndPlayers();
                 setupDynamicUI();
                 updateUnitCounts();
                 
@@ -392,6 +453,7 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
         $playerDiv.fadeOut(function() {
     		$playerDiv.detach().appendTo($teamDiv).fadeIn();
             
+            sortTeamsAndPlayers();
             updateUnitCounts();
             
             var effectOptions = {color: "#3399FF"};

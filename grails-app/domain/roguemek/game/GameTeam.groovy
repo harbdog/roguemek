@@ -8,6 +8,7 @@ class GameTeam {
 	static mapping= {
 		id generator: 'uuid'
 		version false
+        sort team: 'asc'
 	}
 	
 	Game game

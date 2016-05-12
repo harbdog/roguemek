@@ -40,4 +40,9 @@ class StagingUser {
 		
 		rgbCamo nullable: true
     }
+	
+	@Override
+	public String toString() {
+		return "<StagingUser-${id}:${user.toString()}>"
+	}
 }

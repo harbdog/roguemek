@@ -26,6 +26,10 @@
 		
 		<script type="text/javascript">var hpgTransport = "${grailsApplication.config.roguemek.server.hpgTransport}";</script>
 		<script type="text/javascript">var currentUserId = "${userInstance?.id}";</script>
+		
+		<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
+		<script type="text/javascript">var playersEditable = ${isEditable};</script>
+		<script type="text/javascript">var unitsEditable = ${gameInstance?.isInit()};</script>
 
 		<div id="show-game" class="content scaffold-show" role="main">
 			<h1><g:message code="game.init.staging.label" /> - ${gameInstance?.description}</h1>
@@ -145,10 +149,6 @@
 			</div>
         
 			<div id="teams">
-				<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
-				<script type="text/javascript">var playersEditable = ${isEditable};</script>
-				<script type="text/javascript">var unitsEditable = ${gameInstance?.isInit()};</script>
-				
 				<g:if test="${gameInstance?.isInit()}">
 	                
 	                <g:each in="${stagingUsers}" var="entry">

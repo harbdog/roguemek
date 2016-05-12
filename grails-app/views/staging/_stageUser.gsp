@@ -5,7 +5,7 @@
 	import="roguemek.game.StagingHelper"
 %>
 
-<div class="player" data-userid="${user?.id}">
+<div class="player" data-userid="${user?.id}" data-username="${user?.callsign}">
 	<div class="player-info" data-userid="${user?.id}">
 		<g:set var="userCamo" value="${StagingHelper.getCamoForUser(gameInstance, user)}" />
 	

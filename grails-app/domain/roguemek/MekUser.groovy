@@ -9,6 +9,7 @@ class MekUser {
 	static mapping= {
 		id generator: 'uuid'
 		password column: '`password`'
+		sort callsign: 'asc'
 	}
 
 	transient springSecurityService

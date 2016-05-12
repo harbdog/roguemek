@@ -138,7 +138,15 @@ class Game {
 		// keep track of users in teams to look up users with no teams easier
 		def teamedUserIds = []
 		
-		def gameTeams = GameTeam.findAllByGame(this)
+		def gameTeamCriteria = GameTeam.createCriteria()
+		def gameTeams = gameTeamCriteria.list {
+			createAlias("user", "u", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN)
+			eq("game", this)
+			and {
+				order("team", "asc")
+				order("u.callsign", "asc")
+			}
+		}
 		gameTeams?.each { gTeam ->
 			def teamUserList = teams[gTeam.team]
 			if(!teamUserList) {
@@ -153,7 +161,13 @@ class Game {
 		}
 		
 		// handle users not in a team
-		StagingUser.findAllByGame(this).each { stageUser ->
+		def stageUserCriteria = StagingUser.createCriteria()
+		def stageUserList = stageUserCriteria.list {
+			createAlias("user", "u", org.hibernate.sql.JoinType.LEFT_OUTER_JOIN)
+			eq("game", this)
+			order("u.callsign", "asc")
+		}
+		stageUserList.each { stageUser ->
 			if(!teamedUserIds.contains(stageUser.user.id)) {
 				def teamUserList = [stageUser]
 				teams[noTeamNum --] = teamUserList
