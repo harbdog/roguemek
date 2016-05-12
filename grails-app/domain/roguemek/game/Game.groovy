@@ -322,15 +322,25 @@ class Game {
 	 * Gets a map of users with list of units controlled by that user
 	 */
 	public def getUnitsByUser() {
+		return getUnitsByUser(false)
+	}
+	
+	/**
+	 * Gets a map of users with list of units controlled by that user
+	 * @param userIdAsKey set true to use the user ids as they keys instead of user objects
+	 */
+	public def getUnitsByUser(boolean userIdAsKey) {
 		def unitsByUser = [:]
 		
 		for(BattleUnit unit in units) {
 			MekUser user = unit.pilot?.ownerUser
 			
-			def unitList = unitsByUser[user]
+			def userKey = (userIdAsKey ? user.id : user)
+			
+			def unitList = unitsByUser[userKey]
 			if(unitList == null) {
 				unitList = []
-				unitsByUser[user] = unitList
+				unitsByUser[userKey] = unitList
 			}
 			
 			unitList << unit

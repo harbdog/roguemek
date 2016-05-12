@@ -162,6 +162,7 @@
 				<g:else>
 					<%  // display users grouped and identified with their team
 						def usersByTeam = gameInstance?.getUsersByTeam()
+						def unitsByUser = gameInstance?.getUnitsByUser(true)
 					%>
 					<g:each in="${usersByTeam}" var="entry">
 						<g:set var="teamNum" value="${entry.key}" />
@@ -182,7 +183,7 @@
 											${thisUser.callsign}
 										</h3>
 									
-					                	<g:set var="unitList" value="${gameInstance?.getUnitsForUser(thisUser)}" /> 
+					                	<g:set var="unitList" value="${unitsByUser[thisUser.id]}" />
 					                	
 					                	<li class="fieldcontain">
 					                		<span id="units-label" class="property-label"><g:message code="game.status.label" default="Status" /></span>
