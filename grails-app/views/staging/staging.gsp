@@ -1,4 +1,5 @@
-<%@ page import="roguemek.game.Game" 
+<%@ page import="roguemek.MekUser"
+		 import="roguemek.game.Game" 
 		 import="roguemek.game.BattleUnit"
 		 import="roguemek.game.BattleMech"
 %>
@@ -149,7 +150,7 @@
 			</div>
         
 			<div id="teams">
-				<g:if test="${gameInstance?.isInit()}">
+				<g:if test="${gameInstance?.isInit() && stagingUsers != null}">
 	                
 	                <g:each in="${stagingUsers}" var="entry">
 	                    <g:set var="teamNum" value="${entry.key}" />
@@ -159,32 +160,45 @@
 	            	</g:each>
 				</g:if>
 				<g:else>
-					<%  // TODO: display users grouped and identified with their team
-						def sortedUsers = gameInstance?.users?.sort(false, { u1, u2 ->
-							u1.callsign <=> u2.callsign
-						})
+					<%  // display users grouped and identified with their team
+						def usersByTeam = gameInstance?.getUsersByTeam()
 					%>
-					<ol class="property-list game">
-						<g:each in="${sortedUsers}" var="thisUser">
+					<g:each in="${usersByTeam}" var="entry">
+						<g:set var="teamNum" value="${entry.key}" />
+						<g:set var="teamUsers" value="${entry.value}" />
 						
-							<h3>
-								${thisUser.callsign}
-							</h3>
+						<div class="team">
+						    <div class="team-header">
+						        <g:if test="${(teamNum >= 0)}">
+						            <h2>Team ${teamNum}</h2>
+						        </g:if>
+						    </div>
 						
-		                	<g:set var="unitList" value="${gameInstance?.getUnitsForUser(thisUser)}" /> 
-		                	
-		                	<li class="fieldcontain">
-		                		<span id="units-label" class="property-label"><g:message code="game.status.label" default="Status" /></span>
-		                		
-		                		<g:each in="${unitList}" var="unit">
-		                			<g:set var="pilot" value="${unit.pilot}" />
-		                			<span class="property-value" aria-labelledby="units-label">
-		                				${unit.getHealthPercentage().round()}% : ${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}
-		               				</span>
-		                		</g:each>
-		                	</li>
-		                </g:each>
-					</ol>
+							<g:each in="${teamUsers}" var="thisUser">
+								<div class="player">
+									<ol class="property-list game">
+										
+										<h3>
+											${thisUser.callsign}
+										</h3>
+									
+					                	<g:set var="unitList" value="${gameInstance?.getUnitsForUser(thisUser)}" /> 
+					                	
+					                	<li class="fieldcontain">
+					                		<span id="units-label" class="property-label"><g:message code="game.status.label" default="Status" /></span>
+					                		
+					                		<g:each in="${unitList}" var="unit">
+					                			<g:set var="pilot" value="${unit.pilot}" />
+					                			<span class="property-value" aria-labelledby="units-label">
+					                				${unit.getHealthPercentage().round()}% : ${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}
+					               				</span>
+					                		</g:each>
+					                	</li>
+									</ol>
+								</div>
+							</g:each>
+						</div>
+					</g:each>
 				</g:else>
 			</div>
 		</div>

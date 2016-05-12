@@ -76,7 +76,7 @@ class StagingController {
 		}
 		
 		// get all users staged in the game
-		def stagingUsers = game.getStagingUsersByTeam()
+		def stagingUsers = game.isInit() ? game.getStagingUsersByTeam() : null
 		
 		log.info "stagingUsers: ${stagingUsers}"
 		
