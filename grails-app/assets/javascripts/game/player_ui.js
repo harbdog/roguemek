@@ -1171,13 +1171,18 @@ function setPlayerTarget(unit) {
 	}
 	
 	targetLine.update = function() {
+		var targetColor = Settings.get(Settings.UI_ENEMY_COLOR);
+		if(isTeamUnit(unit)) {
+			targetColor = Settings.get(Settings.UI_FRIENDLY_COLOR);
+		}
+		
 		this.graphics.clear();
 		this.graphics.setStrokeDash([10, 20], 10).
-				setStrokeStyle(3, "round").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
+				setStrokeStyle(3, "round").beginStroke(targetColor)
 				.moveTo(turnUnit.getUnitDisplay().x, turnUnit.getUnitDisplay().y)
 				.lineTo(unit.getUnitDisplay().x, unit.getUnitDisplay().y);
 		// give the indicator a glow
-		var glowColor = shadeColor(Settings.get(Settings.UI_ENEMY_COLOR), 0.75);
+		var glowColor = shadeColor(targetColor, 0.75);
 		
 		if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_QUALITY){
 			// shadows only at the highest gfx setting

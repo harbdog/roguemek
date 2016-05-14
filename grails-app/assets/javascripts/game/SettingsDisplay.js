@@ -126,6 +126,14 @@ s.init = function() {
 			Settings.UI_PLAYER_COLOR
 	);
 	
+	///////////////////////////////////////
+	// create the friendly color setting //
+	var friendlyColorInput = SettingsDisplay.createColorSetting(
+			settingsDiv,
+			"friendly", "Friendly",
+			Settings.UI_FRIENDLY_COLOR
+	);
+	
 	////////////////////////////////////
 	// create the enemy color setting //
 	var enemyColorInput = SettingsDisplay.createColorSetting(

@@ -124,14 +124,15 @@ c.setSelected = function(selected, isOtherUnit, surroundSelect) {
 	
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
 	
-	var strokeColor = Settings.get(Settings.UI_FG_COLOR);
-	if(selected) {
-		if(isOtherUnit) {
-			strokeColor = Settings.get(Settings.UI_ENEMY_COLOR);
-		}
-		else {
-			strokeColor = Settings.get(Settings.UI_PLAYER_COLOR);
-		}
+	var strokeColor;
+	if(isPlayerUnit(this.unit)){
+		strokeColor = Settings.get(Settings.UI_PLAYER_COLOR);
+	}
+	else if(isTeamUnit(this.unit)) {
+		strokeColor = Settings.get(Settings.UI_FRIENDLY_COLOR);
+	}
+	else {
+		strokeColor = Settings.get(Settings.UI_ENEMY_COLOR);
 	}
 	
 	if(selected){
@@ -158,8 +159,16 @@ c.setSelected = function(selected, isOtherUnit, surroundSelect) {
 		
 	}
 	else{
-		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(strokeColor)
+		this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_FG_COLOR))
 				.drawRect(0, 0, this.image.width, this.image.height);
+				
+		if(surroundSelect) {
+			// draw a line just on top to indicate player/friendly/enemy
+			this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*2, "square").beginStroke(strokeColor)
+					.moveTo(BORDER_WIDTH, 0)
+					.lineTo(this.image.width - BORDER_WIDTH, 0)
+					.endStroke();
+		}
 	}
 	
 	this.doCache();

@@ -947,6 +947,7 @@ class GameService extends AbstractGameService {
 			}
 			
 			def uRender = [
+				owner: u.pilot?.ownerUser?.id,
 				unit: u.id,
 				callsign: u.pilot?.ownerUser?.callsign,
 				name: u.mech?.name,

@@ -956,9 +956,27 @@ function handleSettingsUpdate(settingKey) {
 			}
 		});
 	}
+	else if(settingKey == Settings.UI_FRIENDLY_COLOR) {
+		$.each(units, function(index, thisUnit) {
+			if(!isPlayerUnit(thisUnit) && isTeamUnit(thisUnit)) {
+				// only update the unit if same team
+				var displayUnit = thisUnit.getUnitDisplay();
+				displayUnit.update();
+			}
+		});
+		
+		if(targetBracket != null) {
+			targetBracket.update();
+		}
+		
+		if(targetLine != null) {
+			targetLine.update();
+		}
+	}
 	else if(settingKey == Settings.UI_ENEMY_COLOR) {
 		$.each(units, function(index, thisUnit) {
-			if(!isPlayerUnit(thisUnit)) {
+			if(!isTeamUnit(thisUnit)) {
+				// only update the unit if not same team
 				var displayUnit = thisUnit.getUnitDisplay();
 				displayUnit.update();
 			}
@@ -1062,7 +1080,7 @@ function handleTargetChange(targetUnit) {
 		prevTargetUnit.getUnitDisplay().setUnitIndicatorVisible(true);
 	}
 	
-	if(targetUnit == null) {
+	if(targetUnit == null || isTeamUnit(targetUnit)) {
 		// clear selected weapons and update weapons display
 		clearSelectedWeapons();
 		clearWeaponsToHit(turnUnit);

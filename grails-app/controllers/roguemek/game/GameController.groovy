@@ -61,7 +61,7 @@ class GameController {
 				
 				def chatMessages = ChatMessage.findAllByOptGameId(g.id, [max: 200, sort: "time", order: "asc"])
 				
-				respond g, model: [chatMessages:chatMessages]
+				respond g, model: [userInstance: user, chatMessages:chatMessages]
 			}
 		}
 		else {
@@ -94,6 +94,9 @@ class GameController {
 		if(g == null || b == null) {
 			return
 		}
+        
+        // get the teams per user id
+        def teams = g?.getTeamsByUser()
 		
 		// find any units the user controls
 		def playerUnits = []
@@ -125,6 +128,7 @@ class GameController {
 		
 		def elements = [
 			board: gameService.getHexMapRender(g),
+            teams: teams,
 			units: gameService.getUnitsRender(g),
 			playerUnits: playerUnits,
 			turnUnit: turnUnit.id,

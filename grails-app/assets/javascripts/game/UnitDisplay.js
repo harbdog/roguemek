@@ -524,6 +524,9 @@ c.updateHeadingIndicator = function() {
 	if(isPlayerUnit(this.unit)) {
 		color = Settings.get(Settings.UI_PLAYER_COLOR);
 	}
+	else if(isTeamUnit(this.unit)) {
+		color = Settings.get(Settings.UI_FRIENDLY_COLOR);
+	}
 	else{
 		color = Settings.get(Settings.UI_ENEMY_COLOR);
 	}
@@ -593,11 +596,18 @@ c.updateUnitIndicator = function() {
 		var color = null;
 		if(isPlayerUnit(this.unit)) {
 			color = Settings.get(Settings.UI_PLAYER_COLOR);
-			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawCircle(0, 0, hexWidth/3-2).endStroke();
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color)
+					.drawCircle(0, 0, hexWidth/3-2).endStroke();
+		}
+		else if(isTeamUnit(this.unit)) {
+			color = Settings.get(Settings.UI_FRIENDLY_COLOR);
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color)
+					.drawRect(-hexHeight/3, -hexHeight/3, 2*(hexHeight/3), 2*(hexHeight/3)).endStroke();
 		}
 		else{
 			color = Settings.get(Settings.UI_ENEMY_COLOR);
-			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color).drawPolyStar(0, 0, hexWidth/3-1, 3, 0, -90).endStroke();
+			this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color)
+					.drawPolyStar(0, 0, hexWidth/3-1, 3, 0, -90).endStroke();
 		}
 		
 		// give the indicator a glow
@@ -626,6 +636,18 @@ c.showTurnDisplay = function(show) {
 		createjs.Tween.get(this.indicator, { loop: true})
 				.to({alpha: 0.75, scaleX: 2.5, scaleY: 2.5}, 750)
 				.to({alpha: 0.25, scaleX: 3.5, scaleY: 3.5}, 500)
+				.addEventListener("change", function() {
+					update = true;
+				});
+	}
+	else if(isTeamUnit(this.unit)) {
+		color = Settings.get(Settings.UI_FRIENDLY_COLOR);
+		this.indicator.graphics.setStrokeStyle(3, "round").beginStroke(color)
+				.drawRect(-hexHeight/3, -hexHeight/3, 2*(hexHeight/3), 2*(hexHeight/3)).endStroke();
+				
+		// indicate friendly turn by spinning the square in a looping animation
+		createjs.Tween.get(this.indicator, { loop: true})
+				.to({rotation: 360}, 3000)
 				.addEventListener("change", function() {
 					update = true;
 				});

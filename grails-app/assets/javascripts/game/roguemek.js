@@ -51,7 +51,7 @@ var ACTION_BACKWARD = "backward";
 
 // Global variables used throughout the game
 var queue, progress;
-var hexMap, units, unitsOrder;
+var hexMap, teams, units, unitsOrder;
 
 // Keep track of which units belong to the player
 var playerUnits;
@@ -230,6 +230,9 @@ function loadGameElements() {
 		  var manifest = [];
 		  var alreadyManifested = {};
 		  
+		  // teams stored by user id as key, value is team number
+		  teams = data.teams;
+		  
 		  units = {};
 		  unitsOrder = data.turnOrder;
 		  hexMap = [];
@@ -268,6 +271,7 @@ function loadGameElements() {
 		  $.each(data.units, function(index, thisUnit) {
 			  if(thisUnit != null){
 				  var unitInstance = new Unit(thisUnit.unit, thisUnit.x, thisUnit.y, thisUnit.heading);
+				  unitInstance.owner = thisUnit.owner;
 				  unitInstance.image = thisUnit.image;
 				  unitInstance.imageFile = thisUnit.imageFile;
 				  unitInstance.apRemaining = thisUnit.apRemaining;
@@ -499,6 +503,22 @@ function isPlayerUnit(unit) {
 }
 function isPlayerUnitId(unitId) {
 	return isPlayerUnit(units[unitId]);
+}
+
+/**
+ * Return true if the given unit is on the same team as the player
+ * @param unit
+ * @returns
+ */
+function isTeamUnit(unit) {
+	if(unit == null || unit.owner == null || teams[unit.owner] == null
+			|| currentUserId == null || teams[currentUserId] == null) {
+		return false;
+	}
+	return (teams[unit.owner] == teams[currentUserId]);
+}
+function isTeamUnitId(unitId) {
+	return isTeamUnit(units[unitId]);
 }
 
 /**

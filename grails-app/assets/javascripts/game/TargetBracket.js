@@ -35,7 +35,13 @@ c.update = function() {
 	
 	var scale = 0.8 * hexScale;
 	
-	this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(Settings.get(Settings.UI_ENEMY_COLOR))
+	var currentTarget = getUnitTarget(turnUnit);
+	var targetColor = Settings.get(Settings.UI_ENEMY_COLOR);
+	if(isTeamUnit(currentTarget)) {
+		targetColor = Settings.get(Settings.UI_FRIENDLY_COLOR);
+	}
+	
+	this.background.graphics.setStrokeStyle(BORDER_WIDTH, "square").beginStroke(targetColor)
 			.moveTo(0, 0).lineTo(hexWidth/6, 0)
 			.moveTo(0, 0).lineTo(0, hexHeight/6)
 			
@@ -91,7 +97,7 @@ c.update = function() {
 				
 				// create a background for the index label
 				var weaponIndexBackground = new createjs.Shape();
-				weaponIndexBackground.graphics.beginFill(Settings.get(Settings.UI_ENEMY_COLOR))
+				weaponIndexBackground.graphics.beginFill(targetColor)
 						.drawRect(0, 0, TargetBracket.MAX_NUMBER_LABEL_WIDTH, measuredHeight);
 				
 				weaponIndexBackground.x = weaponIndexDisplay.x - (TargetBracket.MAX_NUMBER_LABEL_WIDTH - measuredWidth)/2;
