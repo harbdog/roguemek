@@ -37,7 +37,10 @@ c.update = function() {
 	
 	var currentTarget = getUnitTarget(turnUnit);
 	var targetColor = Settings.get(Settings.UI_ENEMY_COLOR);
-	if(isTeamUnit(currentTarget)) {
+	if(isPlayerUnit(currentTarget)) {
+		targetColor = Settings.get(Settings.UI_PLAYER_COLOR);
+	}
+	else if(isTeamUnit(currentTarget)) {
 		targetColor = Settings.get(Settings.UI_FRIENDLY_COLOR);
 	}
 	

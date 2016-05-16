@@ -1180,7 +1180,10 @@ function setPlayerTarget(unit) {
 	
 	targetLine.update = function() {
 		var targetColor = Settings.get(Settings.UI_ENEMY_COLOR);
-		if(isTeamUnit(unit)) {
+		if(isPlayerUnit(unit)) {
+			targetColor = Settings.get(Settings.UI_PLAYER_COLOR);
+		}
+		else if(isTeamUnit(unit)) {
 			targetColor = Settings.get(Settings.UI_FRIENDLY_COLOR);
 		}
 		

@@ -333,6 +333,14 @@ function handleKeyPress(e, key) {
 		// target next enemy unit
 		cycleTarget(true);
 	}
+    else if(key == "f"){
+		// target previous friendly unit
+		cycleTarget(false, true);
+	}
+	else if(key == "g"){
+		// target next friendly unit
+		cycleTarget(true, true);
+	}
 	else if(key == "escape"){
 		// clear target
 		handleTargetChange(null);
@@ -955,6 +963,14 @@ function handleSettingsUpdate(settingKey) {
 				displayUnit.update();
 			}
 		});
+		
+		if(targetBracket != null) {
+			targetBracket.update();
+		}
+		
+		if(targetLine != null) {
+			targetLine.update();
+		}
 	}
 	else if(settingKey == Settings.UI_FRIENDLY_COLOR) {
 		$.each(units, function(index, thisUnit) {
@@ -1012,7 +1028,7 @@ function handleSettingsUpdate(settingKey) {
  * Cycles to the next active target forward or backward 
  * @param cycleForward
  */
-function cycleTarget(cycleForward) {
+function cycleTarget(cycleForward, cycleFriendly) {
 	if(isPlayerUnitTurn()) {
 		var targetUnit = null;
 		var prevTargetUnit = getUnitTarget(turnUnit);
@@ -1044,7 +1060,9 @@ function cycleTarget(cycleForward) {
 			var thisUnit = unitList[index];
 			
 			if((prevTargetUnit != null && thisUnit.id == prevTargetUnit.id)
-					|| isPlayerUnit(thisUnit) 
+                    || thisUnit.id == turnUnit.id
+					|| (!cycleFriendly && isTeamUnit(thisUnit))
+                    || (cycleFriendly && !isTeamUnit(thisUnit))
 					|| thisUnit.isDestroyed()) {
 				// do not consider for targeting
 			}
@@ -1086,6 +1104,11 @@ function handleTargetChange(targetUnit) {
 	}
 	
 	if(targetUnit == null || isTeamUnit(targetUnit)) {
+		if(targetUnit != null) {
+			// hide the unit indicator on the new target
+			targetUnit.getUnitDisplay().setUnitIndicatorVisible(false);
+		}
+		
 		// clear selected weapons and update weapons display
 		clearSelectedWeapons();
 		clearWeaponsToHit(turnUnit);

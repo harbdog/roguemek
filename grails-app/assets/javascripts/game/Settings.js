@@ -22,7 +22,7 @@ Settings.init = function() {
 	Settings.default(Settings.UI_BG_COLOR, "#404040");
 	Settings.default(Settings.UI_FG_COLOR, "#FFFFFF");
 	Settings.default(Settings.UI_PLAYER_COLOR, "#3399FF");
-	Settings.default(Settings.UI_FRIENDLY_COLOR, "#00CC29");
+	Settings.default(Settings.UI_FRIENDLY_COLOR, "#4CFF00");
 	Settings.default(Settings.UI_ENEMY_COLOR, "#FF0000");
 	
 	// the graphics quality
