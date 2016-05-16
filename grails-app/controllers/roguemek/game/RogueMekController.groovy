@@ -3,8 +3,11 @@ package roguemek.game
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import grails.converters.*
+
 import roguemek.*
+import roguemek.chat.*
 import roguemek.model.*
+import roguemek.stats.*
 
 @Transactional
 class RogueMekController {
@@ -194,7 +197,44 @@ class RogueMekController {
 			redirect mapping:"dropship"
 		}
 		else{
-			respond game
+			// load some tables and maps to help display the game result data
+			def winners = []
+			def killMap = [:]	// [key: MekUser, value: [KillDeath,...],...]
+			
+			def unitsByUser = game?.getUnitsByUser(true)
+			
+			// show winners first on the page
+			def winsLosses = WinLoss.findAllByGame(game)
+			winsLosses.each { WinLoss thisWL ->
+				if(thisWL.winner) {
+					winners << thisWL.user.id
+				}
+			}
+			
+			// load a map for easy access to the info by user
+			def killsDeaths = KillDeath.findAllByGame(game)
+			killsDeaths.each { KillDeath thisKD ->
+				if(thisKD.killer) {
+					def killList = killMap[thisKD.killer.id]
+					if(killList == null) {
+						killList = []
+						killMap[thisKD.killer.id] = killList
+					}
+					
+					killList << thisKD
+				}
+			}
+			
+			// load chat messages
+			def chatMessages = ChatMessage.findAllByOptGameId(game?.id, [sort: "time", order: "asc"])
+			
+			// load users grouped and identified with their team
+			def usersByTeam = game?.getUsersByTeam()
+			
+			log.info "usersByTeam: ${usersByTeam}"
+			
+			respond game, model: [winners: winners, killMap: killMap, chatMessages: chatMessages, 
+					usersByTeam: usersByTeam, unitsByUser: unitsByUser]
 		}
 	}
 	
