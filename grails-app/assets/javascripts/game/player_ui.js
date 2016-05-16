@@ -37,7 +37,7 @@ var fpsDisplay, pingDisplay, dialogDisplay, dialogLoading, gameOverDialog;
 var settingsDisplay;
 var settingsButton, chatButton;
 var messagingDisplay, floatingMessages;
-var unitDisplays, armorDisplays, heatDisplays, infoDisplays, weaponsDisplays, weaponsListDisplay;
+var playerDisplays, targetDisplays, weaponsDisplays;
 
 var unitDisplayWidth = 250;
 var unitDisplayBounds;
@@ -557,14 +557,19 @@ function updateUnitDisplayObjects() {
  * Create each other unit UI elements, such as armor and weapons
  */
 function initOtherUnitDisplay() {
-	if(unitDisplays == null) return;
-	
-	if(weaponsListDisplay == null) weaponsListDisplay = {};
+	// initialize the containers which have all unit's displays grouped together inside
+	if(targetDisplays == null) targetDisplays = {};
+	$.each(units, function(index, unit) {
+		var unitGroupDisplay = new createjs.Container();
+		unitGroupDisplay.visible = false;
+		
+		overlay.addChild(unitGroupDisplay);
+		targetDisplays[unit.id] = unitGroupDisplay;
+	});
 	
 	var firstListUnit = unitListDisplayArray[0];
 	$.each(units, function(id, unit) {
-		if(isPlayerUnit(unit)) return;
-		var unitGroupDisplay = unitDisplays[unit.id];
+		var unitGroupDisplay = targetDisplays[unit.id];
 		
 		// the other unit icon is at the top of the display
 		var thisDisplayUnit = unit.getUnitDisplay();
@@ -586,7 +591,7 @@ function initOtherUnitDisplay() {
 		unitInfoDisplay.y = listUnit.y + listUnit.getDisplayHeight();
 		
 		unitGroupDisplay.addChild(unitInfoDisplay);
-		infoDisplays[id] = unitInfoDisplay;
+		unitGroupDisplay.infoDisplay = unitInfoDisplay;
 		
 		// the weapons display is directly below the info display
 		var unitWeaponsListDisplay = new WeaponsListDisplay(unit);
@@ -597,7 +602,7 @@ function initOtherUnitDisplay() {
 		unitWeaponsListDisplay.y = unitInfoDisplay.y + unitInfoDisplay.height;
 		
 		unitGroupDisplay.addChild(unitWeaponsListDisplay);
-		weaponsListDisplay[id] = unitWeaponsListDisplay
+		unitGroupDisplay.weaponsListDisplay = unitWeaponsListDisplay
 		
 		// the other unit armor displays is directly below its weapons display
 		var unitArmorDisplay = new MechArmorDisplay();
@@ -609,7 +614,7 @@ function initOtherUnitDisplay() {
 		unitArmorDisplay.y = unitWeaponsListDisplay.y + unitWeaponsListDisplay.height;
 		
 		unitGroupDisplay.addChild(unitArmorDisplay);
-		armorDisplays[id] = unitArmorDisplay;
+		unitGroupDisplay.armorDisplay = unitArmorDisplay;
 		
 		// set calculated bounds of the unit display
 		var totalHeight = unitArmorDisplay.height + unitWeaponsListDisplay.height + unitInfoDisplay.height + listUnit.getDisplayHeight();
@@ -636,29 +641,27 @@ function initOtherUnitDisplay() {
  * @returns
  */
 function updateOtherUnitDisplay() {
-	if(unitDisplays == null) return;
+	if(targetDisplays == null) return;
 	
-	$.each(unitDisplays, function(unitId, unitGroupDisplay) {
+	$.each(targetDisplays, function(unitId, unitGroupDisplay) {
 		var thisUnit = units[unitId];
-		if(!isPlayerUnit(thisUnit)) {
-			// fix x, y position of the target unit display
-			var thisDisplayBounds = targetDisplayBounds[unitId];
-			
-			thisDisplayBounds.x = canvas.width*(1/overlay.scaleX) - thisDisplayBounds.width;
-			thisDisplayBounds.y = canvas.height*(1/overlay.scaleY) - thisDisplayBounds.height;
-			
-			unitGroupDisplay.x = thisDisplayBounds.x;
-			unitGroupDisplay.y = thisDisplayBounds.y;
-			
-			var unitArmorDisplay = armorDisplays[unitId];
-			unitArmorDisplay.update();
-			
-			var unitWeaponsDisplay = weaponsListDisplay[unitId];
-			unitWeaponsDisplay.update();
-			
-			var unitInfoDisplay = infoDisplays[unitId];
-			unitInfoDisplay.update();
-		}
+		// fix x, y position of the target unit display
+		var thisDisplayBounds = targetDisplayBounds[unitId];
+		
+		thisDisplayBounds.x = canvas.width*(1/overlay.scaleX) - thisDisplayBounds.width;
+		thisDisplayBounds.y = canvas.height*(1/overlay.scaleY) - thisDisplayBounds.height;
+		
+		unitGroupDisplay.x = thisDisplayBounds.x;
+		unitGroupDisplay.y = thisDisplayBounds.y;
+		
+		var unitArmorDisplay = unitGroupDisplay.armorDisplay;
+		unitArmorDisplay.update();
+		
+		var unitWeaponsDisplay = unitGroupDisplay.weaponsListDisplay;
+		unitWeaponsDisplay.update();
+		
+		var unitInfoDisplay = unitGroupDisplay.infoDisplay;
+		unitInfoDisplay.update();
 	});
 }
 
@@ -667,13 +670,9 @@ function updateOtherUnitDisplay() {
  * @param unit
  */
 function showOtherUnitDisplay(unit) {
-	if(isPlayerUnit(unit)) return;
-
-	$.each(unitDisplays, function(unitId, unitDisplay) {
+	$.each(targetDisplays, function(unitId, unitDisplay) {
 		var chkUnit = units[unitId];
-		if(!isPlayerUnit(chkUnit)){
-			unitDisplay.visible = (unit != null && unit.id == unitId);
-		}
+		unitDisplay.visible = (unit != null && unit.id == unitId);
 	});
 }
 
@@ -683,26 +682,23 @@ function showOtherUnitDisplay(unit) {
 function initPlayerUnitDisplay() {
 	if(unitListDisplayArray == null || unitListDisplayArray.length == 0) return;
 	
-	// create the arrays that store the individual for unit displays
-	if(armorDisplays == null) armorDisplays = {};
-	if(heatDisplays == null) heatDisplays = {};
-	if(infoDisplays == null) infoDisplays = {};
-	
-	// initialize the containers which have each unit's displays grouped together inside
-	if(unitDisplays == null) unitDisplays = {};
+	// initialize the containers which have each player unit's displays grouped together inside
+	if(playerDisplays == null) playerDisplays = {};
 	$.each(units, function(index, unit) {
-		var unitGroupDisplay = new createjs.Container();
-		unitGroupDisplay.visible = false;
-		
-		overlay.addChild(unitGroupDisplay);
-		unitDisplays[unit.id] = unitGroupDisplay;
+		if(isPlayerUnit(unit)) {
+			var unitGroupDisplay = new createjs.Container();
+			unitGroupDisplay.visible = false;
+			
+			overlay.addChild(unitGroupDisplay);
+			playerDisplays[unit.id] = unitGroupDisplay;
+		}
 	});
 	
 	// Create each player unit display next to the list of player units
 	var firstListUnit = unitListDisplayArray[0];
 	$.each(unitListDisplayArray, function(index, listUnit) {
 		var unit = listUnit.unit;
-		var unitGroupDisplay = unitDisplays[unit.id];
+		var unitGroupDisplay = playerDisplays[unit.id];
 		
 		// the info display is at the top of the display
 		var unitInfoDisplay = new MechInfoDisplay(unit);
@@ -714,7 +710,7 @@ function initPlayerUnitDisplay() {
 		unitInfoDisplay.y = 0;
 		
 		unitGroupDisplay.addChild(unitInfoDisplay);
-		infoDisplays[unit.id] = unitInfoDisplay;
+		unitGroupDisplay.infoDisplay = unitInfoDisplay;
 		
 		// the heat display is directly below the info display
 		var unitHeatDisplay = new MechHeatDisplay();
@@ -727,7 +723,7 @@ function initPlayerUnitDisplay() {
 		unitHeatDisplay.y = unitInfoDisplay.y + unitInfoDisplay.height;
 		
 		unitGroupDisplay.addChild(unitHeatDisplay);
-		heatDisplays[unit.id] = unitHeatDisplay;
+		unitGroupDisplay.heatDisplay = unitHeatDisplay;
 		
 		// the armor display is directly below the heat display
 		var unitArmorDisplay = new MechArmorDisplay();
@@ -740,7 +736,7 @@ function initPlayerUnitDisplay() {
 		unitArmorDisplay.y = unitHeatDisplay.y + unitHeatDisplay.height;
 		
 		unitGroupDisplay.addChild(unitArmorDisplay);
-		armorDisplays[unit.id] = unitArmorDisplay;
+		unitGroupDisplay.armorDisplay = unitArmorDisplay;
 		
 		// set calculated bounds of the unit display
 		if(unitDisplayBounds == null) {
@@ -771,9 +767,9 @@ function initPlayerUnitDisplay() {
  * @returns
  */
 function updatePlayerUnitDisplay() {
-	if(unitDisplays == null) return;
+	if(playerDisplays == null) return;
 	
-	 $.each(unitDisplays, function(unitId, unitGroupDisplay) {
+	 $.each(playerDisplays, function(unitId, unitGroupDisplay) {
 		 var thisUnit = units[unitId];
 		 if(isPlayerUnit(thisUnit)) {
 			 // fix y position of unit display
@@ -785,13 +781,13 @@ function updatePlayerUnitDisplay() {
 			 unitWeaponsDisplay.update();
 			 unitWeaponsDisplay.y = canvas.height*(1/overlay.scaleY) - unitWeaponsDisplay.height;
 			 
-			 var unitArmorDisplay = armorDisplays[unitId];
+			 var unitArmorDisplay = unitGroupDisplay.armorDisplay;
 			 unitArmorDisplay.update();
 			
-			 var unitHeatDisplay = heatDisplays[unitId];
+			 var unitHeatDisplay = unitGroupDisplay.heatDisplay;
 			 unitHeatDisplay.update();
 			 
-			 var unitInfoDisplay = infoDisplays[unitId];
+			 var unitInfoDisplay = unitGroupDisplay.infoDisplay;
 			 unitInfoDisplay.update();
 		 }
 	 });
@@ -804,7 +800,7 @@ function updatePlayerUnitDisplay() {
 function showPlayerUnitDisplay(unit) {
 	if(!isPlayerUnit(unit)) return;
 	
-	$.each(unitDisplays, function(unitId, unitDisplay) {
+	$.each(playerDisplays, function(unitId, unitDisplay) {
 		var chkUnit = units[unitId];
 		if(isPlayerUnit(chkUnit)){
 			var visible = (unit == null || unit.id == unitId);
@@ -821,10 +817,10 @@ function showPlayerUnitDisplay(unit) {
  * Initializes each unit's touch controls
  */
 function initPlayerUnitControls() {
-	if(unitDisplays == null) return;
+	if(playerDisplays == null) return;
 	if(unitControls == null) unitControls = {};
 	
-	$.each(unitDisplays, function(unitId, unitDisplay) {
+	$.each(playerDisplays, function(unitId, unitDisplay) {
 		var unit = units[unitId];
 		if(!isPlayerUnit(unit)) return;
 		
@@ -846,7 +842,7 @@ function initPlayerUnitControls() {
 function updatePlayerUnitControls() {
 	if(unitControls == null) return;
 	
-	$.each(unitDisplays, function(unitId, unitDisplay) {
+	$.each(playerDisplays, function(unitId, unitDisplay) {
 		var unit = units[unitId];
 		if(!isPlayerUnit(unit)) return;
 		
@@ -888,9 +884,15 @@ function updateHeatDisplay(unit, addedGenHeat) {
 	if(unit == null || !isPlayerUnit(unit)) return;
 	if(addedGenHeat == null) addedGenHeat = 0;
 	
-	// update unit heat, heat generation, heat dissipation
-	var unitHeatDisplay = heatDisplays[unit.id];
-	unitHeatDisplay.setDisplayedHeat(unit.heat, addedGenHeat, unit.heatDiss);
+	var unitGroupDisplays = getUnitGroupDisplays(unit);
+	
+	$.each(unitGroupDisplays, function(index, unitGroupDisplay) {
+		if(unitGroupDisplay != null && unitGroupDisplay.heatDisplay != null) {
+			// update unit heat, heat generation, heat dissipation
+			var unitHeatDisplay = unitGroupDisplay.heatDisplay;
+			unitHeatDisplay.setDisplayedHeat(unit.heat, addedGenHeat, unit.heatDiss);
+		}
+	});
 }
 
 /**
@@ -919,62 +921,68 @@ function applyUnitDamage(unit, index, isInternal, doAnimate) {
 		initialValue = 1;
 	}
 	
-	var unitArmorDisplay = armorDisplays[unit.id];
-	if(unitArmorDisplay != null) {
-		var section, subIndex;
-		if(index == HEAD){
-			// TODO: correct section and index to proper values for HTAL display
-			section = unitArmorDisplay.HD;
-			subIndex = isInternal ? 1 : 0;
-		}
-		else if(index == LEFT_ARM){
-			section = unitArmorDisplay.LA;
-			subIndex = isInternal ? 1 : 0;
-		}
-		else if(index == LEFT_TORSO){
-			section = unitArmorDisplay.LTR;
-			subIndex = isInternal ? 1 : 0;
-		}
-		else if(index == CENTER_TORSO){
-			section = unitArmorDisplay.CTR;
-			subIndex = isInternal ? 1 : 0;
-		}
-		else if(index == RIGHT_TORSO){
-			section = unitArmorDisplay.RTR;
-			subIndex = isInternal ? 1 : 0;
-		}
-		else if(index == RIGHT_ARM){
-			section = unitArmorDisplay.RA;
-			subIndex = isInternal ? 1 : 0;
-		}
-		else if(index == LEFT_LEG){
-			section = unitArmorDisplay.LL;
-			subIndex = isInternal ? 1 : 0;
-		}
-		else if(index == RIGHT_LEG){
-			section = unitArmorDisplay.RL;
-			subIndex = isInternal ? 1 : 0;
-		}
-		else if(index == LEFT_REAR){
-			section = unitArmorDisplay.LTR;
-			subIndex = 2;
-		}
-		else if(index == CENTER_REAR){
-			section = unitArmorDisplay.CTR;
-			subIndex = 2;
-		}
-		else if(index == RIGHT_REAR){
-			section = unitArmorDisplay.RTR;
-			subIndex = 2;
-		}
+	var unitGroupDisplays = getUnitGroupDisplays(unit);
+	
+	$.each(unitGroupDisplays, function(i, unitGroupDisplay) {
+		if(unitGroupDisplay != null && unitGroupDisplay.armorDisplay != null) {
+			var unitArmorDisplay = unitGroupDisplay.armorDisplay;
+			if(unitArmorDisplay != null) {
+				var section, subIndex;
+				if(index == HEAD){
+					// TODO: correct section and index to proper values for HTAL display
+					section = unitArmorDisplay.HD;
+					subIndex = isInternal ? 1 : 0;
+				}
+				else if(index == LEFT_ARM){
+					section = unitArmorDisplay.LA;
+					subIndex = isInternal ? 1 : 0;
+				}
+				else if(index == LEFT_TORSO){
+					section = unitArmorDisplay.LTR;
+					subIndex = isInternal ? 1 : 0;
+				}
+				else if(index == CENTER_TORSO){
+					section = unitArmorDisplay.CTR;
+					subIndex = isInternal ? 1 : 0;
+				}
+				else if(index == RIGHT_TORSO){
+					section = unitArmorDisplay.RTR;
+					subIndex = isInternal ? 1 : 0;
+				}
+				else if(index == RIGHT_ARM){
+					section = unitArmorDisplay.RA;
+					subIndex = isInternal ? 1 : 0;
+				}
+				else if(index == LEFT_LEG){
+					section = unitArmorDisplay.LL;
+					subIndex = isInternal ? 1 : 0;
+				}
+				else if(index == RIGHT_LEG){
+					section = unitArmorDisplay.RL;
+					subIndex = isInternal ? 1 : 0;
+				}
+				else if(index == LEFT_REAR){
+					section = unitArmorDisplay.LTR;
+					subIndex = 2;
+				}
+				else if(index == CENTER_REAR){
+					section = unitArmorDisplay.CTR;
+					subIndex = 2;
+				}
+				else if(index == RIGHT_REAR){
+					section = unitArmorDisplay.RTR;
+					subIndex = 2;
+				}
+				
+				unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue, doAnimate);
 		
-		unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue, doAnimate);
-
-		var listUnit = getUnitListDisplay(unit);
-		if(listUnit != null) {
-			listUnit.updateArmorBar(doAnimate);
+				var listUnit = getUnitListDisplay(unit);
+				if(listUnit != null) {
+					listUnit.updateArmorBar(doAnimate);
+				}
+			}
 		}
-	}
+	});
 }
 
 /**
@@ -1369,7 +1377,7 @@ function resetControls() {
  * Creates each player unit UI elements for weapons
  */
 function initPlayerWeaponsDisplay() {
-	if(armorDisplays == null || playerUnits == null || playerUnits[0] == null) return;
+	if(playerUnits == null || playerUnits[0] == null) return;
 	
 	// create the arrays that store the individual for unit displays
 	if(weaponsDisplays == null) weaponsDisplays = {};
@@ -1463,6 +1471,55 @@ function resetWeaponsToHit(unit) {
 			w.toHit = null;
 		});
 	}
+}
+
+/**
+ * Updates the weapons list display for the given unit
+ */
+function updateWeaponsListDisplays(unit) {
+	var unitGroupDisplays = getUnitGroupDisplays(unit);
+	
+	$.each(unitGroupDisplays, function(index, unitGroupDisplay) {
+		if(unitGroupDisplay != null && unitGroupDisplay.weaponsListDisplay != null) {
+			unitGroupDisplay.weaponsListDisplay.update();
+		}
+	});
+}
+
+/**
+ * Updates the info displays for the given unit
+ */
+function updateInfoDisplays(unit) {
+	var unitGroupDisplays = getUnitGroupDisplays(unit);
+	
+	$.each(unitGroupDisplays, function(index, unitGroupDisplay) {
+		if(unitGroupDisplay != null && unitGroupDisplay.infoDisplay != null) {
+			unitGroupDisplay.infoDisplay.update();
+		}
+	});
+}
+
+/**
+ * Gets each unit group display for the given unit
+ */
+function getUnitGroupDisplays(unit) {
+	var unitGroupDisplays = [];
+	
+	if(playerDisplays != null) {
+		var playerUnitGroupDisplay = playerDisplays[unit.id];
+		if(playerUnitGroupDisplay != null) {
+			unitGroupDisplays.push(playerUnitGroupDisplay);
+		}
+	}
+	
+	if(targetDisplays != null) {
+		var targetUnitGroupDisplay = targetDisplays[unit.id];
+		if(targetUnitGroupDisplay != null) {
+			unitGroupDisplays.push(targetUnitGroupDisplay);
+		}
+	}
+	
+	return unitGroupDisplays;
 }
 
 /**

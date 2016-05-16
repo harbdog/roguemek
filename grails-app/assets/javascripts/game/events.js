@@ -662,7 +662,7 @@ function handleUnitClick(event) {
 	
 	console.log("clicked "+targetUnitDisplay); 
 	
-	if(isPlayerUnitTurn() && !isPlayerUnit(targetUnit)) {
+	if(isPlayerUnitTurn()) {
 		handleTargetChange(targetUnit);
 	}
 }
@@ -1069,6 +1069,11 @@ function cycleTarget(cycleForward) {
  * @param targetUnit
  */
 function handleTargetChange(targetUnit) {
+	if(targetUnit == turnUnit) {
+		// a unit cannot target itself, clear target instead
+		targetUnit = null;
+	}
+	
 	var prevTargetUnit = getUnitTarget(turnUnit);
 	setUnitTarget(turnUnit, targetUnit);
 	

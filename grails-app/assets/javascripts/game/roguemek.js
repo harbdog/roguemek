@@ -1091,7 +1091,7 @@ function updateGameData(data) {
 				updateWeapons = true;
 			}
 			else {
-				weaponsListDisplay[t.id].update();
+				updateWeaponsListDisplays(t);
 			}
 		}
 	}
@@ -1241,7 +1241,7 @@ function updateGameData(data) {
     
     if(updateInfoDisplay) {
         // updates the unit info display window
-        infoDisplays[u.id].update();
+		updateInfoDisplays(u);
     }
 	
 	// do some final UI updates from turn changes
