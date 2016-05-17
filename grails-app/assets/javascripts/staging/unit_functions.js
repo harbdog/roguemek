@@ -5,6 +5,7 @@
 "use strict";
 
 var unitSelectDialog;
+var unitPreviewDialog;
 
 /**
  * Initializes unit related UI components
@@ -27,6 +28,32 @@ function initUnitUI() {
 			"Select": ajaxAddUnit,
 			Cancel: function() {
 				unitSelectDialog.dialog("close");
+			}
+		}
+    });
+	
+	// Initialize unit preview dialog
+	unitPreviewDialog = $("#unitPreviewDiv").dialog({
+		title: "Preview Unit",
+    	autoOpen: false,
+    	modal: true,
+		show: {
+			effect: "fade",
+			duration: 350
+		},
+		open: function () {
+			// swap out the static for the animated preview image class
+			$(".unit-preview-static")
+					.removeClass("unit-preview-static")
+					.addClass("unit-preview");
+	    },
+		hide: {
+			effect: "fade",
+			duration: 250
+		},
+		buttons: {
+			Close: function() {
+				unitPreviewDialog.dialog("close");
 			}
 		}
     });
@@ -59,12 +86,50 @@ function setupDynamicUnitUI() {
 		        text: false
 		    }).click(deleteUnit);
 	    });
+		
+		// setup click preview for units
+		$("div.player-unit-model").on({
+			click: function(event) {
+				var unitId = $(this).attr("data-model-id");
+				previewUnitSelect(unitId);
+			}
+		});
     }
     else {
     	// hide the unit add/delete buttons
     	$("button.unit-delete").hide();
     	$("button.unit-add").hide();
     }
+}
+
+/**
+ * Called when a game participant clicks to view the unit preview
+ */
+function previewUnitSelect(unitId) {
+	
+	// show a loading dialog while waiting to get the info display from the server
+	dialogLoading.dialog("option", "position", {my: "center", at: "center", of: window});
+	dialogLoading.dialog("open");
+	
+	var data = {unitId: unitId};
+	
+	unitPreviewDialog.load("previewUnit", data, function() {
+		dialogLoading.dialog("close");
+		
+		var idealDialogWidth = 500;
+		
+		var windowWidth = $(window).width();
+		
+		// make sure the width of the dialog in the window isn't too small to show everything
+        var dialogWidth = idealDialogWidth;
+		if(windowWidth < idealDialogWidth) {
+			dialogWidth = windowWidth;
+		}
+		
+		unitPreviewDialog.dialog("option", "position", {my: "center", at: "center", of: window});
+		unitPreviewDialog.dialog("option", "width", dialogWidth);
+		unitPreviewDialog.dialog("open");
+    });
 }
 
 /**

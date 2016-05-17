@@ -16,6 +16,7 @@
 		<div id="mapSelectDiv"></div>
 		<div id="mapPreviewDiv"></div>
 		<div id="unitSelectDiv"></div>
+		<div id="unitPreviewDiv"></div>
 		<div id="camoSelectDiv"></div>
 		<div id="loadingDiv"><div id="spinner" class="spinner"><g:message code="spinner.alt" default="Loading&hellip;"/></div></div>
 		

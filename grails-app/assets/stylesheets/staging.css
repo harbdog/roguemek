@@ -274,6 +274,12 @@ input[type=radio]:checked+label:before {
 	background-color: rgba(51, 153, 255, 0.5);
 }
 
+.player-unit-model {
+	display: inherit;
+	width: 100%;
+	cursor: pointer;
+}
+
 img.unit-image {
 	width: 40px;
 }
