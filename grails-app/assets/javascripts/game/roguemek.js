@@ -928,10 +928,10 @@ function updateGameData(data) {
 		updateInfoDisplay = true;
 		
 		// update unit list display to show armor bar as destroyed
-		var listUnit = getUnitListDisplay(u);
-		if(listUnit != null) {
+		var listUnits = getUnitListDisplays(u);
+		$.each(listUnits, function(index, listUnit) {
 			listUnit.updateArmorBar(true);
-		}
+		});
 	}
 	
 	// update to position

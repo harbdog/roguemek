@@ -17,6 +17,8 @@ function ListUnitDisplay(unitDisplay) {
 	this.foreground = null;
 	this.armorBar = null;
 	this.scale = 0.5;
+	
+	this.isTargetDisplay = false;
 }
 var c = createjs.extend(ListUnitDisplay, createjs.Container);
 
@@ -151,9 +153,9 @@ c.setSelected = function(selected, isOtherUnit, surroundSelect) {
 					.drawRect(0, 0, this.image.width, this.image.height)
 					.endFill();
 			this.foreground.graphics.setStrokeStyle(BORDER_WIDTH*3, "square").beginStroke(strokeColor)
-					.moveTo(0, this.image.height)
+					.moveTo(0, this.image.height - BORDER_WIDTH*3/2)
 					.lineTo(0, 0)
-					.lineTo(this.image.width, 0)
+					.lineTo(this.image.width - BORDER_WIDTH*3/2, 0)
 					.endStroke();
 		}
 		

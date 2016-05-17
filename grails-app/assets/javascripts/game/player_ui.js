@@ -567,13 +567,13 @@ function initOtherUnitDisplay() {
 		targetDisplays[unit.id] = unitGroupDisplay;
 	});
 	
-	var firstListUnit = unitListDisplayArray[0];
 	$.each(units, function(id, unit) {
 		var unitGroupDisplay = targetDisplays[unit.id];
 		
 		// the other unit icon is at the top of the display
 		var thisDisplayUnit = unit.getUnitDisplay();
 		var listUnit = new ListUnitDisplay(thisDisplayUnit);
+		listUnit.isTargetDisplay = true;
 		listUnit.init();
 		listUnit.setSelected(true, true);
 		listUnit.x = targetDisplayWidth - listUnit.getDisplayWidth();
@@ -695,15 +695,15 @@ function initPlayerUnitDisplay() {
 	});
 	
 	// Create each player unit display next to the list of player units
-	var firstListUnit = unitListDisplayArray[0];
 	$.each(unitListDisplayArray, function(index, listUnit) {
+		// only player ListUnitDisplays will have been initialized at this point
 		var unit = listUnit.unit;
 		var unitGroupDisplay = playerDisplays[unit.id];
 		
 		// the info display is at the top of the display
 		var unitInfoDisplay = new MechInfoDisplay(unit);
 		unitInfoDisplay.width = unitDisplayWidth;
-		unitInfoDisplay.height = firstListUnit.getDisplayHeight() * 1.5;
+		unitInfoDisplay.height = listUnit.getDisplayHeight() * 1.5;
 		unitInfoDisplay.init();
 		
 		unitInfoDisplay.x = 0;
@@ -716,7 +716,7 @@ function initPlayerUnitDisplay() {
 		var unitHeatDisplay = new MechHeatDisplay();
 		
 		unitHeatDisplay.width = unitDisplayWidth;
-		unitHeatDisplay.height = firstListUnit.getDisplayHeight();
+		unitHeatDisplay.height = listUnit.getDisplayHeight();
 		unitHeatDisplay.init();
 		
 		unitHeatDisplay.x = 0;
@@ -729,7 +729,7 @@ function initPlayerUnitDisplay() {
 		var unitArmorDisplay = new MechArmorDisplay();
 		
 		unitArmorDisplay.width = unitDisplayWidth;
-		unitArmorDisplay.height = firstListUnit.getDisplayHeight() * 2;
+		unitArmorDisplay.height = listUnit.getDisplayHeight() * 2;
 		unitArmorDisplay.init();
 		
 		unitArmorDisplay.x = 0;
@@ -742,7 +742,7 @@ function initPlayerUnitDisplay() {
 		if(unitDisplayBounds == null) {
 			var totalHeight = unitArmorDisplay.height + unitHeatDisplay.height + unitInfoDisplay.height;
 			unitDisplayBounds = new createjs.Rectangle(
-					firstListUnit.x + firstListUnit.getDisplayWidth(), canvas.height - totalHeight,
+					listUnit.x + listUnit.getDisplayWidth(), canvas.height - totalHeight,
 					unitDisplayWidth, totalHeight);
 		}
 		
@@ -976,10 +976,10 @@ function applyUnitDamage(unit, index, isInternal, doAnimate) {
 				
 				unitArmorDisplay.setSectionPercent(section, subIndex, 100 * value/initialValue, doAnimate);
 		
-				var listUnit = getUnitListDisplay(unit);
-				if(listUnit != null) {
+				var listUnits = getUnitListDisplays(unit);
+				$.each(listUnits, function(index, listUnit) {
 					listUnit.updateArmorBar(doAnimate);
-				}
+				});
 			}
 		}
 	});
@@ -1096,7 +1096,7 @@ function updatePlayerUnitListDisplay() {
 	if(unitListDisplayArray == null) return;
 	
 	$.each(unitListDisplayArray, function(index, listUnit) {
-		if(isPlayerUnit(listUnit.unit)) {
+		if(isPlayerUnit(listUnit.unit) && !listUnit.isTargetDisplay) {
 			// update the position in case the resize was called
 			listUnit.x = 1;
 			listUnit.y = canvas.height*(1/overlay.scaleY) - (index+1) * listUnit.getDisplayHeight();
@@ -1115,7 +1115,7 @@ function updateOtherUnitListDisplay() {
 	if(unitListDisplayArray == null) return;
 	
 	$.each(unitListDisplayArray, function(index, listUnit) {
-		if(!isPlayerUnit(listUnit.unit)) {
+		if(!isPlayerUnit(listUnit.unit) && listUnit.isTargetDisplay) {
 			// update graphics of the display
 			listUnit.update();
 			listUnit.setSelected(true, true);
@@ -1126,18 +1126,18 @@ function updateOtherUnitListDisplay() {
 /**
  * Gets the player unit display belonging to the given unit
  */
-function getUnitListDisplay(unit) {
+function getUnitListDisplays(unit) {
 	if(unit == null || unitListDisplayArray == null) return null;
 	
-	for(var index=0; index<unitListDisplayArray.length; index++) {
-		var listUnit = unitListDisplayArray[index];
-		
-		if(listUnit.unit.id == unit.id) {
-			return listUnit;
-		}
-	}
+	var listUnits = [];
 	
-	return null;
+	$.each(unitListDisplayArray, function(index, listUnit) {
+		if(listUnit.unit.id == unit.id) {
+			listUnits.push(listUnit);
+		}
+	});
+	
+	return listUnits;
 }
 
 /**
