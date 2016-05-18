@@ -8,6 +8,11 @@
 			</g:if>
 		</div>
 		
+		<span class="unit-mass">
+			<span>${(int) unit?.mech?.mass}</span>
+			<span>Tons</span>
+		</span>
+		
 		<g:set var="pilot" value="${unit?.pilot}" />
 		<span class="unit-name">${unit?.encodeAsHTML()} - ${pilot?.encodeAsHTML()}</span>
 	</div>

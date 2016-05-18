@@ -278,14 +278,25 @@ input[type=radio]:checked+label:before {
 	display: inherit;
 	width: 100%;
 	cursor: pointer;
+	align-items: center;
 }
 
 img.unit-image {
 	width: 40px;
+	margin: 0 0.25em 0 0;
+	vertical-align: middle;
+}
+
+span.unit-mass {
+    font-size: 0.75em;
+    margin: 0 0.5em 0 0.5em;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 }
 
 span.unit-name {
-	margin: 0.5em 0.5em 0 0;
+	margin: 0 0.5em 0 0.5em;
 }
 
 /* User buttons */

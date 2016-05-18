@@ -42,10 +42,12 @@ function initUnitUI() {
 			duration: 350
 		},
 		open: function () {
-			// swap out the static for the animated preview image class
-			$(".unit-preview-static")
-					.removeClass("unit-preview-static")
-					.addClass("unit-preview");
+			// after finished opening dialog, swap out the static for the animated preview image class
+	        $(this).parent().promise().done(function () {
+				$(".unit-preview-static")
+						.removeClass("unit-preview-static")
+						.addClass("unit-preview");
+	        });
 	    },
 		hide: {
 			effect: "fade",
