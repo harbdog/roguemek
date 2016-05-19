@@ -366,6 +366,10 @@ class GameStagingService extends AbstractGameService {
 			}
 		}
 		
+		// clean up teams
+		GameChatUser.executeUpdate(
+				"delete GameTeam gt where gt.game=:game", [game: gameInstance])
+		
 		// let those still in the staging screen be aware of the game state change
 		Object[] messageArgs = []
 		gameChatService.addMessageUpdate(gameInstance, "staging.game.deleted", messageArgs)
