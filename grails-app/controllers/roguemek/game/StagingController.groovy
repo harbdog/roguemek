@@ -103,6 +103,10 @@ class StagingController {
 		if(stagingInstance) {
 			stagingInstance.delete flush:true
 			
+			GameTeam.executeUpdate(
+					"delete GameTeam gt where gt.game=:game and gt.user=:user",
+					[game: game, user: userInstance])
+			
 			// TODO: remove any of the user's BattleUnit from the database, if it is not owned (also remove the pilot if not owned)
 
 			def data = [
