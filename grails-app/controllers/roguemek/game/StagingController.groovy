@@ -67,7 +67,8 @@ class StagingController {
 			
 			def data = [
 				user: userInstance.id,
-				userAdded: userInstance.id
+				userAdded: userInstance.id,
+				userName: userInstance.toString()
 			]
 			Object[] messageArgs = [userInstance.toString()]
 			gameChatService.addMessageUpdate(game, "staging.user.added", messageArgs)
@@ -80,11 +81,22 @@ class StagingController {
 		
 		log.info "stagingUsers: ${stagingUsers}"
 		
+		def sortedUsers
+		if(game.isInit()) {
+			sortedUsers = StagingUser.executeQuery(
+					'select u.user from StagingUser u where u.game=:game',
+					[game: game]
+			).sort( false, { u1, u2 -> u1.callsign <=> u2.callsign } )
+		}
+		else { 
+			sortedUsers = game.users.sort( false, { u1, u2 -> u1.callsign <=> u2.callsign } )
+		}
+		
 		def chatMessages = ChatMessage.findAllByOptGameId(game.id, [sort: "time", order: "asc"])
 		
 		session["game"] = game.id
 		
-		respond game, model:[userInstance:userInstance, 
+		respond game, model:[userInstance:userInstance, sortedUsers: sortedUsers,
 				stagingUsers:stagingUsers, stagingInstance:stagingInstance, 
 				chatMessages:chatMessages]
 	}
@@ -111,7 +123,8 @@ class StagingController {
 
 			def data = [
 				user: userInstance.id,
-				userRemoved: userInstance.id
+				userRemoved: userInstance.id,
+				userName: userInstance.toString()
 			]
 			Object[] messageArgs = [userInstance.toString()]
 			gameChatService.addMessageUpdate(game, "staging.user.removed", messageArgs)
@@ -607,7 +620,8 @@ class StagingController {
 		
 		def data = [
 			user: userInstance.id,
-			userAdded: userInstance.id
+			userAdded: userInstance.id,
+			userName: userInstance.toString()
 		]
 		Object[] messageArgs = [userInstance.toString()]
 		gameChatService.addMessageUpdate(game, "staging.user.added", messageArgs)
@@ -647,7 +661,8 @@ class StagingController {
 
 		def data = [
 			user: userInstance.id,
-			userRemoved: userToRemove.id
+			userRemoved: userToRemove.id,
+			userName: userInstance.toString()
 		]
 		Object[] messageArgs = [userToRemove.toString()]
 		gameChatService.addMessageUpdate(game, "staging.user.removed", messageArgs)

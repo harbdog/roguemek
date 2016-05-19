@@ -59,9 +59,11 @@ class GameController {
 				
 				log.trace("User "+user?.username+" joining Game("+g.id+")")
 				
+				def sortedUsers = g.users.sort( false, { u1, u2 -> u1.callsign <=> u2.callsign } )
+				
 				def chatMessages = ChatMessage.findAllByOptGameId(g.id, [max: 200, sort: "time", order: "asc"])
 				
-				respond g, model: [userInstance: user, chatMessages:chatMessages]
+				respond g, model: [userInstance: user, sortedUsers: sortedUsers, chatMessages:chatMessages]
 			}
 		}
 		else {

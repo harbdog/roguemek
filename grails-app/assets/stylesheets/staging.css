@@ -108,6 +108,11 @@ span.chat-user {
 	color: #3498DB;
 }
 
+span.game-user {
+	margin-right: 5px;
+	color: #A0A0A0;
+}
+
 /* game content div */
 #game-content {
 	display: flex;

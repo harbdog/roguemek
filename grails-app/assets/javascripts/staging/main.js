@@ -128,6 +128,25 @@ function handleChatUsersUpdate(userData) {
 	var $chatUserDiv = $("div[data-chat-userid='"+userId+"']")
 	
 	if(userData.add) {
+		var $chatUserSpan = $chatUserDiv.find("span");
+		if(!$chatUserSpan.hasClass("chat-user")) {
+		
+			$chatUserDiv.find("span")
+					.switchClass("game-user", "chat-user");
+			
+			// TODO: allow customization of colors in chat!
+			var effectOptions = {color: shadeColor("#3399FF", -0.5)};
+			$chatUserDiv.effect("highlight", effectOptions, 1000);
+		}
+	}
+	else if(userData.remove){
+		var $chatUserSpan = $chatUserDiv.find("span");
+		if(!$chatUserSpan.hasClass("game-user")) {
+			$chatUserDiv.find("span")
+					.switchClass("chat-user", "game-user");
+		}
+	}
+	else if(userData.join) {
 		// first, make sure it doesn't already exist
 		if($chatUserDiv.length) {
 			$chatUserDiv.fadeIn();
@@ -147,7 +166,7 @@ function handleChatUsersUpdate(userData) {
 		var effectOptions = {color: shadeColor("#3399FF", -0.5)};
 		$chatUserDiv.effect("highlight", effectOptions, 1000);
 	}
-	else if(userData.remove){
+	else if(userData.leave){
 		$chatUserDiv.fadeOut(function() {
 			var $this = $(this);
 			// waiting a short while before complete removal just in case it was only a refresh event
@@ -223,9 +242,13 @@ function updateStagingData(data) {
 	}
 	else if(data.userAdded != null) {
 		var userId = data.userAdded;
+		var userName = data.userName;
 		
 		// update the users and teams on the page without forcing reload
 		ajaxStageTeamOrUser(-1, userId);
+		
+		// update the chat list
+		handleChatUsersUpdate({userid: userId, username: userName, join: true});
 	}
 	else if(data.userRemoved != null) {
 		var userId = data.userRemoved;
@@ -243,6 +266,10 @@ function updateStagingData(data) {
 		if(currentUserId == userId) {
 			alert("You have been removed from battle by the owner, returning to dropship");	// TODO: i18n this message
 			redirectToDropship();
+		}
+		else {
+			// update the chat list
+			handleChatUsersUpdate({userid: userId, leave: true});
 		}
 	}
 	else if(data.userReady != null) {

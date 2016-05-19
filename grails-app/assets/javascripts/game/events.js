@@ -109,21 +109,6 @@ function handleChatUsersUpdate(userData) {
 	var $chatUserSpan = $chatUserDiv.find("span");
 	
 	if(userData.add) {
-		// first, make sure it doesn't already exist
-		/*if($chatUserDiv.length) {
-			$chatUserDiv.fadeIn();
-			return
-		}
-		
-		var $chatUsers = $('#chat-users');
-		
-		// create the div section containing the user name
-		var $chatUserDiv = $("<div>").attr("data-chat-userid", userId);
-		var $chatUserSpan = $("<span>", {class: "chat-user"}).text(userName);
-		
-		$chatUserDiv.append($chatUserSpan);
-		$chatUsers.append($chatUserDiv);*/
-		
 		if(!$chatUserSpan.hasClass("chat-user")) {
 		
 			$chatUserDiv.find("span")
@@ -135,15 +120,6 @@ function handleChatUsersUpdate(userData) {
 		}
 	}
 	else if(userData.remove){
-		/*$chatUserDiv.fadeOut(function() {
-			var $this = $(this);
-			// waiting a short while before complete removal just in case it was only a refresh event
-			setTimeout(function(){
-				if($this.is(":visible") == false) {
-					$this.remove()
-				}
-			},500);
-		});*/
 		if(!$chatUserSpan.hasClass("game-user")) {
 			$chatUserDiv.find("span")
 					.switchClass("chat-user", "game-user");

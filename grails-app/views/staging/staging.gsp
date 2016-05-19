@@ -63,8 +63,10 @@
 						</g:each>
 					</g:if>
 				</div>
-				<div id="chat-users">
-					<%-- chat users will be initialized by an ajax call after the staging elements have loaded fully --%>
+                <div id="chat-users">
+					<g:each in="${sortedUsers}" var="thisUser">
+						<div data-chat-userid="${thisUser.id}"><span class="game-user">${thisUser.callsign}</span></div>
+					</g:each>
 				</div>
 				<input id="chat-input" type="text"/>
 			</div>

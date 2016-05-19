@@ -40,7 +40,7 @@
 					</g:if>
 				</div>
 			    <div id="chat-users">
-					<g:each in="${gameInstance?.users}" var="thisUser">
+					<g:each in="${sortedUsers}" var="thisUser">
 						<div data-chat-userid="${thisUser.id}"><span class="game-user">${thisUser.callsign}</span></div>
 					</g:each>
 				</div>
