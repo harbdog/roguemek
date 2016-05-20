@@ -2,6 +2,7 @@
 		 import="roguemek.game.Game" 
 		 import="roguemek.game.BattleUnit"
 		 import="roguemek.game.BattleMech"
+		 import="roguemek.game.StagingHelper"
 %>
 
 <!DOCTYPE html>
@@ -74,6 +75,14 @@
 		
 		<div id="game-content">
 			<div id="game-details" class="content scaffold-show" role="main">
+				
+				<g:if test="${gameInstance?.isInit()}">
+					<g:set var="checkedReady" value="${StagingHelper.getStagingForUser(gameInstance, userInstance)?.isReady ? 'checked' : ''}" />
+					<g:set var="readyTitle" value="${message(code: 'staging.game.user.ready.title')}" />
+					<input type="checkbox" id="user-ready" ${checkedReady}>
+					<label title="${readyTitle}" class="user-ready" for="user-ready"></label>
+				</g:if>
+				
 				<ol class="property-list game">
 				
 					<li class="fieldcontain">

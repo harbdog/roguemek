@@ -18,7 +18,7 @@
 		
 		<g:set var="startingLocation" value="${StagingHelper.getStartingLocationForUser(gameInstance, user)}" />
 		
-		<g:if test="${gameInstance?.isInit() && true}">
+		<g:if test="${gameInstance?.isInit()}">
 			<g:set var="checkedReady" value="${StagingHelper.getStagingForUser(gameInstance, user)?.isReady ? 'checked' : ''}" />
 			<g:set var="disableReady" value="${(userInstance?.id == user?.id) ? '' : 'disabled'}" />
 			<g:set var="readyTitle" value="${(userInstance?.id == user?.id) ? message(code: 'staging.game.user.ready.title') : ''}" />

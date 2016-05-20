@@ -277,6 +277,11 @@ function updateStagingData(data) {
 		
 		var readyCheckbox = $("input#ready-"+userId+".player-ready[type=checkbox]");
 		readyCheckbox.prop('checked', isReady).trigger("change");
+		
+		if(userId == currentUserId) {
+			// update user's ready box also
+			$("input#user-ready[type=checkbox]").prop('checked', isReady).trigger("change");
+		}
 	}
 	else if(data.teamNum != null) {
 		var teamNum = data.teamNum;

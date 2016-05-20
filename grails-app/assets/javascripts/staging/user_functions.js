@@ -35,6 +35,32 @@ function initUserUI() {
 		}
     });
     
+    // Initialize ready buttons
+    // setup ready button
+    $("input#user-ready").each(function() {
+        $(this).button({
+            label: $(this).is(':checked') ? 'Ready' : 'Not Ready',  // TODO: i18n this
+            text: true
+        })
+        .change(function() {
+            var isReady = $(this).is(':checked');
+            $(this).button("option", "label", isReady ? 'Ready' : 'Not Ready');
+        })
+        .click(function() {
+            var isReady = $(this).is(':checked');
+            var inputMap = {ready: isReady};
+            
+            $.getJSON("readyUser", inputMap)
+                .fail(function(jqxhr, textStatus, error) {
+                    var err = textStatus + ", " + error;
+                    console.log( "Request Failed: " + err );
+                })
+                .done(function() {
+                    // nothing to do here since it will be updated via atmosphere
+                });
+        });
+    });
+    
     // Initialize action specific confirmation dialog
     $("#user-leave-dialog").dialog({
     	autoOpen: false,
