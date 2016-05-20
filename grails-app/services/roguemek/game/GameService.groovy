@@ -544,7 +544,7 @@ class GameService extends AbstractGameService {
 						Date update = addMessageUpdate(game, "game.unit.ammo.explosion", messageArgs, explosionData)
 						
 						// perform piloting check on target if certain criticals received damage from weapons fire
-						checkCriticalsHitPilotSkill(game, unit, ammoCritsHitList)
+						checkCriticalsHitPilotSkill(game, null, unit, ammoCritsHitList)
 						
 						// TODO: figure out why the unit may not getting conveyed as destroyed from start of turn ammo explosion to the UI
 					}
@@ -1282,7 +1282,7 @@ class GameService extends AbstractGameService {
 		if(attemptingStanding) {
 			// unit is attempting to stand, perform piloting skill check before allowing it
 			def modifiers = PilotingModifier.getPilotSkillModifiers(game, unit, PilotingModifier.Modifier.MECH_STANDING)
-			def checkSuccess = doPilotSkillCheck(game, unit, modifiers)
+			def checkSuccess = doPilotSkillCheck(game, null, unit, modifiers)
 		}
 		else {
 			unit.hexesMoved ++
@@ -1637,7 +1637,7 @@ class GameService extends AbstractGameService {
 					
 					// mech obstacle must make a pilot skill roll to avoid falling from domino effect
 					def modifiers = PilotingModifier.getPilotSkillModifiers(game, unitObstacle, PilotingModifier.Modifier.MECH_PUSHED)
-					def checkSuccess = doPilotSkillCheck(game, unitObstacle, modifiers)
+					def checkSuccess = doPilotSkillCheck(game, unit, unitObstacle, modifiers)
 				}
 			}
 		}
@@ -2185,7 +2185,7 @@ class GameService extends AbstractGameService {
 						}
 						
 						if(attackerDamage > 0 && selfHitLocations != null) {
-							def selfData = selfDamage(game, attackerDamage, unit, selfHitLocations)
+							def selfData = selfDamage(game, null, attackerDamage, unit, selfHitLocations)
 							
 							if(selfData != null) {
 								String selfAttackerDamage = String.valueOf(selfData.damage)
@@ -2276,16 +2276,16 @@ class GameService extends AbstractGameService {
 		}
 		
 		// perform piloting check on source unit if certain attacks hit or missed
-		checkActionsPilotSkill(game, unit, pilotingSkillMap.source)
+		checkActionsPilotSkill(game, null, unit, pilotingSkillMap.source)
 		
 		// perform piloting check on target unit if certain attacks hit
-		checkActionsPilotSkill(game, target, pilotingSkillMap.target)
+		checkActionsPilotSkill(game, unit, target, pilotingSkillMap.target)
 		
 		// perform piloting check on target in case it has received 20 damage or more this turn and hasn't already performed the check
-		checkDamageTakenPilotSkill(game, target)
+		checkDamageTakenPilotSkill(game, unit, target)
 		
 		// perform piloting check on target if certain criticals received damage from weapons fire
-		checkCriticalsHitPilotSkill(game, target, critsHitList)
+		checkCriticalsHitPilotSkill(game, unit, target, critsHitList)
 		
 		
 		// update return data with target armor/internals
@@ -2333,7 +2333,7 @@ class GameService extends AbstractGameService {
 			
 		log.info("Modifiers for "+target.getUnitCallsign()+": "+modifiers)
 		
-		def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+		def checkSuccess = doPilotSkillCheck(game, null, target, modifiers)
 		
 		log.info("checkSuccess: "+checkSuccess)
 	}
@@ -2341,13 +2341,13 @@ class GameService extends AbstractGameService {
 	/**
 	 * Performs piloting checks for each action for skill checks provided in the pilotingActionsChecks list
 	 */
-	public def checkActionsPilotSkill(Game game, BattleUnit target, def pilotingActionsChecks) {
+	public def checkActionsPilotSkill(Game game, BattleUnit attacker, BattleUnit target, def pilotingActionsChecks) {
 		if(target instanceof BattleMech) {
 			for(PilotingModifier.Modifier thisCause in pilotingActionsChecks) {
 				log.debug("Pilot skill check due to: "+thisCause)
 				
 				def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, thisCause)
-				def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+				def checkSuccess = doPilotSkillCheck(game, attacker, target, modifiers)
 				
 				if(!checkSuccess) {
 					// if a check fails, no subsequent pilot skill checks need to be made
@@ -2362,7 +2362,7 @@ class GameService extends AbstractGameService {
 	/**
 	 * Perform piloting check on target in the event it has received 20 damage or more this turn and hasn't already performed the check
 	 */
-	public def checkDamageTakenPilotSkill(Game game, BattleUnit target) {
+	public def checkDamageTakenPilotSkill(Game game, BattleUnit attacker, BattleUnit target) {
 		if(target instanceof BattleMech 
 				&& target.damageTaken >= 20
 				&& target.damageTakenCheck == false) {
@@ -2372,7 +2372,7 @@ class GameService extends AbstractGameService {
 			
 			def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, PilotingModifier.Modifier.MECH_DAMAGE)
 			
-			def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+			def checkSuccess = doPilotSkillCheck(game, attacker, target, modifiers)
 			return checkSuccess
 		}
 				
@@ -2382,7 +2382,7 @@ class GameService extends AbstractGameService {
 	/**
 	 * Perform piloting check on target in the event it has had a critical hit on a component that requires a pilot skill check to be performed
 	 */
-	public def checkCriticalsHitPilotSkill(Game game, BattleUnit target, def critsHitList) {
+	public def checkCriticalsHitPilotSkill(Game game, BattleUnit attacker, BattleUnit target, def critsHitList) {
 		if(target instanceof BattleMech 
 				&& critsHitList != null 
 				&& critsHitList.size() > 0) {
@@ -2421,7 +2421,7 @@ class GameService extends AbstractGameService {
 					log.debug("Pilot skill check due to critical on: "+thisHit)
 					
 					def modifiers = PilotingModifier.getPilotSkillModifiers(game, target, thisCause)
-					def checkSuccess = doPilotSkillCheck(game, target, modifiers)
+					def checkSuccess = doPilotSkillCheck(game, attacker, target, modifiers)
 					
 					if(!checkSuccess) {
 						// if a check fails, no subsequent pilot skill checks need to be made
@@ -2484,7 +2484,7 @@ class GameService extends AbstractGameService {
 			
 			if(pilotingCheckModifier != null) {
 				def modifiers = PilotingModifier.getPilotSkillModifiers(game, unit, pilotingCheckModifier)
-				def checkSuccess = doPilotSkillCheck(game, unit, modifiers)
+				def checkSuccess = doPilotSkillCheck(game, null, unit, modifiers)
 				
 				return checkSuccess
 			}
@@ -2496,7 +2496,7 @@ class GameService extends AbstractGameService {
 	/**
 	 * Does the piloting skill check for the unit based on the given modifiers, and if fails makes the unit fall
 	 */
-	public def doPilotSkillCheck(Game game, BattleUnit unit, def modifiers) {
+	public def doPilotSkillCheck(Game game, BattleUnit attacker, BattleUnit unit, def modifiers) {
 		if(!unit instanceof BattleMech) {
 			return true
 		}
@@ -2617,7 +2617,7 @@ class GameService extends AbstractGameService {
 					thisDamage = fallDamage
 				}
 				
-				def selfData = selfDamage(game, thisDamage, unit, fallHitLocations)
+				def selfData = selfDamage(game, attacker, thisDamage, unit, fallHitLocations)
 				
 				if(selfData != null) {
 					String selfAttackerDamage = String.valueOf(thisDamage)
@@ -2783,7 +2783,9 @@ class GameService extends AbstractGameService {
 		}
 	}
 	
-	// apply damage to hit location starting with armor, then internal, then use damage redirect from there if needed
+	/**
+	 * apply damage to hit location starting with armor, then internal, then use damage redirect from there if needed
+	 */
 	public def applyDamage(Game game, BattleUnit attacker, int damage, BattleUnit unit, int hitLocation) {
 		def critsHitList = []
 		
@@ -3290,7 +3292,7 @@ class GameService extends AbstractGameService {
 	 * @param hitLocations
 	 * @return
 	 */
-	public def selfDamage(Game game, int damage, BattleUnit unit, def unitLocations) {
+	public def selfDamage(Game game, BattleUnit attacker, int damage, BattleUnit unit, def unitLocations) {
 		if(unit.isDestroyed()) return
 		
 		int hitLocation = -1
@@ -3311,10 +3313,10 @@ class GameService extends AbstractGameService {
 			hitLocation = unitLocations[resultLocation]
 		}
 		
-		def critsHitList = applyDamage(game, null, damage, unit, hitLocation)
+		def critsHitList = applyDamage(game, attacker, damage, unit, hitLocation)
 		
 		// handle any piloting skill checks that may need to happen after crits are hit from self damage
-		checkCriticalsHitPilotSkill(game, unit, critsHitList)
+		checkCriticalsHitPilotSkill(game, attacker, unit, critsHitList)
 		
 		unit.save flush:true
 		
@@ -3737,7 +3739,7 @@ class GameService extends AbstractGameService {
 		
 		log.info("  critsHitList: "+critsHitList)
 		
-		def checkSuccess = checkCriticalsHitPilotSkill(game, target, critsHitList)
+		def checkSuccess = checkCriticalsHitPilotSkill(game, null, target, critsHitList)
 		
 		target.save flush:true
 		
