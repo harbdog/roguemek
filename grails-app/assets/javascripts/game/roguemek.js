@@ -1284,6 +1284,15 @@ function updateGameData(data) {
 	if(updateWeapons) {
 		updateWeaponsDisplay(turnUnit);
 		
+		// remove any selected weapons that can no longer hit
+		var weaponsPreparedToFire = getSelectedWeapons();
+		$.each(weaponsPreparedToFire, function(index, weapon) {
+			if(weapon != null 
+					&& (weapon.toHit == null || weapon.toHit == 0)) {
+				weaponsPreparedToFire[index] = null;
+			}
+		});
+		
 		// Update selected weapons
 		updateSelectedWeapons();
 	}
