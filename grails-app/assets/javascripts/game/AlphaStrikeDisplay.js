@@ -22,7 +22,7 @@ function AlphaStrikeDisplay(hotkey) {
 	this.numBackground = null;
 	this.numLabel = null;
 	this.nameLabel = null;
-	this.toHitLabel = null;
+	this.selectionLabel = null;
 }
 var c = createjs.extend(AlphaStrikeDisplay, createjs.Container);
 
@@ -50,12 +50,12 @@ c.init = function() {
 	this.addChild(this.nameLabel);
 	
 	// the update method will show actual calculated TO-HIT 
-	var toHitAsPercent = "   -";
+	var selectionText = "   +";
 	// add weapon % to hit label to the far right
-	this.toHitLabel = new createjs.Text(toHitAsPercent, "14px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
-	this.toHitLabel.x = this.width - this.toHitLabel.getMeasuredWidth() - 5;
-	this.toHitLabel.y = 5;	
-	this.addChild(this.toHitLabel);
+	this.selectionLabel = new createjs.Text(selectionText, "14px UbuntuMono", Settings.get(Settings.UI_FG_COLOR));
+	this.selectionLabel.x = this.width - this.selectionLabel.getMeasuredWidth() - 5;
+	this.selectionLabel.y = 5;	
+	this.addChild(this.selectionLabel);
 	
 	// add the background shape
 	this.background = new createjs.Shape();
@@ -82,18 +82,21 @@ c.update = function() {
 	if(this.isActive()) {
 		this.numLabel.color = Settings.get(Settings.UI_BG_COLOR);
 		this.nameLabel.color = Settings.get(Settings.UI_FG_COLOR);
-		this.toHitLabel.color = Settings.get(Settings.UI_FG_COLOR);
+		this.selectionLabel.color = Settings.get(Settings.UI_FG_COLOR);
 	}
 	else {
 		this.numLabel.color = "#A0A0A0";
 		this.nameLabel.color = "#A0A0A0";
-		this.toHitLabel.color = "#A0A0A0";
+		this.selectionLabel.color = "#A0A0A0";
 	}
 	
-	// update to Hit percent
-	var toHitAsPercent = "   +";
-	this.toHitLabel.text = toHitAsPercent;
-	this.toHitLabel.x = this.width - this.toHitLabel.getMeasuredWidth() - 5;
+	// update selection text
+	var selectionText = "   +";
+	if(this.selected) {
+		selectionText = "   -";
+	}
+	this.selectionLabel.text = selectionText;
+	this.selectionLabel.x = this.width - this.selectionLabel.getMeasuredWidth() - 5;
 	
 	// create hit area (it never needs to be added to display)
 	var hit = new createjs.Shape();
@@ -117,6 +120,12 @@ c.drawSelected = function() {
 				.drawRect(AlphaStrikeDisplay.MAX_NUMBER_LABEL_WIDTH, BORDER_WIDTH, 
 					this.width-AlphaStrikeDisplay.MAX_NUMBER_LABEL_WIDTH, this.height).endStroke();
 	}
+	
+	var selectionText = "   +";
+	if(this.selected) {
+		selectionText = "   -";
+	}
+	this.selectionLabel.text = selectionText;
 }
 
 c.isSelected = function() {

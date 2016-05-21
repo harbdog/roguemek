@@ -1430,7 +1430,7 @@ function toggleAllWeapons() {
 	if(!isPlayerUnitTurn()) return;
 	
 	// determine if all weapons are selected or not
-	var numWeapons = getNumWeapons(turnUnit);
+	var numWeapons = getNumAvailableWeapons(turnUnit);
 	var numSelectedWeapons = getNumSelectedWeapons();
 	
 	var allWeaponsSelected = (numWeapons == numSelectedWeapons);

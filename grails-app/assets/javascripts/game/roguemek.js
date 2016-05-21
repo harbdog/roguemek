@@ -746,6 +746,23 @@ function getNumWeapons(unit) {
 }
 
 /**
+ * Returns the number of active (not destroyed or on cooldown), non-melee weapons for the given unit
+ */
+function getNumAvailableWeapons(unit) {
+	if(unit == null || unit.weapons == null) return 0;
+	
+	var numAvailWeapons = 0;
+	$.each(unit.weapons, function(index, weapon) {
+		if(weapon != null && !weapon.isMeleeWeapon() 
+				&& weapon.isActive() && weapon.cooldown == 0) {
+			numAvailWeapons ++;
+		}
+	});
+	
+	return numAvailWeapons;
+}
+
+/**
  * just a roll of the dice
  */
 function rollDice(numDie, numSides){

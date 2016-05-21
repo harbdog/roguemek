@@ -57,6 +57,7 @@ c.init = function() {
 		var hotkey = "\\";
 		this.alphaStrike = new AlphaStrikeDisplay(hotkey);
 		this.alphaStrike.init();
+		this.alphaStrike.alpha = 0;
 	}
 	
 	this.update();
@@ -147,6 +148,29 @@ c.setSelectedWeapons = function(weaponsArray) {
 		var selected = (weaponsArray != null && $.inArray(unitWeaponDisplay.weapon, weaponsArray) != -1);
 		unitWeaponDisplay.setSelected(selected);
 	});
+	
+	// determine if all weapons are selected or not
+	if(this.alphaStrike) {
+		var turnTargetUnit = getUnitTarget(turnUnit);
+		
+		if(turnTargetUnit == null || isTeamUnit(turnTargetUnit)) {
+			if(this.alphaStrike.alpha > 0) {
+				createjs.Tween.get(this.alphaStrike).to({alpha:0}, 250);
+			}
+		}
+		else {
+			if(this.alphaStrike.alpha < 1) {
+				createjs.Tween.get(this.alphaStrike).to({alpha:1}, 250);
+			}
+			
+			var numWeapons = getNumAvailableWeapons(turnUnit);
+			var numSelectedWeapons = getNumSelectedWeapons();
+			
+			var allWeaponsSelected = (numWeapons == numSelectedWeapons);
+			
+			this.alphaStrike.setSelected(allWeaponsSelected);
+		}
+	}
 	
 	this.doCache();
 }
