@@ -152,7 +152,9 @@ c.setSelectedWeapons = function(weaponsArray) {
 	if(this.alphaStrike) {
 		var turnTargetUnit = getUnitTarget(turnUnit);
 		
-		if(turnTargetUnit == null || isTeamUnit(turnTargetUnit)) {
+		var numAvailWeapons = getNumAvailableWeapons(turnUnit);
+		
+		if(turnTargetUnit == null || isTeamUnit(turnTargetUnit) || numAvailWeapons == 0) {
 			if(this.alphaStrike.alpha > 0) {
 				createjs.Tween.get(this.alphaStrike).to({alpha:0}, 250);
 			}
@@ -162,10 +164,8 @@ c.setSelectedWeapons = function(weaponsArray) {
 				createjs.Tween.get(this.alphaStrike).to({alpha:1}, 250);
 			}
 			
-			var numWeapons = getNumAvailableWeapons(turnUnit);
 			var numSelectedWeapons = getNumSelectedWeapons();
-			
-			var allWeaponsSelected = (numWeapons == numSelectedWeapons);
+			var allWeaponsSelected = (numAvailWeapons == numSelectedWeapons);
 			
 			this.alphaStrike.setSelected(allWeaponsSelected);
 		}
