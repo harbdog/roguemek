@@ -71,8 +71,6 @@ c.init = function() {
 c.update = function() {
 	this.uncache();
 	
-	this.background.alpha = Settings.get(Settings.UI_OPACITY);
-	
 	this.drawSelected();
 	
 	this.numBackground.graphics.clear();
@@ -111,11 +109,15 @@ c.drawSelected = function() {
 	
 	if(this.selected) {
 		// update background as selected to fire
+		this.background.alpha = 1;
+		
 		this.background.graphics.beginFill("#FF0000")
 				.drawRect(AlphaStrikeDisplay.MAX_NUMBER_LABEL_WIDTH, BORDER_WIDTH, 
 					this.width-AlphaStrikeDisplay.MAX_NUMBER_LABEL_WIDTH, this.height).endStroke();
 	}
 	else {
+		this.background.alpha = Settings.get(Settings.UI_OPACITY);
+		
 		this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))
 				.drawRect(AlphaStrikeDisplay.MAX_NUMBER_LABEL_WIDTH, BORDER_WIDTH, 
 					this.width-AlphaStrikeDisplay.MAX_NUMBER_LABEL_WIDTH, this.height).endStroke();
