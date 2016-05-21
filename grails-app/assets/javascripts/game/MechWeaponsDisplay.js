@@ -64,8 +64,9 @@ c.init = function() {
 }
 
 c.update = function() {
-	this.removeAllChildren();
 	this.uncache();
+	this.removeAllChildren();
+	
 	this.background.graphics.clear();
 	
 	this.background.alpha = Settings.get(Settings.UI_OPACITY);
@@ -137,8 +138,6 @@ c.update = function() {
 				.moveTo(0, this.height).lineTo(this.width, this.height).endStroke();
 		this.addChildAt(this.background, 0);
 	}
-	
-	this.doCache();
 }
 
 c.setSelectedWeapons = function(weaponsArray) {
@@ -170,15 +169,6 @@ c.setSelectedWeapons = function(weaponsArray) {
 			
 			this.alphaStrike.setSelected(allWeaponsSelected);
 		}
-	}
-	
-	this.doCache();
-}
-
-c.doCache = function() {
-	if(Settings.get(Settings.GFX_CACHING) == Settings.GFX_PERFORMANCE){
-		// caching only at the lowest gfx setting
-		this.cache(0,0, this.width,this.height);
 	}
 }
 
