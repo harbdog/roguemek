@@ -18,6 +18,7 @@ function MechWeaponsDisplay(unit) {
 	this.weapons = [];
 	
 	this.background = null;
+	this.alphaStrike = null;
 }
 var c = createjs.extend(MechWeaponsDisplay, createjs.Container);
 
@@ -50,6 +51,13 @@ c.init = function() {
 		weaponsArray.push(weaponDisplay);
 		index ++;
 	});
+	
+	if(index > 0) {
+		// create the alpha strike display
+		var hotkey = "\\";
+		this.alphaStrike = new AlphaStrikeDisplay(hotkey);
+		this.alphaStrike.init();
+	}
 	
 	this.update();
 }
@@ -109,6 +117,17 @@ c.update = function() {
 			if(weaponDisplay.y + weaponDisplay.height > this.height) {
 				this.height = weaponDisplay.y + weaponDisplay.height;
 			}
+		}
+		
+		// add alpha strike button that spans the entire width across the top
+		if(this.alphaStrike && totalWeapons > 0) {
+			this.alphaStrike.width = this.width;
+			this.alphaStrike.update();
+			
+			this.alphaStrike.x = 0;
+			this.alphaStrike.y = -this.alphaStrike.height;
+			
+			this.addChild(this.alphaStrike);
 		}
 		
 		this.background.graphics.beginFill(Settings.get(Settings.UI_BG_COLOR))

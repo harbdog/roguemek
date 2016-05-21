@@ -712,6 +712,40 @@ function removeSelectedWeapon(weapon) {
 }
 
 /**
+ * Returns the number of weapons selected to fire for the turn unit
+ */
+function getNumSelectedWeapons() {
+	// determine if all weapons are selected or not
+	var weaponsPreparedToFire = getSelectedWeapons();
+	var numSelectedWeapons = 0;
+	
+	// physical weapons do not count towards all being selected
+	$.each(weaponsPreparedToFire, function(index, weapon) {
+		if(weapon != null && !weapon.isMeleeWeapon()) {
+			numSelectedWeapons ++;
+		}
+	});
+	
+	return numSelectedWeapons;
+}
+
+/**
+ * Returns the number of non-melee weapons for the given unit
+ */
+function getNumWeapons(unit) {
+	if(unit == null || unit.weapons == null) return 0;
+	
+	var numWeapons = 0;
+	$.each(unit.weapons, function(index, weapon) {
+		if(weapon != null && !weapon.isMeleeWeapon()) {
+			numWeapons ++;
+		}
+	});
+	
+	return numWeapons;
+}
+
+/**
  * just a roll of the dice
  */
 function rollDice(numDie, numSides){

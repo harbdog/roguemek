@@ -1423,6 +1423,32 @@ function updateWeaponsDisplay(unit) {
 	}
 }
 
+/**
+ * Toggles all weapons to fire, or not fire if all are already selected
+ */
+function toggleAllWeapons() {
+	if(!isPlayerUnitTurn()) return;
+	
+	// determine if all weapons are selected or not
+	var numWeapons = getNumWeapons(turnUnit);
+	var numSelectedWeapons = getNumSelectedWeapons();
+	
+	var allWeaponsSelected = (numWeapons == numSelectedWeapons);
+	
+	if(allWeaponsSelected) {
+		clearSelectedWeapons();
+	}
+	else {
+		$.each(turnUnit.weapons, function(index, weapon) {
+			if(weapon != null && !weapon.isMeleeWeapon()) {
+				addSelectedWeapon(weapon);
+			}
+		});
+	}
+	
+	updateSelectedWeapons();
+}
+
 function updateSelectedWeapons() {
 	if(!isPlayerUnitTurn()) return;
 	

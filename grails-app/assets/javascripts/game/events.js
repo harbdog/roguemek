@@ -183,6 +183,10 @@ function handleKeyPress(e, key) {
 			}
 		}
 	}
+	else if(key == "\\") {
+		// alpha strike (select or deselect all weapons based on their current state)
+		toggleAllWeapons();
+	}
 	else if(key == "." || key == "space" || key == "enter"){
 		// Skip the remainder of the turn
 		// OR fire any selected weapons
@@ -659,19 +663,24 @@ function handleWeaponClick(event) {
 	console.log("clicked "+unitWeaponDisplay);
 	
 	if(isPlayerUnitTurn()) {
-		var weapon = unitWeaponDisplay.weapon;
-		
-		if(weapon != null) {
-			var selectedIndex = $.inArray(weapon, selectedWeapons);
-			if(selectedIndex == -1) {
-				addSelectedWeapon(weapon);
-			}
-			else {
-				removeSelectedWeapon(weapon);
-			}
+		if(unitWeaponDisplay instanceof AlphaStrikeDisplay) {
+			toggleAllWeapons();
+		}
+		else {
+			var weapon = unitWeaponDisplay.weapon;
 			
-			// update the selected weapons on the UI and their heat that would be generated
-			updateSelectedWeapons();
+			if(weapon != null) {
+				var selectedIndex = $.inArray(weapon, selectedWeapons);
+				if(selectedIndex == -1) {
+					addSelectedWeapon(weapon);
+				}
+				else {
+					removeSelectedWeapon(weapon);
+				}
+				
+				// update the selected weapons on the UI and their heat that would be generated
+				updateSelectedWeapons();
+			}
 		}
 	}
 }
