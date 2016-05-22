@@ -134,15 +134,10 @@ function showMapSelect() {
 	var windowWidth = $(window).width();
 	var windowHeight = $(window).height();
 	
-	var dialogWidth = 3*windowWidth/4;
-	if(dialogWidth < idealDialogWidth) {
+    var dialogWidth = idealDialogWidth;
+	if(windowWidth < dialogWidth) {
 		// make sure the width of the dialog in the window isn't too small to show everything
-		if(windowWidth < idealDialogWidth) {
-			dialogWidth = windowWidth;
-		}
-		else {
-			dialogWidth = idealDialogWidth;
-		}
+		dialogWidth = windowWidth;
 	}
 	
 	mapSelectDialog.dialog("option", "position", {my: "top", at: "top", of: window});
