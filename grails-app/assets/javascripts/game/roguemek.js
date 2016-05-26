@@ -1133,12 +1133,18 @@ function updateGameData(data) {
 		
 		equipObj.status = status;
 		
-		// show floating message about the crit being hit
-		var floatMessageStr = "CRIT "+equipObj.shortName;	// TODO: localize this message and include short name of the equipment
-		
-		// determine location of message and create it
-		var floatMessagePoint = new Point(t.getUnitDisplay().x, t.getUnitDisplay().y);
-		createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+		if(data.locationDestroyed && equipObj.type != TYPE_WEAPON) {
+			// if the critical hit comes from the entire location being destroyed, 
+			// don't spam floating messages with non-weapon equipment
+		}
+		else {
+			// show floating message about the crit being hit
+			var floatMessageStr = "CRIT "+equipObj.shortName;	// TODO: localize this message and include short name of the equipment
+			
+			// determine location of message and create it
+			var floatMessagePoint = new Point(t.getUnitDisplay().x, t.getUnitDisplay().y);
+			createFloatMessage(floatMessagePoint, floatMessageStr, null, 0, 1.0, false);
+		}
 		
 		if(equipObj.status != "A" && equipObj.type == TYPE_WEAPON) {
 			if(isPlayerT) {

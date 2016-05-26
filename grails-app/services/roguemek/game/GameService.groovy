@@ -3054,7 +3054,7 @@ class GameService extends AbstractGameService {
 					
 					// include data in the message for the damaged/destroyed equipment
 					def criticalHitData = [id: critEquip.id, status: String.valueOf(critEquip.status)]
-					def data = [target: unit.id, criticalHit: criticalHitData]
+					def data = [target: unit.id, criticalHit: criticalHitData, locationDestroyed: true]
 					
 					Date update = addMessageUpdate(game, null, null, data)
 				}
