@@ -52,6 +52,12 @@ class StagingController {
 			isParticipant = (stagingInstance != null)
 		}
 		
+		// For some reason, if the announcement of the new staged user comes too soon
+		// after being created, it can occasionally, randomly, fail to be found
+		// despite being flushed inside generateStagingForUser...
+		// So we will delay it until just before responding to give it time
+		def delayedStagingAnnouncement = false
+		
 		if(isParticipant) {
 			// nothing to do, let user proceed
 		}
@@ -65,21 +71,11 @@ class StagingController {
 			// generate staging information for the new user
 			stagingInstance = gameStagingService.generateStagingForUser(game, userInstance)
 			
-			def data = [
-				user: userInstance.id,
-				userAdded: userInstance.id,
-				userName: userInstance.toString()
-			]
-			Object[] messageArgs = [userInstance.toString()]
-			gameChatService.addMessageUpdate(game, "staging.user.added", messageArgs)
-			
-			gameStagingService.addStagingUpdate(game, data)
+			delayedStagingAnnouncement = true
 		}
 		
 		// get all users staged in the game
 		def stagingUsers = game.isInit() ? game.getStagingUsersByTeam() : null
-		
-		log.info "stagingUsers: ${stagingUsers}"
 		
 		def sortedUsers
 		if(game.isInit()) {
@@ -93,6 +89,18 @@ class StagingController {
 		}
 		
 		def chatMessages = ChatMessage.findAllByOptGameId(game.id, [sort: "time", order: "asc"])
+		
+		if(delayedStagingAnnouncement) {
+			def data = [
+				user: userInstance.id,
+				userAdded: userInstance.id,
+				userName: userInstance.toString()
+			]
+			Object[] messageArgs = [userInstance.toString()]
+			gameChatService.addMessageUpdate(game, "staging.user.added", messageArgs)
+			
+			gameStagingService.addStagingUpdate(game, data)
+		}
 		
 		session["game"] = game.id
 		
