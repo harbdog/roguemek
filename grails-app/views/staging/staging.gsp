@@ -26,6 +26,9 @@
 				 only to provide tools for development that do nothing for normal users --%>
 		    <script type="text/javascript">var devMode = true;</script>
 		</g:if>
+		<g:else>
+			<script type="text/javascript">var devMode = false;</script>
+		</g:else>
 		
 		<script type="text/javascript">var hpgTransport = "${grailsApplication.config.roguemek.server.hpgTransport}";</script>
 		<script type="text/javascript">var currentUserId = "${userInstance?.id}";</script>
