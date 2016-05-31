@@ -1,4 +1,8 @@
-/* STAGING PAGE */
+/* 
+* STAGING PAGE
+*= require jstree
+*= require_self
+*/
 @font-face {
 	font-family: 'UbuntuMono';
 	src: url('images/UbuntuMono.ttf');
@@ -396,8 +400,16 @@ div.camo-selection {
 	width: 100%;
 }
 
-div#color-selection {
+div.selection-panel {
 	width: 50%;
+}
+
+div#color-selection {
+	margin: 0 0 1em 0;
+}
+
+div#pattern-tree {
+	height: 100%;
 }
 
 div#camo-preview {

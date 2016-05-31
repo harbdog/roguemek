@@ -663,8 +663,9 @@ function showCamoSelect() {
 	
 	camoSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
 	camoSelectDialog.dialog("option", "width", windowWidth/2);
-	camoSelectDialog.dialog("option", "height", windowHeight/2);
+	//camoSelectDialog.dialog("option", "height", windowHeight/2);
 	
+    // setup the color selection input
 	$("#color-input").spectrum({
 		preferredFormat: "rgb",
 		showInitial: true,
@@ -694,6 +695,19 @@ function showCamoSelect() {
 			ajaxUpdateCamoColorSelection(camoSelectUserID, tinycolor(origColor));
 		}
 	});
+    
+    // setup the pattern selection tree
+    $("#pattern-tree").jstree({
+        "core": { 
+            "themes": { 
+                "name" : "default-dark"
+            }
+        }
+    });
+    
+    $("#pattern-tree").on("changed.jstree", function(e, data) {
+        console.log(data.node.text);
+    });
 	
 	camoSelectDialog.dialog("open");
 }

@@ -743,14 +743,21 @@ class StagingController {
 		if(params.userId == null) return
 		MekUser userToUpdate = MekUser.read(params.userId)
 		
-		Set<String> mechPaths = ContextHelper.getResourcePaths("/assets/images/camo/", false)
-		//log.info mechPaths
-		
 		if(userToUpdate) {
 			// pass along a unit for preview if one exists
 			BattleUnit previewUnit = StagingUser.findByGameAndUser(game, userToUpdate)?.units[0]
+			
+			// generate top level camo pattern folders
+			def camoPatternPaths = []
+			def pathRegex = ~/.*[\\|\/](.*)/
+			Set<String> camoPaths = ContextHelper.getResourcePaths("/assets/images/camo/", false)
+			camoPaths.each { path ->
+				path.find(pathRegex) { fullMatch, regPath ->
+					camoPatternPaths << regPath
+				}
+			}
 
-			render template: 'camoSelect', model:[gameInstance:game, userInstance:userToUpdate, previewUnit:previewUnit]
+			render template: 'camoSelect', model:[gameInstance:game, userInstance:userToUpdate, previewUnit:previewUnit, camoPatternPaths: camoPatternPaths]
 		}
 		else {
 			redirect url: "/"

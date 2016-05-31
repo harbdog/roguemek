@@ -2,6 +2,7 @@
 //= require jquery-ui.min.js
 //= require jquery.ui.touch-punch.min.js
 //= require jquery.form.js
+//= require jstree.min.js
 //= require atmosphere-meteor-jquery
 //= require spectrum-1.7.1.js
 //= require modernizr-touch.js
