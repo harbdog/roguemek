@@ -47,6 +47,7 @@ class BattleUnit {
 	Character status = STATUS_ACTIVE
 	
 	String imageFile
+	String camoFile
 	Short[] rgb = [100,100,100]
 	byte[] image
 	
@@ -83,6 +84,7 @@ class BattleUnit {
 		prone nullable: false
 		
 		imageFile nullable: false
+		camoFile nullable: true
 		rgb size: 3..3
 		image nullable: false, maxSize: 16384
 		
@@ -165,7 +167,15 @@ class BattleUnit {
 		
 		InputStream stream = ContextHelper.getContextAsset("images/" + unit.imageFile)
 		
-		EntityImage entity = new EntityImage(stream, unit.rgb)
+		EntityImage entity
+		if(unit.camoFile) {
+			InputStream camoStream = ContextHelper.getContextAsset("images/" + unit.camoFile)
+			entity = new EntityImage(stream, camoStream)
+		}
+		else {
+			entity = new EntityImage(stream, unit.rgb)
+		}
+		
 		return entity.toByteArray()
 	}
 	

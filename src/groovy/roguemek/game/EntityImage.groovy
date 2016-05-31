@@ -39,11 +39,16 @@ class EntityImage {
 		this.parent = new Canvas()
 	}
 	
-	public EntityImage(Image base, int tint, Image camo, Component comp) {
-		this(base, null, tint, camo, comp);
+	public EntityImage(InputStream imageStream, InputStream camoStream) {
+		this.base = ImageIO.read(imageStream)
+		this.camo = ImageIO.read(camoStream)
+		imageStream.close()
+		camoStream.close()
+		
+		this.parent = new Canvas()
 	}
 
-	public EntityImage(Image base, Image wreck, int tint, Image camo, Component comp) {
+	public EntityImage(Image base, int tint, Image camo, Component comp) {
 		this.base = base;
 		this.tint = tint;
 		this.camo = camo;
@@ -122,14 +127,22 @@ class EntityImage {
 			int alpha = (pixel >> 24) & 0xff;
 
 			if (alpha != 0) {
-				//int pixel1 = useCamo ? pCamo[i] : tint;
-				//float red1 = ((float) ((pixel1 >> 16) & 0xff)) / 255;
-				//float green1 = ((float) ((pixel1 >> 8) & 0xff)) / 255;
-				//float blue1 = ((float) ((pixel1) & 0xff)) / 255;
-				float red1 = ((float) tint[0]) / 255
-				float green1 = ((float) tint[1]) / 255
-				float blue1 = ((float) tint[2]) / 255
-
+				float red1 = 0f
+				float green1 = 0f
+				float blue1 = 0f
+				
+				if(useCamo) {
+					int pixel1 = pCamo[i]
+					red1 = ((float) ((pixel1 >> 16) & 0xff)) / 255
+					green1 = ((float) ((pixel1 >> 8) & 0xff)) / 255
+					blue1 = ((float) ((pixel1) & 0xff)) / 255
+				}
+				else {
+					red1 = ((float) tint[0]) / 255
+					green1 = ((float) tint[1]) / 255
+					blue1 = ((float) tint[2]) / 255
+				}
+				
 				float black = ((pMech[i]) & 0xff);
 
 				int red2 = Math.round(red1 * black);

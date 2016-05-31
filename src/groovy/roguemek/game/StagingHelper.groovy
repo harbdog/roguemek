@@ -28,14 +28,17 @@ class StagingHelper {
 	}
 	
 	/**
-	 * Gets the camo for the user based on staging data
+	 * Gets the camo (rgb array or camo path string) for the user based on staging data
 	 * @param game
 	 * @param userInstance
 	 * @return
 	 */
 	public static def getCamoForUser(Game game, MekUser userInstance) {
 		StagingUser thisStagingData = getStagingForUser(game, userInstance)
-		if(thisStagingData?.rgbCamo) {
+		if(thisStagingData?.camoFile) {
+			return thisStagingData.camoFile
+		}
+		else if(thisStagingData?.rgbCamo) {
 			return thisStagingData.rgbCamo
 		}
 		

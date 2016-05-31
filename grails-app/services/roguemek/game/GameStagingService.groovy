@@ -444,7 +444,13 @@ class GameStagingService extends AbstractGameService {
 		StagingUser thisStagingData = getStagingForUser(game, userInstance)
 		if(thisStagingData == null) return false
 		
-		thisStagingData.rgbCamo = camo
+		if(camo instanceof Short[]){
+			thisStagingData.rgbCamo = camo
+			thisStagingData.camoFile = null
+		}
+		else if(camo instanceof String) {
+			thisStagingData.camoFile = camo
+		}
 		
 		thisStagingData.validate()
 		if(thisStagingData.hasErrors()) {
@@ -454,9 +460,11 @@ class GameStagingService extends AbstractGameService {
 		
 		thisStagingData.save flush:true
 		
-		// also save the color as preference on the user for later use
-		userInstance.rgbColorPref = camo
-		userInstance.save flush:true
+		if(camo instanceof Short[]){
+			// also save the color as preference on the user for later use
+			userInstance.rgbColorPref = camo
+			userInstance.save flush:true
+		}
 		
 		return true
 	}

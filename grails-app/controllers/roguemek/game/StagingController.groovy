@@ -6,6 +6,7 @@ import grails.converters.*
 import roguemek.*
 import roguemek.chat.*
 import roguemek.model.*
+import roguemek.assets.ContextHelper
 
 @Transactional
 class StagingController {
@@ -742,6 +743,9 @@ class StagingController {
 		if(params.userId == null) return
 		MekUser userToUpdate = MekUser.read(params.userId)
 		
+		Set<String> mechPaths = ContextHelper.getResourcePaths("/assets/images/camo/", false)
+		//log.info mechPaths
+		
 		if(userToUpdate) {
 			// pass along a unit for preview if one exists
 			BattleUnit previewUnit = StagingUser.findByGameAndUser(game, userToUpdate)?.units[0]
@@ -847,6 +851,16 @@ class StagingController {
 					}
 					
 					u.rgb = camoToApply
+					u.camoFile = null
+				}
+				else if(camoToApply instanceof String) {
+					// camo path string is being used
+					if(u.camoFile == camoToApply) {
+						// nothing to change
+						continue
+					}
+					
+					u.camoFile = camoToApply
 				}
 				
 				u.image = BattleUnit.initUnitImage(u)

@@ -28,7 +28,7 @@ class StagingUser {
 	String startingLocation = Game.STARTING_RANDOM
 	
 	Short[] rgbCamo
-	// Camo patternCamo	// TODO: add camo patterns other than solid colors
+	String camoFile
 	
     static constraints = {
 		game nullable: true
@@ -39,6 +39,7 @@ class StagingUser {
 									Game.STARTING_CENTER, Game.STARTING_RANDOM]
 		
 		rgbCamo nullable: true
+		camoFile nullable: true
     }
 	
 	@Override

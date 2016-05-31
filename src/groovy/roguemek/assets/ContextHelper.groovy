@@ -24,23 +24,36 @@ class ContextHelper {
 	}
 	
 	/**
-	 * Gets all resource paths found under the given path as absolute path strings (either on disk on inside war)
+	 * Gets all file only resource paths found under the given path as absolute path strings (either on disk on inside war)
 	 * @param path
 	 * @return
 	 */
 	public static Set<String> getResourcePaths(String path) {
+		return getResourcePaths(path, true)
+	}
+	
+	/**
+	 * Gets all resource paths found under the given path as absolute path strings (either on disk on inside war)
+	 * @param path
+	 * @param filesOnly
+	 * @return
+	 */
+	public static Set<String> getResourcePaths(String path, boolean filesOnly) {
 		Set<String> paths = servletContext.getResourcePaths(path)
 
 		if(paths == null) {
 			// look for the path relatively in the project path instead of the war
 			paths = new ArrayList<String>()
-			if(path.startsWith("/")) {
+			if(path.startsWith("/assets/")) {
+				path = "grails-app" + path
+			}
+			else if(path.startsWith("/")) {
 				path = path.substring(1)
 			}
 			
 			File diskPath = new File(path)
 			diskPath.listFiles().each { file ->
-				if(file.isFile() && file.canRead()) {
+				if((filesOnly ? file.isFile() : true) && file.canRead()) {
 					paths.add(file.getAbsolutePath())	
 				}
 			}
