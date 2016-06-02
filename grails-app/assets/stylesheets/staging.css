@@ -307,7 +307,11 @@ span.unit-mass {
 }
 
 span.unit-name {
-	margin: 0 0.5em 0 0.5em;
+	margin: 0 0.5em 0 0;
+}
+
+span.unit-mass-right {
+	margin: 0 0 0 0.5em;
 }
 
 /* User buttons */
@@ -400,12 +404,13 @@ div.camo-selection {
 	width: 100%;
 }
 
-div.selection-panel {
+div#selection-panel {
 	width: 50%;
 }
 
 div#color-selection {
 	margin: 0 0 1em 0;
+	height: 250px;
 }
 
 div#pattern-tree {
@@ -413,8 +418,9 @@ div#pattern-tree {
 }
 
 div#camo-preview {
-	position: relative;
-	width: 50%;
+	position: fixed;
+	width: 25%;
+	height: 25%;
 	border-left: 1px solid #999;
 	background-color: rgba(255, 255, 255, 0.15);
 }

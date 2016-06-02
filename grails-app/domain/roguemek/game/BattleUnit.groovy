@@ -169,7 +169,7 @@ class BattleUnit {
 		
 		EntityImage entity
 		if(unit.camoFile) {
-			InputStream camoStream = ContextHelper.getContextAsset("images/" + unit.camoFile)
+			InputStream camoStream = ContextHelper.getContextAsset("images/camo/" + unit.camoFile)
 			entity = new EntityImage(stream, camoStream)
 		}
 		else {

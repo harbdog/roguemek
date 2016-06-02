@@ -219,7 +219,7 @@ function updateStagingData(data) {
 		var locationLabels = $("div.player-info[data-userid='"+userId+"'] span.location, div.player-info[data-userid='"+userId+"'] select.location + span.ui-selectmenu-button");
 		locationLabels.effect("highlight", effectOptions, 1500);
 	}
-	else if(data.rgbCamo != null && userId != null) {
+	else if((data.rgbCamo != null || data.patternCamo != null) && userId != null) {
 		// update the units on the page without forcing reload
 		ajaxStageTeamOrUser(null, userId, true);
 	}

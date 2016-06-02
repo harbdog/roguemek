@@ -20,7 +20,7 @@
 			<g:else>
 				<span class="unit-name">${unit?.name}</span>
 			</g:else>
-			<span class="unit-mass right"><g:message code="unit.mass.label" args="[unit?.mass]" /></span>
+			<span class="unit-mass-right right"><g:message code="unit.mass.label" args="[unit?.mass]" /></span>
 		</div>
 		
 		<div class="unit-info-subheader">

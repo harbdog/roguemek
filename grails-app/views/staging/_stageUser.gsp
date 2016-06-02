@@ -1,4 +1,5 @@
 <%@ page 
+	import="org.apache.catalina.util.URLEncoder"
 	import="roguemek.MekUser"
 	import="roguemek.game.BattleUnit"
 	import="roguemek.game.Game"
@@ -10,10 +11,18 @@
 		<g:set var="userCamo" value="${StagingHelper.getCamoForUser(gameInstance, user)}" />
 	
 		<g:if test="${userCamo != null && userCamo instanceof Short[]}">
-			<g:set var="rgbCamoBackground" value="rgb(${userCamo[0]}, ${userCamo[1]}, ${userCamo[2]})" />
+			<g:set var="camoBackground" value="rgb(${userCamo[0]}, ${userCamo[1]}, ${userCamo[2]})" />
 		</g:if>
+		<g:elseif test="${userCamo != null && userCamo instanceof String}">
+			<%
+				def urlEncoder = new URLEncoder()
+				urlEncoder.addSafeCharacter((char)'/')
+				def userCamoURL = urlEncoder.encode(userCamo)
+			%>
+			<g:set var="camoBackground" value="url(../assets/camo/${userCamoURL})" />
+		</g:elseif>
 		<g:else>
-			<g:set var="rgbCamoBackground" value="rgb(255, 0, 0)" />
+			<g:set var="camoBackground" value="rgb(255, 0, 0)" />
 		</g:else>
 		
 		<g:set var="startingLocation" value="${StagingHelper.getStartingLocationForUser(gameInstance, user)}" />
@@ -81,7 +90,7 @@
 		</g:if>
 		
 		<g:if test="${gameInstance?.isInit() && userInstance?.id == user?.id}">
-			<button class="player-camo" data-userid="${user?.id}" style="background: ${rgbCamoBackground};"></button>
+			<button class="player-camo" data-userid="${user?.id}" style="background: ${camoBackground}; background-size: 1.5em;"></button>
 		</g:if>
 	</div>
 </div>

@@ -214,7 +214,7 @@ class BootStrap {
 			// Initialize a sample BattleMech
 			Mech mechA = Mech.findByName("Stalker")
 			battleMechA = new BattleMech(pilot: adminPilot, mech: mechA.loadUnit(), rgb: [255, 0, 0])
-			battleMechA.camoFile = "camo/Kurita/Pesht Regulars/3rd Pesht Regulars.jpg"
+			battleMechA.camoFile = "Kurita/Pesht Regulars/3rd Pesht Regulars.jpg"
 			if(!battleMechA.validate()) {
 				log.error("Errors with battle mech "+battleMechA.mech?.name+":\n")
 				battleMechA.errors.allErrors.each {
@@ -231,7 +231,7 @@ class BootStrap {
 			// and a 2nd mech for the admin pilot
 			Mech mechB = Mech.findByName("Firestarter")
 			battleMechB = new BattleMech(pilot: adminPilot, mech: mechB.loadUnit(), rgb: [255, 105, 105])
-			battleMechB.camoFile = "camo/Kurita/Pesht Regulars/3rd Pesht Regulars.jpg"
+			battleMechB.camoFile = "Kurita/Pesht Regulars/3rd Pesht Regulars.jpg"
 			if(!battleMechB.validate()) {
 				log.error("Errors with battle mech "+battleMechB.mech?.name+":\n")
 				battleMechB.errors.allErrors.each {
@@ -327,7 +327,7 @@ class BootStrap {
 				StagingUser stagingAdmin = new StagingUser(
 						game: sampleGame, user: adminUser,
 						startingLocation: Game.STARTING_NW,
-						camoFile: "camo/Kurita/Pesht Regulars/3rd Pesht Regulars.jpg",
+						camoFile: "Kurita/Pesht Regulars/3rd Pesht Regulars.jpg",
 						rgbCamo: [255, 0, 0],
 						units: [battleMechA, battleMechB])
 				stagingAdmin.save flush:true

@@ -6,6 +6,7 @@
 
 var camoSelectDialog;
 var camoSelectUserID;
+var camoPatternTree;
 
 /**
  * Initializes user related UI components
@@ -17,16 +18,17 @@ function initUserUI() {
 		title: "Select Camo",
     	autoOpen: false,
     	modal: true,
+        resizable: false,
     	// not using show/hide effects since it causes the css spinning preview to start over when finished, making it look jittery
 		close: function() {
 			var origColor = $("button#color-revert").val();
 			var inputColor = $("#color-input").val();
-			if(origColor != inputColor) {
-				// apply selected camo to all player units on server
-				ajaxApplyUnitCamoSelection(camoSelectUserID);
-			}
+            
+			// apply selected camo to all player units on server
+			ajaxApplyUnitCamoSelection(camoSelectUserID);
 			
 			camoSelectUserID = null;
+            camoPatternTree = null;
 		},
 		buttons: {
 			"OK": function() {
@@ -656,15 +658,28 @@ function loadCamoSelect() {
  * Prepares the camo selection screen for being shown
  */
 function showCamoSelect() {
-	var windowWidth = $(window).width();
-	var windowHeight = $(window).height();
-	
+
 	camoSelectUserID = $(".camo-selection").attr("data-userid");
 	
-	camoSelectDialog.dialog("option", "position", {my: "center", at: "center", of: window});
-	camoSelectDialog.dialog("option", "width", windowWidth/2);
-	//camoSelectDialog.dialog("option", "height", windowHeight/2);
-	
+    var idealDialogWidth = 800;
+    
+    var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+    
+    var dialogWidth = idealDialogWidth;
+    if(windowWidth < dialogWidth) {
+        // make sure the width of the dialog in the window isn't too small to show everything
+        dialogWidth = windowWidth;
+    }
+    
+    camoSelectDialog.dialog("option", "position", {my: "top", at: "top", of: window});
+	camoSelectDialog.dialog("option", "width", dialogWidth);
+    
+    // setup the tabs
+    $("#selection-panel").tabs({
+        active: camoSelectionIndex
+    });
+    
     // setup the color selection input
 	$("#color-input").spectrum({
 		preferredFormat: "rgb",
@@ -678,7 +693,7 @@ function showCamoSelect() {
 			$(this).data('changed', true);
 		},
 		hide: function(color) {
-			if($(this).data('changed')) {
+			if($(this).data('changed') || camoPatternSelected) {
 				// changed
 				ajaxUpdateCamoColorSelection(camoSelectUserID, tinycolor($("#color-input").val()));
 			} else {
@@ -690,32 +705,125 @@ function showCamoSelect() {
 	$("button#color-revert").click(function() {
 		var origColor = $("button#color-revert").val();
 		var inputColor = $("#color-input").val();
-		if(origColor != inputColor) {
+		if(origColor != inputColor || camoPatternSelected) {
 			$("#color-input").spectrum("set", origColor);
 			ajaxUpdateCamoColorSelection(camoSelectUserID, tinycolor(origColor));
 		}
 	});
     
     // setup the pattern selection tree
-    $("#pattern-tree").jstree({
+    camoPatternTree = $("#pattern-tree");
+    camoPatternTree.jstree({
         "core": { 
+            "check_callback" : true,
             "themes": { 
                 "name" : "default-dark"
             }
-        }
+        },
+        "types" : {
+            'default' : { 
+                'valid_children' : ['default', 'file'],
+                'icon' : 'jstree-folder' 
+            },
+            'file' : { 
+                'valid_children' : [], 
+                'icon' : 'jstree-file' 
+            }
+        },
+        "plugins" : ['types', 'unique', 'sort', 'wholerow']
     });
     
-    $("#pattern-tree").on("changed.jstree", function(e, data) {
-        console.log(data.node.text);
+    camoPatternTree.on("changed.jstree", function(e, data) {
+        ajaxUpdateCamoPathSelection(camoSelectUserID, data);
+    }).on('create_node.jstree', function(e, data) {
+        //console.log("CREATED!");
     });
 	
 	camoSelectDialog.dialog("open");
 }
 
 /**
+ * Requests the server to update based on a camo pattern path selection that was made
+ */
+function ajaxUpdateCamoPathSelection(userId, eventData) {
+    
+    var node = eventData.node;
+    var inst = eventData.instance;
+    
+    if(userId == null || node == null) return;
+    
+    if(node.children.length > 0) {
+        // children have already been loaded, close/open the node based on it's current state
+        if(inst.is_open(node)) {
+            inst.close_node(node);
+        }
+        else {
+            inst.open_node(node);
+        }
+    }
+    else {
+        // if folder node, build the camo path to request fetching from
+        var $node = $("#"+node.id);
+        var patternPath = $node.attr("data-full-path");
+        
+        var inputMap = {
+                userId: userId,
+                path: patternPath
+        }
+        
+        $node.addClass("jstree-loading");
+        
+        $.getJSON("camoPath", inputMap)
+    		.fail(function(jqxhr, textStatus, error) {
+    			var err = textStatus + ", " + error;
+    			console.log( "Request Failed: " + err );
+    		})
+    		.done(function(data) {
+                $node.removeClass("jstree-loading");
+                
+    			if(data != null) {
+                    if(data.updated && data.image) {
+                        camoPatternSelected = true;
+                        
+                        // update the preview unit image
+    					var base64 = _arrayBufferToBase64(data.image);
+    					
+    					$("img.camo-unit-preview").attr("src", "data:image/gif;base64," + base64);
+                    }
+                    else if(data.camoPatternPaths != null) {
+                        $.each(data.camoPatternPaths, function(i, path) {
+                            var pathName = path;
+                            var pathType = "default";
+                            if(pathName.indexOf(".jpg") > 0) {
+                                pathType = "file";
+                                pathName = pathName.substr(0, pathName.indexOf(".jpg"));
+                            }
+                            
+                            var newNodeId = inst.create_node(node, {
+                                        data: {type: pathType},
+                                        type: pathType,
+                                        text: pathName,
+                                        id: node.id +"_"+ i,
+                                        li_attr: {'data-full-path': patternPath +"/"+ path},
+                                    }, "last", function(new_node) {
+                                        //console.log(new_node);
+                                    });
+                            
+                        });
+                        
+                        inst.open_node(node);
+                    }
+    			}
+    		});
+    }
+}
+
+/**
  * Updates the camo color section from server with unit preview
  */
 function ajaxUpdateCamoColorSelection(userId, rgbTinyColor) {
+    camoPatternSelected = false;
+    
 	var inputMap = {
 			userId: userId, 
 			rgbCamo: rgbTinyColor.toRgb()

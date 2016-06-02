@@ -459,15 +459,16 @@ class StagingController {
 			def testPilot = new Pilot(temporary: true, firstName: Name.getRandom().name, lastName: Surname.getRandom().surname, ownerUser: userInstance, status: Pilot.STATUS_ACTIVE)
 			testPilot.save flush: true
 			
+			battleUnitInstance = new BattleMech(pilot: testPilot, mech: unitInstance, x: 0, y: 0, heading: 3)
+			
 			// set the unit color to the color selected by the player
 			def camoSelection = StagingHelper.getCamoForUser(game, userInstance)
-			
-			def rgbCamo = [255, 0, 0]
 			if(camoSelection instanceof Short[]) {
-				rgbCamo = camoSelection
+				battleUnitInstance.rgb = camoSelection
 			}
-			
-			battleUnitInstance = new BattleMech(pilot: testPilot, mech: unitInstance, x: 0, y: 0, heading: 3, rgb: rgbCamo)
+			else if(camoSelection instanceof String) {
+				battleUnitInstance.camoFile = camoSelection
+			}
 		}
 		
 		if(battleUnitInstance == null) return
@@ -756,6 +757,8 @@ class StagingController {
 					camoPatternPaths << regPath
 				}
 			}
+			
+			//camoPatternPaths.sort( true, { a, b -> a <=> b } )
 
 			render template: 'camoSelect', model:[gameInstance:game, userInstance:userToUpdate, previewUnit:previewUnit, camoPatternPaths: camoPatternPaths]
 		}
@@ -765,7 +768,63 @@ class StagingController {
 	}
 	
 	/**
-	 * Updates the preview camo selection of the user
+	 * Handles selection of a camo pattern path to either select the camo or expand the path to list contents
+	 */
+	def camoPath() {
+		def userInstance = currentUser()
+		if(userInstance == null) return
+		
+		Game game = Game.read(session.game)
+		if(game == null || !game.isInit()) return
+		
+		if(params.userId == null) return
+		MekUser userToUpdate = MekUser.read(params.userId)
+		if(userToUpdate == null) return
+		
+		//if(params.path == null) return
+		def patternPath = params.path ?: ""
+		
+		def result = [
+			updated: false
+		]
+		
+		if(patternPath.toLowerCase().endsWith(".jpg")) {
+			// pattern was chosen
+			def camoUpdated = gameStagingService.setCamoForUser(game, userToUpdate, patternPath)
+			
+			// apply the new camo to the first unit for the user so it can be displayed as a preview
+			BattleUnit u = StagingUser.findByGameAndUser(game, userToUpdate)?.units[0]
+			if(u != null) {
+				u.camoFile = patternPath
+				u.image = BattleUnit.initUnitImage(u)
+				
+				u.save flush:true
+			}
+			
+			result.updated = camoUpdated
+			result.image = u?.image
+		}
+		else {
+			// path was chosen, generate child level camo pattern folders and image files
+			def camoPatternPaths = []
+			def pathRegex = ~/.*[\\|\/](.*)/
+			Set<String> camoPaths = ContextHelper.getResourcePaths("/assets/images/camo/${patternPath}", false)
+			camoPaths.each { path ->
+				path.find(pathRegex) { fullMatch, regPath ->
+					camoPatternPaths << regPath
+				}
+			}
+			
+			//camoPatternPaths.sort( true, { a, b -> a <=> b } )
+			
+			result.camoPatternPaths = camoPatternPaths
+		}
+		
+		render result as JSON
+	}
+	
+	/**
+	 * Updates the RGB preview camo selection of the user
 	 * @return
 	 */
 	def camoUpdate() {
@@ -811,13 +870,14 @@ class StagingController {
 		BattleUnit u = StagingUser.findByGameAndUser(game, userToUpdate)?.units[0]
 		if(u != null) {
 			u.rgb = rgbCamo
+			u.camoFile = null
 			u.image = BattleUnit.initUnitImage(u)
 			
 			u.save flush:true
 		}
 		
 		def result = [
-			updated:camoUpdated,
+			updated: camoUpdated,
 			image: u?.image
 		]
 		
@@ -851,7 +911,7 @@ class StagingController {
 			for(BattleUnit u in StagingHelper.getUnitsForUser(game, userToUpdate)) {
 				if(camoToApply instanceof Short[]){
 					// groovy list "equals" only works if cast as int[] array
-					if(u.rgb != null
+					if(u.rgb != null && u.camoFile == null
 							&& (camoToApply as int[]).equals(u.rgb as int[])){
 						// nothing to change
 						continue
@@ -879,16 +939,30 @@ class StagingController {
 			camoApplied = false
 		}
 		
-		if(camoApplied
-				&& camoToApply instanceof Short[]) {
-			def data = [
-				user: userToUpdate.id,
-				rgbCamo: [camoToApply[0], camoToApply[1], camoToApply[2]]
-			]
-			Object[] messageArgs = [userToUpdate.toString()]
-			gameChatService.addMessageUpdate(game, "staging.camo.color.changed", messageArgs)
+		if(camoApplied){
+			def data
+			if(camoToApply instanceof Short[]) {
+				data = [
+					user: userToUpdate.id,
+					rgbCamo: [camoToApply[0], camoToApply[1], camoToApply[2]]
+				]
+				Object[] messageArgs = [userToUpdate.toString()]
+				gameChatService.addMessageUpdate(game, "staging.camo.color.changed", messageArgs)
+				
+				gameStagingService.addStagingUpdate(game, data)
+			}
+			else if(camoToApply instanceof String) {
+				data = [
+					user: userToUpdate.id,
+					patternCamo: camoToApply
+				]
+				Object[] messageArgs = [userToUpdate.toString()]
+				gameChatService.addMessageUpdate(game, "staging.camo.pattern.changed", messageArgs)
+			}
 			
-			gameStagingService.addStagingUpdate(game, data)
+			if(data) {
+				gameStagingService.addStagingUpdate(game, data)
+			}
 		}
 		
 		def result = [
