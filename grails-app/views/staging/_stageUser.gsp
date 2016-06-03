@@ -15,11 +15,9 @@
 		</g:if>
 		<g:elseif test="${userCamo != null && userCamo instanceof String}">
 			<%
-				def urlEncoder = new URLEncoder()
-				urlEncoder.addSafeCharacter((char)'/')
-				def userCamoURL = urlEncoder.encode(userCamo)
+				String userCamoURL = "url(\"../assets/camo/${userCamo}\")"
 			%>
-			<g:set var="camoBackground" value="url(../assets/camo/${userCamoURL})" />
+			<g:set var="camoBackground" value="${userCamoURL}" />
 		</g:elseif>
 		<g:else>
 			<g:set var="camoBackground" value="rgb(255, 0, 0)" />

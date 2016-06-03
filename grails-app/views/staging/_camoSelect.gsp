@@ -35,7 +35,7 @@
 			<div id="pattern-tree">
 				<ul>
 					<g:if test="${isPattern}">
-						<li data-full-path="${userCamo}" data-jstree='{"type": "file", "opened": true, "selected": true}'><a href="#">- Current -</a></li>
+						<li data-full-path="${userCamo}" data-jstree='{"type": "file", "opened": true, "selected": true, "icon": "../assets/camo/${userCamo}"}'><a href="#">- Current -</a></li>
 					</g:if>
 					
 					<g:each in="${camoPatternPaths}" status="i" var="path">

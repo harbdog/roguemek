@@ -792,19 +792,25 @@ function ajaxUpdateCamoPathSelection(userId, eventData) {
                     }
                     else if(data.camoPatternPaths != null) {
                         $.each(data.camoPatternPaths, function(i, path) {
+                            
+                            var pathFull = patternPath +"/"+ path;
                             var pathName = path;
                             var pathType = "default";
+                            var pathIcon = null;
+                            
                             if(pathName.indexOf(".jpg") > 0) {
                                 pathType = "file";
                                 pathName = pathName.substr(0, pathName.indexOf(".jpg"));
+                                pathIcon = "../assets/camo/"+ pathFull;
                             }
                             
                             var newNodeId = inst.create_node(node, {
                                         data: {type: pathType},
                                         type: pathType,
                                         text: pathName,
+                                        icon: pathIcon,
                                         id: node.id +"_"+ i,
-                                        li_attr: {'data-full-path': patternPath +"/"+ path},
+                                        li_attr: {'data-full-path': pathFull}
                                     }, "last", function(new_node) {
                                         //console.log(new_node);
                                     });

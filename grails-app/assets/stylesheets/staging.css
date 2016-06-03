@@ -417,6 +417,10 @@ div#pattern-tree {
 	height: 100%;
 }
 
+div#pattern-tree li[data-full-path] > a.jstree-anchor > i.jstree-icon:not(.jstree-folder) {
+	background-size: 24px !important;
+}
+
 div#camo-preview {
 	position: fixed;
 	width: 25%;
