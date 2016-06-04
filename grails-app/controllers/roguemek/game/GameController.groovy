@@ -218,12 +218,6 @@ class GameController {
     def show(Game gameInstance) {
         respond gameInstance
     }
-	
-	@Transactional(readOnly = true)
-	@Secured(['ROLE_ROOT'])
-	def test(Game gameInstance) {
-		respond gameInstance
-	}
 
 	@Transactional(readOnly = true)
     def create() {

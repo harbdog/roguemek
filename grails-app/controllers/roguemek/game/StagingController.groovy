@@ -127,6 +127,10 @@ class StagingController {
 			GameTeam.executeUpdate(
 					"delete GameTeam gt where gt.game=:game and gt.user=:user",
 					[game: game, user: userInstance])
+                    
+            GameChatUser.executeUpdate(
+    				"delete GameChatUser gc where gc.game=:game and gc.chatUser=:user",
+    				[game: game, user: userInstance])
 			
 			// TODO: remove any of the user's BattleUnit from the database, if it is not owned (also remove the pilot if not owned)
 
@@ -662,6 +666,10 @@ class StagingController {
 
 		GameTeam.executeUpdate(
 				"delete GameTeam gt where gt.game=:game and gt.user=:user",
+				[game: game, user: userToRemove])
+				
+		GameChatUser.executeUpdate(
+				"delete GameChatUser gc where gc.game=:game and gc.chatUser=:user",
 				[game: game, user: userToRemove])
 
 		StagingUser thisStagingData = StagingHelper.getStagingForUser(game, userToRemove)
