@@ -1,5 +1,8 @@
 
-<%@ page import="roguemek.game.Game" %>
+<%@ page import="roguemek.game.Game"
+		 import="roguemek.game.GameChatUser"
+		 import="roguemek.game.StagingUser"
+%>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -67,6 +70,42 @@
 					
 						<g:each in="${gameInstance.users}" var="u">
 						<span class="property-value" aria-labelledby="users-label"><g:link controller="mekUser" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
+						</g:each>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${gameInstance?.isInit()}">
+				<%
+					def stagedUsers = []
+					def stagedUserObjects = StagingUser.findAllByGame(gameInstance)
+					for(StagingUser stagedObject in stagedUserObjects) {
+						stagedUsers << stagedObject?.user
+					}
+				%>
+				<li class="fieldcontain">
+					<span id="staged-users-label" class="property-label"><g:message code="game.staged.users.label" default="Staged Users" /></span>
+					
+						<g:each in="${stagedUsers}" var="u">
+						<span class="property-value" aria-labelledby="staged-users-label"><g:link controller="mekUser" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
+						</g:each>
+					
+				</li>
+				</g:if>
+				
+				<g:if test="${gameInstance?.isInit() || gameInstance?.isActive()}">
+				<%
+					def chatUsers = []
+					def chatUserObjects = GameChatUser.findAllByGame(gameInstance)
+					for(GameChatUser gameChatObject in chatUserObjects) {
+						chatUsers << gameChatObject?.chatUser
+					}
+				%>
+				<li class="fieldcontain">
+					<span id="chat-users-label" class="property-label"><g:message code="game.chat.users.label" default="Chat Users" /></span>
+					
+						<g:each in="${chatUsers}" var="u">
+						<span class="property-value" aria-labelledby="chat-users-label"><g:link controller="mekUser" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
 						</g:each>
 					
 				</li>
