@@ -30,12 +30,15 @@ class ChatMeteorHandler extends HttpServlet {
 	void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if(!gameChatService.isAuthenticated(request)) return
 		
+		def user = gameChatService.currentUser(request)
+		if(user == null) return
+		
 		String mapping = MAPPING_ROOT + request.getPathInfo()
 		
 		def session = request.getSession(false)
 		if(session.game != null &&
 				MAPPING_GAME.equals(mapping)){
-			mapping += "/"+session.game
+			mapping += "/${session.game}/${user.id}"
 		}
 				
 		Broadcaster b = atmosphereMeteor.broadcasterFactory.lookup(SimpleBroadcaster.class, mapping, true)
@@ -82,13 +85,23 @@ class ChatMeteorHandler extends HttpServlet {
 			def user = gameChatService.currentUser(request)
 			if(user == null) return
 			
-			if(session.game != null &&
-					MAPPING_GAME.equals(mapping)){
-				mapping += "/"+session.game
-				
+			def isTeamChat = message.startsWith("/t")
+			
+			if(session.game != null && MAPPING_GAME.equals(mapping)){
+				mapping += "/${session.game}"
 				jsonMap.game = session.game
 				
-				gameChatService.sendChat(user, jsonMap, mapping)
+				if(isTeamChat) {
+					// find the team number for the user to add to the mapping
+					def gameInstance = Game.read(session.game)
+					def teamNum = gameInstance?.getTeamForUser(user) ?: null
+					if(teamNum != null) {
+						gameChatService.sendTeamChat(gameInstance, teamNum, user, jsonMap, mapping)
+					}
+				}
+				else {
+					gameChatService.sendChat(user, jsonMap, mapping)
+				}
 			}
 		}
 	}

@@ -218,6 +218,28 @@ class Game {
 	}
 	
 	/**
+	 * Given a team number, returns list of users set to that team
+	 */
+	public def getUsersForTeam(int teamNum) {
+		def teamUsers = []
+		if(teamNum < 0) return teamUsers
+		
+		def teamUserCriteria = GameTeam.createCriteria()
+		def teamUserList = teamUserCriteria.list {
+			and {
+				eq("game", this)
+				eq("team", teamNum)
+			}
+		}
+		
+		teamUserList.each { GameTeam gt ->
+			teamUsers << gt.user
+		}
+		
+		return teamUsers
+	}
+	
+	/**
 	 * Gets the list of users for each team number in this game
 	 * @return keyed by team number (negative number if the user has no team or a positive integer if it does), value is list of users in the team
 	 */

@@ -27,14 +27,52 @@ class GameChatService extends AbstractGameService {
 			return
 		}
 		
+		def time = new Date()
+		
+		// chat is to all participants
+		mapping += "/*"
+		
 		data.message = message
 		data.user = user.toString()
-		data.time = new Date().getTime()
+		data.time = time.getTime()
 		
 		// record in the database using async to do it in parallel to the broadcast
 		recordChat(user, data)
 		
 		metaBroadcaster.broadcastTo(mapping, data)
+	}
+	
+	def sendTeamChat(game, team, user, data, mapping) {
+		// clean the message to not allow some markup
+		def message = htmlCleaner.cleanHtml(data.message, 'simpleText')?.trim()
+		if(game == null || message == null || message.length() == 0) {
+			return
+		}
+		
+		def time = new Date()
+		
+		// strip out the '/t'...'/team' portion of the message and replace with '[TEAM]'
+		def teamRegex = /^(\/t\w+|\/t)/
+		message = message.replaceFirst(teamRegex, "[TEAM]")
+		
+		data.message = message
+		data.user = user.toString()
+		data.time = time.getTime()
+		
+		// TODO: record to the database in a way such that it won't be displayed to enemy team if they reload page
+		// recordChat(user, data)
+		log.info "(${time}) ${data.user}: ${data.message}"
+		
+		// send only to members of the team
+		def teamUsers = game.getUsersForTeam(team)
+		if(teamUsers == null || teamUsers.size() == 0) {
+			teamUsers = [user]
+		}
+		
+		teamUsers.each { MekUser u ->
+			def userMapping = "${mapping}/${u.id}"
+			metaBroadcaster.broadcastTo(userMapping, data)
+		}
 	}
 	
 	/**
@@ -71,7 +109,7 @@ class GameChatService extends AbstractGameService {
 	def addMessageUpdate(Game game, String messageCode, Object[] messageArgs, time) {
 		if(game == null || messageCode == null) return
 		
-		String mapping = ChatMeteorHandler.MAPPING_GAME +"/"+ game.id
+		String mapping = "${ChatMeteorHandler.MAPPING_GAME}/${game.id}/*"
 		String message = messageSource.getMessage(messageCode, messageArgs, LocaleContextHolder.locale)
 		
 		log.debug "GameChatService.addMessageUpdate: ${mapping} = ${message}"
