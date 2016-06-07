@@ -321,19 +321,37 @@ class GameController {
             return
         }
 		
-		// clear and recreate users, spectators and units lists 
+		if(params.chatUsers == null) {
+			// make sure no chat users remain
+			GameChatUser.executeUpdate(
+					"delete GameChatUser gc where gc.game=:game", [game: gameInstance])
+		}
+		else{
+			// make sure only the given chat users remain
+			def chatUsers = []
+			params.list("chatUsers").each { def userId ->
+				MekUser cUser = MekUser.read(userId)
+				if(cUser != null) chatUsers << cUser
+			}
+			
+			GameChatUser.executeUpdate(
+    				"delete GameChatUser gc where gc.game=:game and gc.chatUser not in (:userList)",
+    				[game: gameInstance, userList: chatUsers])
+		}
+		
+		// clear and recreate users and spectators lists 
 		// otherwise they can duplicate or not remove previous entries
 		gameInstance.users.clear()
 		gameInstance.spectators.clear()
-		gameInstance.units.clear()
+        gameInstance.units.clear()
 		
 		if(params.users instanceof String) params.users = [params.users]
 		params.users.each { it -> gameInstance.users.add(MekUser.read(it)) }
 		
 		if(params.spectators instanceof String) params.spectators = [params.spectators]
 		params.spectators.each { it -> gameInstance.spectators.add(MekUser.read(it)) }
-		
-		if(params.units instanceof String) params.units = [params.units]
+        
+        if(params.units instanceof String) params.units = [params.units]
 		params.units.each { it -> gameInstance.units.add(BattleUnit.read(it)) }
 		
 		gameInstance.validate()

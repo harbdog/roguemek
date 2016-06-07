@@ -53,6 +53,24 @@
 				</li>
 				</g:if>
 				
+				<g:if test="${gameInstance?.isInit() || gameInstance?.isActive()}">
+				<%
+					def chatUsers = []
+					def chatUserObjects = GameChatUser.findAllByGame(gameInstance)
+					for(GameChatUser gameChatObject in chatUserObjects) {
+						chatUsers << gameChatObject?.chatUser
+					}
+				%>
+				<li class="fieldcontain">
+					<span id="chat-users-label" class="property-label"><g:message code="game.chat.users.label" default="Chat Users" /></span>
+					
+						<g:each in="${chatUsers}" var="u">
+						<span class="property-value" aria-labelledby="chat-users-label"><g:link controller="mekUser" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
+						</g:each>
+					
+				</li>
+				</g:if>
+				
 				<g:if test="${gameInstance?.spectators}">
 				<li class="fieldcontain">
 					<span id="spectators-label" class="property-label"><g:message code="game.spectators.label" default="Spectators" /></span>
@@ -93,25 +111,18 @@
 				</li>
 				</g:if>
 				
-				<g:if test="${gameInstance?.isInit() || gameInstance?.isActive()}">
-				<%
-					def chatUsers = []
-					def chatUserObjects = GameChatUser.findAllByGame(gameInstance)
-					for(GameChatUser gameChatObject in chatUserObjects) {
-						chatUsers << gameChatObject?.chatUser
-					}
-				%>
-				<li class="fieldcontain">
-					<span id="chat-users-label" class="property-label"><g:message code="game.chat.users.label" default="Chat Users" /></span>
-					
-						<g:each in="${chatUsers}" var="u">
-						<span class="property-value" aria-labelledby="chat-users-label"><g:link controller="mekUser" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
+				<g:if test="${gameInstance?.isInit()}">
+					<li class="fieldcontain">
+						<span id="units-label" class="property-label"><g:message code="game.staged.units.label" default="Staged Units" /></span>
+						
+						<g:each in="${gameInstance.getStagingUnitsByUser()}" var="entry">
+							<g:each in="${entry.value}" var="u">
+								<span class="property-value" aria-labelledby="units-label"><g:link controller="battleMech" action="show" id="${u.id}">${u?.encodeAsHTML()}</g:link></span>
+							</g:each>
 						</g:each>
-					
-				</li>
+					</li>
 				</g:if>
-				
-				<g:if test="${gameInstance?.units}">
+				<g:elseif test="${gameInstance?.units}">
 					<li class="fieldcontain">
 						<span id="units-label" class="property-label"><g:message code="game.units.label" default="Units" /></span>
 						
@@ -120,7 +131,7 @@
 							</g:each>
 						
 					</li>
-				</g:if>
+				</g:elseif>
 				
 				<g:if test="${gameInstance?.board}">
 				<li class="fieldcontain">
