@@ -21,13 +21,17 @@ class ChatMessage {
 	
 	// optional values that reference external resources
 	String optGameId
+	String recipient
 	
     static constraints = {
 		user nullable: true
 		time nullable: false
 		message blank: false
 		
+		// optGameId: optional ID of the game referenced by the message
 		optGameId nullable: true
+		// recipient: optional team numer (or later, user ID) of the recipient of the message
+		recipient nullable: true
     }
 	
 	def beforeInsert() {

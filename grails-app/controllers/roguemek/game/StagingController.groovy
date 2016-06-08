@@ -89,7 +89,16 @@ class StagingController {
 			sortedUsers = game.users.sort( false, { u1, u2 -> u1.callsign <=> u2.callsign } )
 		}
 		
-		def chatMessages = ChatMessage.findAllByOptGameId(game.id, [sort: "time", order: "asc"])
+		def recipients = [String.valueOf(game.getTeamForUser(userInstance)), userInstance.id]
+		def chatCriteria = ChatMessage.createCriteria()
+		def chatMessages = chatCriteria.list {
+			eq("optGameId", game.id)
+			or {
+				isNull("recipient")
+				'in'("recipient", recipients)
+			}
+			order("time", "asc")
+		}
 		
 		if(delayedStagingAnnouncement) {
 			def data = [

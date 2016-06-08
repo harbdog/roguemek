@@ -197,6 +197,8 @@ class RogueMekController {
 			redirect mapping:"dropship"
 		}
 		else{
+			def userInstance = currentUser()
+			
 			// load some tables and maps to help display the game result data
 			def winners = []
 			def killMap = [:]	// [key: MekUser, value: [KillDeath,...],...]
@@ -226,7 +228,27 @@ class RogueMekController {
 			}
 			
 			// load chat messages
-			def chatMessages = ChatMessage.findAllByOptGameId(game?.id, [sort: "time", order: "asc"])
+			def recipients = [String.valueOf(game.getTeamForUser(userInstance)), userInstance.id]
+			def chatCriteria = ChatMessage.createCriteria()
+			def chatMessages
+			if(isRootUser()) {
+				// let admin/root user see all messages instead of only for their team
+				chatMessages = chatCriteria.list {
+					eq("optGameId", game.id)
+					order("time", "asc")
+				}
+			}
+			else {
+				// all other users can only see if all or for their team
+				chatMessages = chatCriteria.list {
+					eq("optGameId", game.id)
+					or {
+						isNull("recipient")
+						'in'("recipient", recipients)
+					}
+					order("time", "asc")
+				}
+			}
 			
 			// load users grouped and identified with their team
 			def usersByTeam = game?.getUsersByTeam()
@@ -265,6 +287,22 @@ class RogueMekController {
 			}
 			'*'{ render status: NO_CONTENT }
 		}
+	}
+	
+	/**
+	 * Returns true if the current user's roles contains the ROOT role
+	 * @return
+	 */
+	private boolean isRootUser() {
+		def roles = springSecurityService.getPrincipal().getAuthorities()
+		
+		for(def role in roles) {
+			if(role.getAuthority() == Role.ROLE_ROOT) {
+				return true
+			}
+		}
+		
+		return false
 	}
 	
 	private MekUser currentUser() {

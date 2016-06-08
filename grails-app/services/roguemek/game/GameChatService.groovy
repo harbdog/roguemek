@@ -37,7 +37,7 @@ class GameChatService extends AbstractGameService {
 		data.time = time.getTime()
 		
 		// record in the database using async to do it in parallel to the broadcast
-		recordChat(user, data)
+		recordChat(user, data, null)
 		
 		metaBroadcaster.broadcastTo(mapping, data)
 	}
@@ -60,8 +60,7 @@ class GameChatService extends AbstractGameService {
 		data.time = time.getTime()
 		
 		// TODO: record to the database in a way such that it won't be displayed to enemy team if they reload page
-		// recordChat(user, data)
-		log.info "(${time}) ${data.user}: ${data.message}"
+		recordChat(user, data, team)
 		
 		// send only to members of the team
 		def teamUsers = game.getUsersForTeam(team)
@@ -82,12 +81,14 @@ class GameChatService extends AbstractGameService {
 	 * @return
 	 */
 	@Async
-	def recordChat(user, data) {
-		log.debug "GameChatService.recordChat - ${user}: ${data}"
+	def recordChat(user, data, recipient) {
+		if(recipient < 0) recipient = null
+		
+		log.debug "GameChatService.recordChat - ${user}${(recipient != null) ? "@"+recipient : ""}: ${data}"
 		if(data == null) return
 		
 		if(data.message && data.time && data.game) {
-			ChatMessage chat = new ChatMessage(user: user, message: data.message, time: new Date(data.time), optGameId: data.game)
+			ChatMessage chat = new ChatMessage(user: user, message: data.message, time: new Date(data.time), optGameId: data.game, recipient: recipient)
 			chat.save flush: true
 		}
 	}
@@ -115,7 +116,7 @@ class GameChatService extends AbstractGameService {
 		log.debug "GameChatService.addMessageUpdate: ${mapping} = ${message}"
 		
 		def messageData = [time: time, message: message, game: game.id]
-		recordChat(null, messageData)
+		recordChat(null, messageData, null)
 		
 		def chatResponse = [type: "chat", message: message, time: time] as JSON
 		metaBroadcaster.broadcastTo(mapping, chatResponse)

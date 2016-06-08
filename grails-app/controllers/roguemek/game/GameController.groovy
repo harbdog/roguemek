@@ -61,7 +61,16 @@ class GameController {
 				
 				def sortedUsers = g.users.sort( false, { u1, u2 -> u1.callsign <=> u2.callsign } )
 				
-				def chatMessages = ChatMessage.findAllByOptGameId(g.id, [max: 200, sort: "time", order: "asc"])
+				def recipients = [String.valueOf(g.getTeamForUser(user)), user.id]
+				def chatCriteria = ChatMessage.createCriteria()
+				def chatMessages = chatCriteria.list {
+					eq("optGameId", g.id)
+					or {
+						isNull("recipient")
+						'in'("recipient", recipients)
+					}
+					order("time", "asc")
+				}
 				
 				respond g, model: [userInstance: user, sortedUsers: sortedUsers, chatMessages:chatMessages]
 			}
