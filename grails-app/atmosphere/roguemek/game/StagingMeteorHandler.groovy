@@ -38,7 +38,7 @@ class StagingMeteorHandler extends HttpServlet {
 		String mapping = MAPPING_ROOT + request.getPathInfo()
 		
 		def session = request.getSession(false)
-		if(session.game != null &&
+		if(session?.game != null &&
 				MAPPING_GAME.equals(mapping)){
 			mapping += "/"+session.game
 		}
@@ -77,7 +77,7 @@ class StagingMeteorHandler extends HttpServlet {
 		def jsonMap = JSON.parse(request.getReader().readLine().trim()) as Map
 		String action = jsonMap.containsKey("action") ? jsonMap.action.toString() : null
 		
-		if(action != null && session.game != null 
+		if(action != null && session?.game != null 
 				&& MAPPING_GAME.equals(mapping)) {
 			// handle connection of the user to the game chat during staging
 			if(action == "connectUser") {
