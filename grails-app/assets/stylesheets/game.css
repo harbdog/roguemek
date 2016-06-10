@@ -150,13 +150,15 @@ div.chat-line {
 }
 
 span.chat-time {
-	margin-right: 5px;
 	color: #C0C0C0;
 }
 
 /* TODO: use #FF4646 for enemy chat... allow custom color setting? */
 span.chat-user {
-	margin-right: 5px;
+	color: #99CCFF;
+}
+
+span.team-message {
 	color: #99CCFF;
 }
 

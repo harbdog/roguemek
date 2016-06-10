@@ -1555,8 +1555,8 @@ function getUnitGroupDisplays(unit) {
  * Adds the given message to the end of the message display and scrolls to the bottom for it
  * @param message
  */
-function addMessageUpdate(message, time, user) {
-	messagingDisplay.addMessage(message, time, user, true);
+function addMessageUpdate(message, time, user, recipient) {
+	messagingDisplay.addMessage(message, time, user, recipient, true);
 }
 
 /**

@@ -58,6 +58,7 @@ class GameChatService extends AbstractGameService {
 		data.message = message
 		data.user = user.toString()
 		data.time = time.getTime()
+		data.recipient = team
 		
 		// TODO: record to the database in a way such that it won't be displayed to enemy team if they reload page
 		recordChat(user, data, team)

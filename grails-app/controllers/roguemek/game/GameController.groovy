@@ -16,6 +16,7 @@ class GameController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
 	GameService gameService
+	GameChatService gameChatService
 	GameStagingService gameStagingService
 	GameControllerService gameControllerService
 	GameOverService gameOverService
@@ -285,6 +286,10 @@ class GameController {
 		
 		// generate staging information for the owner user
 		gameStagingService.generateStagingForUser(gameInstance, userInstance)
+		
+		// send welcome message
+		Object[] messageArgs = [userInstance.toString()]
+		gameChatService.addMessageUpdate(gameInstance, "staging.user.init", messageArgs)
 
 		request.withFormat {
 			form multipartForm {

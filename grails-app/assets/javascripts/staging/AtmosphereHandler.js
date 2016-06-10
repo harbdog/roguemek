@@ -36,15 +36,21 @@ function handleChat(data) {
 	if (type == 'chat') {
 		var $chat = $('#chat-window');
 		
-		var chatLine = "<div class='chat-line'>"
+		var chatLine = "<div class='chat-line'>\n"
 		if(data.time != null) {
-			chatLine += "<span class='chat-time'>"+"["+new Date(data.time).toLocaleTimeString()+"]"+"</span>";
+			chatLine += "<span class='chat-time'>"+"["+new Date(data.time).toLocaleTimeString()+"]"+"</span>\n";
 		}
 		if(data.user != null) {
-			chatLine += "<span class='chat-user'>"+ data.user +":</span>";
+			chatLine += "<span class='chat-user'>"+ data.user +":</span>\n";
 		}
 		if(data.message != null) {
-			chatLine += "<span class='chat-message'>"+ data.message +"</span>";
+			if(data.recipient != null) {
+				// TODO: handle team message differently from tell message, when tells are implemented
+				chatLine += "<span class='team-message'>"+ data.message +"</span>\n";
+			}
+			else {
+				chatLine += "<span class='chat-message'>"+ data.message +"</span>\n";
+			}
 		}
 		chatLine += "</div>";
 		

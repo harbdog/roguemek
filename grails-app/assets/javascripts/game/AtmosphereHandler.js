@@ -26,7 +26,7 @@ function handleChat(data) {
 	var type = data.type;
 	if (type == CHAT_REQUEST_TYPE
 			&& data.message != null && data.message.length > 0) {
-		addMessageUpdate(data.message, data.time, data.user);
+		addMessageUpdate(data.message, data.time, data.user, data.recipient);
 	}
 }
 

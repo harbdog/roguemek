@@ -288,6 +288,16 @@ function updateStagingData(data) {
 		
 		// move the player div to the correct new team div
 		ajaxStageTeamOrUser(teamNum, userId);
+		
+		if(userId == currentUserId) {
+			// show/hide the team chat note
+			if(teamNum >= 0) {
+				$(".team-chat-note").show();
+			}
+			else {
+				$(".team-chat-note").hide();
+			}
+		}
 	}
 	else if(data.gameState != null) {
 		if(data.gameState == "A") {

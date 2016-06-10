@@ -231,8 +231,8 @@ class RogueMekController {
 			def recipients = [String.valueOf(game.getTeamForUser(userInstance)), userInstance.id]
 			def chatCriteria = ChatMessage.createCriteria()
 			def chatMessages
-			if(isRootUser()) {
-				// let admin/root user see all messages instead of only for their team
+			if(isAdminUser()) {
+				// let admin user see all messages instead of only for their team
 				chatMessages = chatCriteria.list {
 					eq("optGameId", game.id)
 					order("time", "asc")
@@ -290,14 +290,14 @@ class RogueMekController {
 	}
 	
 	/**
-	 * Returns true if the current user's roles contains the ROOT role
+	 * Returns true if the current user's roles contains the ADMIN role
 	 * @return
 	 */
-	private boolean isRootUser() {
+	private boolean isAdminUser() {
 		def roles = springSecurityService.getPrincipal().getAuthorities()
 		
 		for(def role in roles) {
-			if(role.getAuthority() == Role.ROLE_ROOT) {
+			if(role.getAuthority() == Role.ROLE_ADMIN) {
 				return true
 			}
 		}

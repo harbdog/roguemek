@@ -62,7 +62,9 @@
 								<%-- TODO: figure out showing in the locale time style like Date.toLocaleTimeString in javascript --%>
 								<span class="chat-time">[<g:formatDate format="h:mm:ss a" date="${thisChat.time}"/>]</span>
 								<g:if test="${thisChat.user}"><span class="chat-user">${thisChat.user}:</span></g:if>
-								<span class="chat-message">${thisChat.message}</span>
+								
+								<g:set var="messageClass" value="${(thisChat.recipient != null) ? "team-message" : "chat-message" }" />
+								<span class="${messageClass}">${thisChat.message}</span>
 							</div>
 						</g:each>
 					</g:if>
@@ -140,6 +142,14 @@
 							
 								<g:select from="${teamSelections.entrySet()}" name="team-select" optionKey="key" optionValue="value" value="${userInstanceTeamNum}"></g:select>
 						</li>
+						
+						<g:set var="teamChatNoteStyle" value="" />
+						<g:if test="${(userInstanceTeamNum < 0)}">
+							<g:set var="teamChatNoteStyle" value="display:none;" />
+						</g:if>
+						
+						<h5 class="team-chat-note" style="${teamChatNoteStyle}"><g:message code="staging.team.chat.note" /></h5>
+						
 					</g:if>
 					<g:else>
 						<li class="fieldcontain">

@@ -19,8 +19,9 @@
 }
 
 #map-button {
-	margin: 0;
+	margin: 0 auto;
 	font-size: 1em;
+	display: table;
 }
 
 #map-button .ui-button-text {
@@ -102,13 +103,15 @@ div.chat-line {
 }
 
 span.chat-time {
-	margin-right: 5px;
 	color: #C0C0C0;
 }
 
 /* TODO: use #FF4646 for enemy chat? */
 span.chat-user {
-	margin-right: 5px;
+	color: #3498DB;
+}
+
+span.team-message {
 	color: #3498DB;
 }
 
@@ -256,6 +259,12 @@ input[type=radio]:checked+label:before {
 	-moz-border-radius: 0.5em;
 	-webkit-border-radius: 0.5em;
 	border-radius: 0.5em;
+}
+
+.team-chat-note {
+	text-align: center;
+	margin: 0.5em;
+	color: #3498DB;
 }
 
 .player {

@@ -114,20 +114,26 @@ c.update = function() {
 	this.inputElement.y = this.height;
 }
 
-c.addMessage = function(message, time, user, scrollToBottom) {
+c.addMessage = function(message, time, user, recipient, scrollToBottom) {
 	var $chat = $('#chat-window');
 	
 	if(message != null && message.length > 0) { 
 		//this.messagingElement.htmlElement.innerHTML += "&#13;&#10;"+message;
-		var chatLine = "<div class='chat-line'>";
+		var chatLine = "<div class='chat-line'>\n";
 		if(time != null) {
-			chatLine += "<span class='chat-time'>"+"["+new Date(time).toLocaleTimeString()+"]"+"</span>";
+			chatLine += "<span class='chat-time'>"+"["+new Date(time).toLocaleTimeString()+"]"+"</span>\n";
 		}
 		if(user != null) {
-			chatLine += "<span class='chat-user'>"+ user +":</span>";
+			chatLine += "<span class='chat-user'>"+ user +":</span>\n";
 		}
 		if(message != null) {
-			chatLine += "<span class='chat-message'>"+ message +"</span>";
+			if(recipient != null) {
+				// TODO: handle team message differently from tell message, when tells are implemented
+				chatLine += "<span class='team-message'>"+ message +"</span>\n";
+			}
+			else {
+				chatLine += "<span class='chat-message'>"+ message +"</span>\n";
+			}
 		}
 		chatLine += "</div>";
 		
