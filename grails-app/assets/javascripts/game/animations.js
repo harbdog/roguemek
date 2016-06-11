@@ -4,8 +4,8 @@
 "use strict";
 
 // Projectile speeds in pixels per 1000 ms
-var PROJECTILE_SPEED_LRM = 600;
-var PROJECTILE_SPEED_SRM = 500;
+var PROJECTILE_SPEED_LRM = 400;
+var PROJECTILE_SPEED_SRM = 300;
 var PROJECTILE_SPEED_AC = 700;
 var PROJECTILE_SPEED_MG = 400;
 var PROJECTILE_SPEED_FLAMER = 400;
@@ -568,14 +568,14 @@ function animateProjectile(srcUnit, weapon, tgtUnit, hitLocation, initialDelay) 
 		missile.visible = false;
 		stage.addChild(missile);
 		
-		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime).call(removeThisFromStage, null, missile);
+		createjs.Tween.get(missile).wait(initialDelay).to({visible:true}).to({x:weaponEndPoint.x, y:weaponEndPoint.y}, projectileTime, createjs.Ease.getBackIn(1.5)).call(removeThisFromStage, null, missile);
 		
 		// add missile smoke trail
 		setTimeout(
 			function() {
 				var emitter = new MissileTrailEmitter(missile, projectileTime);
 			}, 
-			initialDelay
+			initialDelay + (projectileTime/4)
 		);
 		
 		addAnimatingTime(initialDelay + projectileTime);
