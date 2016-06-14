@@ -376,6 +376,9 @@ class GameController {
         }
 
         gameInstance.save flush:true
+		
+		// load the board in case is not loaded already
+		gameInstance.loadMap()
 
         request.withFormat {
             form multipartForm {
