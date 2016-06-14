@@ -770,6 +770,9 @@ class StagingController {
 			def pathRegex = ~/.*[\\|\/](.*)/
 			Set<String> camoPaths = ContextHelper.getResourcePaths("/assets/images/camo/", false)
 			camoPaths.each { path ->
+				// make sure there are no trailing slashes
+				path = path.replaceAll('/$', "")
+				
 				path.find(pathRegex) { fullMatch, regPath ->
 					camoPatternPaths << regPath
 				}
@@ -827,6 +830,9 @@ class StagingController {
 			def pathRegex = ~/.*[\\|\/](.*)/
 			Set<String> camoPaths = ContextHelper.getResourcePaths("/assets/images/camo/${patternPath}", false)
 			camoPaths.each { path ->
+				// make sure there are no trailing slashes
+				path = path.replaceAll('/$', "")
+				
 				path.find(pathRegex) { fullMatch, regPath ->
 					camoPatternPaths << regPath
 				}
