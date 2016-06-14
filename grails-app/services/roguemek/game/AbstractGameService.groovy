@@ -29,4 +29,14 @@ class AbstractGameService extends HttpServlet{
 		
 		return null
 	}
+	
+	def currentRoles(request) {
+		def httpSession = request?.getSession(false)
+		def context = (SecurityContext) httpSession?.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)
+		if (context?.authentication?.isAuthenticated()) {
+			return context.authentication.principal.authorities*.authority
+		}
+		
+		return []
+	}
 }

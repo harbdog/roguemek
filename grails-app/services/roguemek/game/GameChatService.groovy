@@ -75,6 +75,28 @@ class GameChatService extends AbstractGameService {
 		}
 	}
 	
+	def sendBroadcastChat(user, data, mapping) {
+		// clean the message to not allow some markup
+		def message = htmlCleaner.cleanHtml(data.message, 'simpleText')?.trim()
+		if(message == null || message.length() == 0) {
+			return
+		}
+		
+		def time = new Date()
+		
+		// strip out the '/b'...'/broadcast' portion of the message and replace with '[SERVER]'
+		def broadcastRegex = /^(\/b\w+|\/b)/
+		message = message.replaceFirst(broadcastRegex, "[SERVER]")
+		
+		data.message = message
+		data.time = time.getTime()
+		
+		recordChat(user, data, null)
+		
+		// send to all players connected to any chat
+		metaBroadcaster.broadcastTo(mapping, data)
+	}
+	
 	/**
 	 * Asynchronously persist the chat message to the data store
 	 * @param user

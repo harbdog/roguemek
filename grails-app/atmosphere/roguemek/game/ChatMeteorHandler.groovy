@@ -86,6 +86,19 @@ class ChatMeteorHandler extends HttpServlet {
 			if(user == null) return
 			
 			def isTeamChat = message.startsWith("/t")
+			def isBroadcast = message.startsWith("/b")
+			
+			if(isBroadcast) {
+				def checkRoles = gameChatService.currentRoles(request)
+				if(checkRoles.contains(roguemek.Role.ROLE_ROOT) 
+						|| checkRoles.contains(roguemek.Role.ROLE_ADMIN)) {
+					// only ROOT and ADMIN users allowed to broadcast messages to the entire server		
+					mapping += "/*"
+					gameChatService.sendBroadcastChat(user, jsonMap, mapping)
+					
+					return
+				}
+			}
 			
 			if(session.game != null && MAPPING_GAME.equals(mapping)){
 				mapping += "/${session.game}"
