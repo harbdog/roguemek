@@ -6,18 +6,18 @@ var reconnectGameChat = false;
  */
 function initAtmosphere() {
 	HPG.socket = $.atmosphere;
-	
+    
 	// setup game chat meteor
 	var chatRequest = {
 		type: CHAT_REQUEST_TYPE,
-		url: 'atmosphere/chat/game'
+		url: atmosphereURL+'/chat/game'
 	};
 	HPG.subscribe(chatRequest, handleChat);
 	
 	// setup game action meteor
 	var actionRequest = {
 		type: GAME_REQUEST_TYPE,
-		url: 'atmosphere/action/game'
+		url: atmosphereURL+'/action/game'
 	};
 	HPG.subscribe(actionRequest, handleAction);
 }

@@ -26,7 +26,7 @@ var HPG = {
 			contentType: "application/json",
 			shared: false,
 			transport: hpgTransport,	// "websocket" or "long-polling"
-			fallbackTransport: 'long-polling',
+			fallbackTransport: "long-polling",
 			trackMessageLength: true
 		},
 		atmosphereRequest = $.extend({}, defaults, options);

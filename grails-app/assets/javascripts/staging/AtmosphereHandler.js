@@ -7,14 +7,14 @@ function initAtmosphere() {
 	// setup game chat meteor
 	var chatRequest = {
 		type: CHAT_REQUEST_TYPE,
-		url: '../atmosphere/chat/game'
+		url: atmosphereURL+'/chat/game'
 	};
 	HPG.subscribe(chatRequest, handleChat);
 	
 	// setup game staging meteor
 	var stagingRequest = {
 		type: STAGING_REQUEST_TYPE,
-		url: '../atmosphere/staging/game'
+		url: atmosphereURL+'/staging/game'
 	};
 	HPG.subscribe(stagingRequest, handleStaging);
 

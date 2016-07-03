@@ -24,6 +24,9 @@ roguemek {
 		
 		// hpgTransport: some servers do not support websocket connections, set this to "long-polling" to prevent clients from trying websocket
 		hpgTransport = "websocket"
+		
+		// hpgWebSocketPort: some servers do not put websocket on the same HTTP/HTTPS port as the main web server, use this to override
+		hpgWebSocketPort = ""	// e.g. OpenShift uses port "8000" for WS, or "8443" for WSS
 	}
 	registration {
 		// Any new user attempting to register can be enabled by setting newUserEnable to one of the following settings:

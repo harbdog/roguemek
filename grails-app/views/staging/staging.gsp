@@ -31,6 +31,7 @@
 		</g:else>
 		
 		<script type="text/javascript">var hpgTransport = "${grailsApplication.config.roguemek.server.hpgTransport}";</script>
+        <script type="text/javascript">var atmosphereURL = "<g:atmosphereURL/>";</script>
 		<script type="text/javascript">var currentUserId = "${userInstance?.id}";</script>
 		
 		<g:set var="isEditable" value="${gameInstance?.ownerUser == userInstance && gameInstance?.isInit()}" />
