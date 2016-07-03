@@ -378,7 +378,7 @@ function ajaxStageTeamOrUser(teamNum, userId, forceLoadPlayer) {
 	};
     
     // if the user is the current user, update the team select menu
-    if(currentUserId == userId) {
+    if(currentUserId == userId && teamNum != null) {
         $("select#team-select").val(teamNum).selectmenu("refresh");
     }
 	
